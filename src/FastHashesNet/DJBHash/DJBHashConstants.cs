@@ -1,4 +1,4 @@
-﻿namespace FastHashesNet.DJBHash;
+﻿namespace Genbox.FastHashesNet.DJBHash;
 
 public static class DJBHashConstants
 {

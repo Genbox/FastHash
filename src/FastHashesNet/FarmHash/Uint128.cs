@@ -1,4 +1,4 @@
-﻿namespace FastHashesNet.FarmHash;
+﻿namespace Genbox.FastHashesNet.FarmHash;
 
 public struct Uint128
 {

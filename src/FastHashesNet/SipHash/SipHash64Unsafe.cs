@@ -18,7 +18,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace FastHashesNet.SipHash;
+namespace Genbox.FastHashesNet.SipHash;
 
 public static class SipHash64Unsafe
 {

@@ -23,7 +23,7 @@
 //Ported to C# by Ian Qvist
 //Source: https://github.com/google/farmhash
 
-namespace FastHashesNet.FarmHash;
+namespace Genbox.FastHashesNet.FarmHash;
 
 public static class FarmHash32Unsafe
 {

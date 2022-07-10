@@ -1,4 +1,4 @@
-﻿namespace FastHashesNet.FarshHash;
+﻿namespace Genbox.FastHashesNet.FarshHash;
 
 internal static class FarshHashConstants
 {

@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using FastHashesNet.wyHash;
+﻿using System.Text;
+using Genbox.FastHashesNet.wyHash;
 using Xunit;
 
-namespace FastHashesNet.Tests.Single;
+namespace Genbox.FastHashesNet.Tests.Single;
 
 public class wyHashTests
 {

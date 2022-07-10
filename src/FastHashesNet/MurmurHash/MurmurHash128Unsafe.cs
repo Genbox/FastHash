@@ -3,7 +3,7 @@
 //Note: This is the x64 version of 128bit MurmurHash3
 //Note: This hash algorithm is vulnerable to hash flodding: https://emboss.github.io/blog/2012/12/14/breaking-murmur-hash-flooding-dos-reloaded/
 
-namespace FastHashesNet.MurmurHash;
+namespace Genbox.FastHashesNet.MurmurHash;
 
 public static class MurmurHash128Unsafe
 {

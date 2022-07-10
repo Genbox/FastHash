@@ -21,3 +21,4 @@
 
 # Rider cache folder
 .idea/
+*BenchmarkDotNet.Artifacts/

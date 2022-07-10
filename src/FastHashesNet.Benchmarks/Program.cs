@@ -1,6 +1,6 @@
 ﻿using BenchmarkDotNet.Running;
 
-namespace FastHashesNet.Benchmarks;
+namespace Genbox.FastHashesNet.Benchmarks;
 
 public class Program
 {

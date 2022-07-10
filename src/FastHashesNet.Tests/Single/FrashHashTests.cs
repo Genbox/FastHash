@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using FastHashesNet.FarshHash;
+using Genbox.FastHashesNet.FarshHash;
 using Xunit;
 
-namespace FastHashesNet.Tests.Single;
+namespace Genbox.FastHashesNet.Tests.Single;
 
 public class FrashHashTests
 {

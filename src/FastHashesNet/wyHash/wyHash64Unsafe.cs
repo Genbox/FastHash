@@ -1,4 +1,4 @@
-﻿namespace FastHashesNet.wyHash;
+﻿namespace Genbox.FastHashesNet.wyHash;
 
 public unsafe class wyHash64Unsafe
 {

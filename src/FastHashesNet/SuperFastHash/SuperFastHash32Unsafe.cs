@@ -3,7 +3,7 @@
 
 //Note: This algorithm has known issues. https://floodyberry.wordpress.com/2007/03/29/breaking-superfasthash/
 
-namespace FastHashesNet.SuperFastHash;
+namespace Genbox.FastHashesNet.SuperFastHash;
 
 public static class SuperFastHash32Unsafe
 {

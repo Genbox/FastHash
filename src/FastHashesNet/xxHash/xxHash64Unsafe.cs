@@ -37,7 +37,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace FastHashesNet.xxHash;
+namespace Genbox.FastHashesNet.xxHash;
 
 public static class xxHash64Unsafe
 {

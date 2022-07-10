@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
-using FastHashesNet.DJBHash;
-using FastHashesNet.FarmHash;
-using FastHashesNet.FNVHash;
-using FastHashesNet.MurmurHash;
-using FastHashesNet.SipHash;
-using FastHashesNet.SuperFastHash;
-using FastHashesNet.xxHash;
+using Genbox.FastHashesNet.DJBHash;
+using Genbox.FastHashesNet.FarmHash;
+using Genbox.FastHashesNet.FNVHash;
+using Genbox.FastHashesNet.MurmurHash;
+using Genbox.FastHashesNet.SipHash;
+using Genbox.FastHashesNet.SuperFastHash;
+using Genbox.FastHashesNet.xxHash;
 using Xunit;
 
-namespace FastHashesNet.Tests;
+namespace Genbox.FastHashesNet.Tests;
 
 public class GeneralTests
 {
@@ -21,34 +20,70 @@ public class GeneralTests
     //Test if length works
     //Test against simple test data
 
-    private readonly byte[] _testData = Encoding.ASCII.GetBytes("This is a test!!");
+    private static readonly byte[] _data = Encoding.ASCII.GetBytes("This is a test!!");
+    private static unsafe readonly byte* _ptr;
 
-    private readonly Dictionary<Type, byte[]> _testResults = new Dictionary<Type, byte[]>
+    static unsafe GeneralTests()
     {
-        { typeof(DJBHash32), new byte[] { 0xCE, 0xED, 0x14, 0x36 } },
-        { typeof(FarmHash32), new byte[] { 0x7F, 0x0F, 0xF1, 0x11 } },
-        { typeof(FarmHash64), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A } },
-        { typeof(FNV1A32), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 } },
-        { typeof(MurmurHash32), new byte[] { 0xF6, 0x08, 0x79, 0x87 } },
-        { typeof(MurmurHash128), new byte[] { 0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67 } },
-        { typeof(SipHash64), new byte[] { 0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97 } },
-        { typeof(SuperFastHash32), new byte[] { 0x5E, 0xE8, 0x41, 0xB2 } },
-        { typeof(xxHash32), new byte[] { 0x2B, 0xC6, 0xC7, 0x94 } },
-        { typeof(xxHash64), new byte[] { 0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE } }
-    };
+        _ptr = (byte*)NativeMemory.Alloc((nuint)_data.Length);
 
-    private string ByteStuff(byte[] data)
-    {
-        string value = Utilities.ToHex(data);
-
-        List<string> values = new List<string>();
-        for (int i = 0; i < value.Length; i += 2)
+        for (int i = 0; i < _data.Length; i++)
         {
-            values.Add("0x" + value[i] + value[i + 1]);
+            _ptr[i] = _data[i];
         }
+    }
 
-        string returnVal = string.Join(", ", values);
-        return returnVal;
+    public static IEnumerable<object[]> CreateAlgorithms32()
+    {
+        yield return new object[] { nameof(DJBHash32), () => DJBHash32.ComputeHash(_data), new byte[] { 0xCE, 0xED, 0x14, 0x36 } };
+        yield return new object[] { nameof(FarmHash32), () => FarmHash32.ComputeHash(_data), new byte[] { 0x7F, 0x0F, 0xF1, 0x11 } };
+        yield return new object[] { nameof(FNV1A32), () => FNV1A32.ComputeHash(_data), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 } };
+        yield return new object[] { nameof(MurmurHash32), () => MurmurHash32.ComputeHash(_data), new byte[] { 0xF6, 0x08, 0x79, 0x87 } };
+        yield return new object[] { nameof(SuperFastHash32), () => SuperFastHash32.ComputeHash(_data), new byte[] { 0x5E, 0xE8, 0x41, 0xB2 } };
+        yield return new object[] { nameof(xxHash32), () => xxHash32.ComputeHash(_data), new byte[] { 0x2B, 0xC6, 0xC7, 0x94 } };
+    }
+
+    public static IEnumerable<object[]> CreateAlgorithms64()
+    {
+        yield return new object[] { nameof(FarmHash64), () => FarmHash64.ComputeHash(_data), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A } };
+        yield return new object[] { nameof(SipHash64), () => SipHash64.ComputeHash(_data), new byte[] { 0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97 } };
+        yield return new object[] { nameof(xxHash64), () => xxHash64.ComputeHash(_data), new byte[] { 0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE } };
+    }
+
+    public static IEnumerable<object[]> CreateAlgorithms128()
+    {
+        yield return new object[] { nameof(MurmurHash128), () => MurmurHash128.ComputeHash(_data), new byte[] { 0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67 } };
+    }
+
+    public static unsafe ICollection<object[]> CreateAlgorithmsUnsafe32()
+    {
+        return new[]
+        {
+            new object[] { nameof(DJBHash32Unsafe), () => DJBHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xCE, 0xED, 0x14, 0x36 } },
+            new object[] { nameof(FarmHash32Unsafe), () => FarmHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x7F, 0x0F, 0xF1, 0x11 } },
+            new object[] { nameof(FNV1A32Unsafe), () => FNV1A32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 } },
+            new object[] { nameof(MurmurHash32Unsafe), () => MurmurHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x08, 0x79, 0x87 } },
+            new object[] { nameof(SuperFastHash32Unsafe), () => SuperFastHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x5E, 0xE8, 0x41, 0xB2 } },
+            new object[] { nameof(xxHash32Unsafe), () => xxHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x2B, 0xC6, 0xC7, 0x94 } },
+        };
+    }
+
+    public static unsafe ICollection<object[]> CreateAlgorithmsUnsafe64()
+    {
+        return new[]
+        {
+            new object[] { nameof(FarmHash64Unsafe), () => FarmHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A } },
+            new object[] { nameof(SipHash64Unsafe), () => SipHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97 } },
+            new object[] { nameof(xxHash64Unsafe), () => xxHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE } },
+        };
+    }
+
+    public static unsafe ICollection<object[]> CreateAlgorithmsUnsafe128()
+    {
+        return new[]
+        {
+            new object[] { nameof(MurmurHash128Unsafe), () => MurmurHash128Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67 } },
+        };
     }
 
     private IEnumerable<Type> GetAllTypesOf<T>()
@@ -69,99 +104,29 @@ public class GeneralTests
         }
     }
 
-    [Fact]
-    public void CheckReferenceResults()
-    {
-        //DJBHash32
-        uint r1 = DJBHash32.ComputeHash(_testData);
-        Assert.Equal(BitConverter.ToUInt32(_testResults[typeof(DJBHash32)], 0), r1);
+    [Theory]
+    [MemberData(nameof(CreateAlgorithms32))]
+    public void Check32(string _, Func<uint> func, byte[] expected) => Assert.Equal(expected, BitConverter.GetBytes(func()));
 
-        //Farmhash32
-        uint r2 = FarmHash32.ComputeHash(_testData);
-        Assert.Equal(BitConverter.ToUInt32(_testResults[typeof(FarmHash32)], 0), r2);
+    [Theory]
+    [MemberData(nameof(CreateAlgorithms64))]
+    public void Check64(string _, Func<ulong> func, byte[] expected) => Assert.Equal(expected, BitConverter.GetBytes(func()));
 
-        //Farmhash64
-        ulong r3 = FarmHash64.ComputeHash(_testData);
-        Assert.Equal(BitConverter.ToUInt64(_testResults[typeof(FarmHash64)], 0), r3);
+    [Theory]
+    [MemberData(nameof(CreateAlgorithms128))]
+    public void Check128(string _, Func<byte[]> func, byte[] expected) => Assert.Equal(expected, func());
 
-        //FNV1A32
-        uint r4 = FNV1A32.ComputeHash(_testData);
-        Assert.Equal(BitConverter.ToUInt32(_testResults[typeof(FNV1A32)], 0), r4);
+    [Theory]
+    [MemberData(nameof(CreateAlgorithmsUnsafe32))]
+    public void CheckUnsafe32(string _, Func<uint> func, byte[] expected) => Assert.Equal(expected, BitConverter.GetBytes(func()));
 
-        //MurmurHash32
-        uint r5 = MurmurHash32.ComputeHash(_testData);
-        Assert.Equal(BitConverter.ToUInt32(_testResults[typeof(MurmurHash32)], 0), r5);
+    [Theory]
+    [MemberData(nameof(CreateAlgorithmsUnsafe64))]
+    public void CheckUnsafe64(string _, Func<ulong> func, byte[] expected) => Assert.Equal(expected, BitConverter.GetBytes(func()));
 
-        //MurmurHash128
-        byte[] r6 = MurmurHash128.ComputeHash(_testData);
-        Assert.True(_testResults[typeof(MurmurHash128)].SequenceEqual(r6));
-
-        //SipHash64
-        ulong r7 = SipHash64.ComputeHash(_testData);
-        Assert.Equal(BitConverter.ToUInt64(_testResults[typeof(SipHash64)], 0), r7);
-
-        //SuperFastHash32
-        uint r8 = SuperFastHash32.ComputeHash(_testData);
-        Assert.Equal(BitConverter.ToUInt32(_testResults[typeof(SuperFastHash32)], 0), r8);
-
-        //xxHash32
-        uint r9 = xxHash32.ComputeHash(_testData);
-        Assert.Equal(BitConverter.ToUInt32(_testResults[typeof(xxHash32)], 0), r9);
-
-        //xxHash64
-        ulong r10 = xxHash64.ComputeHash(_testData);
-        Assert.Equal(BitConverter.ToUInt64(_testResults[typeof(xxHash64)], 0), r10);
-    }
-
-    [Fact]
-    public void CheckReferenceResultsUnsafe()
-    {
-        unsafe
-        {
-            fixed (byte* ptr = _testData)
-            {
-                //DJBHash32
-                uint r1 = DJBHash32Unsafe.ComputeHash(ptr, _testData.Length);
-                Assert.Equal(BitConverter.ToUInt32(_testResults[typeof(DJBHash32)], 0), r1);
-
-                //Farmhash32
-                uint r2 = FarmHash32Unsafe.ComputeHash(ptr, _testData.Length);
-                Assert.Equal(BitConverter.ToUInt32(_testResults[typeof(FarmHash32)], 0), r2);
-
-                //Farmhash64
-                ulong r3 = FarmHash64Unsafe.ComputeHash(ptr, _testData.Length);
-                Assert.Equal(BitConverter.ToUInt64(_testResults[typeof(FarmHash64)], 0), r3);
-
-                //FNV1A32
-                uint r4 = FNV1A32Unsafe.ComputeHash(ptr, _testData.Length);
-                Assert.Equal(BitConverter.ToUInt32(_testResults[typeof(FNV1A32)], 0), r4);
-
-                //MurmurHash32
-                uint r5 = MurmurHash32Unsafe.ComputeHash(ptr, _testData.Length);
-                Assert.Equal(BitConverter.ToUInt32(_testResults[typeof(MurmurHash32)], 0), r5);
-
-                //MurmurHash128
-                byte[] r6 = MurmurHash128Unsafe.ComputeHash(ptr, _testData.Length);
-                Assert.True(_testResults[typeof(MurmurHash128)].SequenceEqual(r6));
-
-                //SipHash64
-                ulong r7 = SipHash64Unsafe.ComputeHash(ptr, _testData.Length);
-                Assert.Equal(BitConverter.ToUInt64(_testResults[typeof(SipHash64)], 0), r7);
-
-                //SuperFastHash32
-                uint r8 = SuperFastHash32Unsafe.ComputeHash(ptr, _testData.Length);
-                Assert.Equal(BitConverter.ToUInt32(_testResults[typeof(SuperFastHash32)], 0), r8);
-
-                //xxHash32
-                uint r9 = xxHash32Unsafe.ComputeHash(ptr, _testData.Length);
-                Assert.Equal(BitConverter.ToUInt32(_testResults[typeof(xxHash32)], 0), r9);
-
-                //xxHash64
-                ulong r10 = xxHash64Unsafe.ComputeHash(ptr, _testData.Length);
-                Assert.Equal(BitConverter.ToUInt64(_testResults[typeof(xxHash64)], 0), r10);
-            }
-        }
-    }
+    [Theory]
+    [MemberData(nameof(CreateAlgorithmsUnsafe128))]
+    public void CheckUnsafe128(string _, Func<byte[]> func, byte[] expected) => Assert.Equal(expected, func());
 
     [Fact]
     public void CheckAllHaveCorrectName()

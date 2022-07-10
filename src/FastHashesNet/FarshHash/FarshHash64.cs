@@ -22,7 +22,7 @@
 //Website: https://github.com/Bulat-Ziganshin/FARSH
 //Source: https://github.com/Bulat-Ziganshin/FARSH/blob/master/farsh.c
 
-namespace FastHashesNet.FarshHash;
+namespace Genbox.FastHashesNet.FarshHash;
 
 public static class FarshHash64
 {

@@ -1,7 +1,7 @@
 ﻿//Ported to C# by Ian Qvist
 //Source: http://www.isthe.com/chongo/src/fnv/hash_64a.c
 
-namespace FastHashesNet.FNVHash;
+namespace Genbox.FastHashesNet.FNVHash;
 
 /// <summary>
 /// Fowler–Noll–Vo hash implementation

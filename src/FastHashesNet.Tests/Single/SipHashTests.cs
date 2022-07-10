@@ -1,8 +1,7 @@
-﻿using System;
-using FastHashesNet.SipHash;
+﻿using Genbox.FastHashesNet.SipHash;
 using Xunit;
 
-namespace FastHashesNet.Tests.Single;
+namespace Genbox.FastHashesNet.Tests.Single;
 
 public class SipHashTests
 {

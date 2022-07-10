@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace FastHashesNet.FarmHash;
+namespace Genbox.FastHashesNet.FarmHash;
 
 internal static class FarmHash
 {

@@ -34,7 +34,7 @@
 *  - xxHash source repository : https://github.com/Cyan4973/xxHash
 */
 
-namespace FastHashesNet.xxHash;
+namespace Genbox.FastHashesNet.xxHash;
 
 internal static class xxHashConstants
 {

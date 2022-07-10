@@ -1,4 +1,4 @@
-﻿namespace FastHashesNet.MurmurHash;
+﻿namespace Genbox.FastHashesNet.MurmurHash;
 
 internal static class MurmurHashConstants
 {

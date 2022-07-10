@@ -1,7 +1,7 @@
 ﻿//Ported to C# by Ian Qvist
 //Source: http://www.cse.yorku.ca/~oz/hash.html
 
-namespace FastHashesNet.DJBHash;
+namespace Genbox.FastHashesNet.DJBHash;
 
 public static class DJBHash32Unsafe
 {

@@ -1,9 +1,8 @@
-﻿using System;
-using System.Text;
-using FastHashesNet.xxHash;
+﻿using System.Text;
+using Genbox.FastHashesNet.xxHash;
 using Xunit;
 
-namespace FastHashesNet.Tests.Single;
+namespace Genbox.FastHashesNet.Tests.Single;
 
 public class xxHashTests
 {

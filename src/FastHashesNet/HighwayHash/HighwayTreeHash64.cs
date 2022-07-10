@@ -16,7 +16,7 @@
 //Website: https://github.com/google/highwayhash/
 //Source: https://github.com/google/highwayhash/
 
-namespace FastHashesNet.HighwayHash;
+namespace Genbox.FastHashesNet.HighwayHash;
 
 public static class HighwayTreeHash64
 {

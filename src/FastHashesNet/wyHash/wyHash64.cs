@@ -1,6 +1,6 @@
 ﻿//#define WYHASH_CONDOM
 
-namespace FastHashesNet.wyHash;
+namespace Genbox.FastHashesNet.wyHash;
 
 public class wyHash64
 {
