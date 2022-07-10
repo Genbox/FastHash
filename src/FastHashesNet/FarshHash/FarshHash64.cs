@@ -22,127 +22,126 @@
 //Website: https://github.com/Bulat-Ziganshin/FARSH
 //Source: https://github.com/Bulat-Ziganshin/FARSH/blob/master/farsh.c
 
-namespace FastHashesNet.FarshHash
+namespace FastHashesNet.FarshHash;
+
+public static class FarshHash64
 {
-    public static class FarshHash64
+    /* STRIPE bytes of key material plus extra keys for hashes up to 1024 bits long */
+    private static ulong farsh_full_block(byte[] data, int offset)
     {
-        /* STRIPE bytes of key material plus extra keys for hashes up to 1024 bits long */
-        private static ulong farsh_full_block(byte[] data, int offset)
+        ulong sum = 0;
+        int i;
+        int j = 0;
+        for (i = 0; i < FarshHashConstants.STRIPE; i += 8, j += 2)
         {
-            ulong sum = 0;
-            int i;
-            int j = 0;
-            for (i = 0; i < FarshHashConstants.STRIPE; i += 8, j += 2)
-            {
-                uint val1 = Utilities.Fetch32(data, offset + i);
-                uint val2 = Utilities.Fetch32(data, offset + i + sizeof(uint));
-                sum += (val1 + FarshHashConstants.FARSH_KEYS[j]) * (ulong)(val2 + FarshHashConstants.FARSH_KEYS[j + 1]);
-            }
-
-            return sum;
+            uint val1 = Utilities.Fetch32(data, offset + i);
+            uint val2 = Utilities.Fetch32(data, offset + i + sizeof(uint));
+            sum += (val1 + FarshHashConstants.FARSH_KEYS[j]) * (ulong)(val2 + FarshHashConstants.FARSH_KEYS[j + 1]);
         }
 
-        private static ulong farsh_partial_block(byte[] data, int offset)
+        return sum;
+    }
+
+    private static ulong farsh_partial_block(byte[] data, int offset)
+    {
+        ulong sum = 0;
+        int keyindex = 0;
+        int chunks = (data.Length - offset) >> 3;
+
+        for (; chunks > 0; chunks--)
         {
-            ulong sum = 0;
-            int keyindex = 0;
-            int chunks = (data.Length - offset) >> 3;
-
-            for (; chunks > 0; chunks--)
-            {
-                uint val1 = Utilities.Fetch32(data, offset);
-                uint val2 = Utilities.Fetch32(data, offset + sizeof(uint));
-                sum += (val1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(val2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
-                offset += 8;
-                keyindex += 2;
-            }
-
-            uint v1;
-            uint v2;
-
-            int remaining = data.Length - offset;
-
-            switch (remaining)
-            {
-                case 7:
-                    v1 = Utilities.Fetch32(data, offset);
-                    offset += 4;
-                    v2 = (uint)(data[0 + offset] | (data[1 + offset] << 8) | (data[2 + offset] << 16));
-                    sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
-                    break;
-                case 6:
-                    v1 = Utilities.Fetch32(data, offset);
-                    offset += 4;
-                    v2 = Utilities.Fetch16(data, offset);
-                    sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
-                    break;
-                case 5:
-                    v1 = Utilities.Fetch32(data, offset);
-                    offset += 4;
-                    v2 = data[offset];
-                    sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
-                    break;
-                case 4:
-                    v1 = Utilities.Fetch32(data, offset);
-                    sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
-                    break;
-                case 3:
-                    v1 = (uint)(data[0 + offset] | (data[1 + offset] << 8) | (data[2 + offset] << 16));
-                    sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
-                    break;
-                case 2:
-                    v1 = Utilities.Fetch16(data, offset);
-                    sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
-                    break;
-                case 1:
-                    v1 = data[offset];
-                    sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
-                    break;
-            }
-
-            return sum;
+            uint val1 = Utilities.Fetch32(data, offset);
+            uint val2 = Utilities.Fetch32(data, offset + sizeof(uint));
+            sum += (val1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(val2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
+            offset += 8;
+            keyindex += 2;
         }
 
-        public static ulong ComputeHash(byte[] data, ulong seed = 0)
+        uint v1;
+        uint v2;
+
+        int remaining = data.Length - offset;
+
+        switch (remaining)
         {
-            ulong sum = seed;
-            int bytes = data.Length;
-            int offset = 0;
-
-            while (bytes >= FarshHashConstants.STRIPE)
-            {
-                ulong h = farsh_full_block(data, offset);
-                sum = farsh_combine(sum, h);
-                offset += FarshHashConstants.STRIPE;
-                bytes -= FarshHashConstants.STRIPE;
-            }
-
-            if (bytes > 0)
-            {
-                ulong h = farsh_partial_block(data, offset);
-                sum = farsh_combine(sum, h);
-            }
-
-            return farsh_final(sum) ^ FarshHashConstants.FARSH_KEYS[0];   /* ensure that zeroes at the end of data will affect the hash value */
+            case 7:
+                v1 = Utilities.Fetch32(data, offset);
+                offset += 4;
+                v2 = (uint)(data[0 + offset] | (data[1 + offset] << 8) | (data[2 + offset] << 16));
+                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
+                break;
+            case 6:
+                v1 = Utilities.Fetch32(data, offset);
+                offset += 4;
+                v2 = Utilities.Fetch16(data, offset);
+                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
+                break;
+            case 5:
+                v1 = Utilities.Fetch32(data, offset);
+                offset += 4;
+                v2 = data[offset];
+                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
+                break;
+            case 4:
+                v1 = Utilities.Fetch32(data, offset);
+                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
+                break;
+            case 3:
+                v1 = (uint)(data[0 + offset] | (data[1 + offset] << 8) | (data[2 + offset] << 16));
+                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
+                break;
+            case 2:
+                v1 = Utilities.Fetch16(data, offset);
+                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
+                break;
+            case 1:
+                v1 = data[offset];
+                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
+                break;
         }
 
-        private static ulong farsh_combine(ulong sum, ulong h)
+        return sum;
+    }
+
+    public static ulong ComputeHash(byte[] data, ulong seed = 0)
+    {
+        ulong sum = seed;
+        int bytes = data.Length;
+        int offset = 0;
+
+        while (bytes >= FarshHashConstants.STRIPE)
         {
-            h *= FarshHashConstants.PRIME64_2;
-            h += h >> 31;
-            h *= FarshHashConstants.PRIME64_1;
-            sum ^= h;
-            sum = (sum + (sum >> 27)) * FarshHashConstants.PRIME64_1 + FarshHashConstants.PRIME64_4;
-            return sum;
+            ulong h = farsh_full_block(data, offset);
+            sum = farsh_combine(sum, h);
+            offset += FarshHashConstants.STRIPE;
+            bytes -= FarshHashConstants.STRIPE;
         }
 
-        private static uint farsh_final(ulong sum)
+        if (bytes > 0)
         {
-            sum ^= sum >> 33;
-            sum *= FarshHashConstants.PRIME64_2;
-            sum ^= sum >> 29;
-            sum *= FarshHashConstants.PRIME64_3;
-            return (uint)sum ^ (uint)(sum >> 32);
+            ulong h = farsh_partial_block(data, offset);
+            sum = farsh_combine(sum, h);
         }
+
+        return farsh_final(sum) ^ FarshHashConstants.FARSH_KEYS[0];   /* ensure that zeroes at the end of data will affect the hash value */
+    }
+
+    private static ulong farsh_combine(ulong sum, ulong h)
+    {
+        h *= FarshHashConstants.PRIME64_2;
+        h += h >> 31;
+        h *= FarshHashConstants.PRIME64_1;
+        sum ^= h;
+        sum = (sum + (sum >> 27)) * FarshHashConstants.PRIME64_1 + FarshHashConstants.PRIME64_4;
+        return sum;
+    }
+
+    private static uint farsh_final(ulong sum)
+    {
+        sum ^= sum >> 33;
+        sum *= FarshHashConstants.PRIME64_2;
+        sum ^= sum >> 29;
+        sum *= FarshHashConstants.PRIME64_3;
+        return (uint)sum ^ (uint)(sum >> 32);
     }
 }

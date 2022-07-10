@@ -34,20 +34,19 @@
 *  - xxHash source repository : https://github.com/Cyan4973/xxHash
 */
 
-namespace FastHashesNet.xxHash
-{
-    internal static class xxHashConstants
-    {
-        internal const uint PRIME32_1 = 2654435761U;
-        internal const uint PRIME32_2 = 2246822519U;
-        internal const uint PRIME32_3 = 3266489917U;
-        internal const uint PRIME32_4 = 668265263U;
-        internal const uint PRIME32_5 = 374761393U;
+namespace FastHashesNet.xxHash;
 
-        internal const ulong PRIME64_1 = 11400714785074694791UL;
-        internal const ulong PRIME64_2 = 14029467366897019727UL;
-        internal const ulong PRIME64_3 = 1609587929392839161UL;
-        internal const ulong PRIME64_4 = 9650029242287828579UL;
-        internal const ulong PRIME64_5 = 2870177450012600261UL;
-    }
+internal static class xxHashConstants
+{
+    internal const uint PRIME32_1 = 2654435761U;
+    internal const uint PRIME32_2 = 2246822519U;
+    internal const uint PRIME32_3 = 3266489917U;
+    internal const uint PRIME32_4 = 668265263U;
+    internal const uint PRIME32_5 = 374761393U;
+
+    internal const ulong PRIME64_1 = 11400714785074694791UL;
+    internal const ulong PRIME64_2 = 14029467366897019727UL;
+    internal const ulong PRIME64_3 = 1609587929392839161UL;
+    internal const ulong PRIME64_4 = 9650029242287828579UL;
+    internal const ulong PRIME64_5 = 2870177450012600261UL;
 }

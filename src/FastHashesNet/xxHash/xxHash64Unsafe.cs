@@ -37,96 +37,95 @@
 
 using System.Runtime.CompilerServices;
 
-namespace FastHashesNet.xxHash
+namespace FastHashesNet.xxHash;
+
+public static class xxHash64Unsafe
 {
-    public static class xxHash64Unsafe
+    public static unsafe ulong ComputeHash(byte* data, int length, uint seed = 0)
     {
-        public static unsafe ulong ComputeHash(byte* data, int length, uint seed = 0)
+        uint bEnd = (uint)length;
+        ulong h64;
+        int offset = 0;
+
+        if (length >= 32)
         {
-            uint bEnd = (uint)length;
-            ulong h64;
-            int offset = 0;
+            uint limit = bEnd - 32;
+            ulong v1 = seed + xxHashConstants.PRIME64_1 + xxHashConstants.PRIME64_2;
+            ulong v2 = seed + xxHashConstants.PRIME64_2;
+            ulong v3 = seed + 0;
+            ulong v4 = seed - xxHashConstants.PRIME64_1;
 
-            if (length >= 32)
+            do
             {
-                uint limit = bEnd - 32;
-                ulong v1 = seed + xxHashConstants.PRIME64_1 + xxHashConstants.PRIME64_2;
-                ulong v2 = seed + xxHashConstants.PRIME64_2;
-                ulong v3 = seed + 0;
-                ulong v4 = seed - xxHashConstants.PRIME64_1;
-
-                do
-                {
-                    v1 = Round(v1, Utilities.Fetch64(data, offset));
-                    offset += 8;
-                    v2 = Round(v2, Utilities.Fetch64(data, offset));
-                    offset += 8;
-                    v3 = Round(v3, Utilities.Fetch64(data, offset));
-                    offset += 8;
-                    v4 = Round(v4, Utilities.Fetch64(data, offset));
-                    offset += 8;
-                } while (offset <= limit);
-
-                h64 = Utilities.Rotate(v1, 1) + Utilities.Rotate(v2, 7) + Utilities.Rotate(v3, 12) + Utilities.Rotate(v4, 18);
-                h64 = MergeRound(h64, v1);
-                h64 = MergeRound(h64, v2);
-                h64 = MergeRound(h64, v3);
-                h64 = MergeRound(h64, v4);
-            }
-            else
-            {
-                h64 = seed + xxHashConstants.PRIME64_5;
-            }
-
-            h64 += (uint)length;
-
-            while (offset + 8 <= bEnd)
-            {
-                ulong k1 = Round(0, Utilities.Fetch64(data, offset));
-                h64 ^= k1;
-                h64 = Utilities.Rotate(h64, 27) * xxHashConstants.PRIME64_1 + xxHashConstants.PRIME64_4;
+                v1 = Round(v1, Utilities.Fetch64(data, offset));
                 offset += 8;
-            }
+                v2 = Round(v2, Utilities.Fetch64(data, offset));
+                offset += 8;
+                v3 = Round(v3, Utilities.Fetch64(data, offset));
+                offset += 8;
+                v4 = Round(v4, Utilities.Fetch64(data, offset));
+                offset += 8;
+            } while (offset <= limit);
 
-            if (offset + 4 <= bEnd)
-            {
-                h64 ^= Utilities.Fetch32(data, offset) * xxHashConstants.PRIME64_1;
-                h64 = Utilities.Rotate(h64, 23) * xxHashConstants.PRIME64_2 + xxHashConstants.PRIME64_3;
-                offset += 4;
-            }
-
-            while (offset < bEnd)
-            {
-                h64 ^= data[offset] * xxHashConstants.PRIME64_5;
-                h64 = Utilities.Rotate(h64, 11) * xxHashConstants.PRIME64_1;
-                offset++;
-            }
-
-            h64 ^= h64 >> 33;
-            h64 *= xxHashConstants.PRIME64_2;
-            h64 ^= h64 >> 29;
-            h64 *= xxHashConstants.PRIME64_3;
-            h64 ^= h64 >> 32;
-
-            return h64;
+            h64 = Utilities.Rotate(v1, 1) + Utilities.Rotate(v2, 7) + Utilities.Rotate(v3, 12) + Utilities.Rotate(v4, 18);
+            h64 = MergeRound(h64, v1);
+            h64 = MergeRound(h64, v2);
+            h64 = MergeRound(h64, v3);
+            h64 = MergeRound(h64, v4);
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ulong Round(ulong acc, ulong input)
+        else
         {
-            acc += input * xxHashConstants.PRIME64_2;
-            acc = Utilities.Rotate(acc, 31);
-            acc *= xxHashConstants.PRIME64_1;
-            return acc;
+            h64 = seed + xxHashConstants.PRIME64_5;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ulong MergeRound(ulong acc, ulong val)
+        h64 += (uint)length;
+
+        while (offset + 8 <= bEnd)
         {
-            val = Round(0, val);
-            acc ^= val;
-            acc = acc * xxHashConstants.PRIME64_1 + xxHashConstants.PRIME64_4;
-            return acc;
+            ulong k1 = Round(0, Utilities.Fetch64(data, offset));
+            h64 ^= k1;
+            h64 = Utilities.Rotate(h64, 27) * xxHashConstants.PRIME64_1 + xxHashConstants.PRIME64_4;
+            offset += 8;
         }
+
+        if (offset + 4 <= bEnd)
+        {
+            h64 ^= Utilities.Fetch32(data, offset) * xxHashConstants.PRIME64_1;
+            h64 = Utilities.Rotate(h64, 23) * xxHashConstants.PRIME64_2 + xxHashConstants.PRIME64_3;
+            offset += 4;
+        }
+
+        while (offset < bEnd)
+        {
+            h64 ^= data[offset] * xxHashConstants.PRIME64_5;
+            h64 = Utilities.Rotate(h64, 11) * xxHashConstants.PRIME64_1;
+            offset++;
+        }
+
+        h64 ^= h64 >> 33;
+        h64 *= xxHashConstants.PRIME64_2;
+        h64 ^= h64 >> 29;
+        h64 *= xxHashConstants.PRIME64_3;
+        h64 ^= h64 >> 32;
+
+        return h64;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong Round(ulong acc, ulong input)
+    {
+        acc += input * xxHashConstants.PRIME64_2;
+        acc = Utilities.Rotate(acc, 31);
+        acc *= xxHashConstants.PRIME64_1;
+        return acc;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong MergeRound(ulong acc, ulong val)
+    {
+        val = Round(0, val);
+        acc ^= val;
+        acc = acc * xxHashConstants.PRIME64_1 + xxHashConstants.PRIME64_4;
+        return acc;
     }
 }

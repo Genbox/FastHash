@@ -37,75 +37,74 @@
 
 using System.Runtime.CompilerServices;
 
-namespace FastHashesNet.xxHash
+namespace FastHashesNet.xxHash;
+
+public static class xxHash32
 {
-    public static class xxHash32
+    public static uint ComputeHash(byte[] data, uint seed = 0)
     {
-        public static uint ComputeHash(byte[] data, uint seed = 0)
+        uint bEnd = (uint)data.Length;
+        uint h32;
+        uint offset = 0;
+
+        if (bEnd >= 16)
         {
-            uint bEnd = (uint)data.Length;
-            uint h32;
-            uint offset = 0;
+            uint limit = bEnd - 16;
+            uint v1 = seed + xxHashConstants.PRIME32_1 + xxHashConstants.PRIME32_2;
+            uint v2 = seed + xxHashConstants.PRIME32_2;
+            uint v3 = seed + 0;
+            uint v4 = seed - xxHashConstants.PRIME32_1;
 
-            if (bEnd >= 16)
+            do
             {
-                uint limit = bEnd - 16;
-                uint v1 = seed + xxHashConstants.PRIME32_1 + xxHashConstants.PRIME32_2;
-                uint v2 = seed + xxHashConstants.PRIME32_2;
-                uint v3 = seed + 0;
-                uint v4 = seed - xxHashConstants.PRIME32_1;
-
-                do
-                {
-                    v1 = Round(v1, Utilities.Fetch32(data, offset));
-                    offset += 4;
-                    v2 = Round(v2, Utilities.Fetch32(data, offset));
-                    offset += 4;
-                    v3 = Round(v3, Utilities.Fetch32(data, offset));
-                    offset += 4;
-                    v4 = Round(v4, Utilities.Fetch32(data, offset));
-                    offset += 4;
-                } while (offset <= limit);
-
-                h32 = Utilities.Rotate(v1, 1) + Utilities.Rotate(v2, 7) + Utilities.Rotate(v3, 12) + Utilities.Rotate(v4, 18);
-            }
-            else
-            {
-                h32 = seed + xxHashConstants.PRIME32_5;
-            }
-
-            h32 += bEnd;
-
-            while (offset + 4 <= bEnd)
-            {
-                h32 += Utilities.Fetch32(data, offset) * xxHashConstants.PRIME32_3;
-                h32 = Utilities.Rotate(h32, 17) * xxHashConstants.PRIME32_4;
+                v1 = Round(v1, Utilities.Fetch32(data, offset));
                 offset += 4;
-            }
+                v2 = Round(v2, Utilities.Fetch32(data, offset));
+                offset += 4;
+                v3 = Round(v3, Utilities.Fetch32(data, offset));
+                offset += 4;
+                v4 = Round(v4, Utilities.Fetch32(data, offset));
+                offset += 4;
+            } while (offset <= limit);
 
-            while (offset < bEnd)
-            {
-                h32 += data[offset] * xxHashConstants.PRIME32_5;
-                h32 = Utilities.Rotate(h32, 11) * xxHashConstants.PRIME32_1;
-                offset++;
-            }
-
-            h32 ^= h32 >> 15;
-            h32 *= xxHashConstants.PRIME32_2;
-            h32 ^= h32 >> 13;
-            h32 *= xxHashConstants.PRIME32_3;
-            h32 ^= h32 >> 16;
-
-            return h32;
+            h32 = Utilities.Rotate(v1, 1) + Utilities.Rotate(v2, 7) + Utilities.Rotate(v3, 12) + Utilities.Rotate(v4, 18);
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static uint Round(uint seed, uint input)
+        else
         {
-            seed += input * xxHashConstants.PRIME32_2;
-            seed = Utilities.Rotate(seed, 13);
-            seed *= xxHashConstants.PRIME32_1;
-            return seed;
+            h32 = seed + xxHashConstants.PRIME32_5;
         }
+
+        h32 += bEnd;
+
+        while (offset + 4 <= bEnd)
+        {
+            h32 += Utilities.Fetch32(data, offset) * xxHashConstants.PRIME32_3;
+            h32 = Utilities.Rotate(h32, 17) * xxHashConstants.PRIME32_4;
+            offset += 4;
+        }
+
+        while (offset < bEnd)
+        {
+            h32 += data[offset] * xxHashConstants.PRIME32_5;
+            h32 = Utilities.Rotate(h32, 11) * xxHashConstants.PRIME32_1;
+            offset++;
+        }
+
+        h32 ^= h32 >> 15;
+        h32 *= xxHashConstants.PRIME32_2;
+        h32 ^= h32 >> 13;
+        h32 *= xxHashConstants.PRIME32_3;
+        h32 ^= h32 >> 16;
+
+        return h32;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static uint Round(uint seed, uint input)
+    {
+        seed += input * xxHashConstants.PRIME32_2;
+        seed = Utilities.Rotate(seed, 13);
+        seed *= xxHashConstants.PRIME32_1;
+        return seed;
     }
 }

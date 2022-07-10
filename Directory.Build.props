@@ -1,0 +1,106 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--Default project info-->
+  <PropertyGroup>
+    <Authors>Ian Qvist</Authors>
+    <Copyright>Copyright 2022, by Ian Qvist. All rights reserved.</Copyright>
+    <Description>TODO</Description>
+  </PropertyGroup>
+
+  <!--Default project settings-->
+  <PropertyGroup>
+    <!-- Set copying files etc. to timeout faster -->
+    <CopyRetryCount>2</CopyRetryCount>
+    <CopyRetryDelayMilliseconds>500</CopyRetryDelayMilliseconds>
+
+    <!--Assembly settings-->
+    <RootNamespace>Genbox.$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>Genbox.$(MSBuildProjectName)</AssemblyName>
+
+    <!--C# settings-->
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+
+    <!--.NET settings-->
+    <ImplicitUsings>true</ImplicitUsings>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+
+    <!--Debug settings-->
+    <DebugType>portable</DebugType>
+
+    <!--Package settings-->
+    <RepositoryType>Git</RepositoryType>
+    <PackageProjectUrl>https://github.com/Genbox/$(MSBuildProjectName)</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <!--SourceLink-->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!--Analyzers-->
+    <WarningLevel>0</WarningLevel>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <AnalysisLevel>none</AnalysisLevel>
+
+    <!--Other settings-->
+    <ErrorReport>none</ErrorReport>
+  </PropertyGroup>
+
+  <!--Default packages-->
+  <ItemGroup>
+    <PackageReference Include="MinVer" Version="4.1.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="all" />
+    <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!--Analyzers-->
+  <ItemGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' OR '$(BuildingByReSharper)' == 'true'">
+    <PackageReference Include="IDisposableAnalyzers" Version="4.0.2" PrivateAssets="all" />
+    <PackageReference Include="Roslynator.Analyzers" Version="4.1.1" PrivateAssets="all" />
+    <PackageReference Include="ToStringWithoutOverrideAnalyzer" Version="0.6.0" PrivateAssets="all" />
+    <PackageReference Include="AspNetCoreAnalyzers" Version="0.3.0" />
+    <PackageReference Include="ReflectionAnalyzers" Version="0.3.1" />
+    <PackageReference Include="Lindhart.Analyser.MissingAwaitWarning" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="('$(BuildingInsideVisualStudio)' == 'true' OR '$(BuildingByReSharper)' == 'true') and !($(MSBuildProjectName.EndsWith('.Tests')) or $(MSBuildProjectName.Contains('.Benchmarks')) or $(MSBuildProjectName.Contains('.Examples')))">
+    <PackageReference Include="ConfigureAwaitChecker.Analyzer" Version="5.0.0.1" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' AND ('$(BuildingInsideVisualStudio)' == 'true' OR '$(BuildingByReSharper)' == 'true')">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!--Only analyze when using Visual Studio-->
+  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' OR '$(BuildingByReSharper)' == 'true'">
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <WarningLevel>5</WarningLevel>
+    <AnalysisMode>Default</AnalysisMode>
+    <AnalysisLevel>latest</AnalysisLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+  </PropertyGroup>
+
+  <!--MinVer versioning-->
+  <Target Name="ModifyAssemblyVersion" AfterTargets="MinVer">
+    <PropertyGroup>
+      <AssemblyVersion>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch).0</AssemblyVersion>
+    </PropertyGroup>
+  </Target>
+
+</Project>

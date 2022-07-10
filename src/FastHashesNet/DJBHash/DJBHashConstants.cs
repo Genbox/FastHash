@@ -1,7 +1,6 @@
-﻿namespace FastHashesNet.DJBHash
+﻿namespace FastHashesNet.DJBHash;
+
+public static class DJBHashConstants
 {
-    public static class DJBHashConstants
-    {
-        public const int InitHash = 5381;
-    }
+    public const int InitHash = 5381;
 }

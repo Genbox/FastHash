@@ -8,9 +8,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastHashesNet.Benchmarks", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastHashesNet.Tests", "FastHashesNet.Tests\FastHashesNet.Tests.csproj", "{20FF2DA6-D0C4-4D5A-83F8-C48F8146EA71}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Imports", "Imports", "{59D2E407-9063-417D-BBEA-B496190E8725}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Items", "Items", "{59D2E407-9063-417D-BBEA-B496190E8725}"
 	ProjectSection(SolutionItems) = preProject
-		..\Properties.targets = ..\Properties.targets
+		..\.gitattributes = ..\.gitattributes
+		..\.gitignore = ..\.gitignore
+		..\Directory.Build.props = ..\Directory.Build.props
+		..\LICENSE.txt = ..\LICENSE.txt
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Global

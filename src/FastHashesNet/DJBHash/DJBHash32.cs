@@ -1,18 +1,17 @@
 ﻿//Ported to C# by Ian Qvist
 //Source: http://www.cse.yorku.ca/~oz/hash.html
 
-namespace FastHashesNet.DJBHash
+namespace FastHashesNet.DJBHash;
+
+public static class DJBHash32
 {
-    public static class DJBHash32
+    public static uint ComputeHash(byte[] data)
     {
-        public static uint ComputeHash(byte[] data)
-        {
-            uint hash = DJBHashConstants.InitHash;
+        uint hash = DJBHashConstants.InitHash;
 
-            for (int x = 0; x < data.Length; x++)
-                hash = ((hash << 5) + hash) ^ data[x];
+        for (int x = 0; x < data.Length; x++)
+            hash = ((hash << 5) + hash) ^ data[x];
 
-            return hash;
-        }
+        return hash;
     }
 }

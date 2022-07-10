@@ -1,12 +1,11 @@
 ﻿using BenchmarkDotNet.Running;
 
-namespace FastHashesNet.Benchmarks
+namespace FastHashesNet.Benchmarks;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            BenchmarkRunner.Run<HashBenchmark>();
-        }
+        BenchmarkRunner.Run<HashBenchmark>();
     }
 }
