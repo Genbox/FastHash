@@ -68,9 +68,7 @@ public static class Marvin32
         // completed.
 
         if ((count & 0b_0100) == 0)
-        {
             goto DoFinalPartialRead;
-        }
 
         Between4And7BytesRemain:
 
@@ -138,13 +136,9 @@ public static class Marvin32
         // the partial result to "no data".
 
         if (BitConverter.IsLittleEndian)
-        {
             partialResult = 0x80u;
-        }
         else
-        {
             partialResult = 0x80000000u;
-        }
 
         if ((count & 0b_0001) != 0)
         {
@@ -159,9 +153,7 @@ public static class Marvin32
             partialResult = Unsafe.AddByteOffset(ref ptr, (nuint)count & 2);
 
             if (BitConverter.IsLittleEndian)
-            {
                 partialResult |= 0x8000;
-            }
             else
             {
                 partialResult <<= 24;

@@ -9,16 +9,13 @@ internal static class FarmHash
     {
         // Helper from Murmur3 for combining two 32-bit values.
         a *= FarmHashConstants.c1;
-        a = Utilities.RotateWithCheck(a, 17);
+        a = Utilities.RotateRightCheck(a, 17);
         a *= FarmHashConstants.c2;
         h ^= a;
-        h = Utilities.RotateWithCheck(h, 19);
+        h = Utilities.RotateRightCheck(h, 19);
         return h * 5 + 0xe6546b64;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong ShiftMix(ulong val)
-    {
-        return val ^ (val >> 47);
-    }
+    internal static ulong ShiftMix(ulong val) => val ^ (val >> 47);
 }

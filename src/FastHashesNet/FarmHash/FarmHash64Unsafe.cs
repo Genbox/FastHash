@@ -41,23 +41,20 @@ public static class FarmHash64Unsafe
     private static Uint128 WeakHashLen32WithSeeds(ulong w, ulong x, ulong y, ulong z, ulong a, ulong b)
     {
         a += w;
-        b = Utilities.RotateWithCheck(b + a + z, 21);
+        b = Utilities.RotateRightCheck(b + a + z, 21);
         ulong c = a;
         a += x;
         a += y;
-        b += Utilities.RotateWithCheck(a, 44);
+        b += Utilities.RotateRightCheck(a, 44);
         return new Uint128(a + z, b + c);
     }
 
-    private static unsafe Uint128 WeakHashLen32WithSeeds(byte* data, int offset, ulong a, ulong b)
-    {
-        return WeakHashLen32WithSeeds(Utilities.Fetch64(data, offset),
-            Utilities.Fetch64(data, 8 + offset),
-            Utilities.Fetch64(data, 16 + offset),
-            Utilities.Fetch64(data, 24 + offset),
-            a,
-            b);
-    }
+    private static unsafe Uint128 WeakHashLen32WithSeeds(byte* data, int offset, ulong a, ulong b) => WeakHashLen32WithSeeds(Utilities.Fetch64(data, offset),
+        Utilities.Fetch64(data, 8 + offset),
+        Utilities.Fetch64(data, 16 + offset),
+        Utilities.Fetch64(data, 24 + offset),
+        a,
+        b);
 
     private static unsafe ulong HashLen0to16(byte* data, int length)
     {
@@ -66,14 +63,14 @@ public static class FarmHash64Unsafe
             ulong mul = FarmHashConstants.k2 + (uint)length * 2;
             ulong a = Utilities.Fetch64(data) + FarmHashConstants.k2;
             ulong b = Utilities.Fetch64(data, length - 8);
-            ulong c = Utilities.RotateWithCheck(b, 37) * mul + a;
-            ulong d = (Utilities.RotateWithCheck(a, 25) + b) * mul;
+            ulong c = Utilities.RotateRightCheck(b, 37) * mul + a;
+            ulong d = (Utilities.RotateRightCheck(a, 25) + b) * mul;
             return HashLen16(c, d, mul);
         }
         if (length >= 4)
         {
             ulong mul = FarmHashConstants.k2 + (uint)length * 2;
-            ulong a = Utilities.Fetch32(data, 0);
+            ulong a = Utilities.Fetch32(data);
             return HashLen16((uint)length + (a << 3), Utilities.Fetch32(data, length - 4), mul);
         }
         if (length > 0)
@@ -83,7 +80,7 @@ public static class FarmHash64Unsafe
             byte c = data[length - 1];
             uint y = a + ((uint)b << 8);
             uint z = (uint)length + ((uint)c << 2);
-            return FarmHash.ShiftMix(y * FarmHashConstants.k2 ^ z * FarmHashConstants.k0) * FarmHashConstants.k2;
+            return FarmHash.ShiftMix((y * FarmHashConstants.k2) ^ (z * FarmHashConstants.k0)) * FarmHashConstants.k2;
         }
         return FarmHashConstants.k2;
     }
@@ -95,7 +92,7 @@ public static class FarmHash64Unsafe
         ulong b = Utilities.Fetch64(data, 8);
         ulong c = Utilities.Fetch64(data, length - 8) * mul;
         ulong d = Utilities.Fetch64(data, length - 16) * FarmHashConstants.k2;
-        return HashLen16(Utilities.RotateWithCheck(a + b, 43) + Utilities.RotateWithCheck(c, 30) + d, a + Utilities.RotateWithCheck(b + FarmHashConstants.k2, 18) + c, mul);
+        return HashLen16(Utilities.RotateRightCheck(a + b, 43) + Utilities.RotateRightCheck(c, 30) + d, a + Utilities.RotateRightCheck(b + FarmHashConstants.k2, 18) + c, mul);
     }
 
     private static ulong H(ulong x, ulong y, ulong mul, byte r)
@@ -103,7 +100,7 @@ public static class FarmHash64Unsafe
         ulong a = (x ^ y) * mul;
         a ^= a >> 47;
         ulong b = (y ^ a) * mul;
-        return Utilities.RotateWithCheck(b, r) * mul;
+        return Utilities.RotateRightCheck(b, r) * mul;
     }
 
     private static unsafe ulong H32(byte* data, int offset, int length, ulong mul, ulong seed0 = 0, ulong seed1 = 0)
@@ -112,8 +109,8 @@ public static class FarmHash64Unsafe
         ulong b = Utilities.Fetch64(data, 8 + offset);
         ulong c = Utilities.Fetch64(data, length - 8 + offset) * mul;
         ulong d = Utilities.Fetch64(data, length - 16 + offset) * FarmHashConstants.k2;
-        ulong u = Utilities.RotateWithCheck(a + b, 43) + Utilities.RotateWithCheck(c, 30) + d + seed0;
-        ulong v = a + Utilities.RotateWithCheck(b + FarmHashConstants.k2, 18) + c + seed1;
+        ulong u = Utilities.RotateRightCheck(a + b, 43) + Utilities.RotateRightCheck(c, 30) + d + seed0;
+        ulong v = a + Utilities.RotateRightCheck(b + FarmHashConstants.k2, 18) + c + seed1;
         a = FarmHash.ShiftMix((u ^ v) * mul);
         b = FarmHash.ShiftMix((v ^ a) * mul);
         return b;
@@ -176,15 +173,15 @@ public static class FarmHash64Unsafe
             w.Low += a6;
             w.High += a7;
 
-            x = Utilities.RotateWithCheck(x, 26);
+            x = Utilities.RotateRightCheck(x, 26);
             x *= 9;
-            y = Utilities.RotateWithCheck(y, 29);
+            y = Utilities.RotateRightCheck(y, 29);
             z *= mul;
-            v.Low = Utilities.RotateWithCheck(v.Low, 33);
-            v.High = Utilities.RotateWithCheck(v.High, 30);
+            v.Low = Utilities.RotateRightCheck(v.Low, 33);
+            v.High = Utilities.RotateRightCheck(v.High, 30);
             w.Low ^= x;
             w.Low *= 9;
-            z = Utilities.RotateWithCheck(z, 32);
+            z = Utilities.RotateRightCheck(z, 32);
             z += w.High;
             w.High += z;
             z *= 9;
@@ -204,23 +201,23 @@ public static class FarmHash64Unsafe
             w.Low += v.High;
             w.High += x - y;
             x += w.High;
-            w.High = Utilities.RotateWithCheck(w.High, 34);
+            w.High = Utilities.RotateRightCheck(w.High, 34);
             Utilities.Swap(ref u, ref z);
             index += 64;
         } while (index != end);
         // Make s point to the last 64 bytes of input.
         index = last64;
         u *= 9;
-        v.High = Utilities.RotateWithCheck(v.High, 28);
-        v.Low = Utilities.RotateWithCheck(v.Low, 20);
+        v.High = Utilities.RotateRightCheck(v.High, 28);
+        v.Low = Utilities.RotateRightCheck(v.Low, 20);
         w.Low += ((uint)len - 1) & 63;
         u += y;
         y += u;
-        x = Utilities.RotateWithCheck(y - x + v.Low + Utilities.Fetch64(s, index + 8), 37) * mul;
-        y = Utilities.RotateWithCheck(y ^ v.High ^ Utilities.Fetch64(s, index + 48), 42) * mul;
+        x = Utilities.RotateRightCheck(y - x + v.Low + Utilities.Fetch64(s, index + 8), 37) * mul;
+        y = Utilities.RotateRightCheck(y ^ v.High ^ Utilities.Fetch64(s, index + 48), 42) * mul;
         x ^= w.High * 9;
         y += v.Low + Utilities.Fetch64(s, index + 40);
-        z = Utilities.RotateWithCheck(z + w.Low, 33) * mul;
+        z = Utilities.RotateRightCheck(z + w.Low, 33) * mul;
         v = WeakHashLen32WithSeeds(s, index + 0, v.High * mul, x + w.Low);
         w = WeakHashLen32WithSeeds(s, index + 32, z + w.High, y + Utilities.Fetch64(s, index + 16));
         return H(HashLen16(v.Low + x, w.Low ^ y, mul) + z - u,
@@ -258,11 +255,11 @@ public static class FarmHash64Unsafe
         int last64 = end + ((len - 1) & 63) - 63;
         do
         {
-            x = Utilities.RotateWithCheck(x + y + v.Low + Utilities.Fetch64(s, 8), 37) * FarmHashConstants.k1;
-            y = Utilities.RotateWithCheck(y + v.High + Utilities.Fetch64(s, 48), 42) * FarmHashConstants.k1;
+            x = Utilities.RotateRightCheck(x + y + v.Low + Utilities.Fetch64(s, 8), 37) * FarmHashConstants.k1;
+            y = Utilities.RotateRightCheck(y + v.High + Utilities.Fetch64(s, 48), 42) * FarmHashConstants.k1;
             x ^= w.High;
             y += v.Low + Utilities.Fetch64(s, 40);
-            z = Utilities.RotateWithCheck(z + w.Low, 33) * FarmHashConstants.k1;
+            z = Utilities.RotateRightCheck(z + w.Low, 33) * FarmHashConstants.k1;
             v = WeakHashLen32WithSeeds(s, 0, v.High * FarmHashConstants.k1, x + w.Low);
             w = WeakHashLen32WithSeeds(s, 32, z + w.High, y + Utilities.Fetch64(s, 16));
             Utilities.Swap(ref z, ref x);
@@ -275,11 +272,11 @@ public static class FarmHash64Unsafe
         w.Low += ((uint)len - 1) & 63;
         v.Low += w.Low;
         w.Low += v.Low;
-        x = Utilities.RotateWithCheck(x + y + v.Low + Utilities.Fetch64(s, index + 8), 37) * mul;
-        y = Utilities.RotateWithCheck(y + v.High + Utilities.Fetch64(s, index + 48), 42) * mul;
+        x = Utilities.RotateRightCheck(x + y + v.Low + Utilities.Fetch64(s, index + 8), 37) * mul;
+        y = Utilities.RotateRightCheck(y + v.High + Utilities.Fetch64(s, index + 48), 42) * mul;
         x ^= w.High * 9;
         y += v.Low * 9 + Utilities.Fetch64(s, index + 40);
-        z = Utilities.RotateWithCheck(z + w.Low, 33) * mul;
+        z = Utilities.RotateRightCheck(z + w.Low, 33) * mul;
         v = WeakHashLen32WithSeeds(s, index + 0, v.High * mul, x + w.Low);
         w = WeakHashLen32WithSeeds(s, index + 32, z + w.High, y + Utilities.Fetch64(s, index + 16));
         Utilities.Swap(ref z, ref x);

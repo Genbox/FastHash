@@ -17,7 +17,7 @@ public static class SuperFastHash32
         int rem = length & 3;
         length >>= 2;
 
-        int index = 0;
+        uint index = 0;
 
         for (; length > 0; length--)
         {

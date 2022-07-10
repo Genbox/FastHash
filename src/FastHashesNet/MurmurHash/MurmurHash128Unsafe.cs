@@ -25,20 +25,20 @@ public static class MurmurHash128Unsafe
             k2 = blocks[i * 2 + 1];
 
             k1 *= MurmurHashConstants.C1_64;
-            k1 = Utilities.Rotate(k1, 31);
+            k1 = Utilities.RotateLeft(k1, 31);
             k1 *= MurmurHashConstants.C2_64;
             h1 ^= k1;
 
-            h1 = Utilities.Rotate(h1, 27);
+            h1 = Utilities.RotateLeft(h1, 27);
             h1 += h2;
             h1 = h1 * 5 + 0x52dce729;
 
             k2 *= MurmurHashConstants.C2_64;
-            k2 = Utilities.Rotate(k2, 33);
+            k2 = Utilities.RotateLeft(k2, 33);
             k2 *= MurmurHashConstants.C1_64;
             h2 ^= k2;
 
-            h2 = Utilities.Rotate(h2, 31);
+            h2 = Utilities.RotateLeft(h2, 31);
             h2 += h1;
             h2 = h2 * 5 + 0x38495ab5;
         }
@@ -98,12 +98,12 @@ public static class MurmurHash128Unsafe
         }
 
         k2 *= MurmurHashConstants.C2_64;
-        k2 = Utilities.Rotate(k2, 33);
+        k2 = Utilities.RotateLeft(k2, 33);
         k2 *= MurmurHashConstants.C1_64;
         h2 ^= k2;
 
         k1 *= MurmurHashConstants.C1_64;
-        k1 = Utilities.Rotate(k1, 31);
+        k1 = Utilities.RotateLeft(k1, 31);
         k1 *= MurmurHashConstants.C2_64;
         h1 ^= k1;
 

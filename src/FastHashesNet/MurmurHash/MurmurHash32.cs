@@ -16,16 +16,16 @@ public static class MurmurHash32
 
         uint end = nblocks * 4;
 
-        for (int i = 0; i < end; i += 4)
+        for (uint i = 0; i < end; i += 4)
         {
             k1 = Utilities.Fetch32(data, i);
 
             k1 *= MurmurHashConstants.C1_32;
-            k1 = Utilities.Rotate(k1, 15);
+            k1 = Utilities.RotateLeft(k1, 15);
             k1 *= MurmurHashConstants.C2_32;
 
             h1 ^= k1;
-            h1 = Utilities.Rotate(h1, 13);
+            h1 = Utilities.RotateLeft(h1, 13);
             h1 = h1 * 5 + 0xe6546b64;
         }
 
@@ -48,7 +48,7 @@ public static class MurmurHash32
         }
 
         k1 *= MurmurHashConstants.C1_32;
-        k1 = Utilities.Rotate(k1, 15);
+        k1 = Utilities.RotateLeft(k1, 15);
         k1 *= MurmurHashConstants.C2_32;
         h1 ^= k1;
 

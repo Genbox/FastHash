@@ -87,8 +87,7 @@ public class SipHashTests
                 data[j] = (byte)j;
             }
 
-            ulong k0, k1;
-            Utilities.ToULongs(_key, out k0, out k1);
+            ToULongs(_key, out ulong k0, out ulong k1);
 
             ulong result = SipHash64.ComputeHash(data, k0, k1);
             ulong expected = BitConverter.ToUInt64(_vectors[i], 0);
@@ -107,8 +106,7 @@ public class SipHashTests
                 data[j] = (byte)j;
             }
 
-            ulong k0, k1;
-            Utilities.ToULongs(_key, out k0, out k1);
+            ToULongs(_key, out ulong k0, out ulong k1);
 
             unsafe
             {
@@ -119,6 +117,16 @@ public class SipHashTests
                     Assert.Equal(expected, result);
                 }
             }
+        }
+    }
+
+    private static unsafe void ToULongs(byte[] data, out ulong a, out ulong b)
+    {
+        fixed (byte* ptr = data)
+        {
+            ulong* ulPtr = (ulong*)ptr;
+            a = *ulPtr++;
+            b = *ulPtr;
         }
     }
 }

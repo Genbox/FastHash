@@ -2,11 +2,15 @@
 
 public unsafe class wyHash64Unsafe
 {
-    static ulong _wyr8(byte* p) { return Utilities.Fetch64(p); }
+    private static ulong _wyr8(byte* p) => Utilities.Fetch64(p);
 
-    static ulong _wymix(ulong A, ulong B) { _wymum(&A, &B); return A ^ B; }
+    private static ulong _wymix(ulong A, ulong B)
+    {
+        _wymum(&A, &B);
+        return A ^ B;
+    }
 
-    static void _wymum(ulong* A, ulong* B)
+    private static void _wymum(ulong* A, ulong* B)
     {
         ulong hh = (*A >> 32) * (*B >> 32);
         ulong hl = (*A >> 32) * (uint)*B;
@@ -17,12 +21,13 @@ public unsafe class wyHash64Unsafe
         *B = _wyrot(lh) ^ ll;
     }
 
-    static ulong _wyrot(ulong x) { return (x >> 32) | (x << 32); }
+    private static ulong _wyrot(ulong x) => (x >> 32) | (x << 32);
 
     public static ulong ComputeHash(byte* data, ulong len, ulong seed, ulong* secret)
     {
         byte* p = data;
-        ulong a, b; seed ^= *secret;
+        ulong a, b;
+        seed ^= *secret;
 
         if (len <= 16)
         {
@@ -55,7 +60,8 @@ public unsafe class wyHash64Unsafe
                 p += 16;
                 i -= 16;
             }
-            a = _wyr8(p + i - 16); b = _wyr8(p + i - 8);
+            a = _wyr8(p + i - 16);
+            b = _wyr8(p + i - 8);
         }
         return _wymix(secret[1] ^ len, _wymix(a ^ secret[1], b ^ seed));
     }

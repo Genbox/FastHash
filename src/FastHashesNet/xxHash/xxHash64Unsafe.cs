@@ -67,16 +67,14 @@ public static class xxHash64Unsafe
                 offset += 8;
             } while (offset <= limit);
 
-            h64 = Utilities.Rotate(v1, 1) + Utilities.Rotate(v2, 7) + Utilities.Rotate(v3, 12) + Utilities.Rotate(v4, 18);
+            h64 = Utilities.RotateLeft(v1, 1) + Utilities.RotateLeft(v2, 7) + Utilities.RotateLeft(v3, 12) + Utilities.RotateLeft(v4, 18);
             h64 = MergeRound(h64, v1);
             h64 = MergeRound(h64, v2);
             h64 = MergeRound(h64, v3);
             h64 = MergeRound(h64, v4);
         }
         else
-        {
             h64 = seed + xxHashConstants.PRIME64_5;
-        }
 
         h64 += (uint)length;
 
@@ -84,21 +82,21 @@ public static class xxHash64Unsafe
         {
             ulong k1 = Round(0, Utilities.Fetch64(data, offset));
             h64 ^= k1;
-            h64 = Utilities.Rotate(h64, 27) * xxHashConstants.PRIME64_1 + xxHashConstants.PRIME64_4;
+            h64 = Utilities.RotateLeft(h64, 27) * xxHashConstants.PRIME64_1 + xxHashConstants.PRIME64_4;
             offset += 8;
         }
 
         if (offset + 4 <= bEnd)
         {
             h64 ^= Utilities.Fetch32(data, offset) * xxHashConstants.PRIME64_1;
-            h64 = Utilities.Rotate(h64, 23) * xxHashConstants.PRIME64_2 + xxHashConstants.PRIME64_3;
+            h64 = Utilities.RotateLeft(h64, 23) * xxHashConstants.PRIME64_2 + xxHashConstants.PRIME64_3;
             offset += 4;
         }
 
         while (offset < bEnd)
         {
             h64 ^= data[offset] * xxHashConstants.PRIME64_5;
-            h64 = Utilities.Rotate(h64, 11) * xxHashConstants.PRIME64_1;
+            h64 = Utilities.RotateLeft(h64, 11) * xxHashConstants.PRIME64_1;
             offset++;
         }
 
@@ -115,7 +113,7 @@ public static class xxHash64Unsafe
     private static ulong Round(ulong acc, ulong input)
     {
         acc += input * xxHashConstants.PRIME64_2;
-        acc = Utilities.Rotate(acc, 31);
+        acc = Utilities.RotateLeft(acc, 31);
         acc *= xxHashConstants.PRIME64_1;
         return acc;
     }

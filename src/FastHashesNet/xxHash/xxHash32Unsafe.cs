@@ -67,26 +67,24 @@ public static class xxHash32Unsafe
                 offset += 4;
             } while (offset <= limit);
 
-            h32 = Utilities.Rotate(v1, 1) + Utilities.Rotate(v2, 7) + Utilities.Rotate(v3, 12) + Utilities.Rotate(v4, 18);
+            h32 = Utilities.RotateLeft(v1, 1) + Utilities.RotateLeft(v2, 7) + Utilities.RotateLeft(v3, 12) + Utilities.RotateLeft(v4, 18);
         }
         else
-        {
             h32 = seed + xxHashConstants.PRIME32_5;
-        }
 
         h32 += (uint)length;
 
         while (offset + 4 <= bEnd)
         {
             h32 += Utilities.Fetch32(data, offset) * xxHashConstants.PRIME32_3;
-            h32 = Utilities.Rotate(h32, 17) * xxHashConstants.PRIME32_4;
+            h32 = Utilities.RotateLeft(h32, 17) * xxHashConstants.PRIME32_4;
             offset += 4;
         }
 
         while (offset < bEnd)
         {
             h32 += data[offset] * xxHashConstants.PRIME32_5;
-            h32 = Utilities.Rotate(h32, 11) * xxHashConstants.PRIME32_1;
+            h32 = Utilities.RotateLeft(h32, 11) * xxHashConstants.PRIME32_1;
             offset++;
         }
 
@@ -103,7 +101,7 @@ public static class xxHash32Unsafe
     private static uint Round(uint seed, uint input)
     {
         seed += input * xxHashConstants.PRIME32_2;
-        seed = Utilities.Rotate(seed, 13);
+        seed = Utilities.RotateLeft(seed, 13);
         seed *= xxHashConstants.PRIME32_1;
         return seed;
     }

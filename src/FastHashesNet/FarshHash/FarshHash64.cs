@@ -27,11 +27,11 @@ namespace Genbox.FastHashesNet.FarshHash;
 public static class FarshHash64
 {
     /* STRIPE bytes of key material plus extra keys for hashes up to 1024 bits long */
-    private static ulong farsh_full_block(byte[] data, int offset)
+    private static ulong farsh_full_block(byte[] data, uint offset)
     {
         ulong sum = 0;
-        int i;
-        int j = 0;
+        uint i;
+        uint j = 0;
         for (i = 0; i < FarshHashConstants.STRIPE; i += 8, j += 2)
         {
             uint val1 = Utilities.Fetch32(data, offset + i);
@@ -42,11 +42,11 @@ public static class FarshHash64
         return sum;
     }
 
-    private static ulong farsh_partial_block(byte[] data, int offset)
+    private static ulong farsh_partial_block(byte[] data, uint offset)
     {
         ulong sum = 0;
         int keyindex = 0;
-        int chunks = (data.Length - offset) >> 3;
+        uint chunks = (uint)((data.Length - offset) >> 3);
 
         for (; chunks > 0; chunks--)
         {
@@ -60,7 +60,7 @@ public static class FarshHash64
         uint v1;
         uint v2;
 
-        int remaining = data.Length - offset;
+        uint remaining = (uint)(data.Length - offset);
 
         switch (remaining)
         {
@@ -106,8 +106,8 @@ public static class FarshHash64
     public static ulong ComputeHash(byte[] data, ulong seed = 0)
     {
         ulong sum = seed;
-        int bytes = data.Length;
-        int offset = 0;
+        uint bytes = (uint)data.Length;
+        uint offset = 0;
 
         while (bytes >= FarshHashConstants.STRIPE)
         {
@@ -123,7 +123,7 @@ public static class FarshHash64
             sum = farsh_combine(sum, h);
         }
 
-        return farsh_final(sum) ^ FarshHashConstants.FARSH_KEYS[0];   /* ensure that zeroes at the end of data will affect the hash value */
+        return farsh_final(sum) ^ FarshHashConstants.FARSH_KEYS[0]; /* ensure that zeroes at the end of data will affect the hash value */
     }
 
     private static ulong farsh_combine(ulong sum, ulong h)

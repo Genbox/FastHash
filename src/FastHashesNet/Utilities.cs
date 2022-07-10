@@ -1,99 +1,48 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHashesNet;
 
-public static class Utilities
+internal static class Utilities
 {
-    public static unsafe void ToULongs(byte[] data, out ulong a, out ulong b)
-    {
-        fixed (byte* ptr = data)
-        {
-            ulong* ulPtr = (ulong*)ptr;
-            a = *ulPtr++;
-            b = *ulPtr;
-        }
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ushort Fetch16(byte[] p, uint offset = 0) => Unsafe.ReadUnaligned<ushort>(ref Unsafe.AddByteOffset(ref p[0], offset));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ushort Fetch16(byte[] p, int offset = 0)
-    {
-        return BitConverter.ToUInt16(p, offset);
-    }
+    internal static unsafe ushort Fetch16(byte* ptr, int offset = 0) => *(ushort*)(ptr + offset);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe ushort Fetch16(byte* ptr, int offset = 0)
-    {
-        return *(ushort*)(ptr + offset);
-    }
+    internal static uint Fetch32(byte[] p, uint offset = 0) => Unsafe.ReadUnaligned<uint>(ref Unsafe.AddByteOffset(ref p[0], offset));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint Fetch32(byte[] p, int offset = 0)
-    {
-        return (uint)(p[0 + offset] | (p[1 + offset] << 8) | (p[2 + offset] << 16) | (p[3 + offset] << 24));
-    }
+    internal static unsafe uint Fetch32(byte* ptr, int offset = 0) => *(uint*)(ptr + offset);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint Fetch32(byte[] p, uint offset = 0)
-    {
-        return (uint)(p[0 + offset] | (p[1 + offset] << 8) | (p[2 + offset] << 16) | (p[3 + offset] << 24));
-    }
+    internal static ulong Fetch64(byte[] p, uint offset = 0) => Unsafe.ReadUnaligned<ulong>(ref Unsafe.AddByteOffset(ref p[0], offset));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe uint Fetch32(byte* ptr, int offset = 0)
-    {
-        return *(uint*)(ptr + offset);
-    }
+    internal static unsafe ulong Fetch64(byte* ptr, int offset = 0) => *(ulong*)(ptr + offset);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong Fetch64(byte[] p, int offset = 0)
-    {
-        int i1 = p[0 + offset] | (p[1 + offset] << 8) | (p[2 + offset] << 16) | (p[3 + offset] << 24);
-
-        int i2 = p[4 + offset] | (p[5 + offset] << 8) | (p[6 + offset] << 16) | (p[7 + offset] << 24);
-
-        return (ulong)((uint)i1 | ((long)i2 << 32));
-    }
+    internal static void Swap<T>(ref T a, ref T b) => (a, b) = (b, a);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe ulong Fetch64(byte* ptr, int offset = 0)
-    {
-        return *(ulong*)(ptr + offset);
-    }
+    internal static uint RotateRightCheck(uint x, byte r) => r == 0 ? x : RotateRight(x, r);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void Swap<T>(ref T a, ref T b)
-    {
-        T temp = a;
-        a = b;
-        b = temp;
-    }
+    internal static ulong RotateRightCheck(ulong x, byte r) => r == 0 ? x : RotateRight(x, r);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint RotateWithCheck(uint x, int r)
-    {
-        // Avoid shifting by 32: doing so yields an undefined result.
-        return r == 0 ? x : (x >> r) | (x << (32 - r));
-    }
+    internal static uint RotateRight(uint x, byte r) => BitOperations.RotateRight(x, r);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong RotateWithCheck(ulong x, byte r)
-    {
-        // Avoid shifting by 64: doing so yields an undefined result.
-        return r == 0 ? x : (x >> r) | (x << (64 - r));
-    }
+    internal static ulong RotateRight(ulong x, byte r) => BitOperations.RotateRight(x, r);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint Rotate(uint x, byte r)
-    {
-        return (x << r) | (x >> (32 - r));
-    }
+    internal static uint RotateLeft(uint x, byte r) => BitOperations.RotateLeft(x, r);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong Rotate(ulong x, byte r)
-    {
-        return (x << r) | (x >> (64 - r));
-    }
+    internal static ulong RotateLeft(ulong x, byte r) => BitOperations.RotateLeft(x, r);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static uint FMix(uint h)

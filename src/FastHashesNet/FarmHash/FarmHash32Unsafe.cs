@@ -48,11 +48,11 @@ public static class FarmHash32Unsafe
         uint e = Utilities.Fetch32(s);
         uint f = Utilities.Fetch32(s + len - 4);
         uint h = d * FarmHashConstants.c1 + len + seed;
-        a = Utilities.RotateWithCheck(a, 12) + f;
+        a = Utilities.RotateRightCheck(a, 12) + f;
         h = FarmHash.Mur(c, h) + a;
-        a = Utilities.RotateWithCheck(a, 3) + c;
+        a = Utilities.RotateRightCheck(a, 3) + c;
         h = FarmHash.Mur(e, h) + a;
-        a = Utilities.RotateWithCheck(a + f, 12) + d;
+        a = Utilities.RotateRightCheck(a + f, 12) + d;
         h = FarmHash.Mur(b ^ seed, h) + a;
         return Utilities.FMix(h);
     }
@@ -75,25 +75,25 @@ public static class FarmHash32Unsafe
             return len <= 12 ? Hash32Len5to12(s, (uint)len) : Hash32Len13to24(s, (uint)len);
 
         uint h = (uint)len, g = FarmHashConstants.c1 * (uint)len, f = g;
-        uint a0 = Utilities.RotateWithCheck(Utilities.Fetch32(s + len - 4) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
-        uint a1 = Utilities.RotateWithCheck(Utilities.Fetch32(s + len - 8) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
-        uint a2 = Utilities.RotateWithCheck(Utilities.Fetch32(s + len - 16) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
-        uint a3 = Utilities.RotateWithCheck(Utilities.Fetch32(s + len - 12) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
-        uint a4 = Utilities.RotateWithCheck(Utilities.Fetch32(s + len - 20) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
+        uint a0 = Utilities.RotateRightCheck(Utilities.Fetch32(s + len - 4) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
+        uint a1 = Utilities.RotateRightCheck(Utilities.Fetch32(s + len - 8) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
+        uint a2 = Utilities.RotateRightCheck(Utilities.Fetch32(s + len - 16) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
+        uint a3 = Utilities.RotateRightCheck(Utilities.Fetch32(s + len - 12) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
+        uint a4 = Utilities.RotateRightCheck(Utilities.Fetch32(s + len - 20) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
         h ^= a0;
-        h = Utilities.RotateWithCheck(h, 19);
+        h = Utilities.RotateRightCheck(h, 19);
         h = h * 5 + 0xe6546b64;
         h ^= a2;
-        h = Utilities.RotateWithCheck(h, 19);
+        h = Utilities.RotateRightCheck(h, 19);
         h = h * 5 + 0xe6546b64;
         g ^= a1;
-        g = Utilities.RotateWithCheck(g, 19);
+        g = Utilities.RotateRightCheck(g, 19);
         g = g * 5 + 0xe6546b64;
         g ^= a3;
-        g = Utilities.RotateWithCheck(g, 19);
+        g = Utilities.RotateRightCheck(g, 19);
         g = g * 5 + 0xe6546b64;
         f += a4;
-        f = Utilities.RotateWithCheck(f, 19) + 113;
+        f = Utilities.RotateRightCheck(f, 19) + 113;
         uint iters = ((uint)len - 1) / 20;
         do
         {
@@ -112,16 +112,16 @@ public static class FarmHash32Unsafe
             g += f;
             s += 20;
         } while (--iters != 0);
-        g = Utilities.RotateWithCheck(g, 11) * FarmHashConstants.c1;
-        g = Utilities.RotateWithCheck(g, 17) * FarmHashConstants.c1;
-        f = Utilities.RotateWithCheck(f, 11) * FarmHashConstants.c1;
-        f = Utilities.RotateWithCheck(f, 17) * FarmHashConstants.c1;
-        h = Utilities.RotateWithCheck(h + g, 19);
+        g = Utilities.RotateRightCheck(g, 11) * FarmHashConstants.c1;
+        g = Utilities.RotateRightCheck(g, 17) * FarmHashConstants.c1;
+        f = Utilities.RotateRightCheck(f, 11) * FarmHashConstants.c1;
+        f = Utilities.RotateRightCheck(f, 17) * FarmHashConstants.c1;
+        h = Utilities.RotateRightCheck(h + g, 19);
         h = h * 5 + 0xe6546b64;
-        h = Utilities.RotateWithCheck(h, 17) * FarmHashConstants.c1;
-        h = Utilities.RotateWithCheck(h + f, 19);
+        h = Utilities.RotateRightCheck(h, 17) * FarmHashConstants.c1;
+        h = Utilities.RotateRightCheck(h + f, 19);
         h = h * 5 + 0xe6546b64;
-        h = Utilities.RotateWithCheck(h, 17) * FarmHashConstants.c1;
+        h = Utilities.RotateRightCheck(h, 17) * FarmHashConstants.c1;
         return h;
     }
 }

@@ -90,7 +90,7 @@ public class GeneralTests
 
     private IEnumerable<Type> GetAllTypesOf<T>()
     {
-        Assembly assembly = typeof(Utilities).GetTypeInfo().Assembly;
+        Assembly assembly = typeof(DJBHash32).GetTypeInfo().Assembly;
 
         foreach (Type type in assembly.GetTypes())
         {

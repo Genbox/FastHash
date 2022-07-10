@@ -20,11 +20,11 @@ public static class MurmurHash32Unsafe
             k1 = blocks[i];
 
             k1 *= MurmurHashConstants.C1_32;
-            k1 = Utilities.Rotate(k1, 15);
+            k1 = Utilities.RotateLeft(k1, 15);
             k1 *= MurmurHashConstants.C2_32;
 
             h1 ^= k1;
-            h1 = Utilities.Rotate(h1, 13);
+            h1 = Utilities.RotateLeft(h1, 13);
             h1 = h1 * 5 + 0xe6546b64;
         }
 
@@ -45,7 +45,7 @@ public static class MurmurHash32Unsafe
         }
 
         k1 *= MurmurHashConstants.C1_32;
-        k1 = Utilities.Rotate(k1, 15);
+        k1 = Utilities.RotateLeft(k1, 15);
         k1 *= MurmurHashConstants.C2_32;
         h1 ^= k1;
 

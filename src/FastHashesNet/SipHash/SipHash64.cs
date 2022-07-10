@@ -34,7 +34,7 @@ public static class SipHash64
         ulong b = (ulong)length << 56;
         int num = length / 8;
         int offset1 = length - left;
-        int i;
+        uint i;
 
         v3 ^= seed1;
         v2 ^= seed0;
@@ -97,21 +97,21 @@ public static class SipHash64
     private static void SipRound(ref ulong v0, ref ulong v1, ref ulong v2, ref ulong v3)
     {
         v0 += v1;
-        v1 = Utilities.Rotate(v1, 13);
+        v1 = Utilities.RotateLeft(v1, 13);
         v1 ^= v0;
-        v0 = Utilities.Rotate(v0, 32);
+        v0 = Utilities.RotateLeft(v0, 32);
 
         v2 += v3;
-        v3 = Utilities.Rotate(v3, 16);
+        v3 = Utilities.RotateLeft(v3, 16);
         v3 ^= v2;
 
         v2 += v1;
-        v1 = Utilities.Rotate(v1, 17);
+        v1 = Utilities.RotateLeft(v1, 17);
         v1 ^= v2;
-        v2 = Utilities.Rotate(v2, 32);
+        v2 = Utilities.RotateLeft(v2, 32);
 
         v0 += v3;
-        v3 = Utilities.Rotate(v3, 21);
+        v3 = Utilities.RotateLeft(v3, 21);
         v3 ^= v0;
     }
 }

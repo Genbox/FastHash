@@ -20,18 +20,24 @@ namespace Genbox.FastHashesNet.HighwayHash;
 
 public static class HighwayTreeHash64
 {
-    const int kNumLanes = 4;
-    private static ulong[] v0 = new ulong[4];
-    private static ulong[] v1 = new ulong[4];
-    private static ulong[] mul0 = new ulong[4];
-    private static ulong[] mul1 = new ulong[4];
+    private const int kNumLanes = 4;
+    private static readonly ulong[] v0 = new ulong[4];
+    private static readonly ulong[] v1 = new ulong[4];
+    private static readonly ulong[] mul0 = new ulong[4];
+    private static readonly ulong[] mul1 = new ulong[4];
 
     public static ulong ComputeHash(byte[] data, ulong seed0 = 0, ulong seed1 = 0, ulong seed2 = 0, ulong seed3 = 0)
     {
-        ulong[] init0 = {0xdbe6d5d5fe4cce2ful, 0xa4093822299f31d0ul,
-            0x13198a2e03707344ul, 0x243f6a8885a308d3ul};
-        ulong[] init1 = {0x3bd39e10cb0ef593ul, 0xc0acf169b5f18a8cul,
-            0xbe5466cf34e90c6cul, 0x452821e638d01377ul};
+        ulong[] init0 =
+        {
+            0xdbe6d5d5fe4cce2ful, 0xa4093822299f31d0ul,
+            0x13198a2e03707344ul, 0x243f6a8885a308d3ul
+        };
+        ulong[] init1 =
+        {
+            0x3bd39e10cb0ef593ul, 0xc0acf169b5f18a8cul,
+            0xbe5466cf34e90c6cul, 0x452821e638d01377ul
+        };
 
         ulong[] keys = { seed0, seed1, seed2, seed3 };
 
@@ -42,7 +48,7 @@ public static class HighwayTreeHash64
         Xor(init0, keys, v0);
         Xor(init1, permuted_keys, v1);
 
-        ulong[] packets = new ulong[(data.Length / 8) + 1];
+        ulong[] packets = new ulong[data.Length / 8 + 1];
 
         unsafe
         {
@@ -51,9 +57,7 @@ public static class HighwayTreeHash64
                 ulong* uptr = (ulong*)ptr;
 
                 for (int i = 0; i < packets.Length; i++)
-                {
                     packets[i] = uptr[i];
-                }
             }
         }
 
@@ -75,10 +79,10 @@ public static class HighwayTreeHash64
         // (Loop is faster than unrolling)
         for (int lane = 0; lane < kNumLanes; ++lane)
         {
-            uint v1_32 = (uint)(v1[lane]);
+            uint v1_32 = (uint)v1[lane];
             mul0[lane] ^= v1_32 * (v0[lane] >> 32);
             v0[lane] += mul1[lane];
-            uint v0_32 = (uint)(v0[lane]);
+            uint v0_32 = (uint)v0[lane];
             mul1[lane] ^= v0_32 * (v1[lane] >> 32);
         }
 
@@ -89,33 +93,24 @@ public static class HighwayTreeHash64
         ZipperMergeAndAdd(v0[2], v0[3], ref v1[2], ref v1[3]);
     }
 
-    private static ulong MASK(ulong v, int bytes)
-    {
-        return v & (0xFFul << (bytes * 8));
-    }
+    private static ulong MASK(ulong v, int bytes) => v & (0xFFul << (bytes * 8));
 
     private static void Copy(ulong[] source, ulong[] dest)
     {
         for (int lane = 0; lane < kNumLanes; ++lane)
-        {
             dest[lane] = source[lane];
-        }
     }
 
     private static void Add(ulong[] source, ulong[] dest)
     {
         for (int lane = 0; lane < kNumLanes; ++lane)
-        {
             dest[lane] += source[lane];
-        }
     }
 
     private static void Xor(ulong[] op1, ulong[] op2, ulong[] dest)
     {
         for (int lane = 0; lane < kNumLanes; ++lane)
-        {
             dest[lane] = op1[lane] ^ op2[lane];
-        }
     }
 
     private static void ZipperMergeAndAdd(ulong v0, ulong v1, ref ulong add0, ref ulong add1)
@@ -129,17 +124,12 @@ public static class HighwayTreeHash64
                 (MASK(v1, 0) << 48) + MASK(v0, 7);
     }
 
-    private static ulong Rot32(ulong x)
-    {
-        return (x >> 32) | (x << 32);
-    }
-
     private static void Permute(ulong[] v, ulong[] permuted)
     {
-        permuted[0] = Rot32(v[2]);
-        permuted[1] = Rot32(v[3]);
-        permuted[2] = Rot32(v[0]);
-        permuted[3] = Rot32(v[1]);
+        permuted[0] = Utilities.RotateRight(v[2], 0);
+        permuted[1] = Utilities.RotateRight(v[3], 0);
+        permuted[2] = Utilities.RotateRight(v[0], 0);
+        permuted[3] = Utilities.RotateRight(v[1], 0);
     }
 
     private static void PermuteAndUpdate()

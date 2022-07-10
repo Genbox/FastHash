@@ -4,15 +4,15 @@ namespace Genbox.FastHashesNet.wyHash;
 
 public class wyHash64
 {
-    static ulong _wyr8(ulong p, byte[] data)
+    private static ulong _wyr8(ulong p, byte[] data)
     {
         unchecked
         {
-            return Utilities.Fetch64(data, (int)p);
+            return Utilities.Fetch64(data, (uint)p);
         }
     }
 
-    static ulong _wymix(ulong A, ulong B)
+    private static ulong _wymix(ulong A, ulong B)
     {
         ulong hh = (A >> 32) * (B >> 32);
         ulong hl = (A >> 32) * (uint)B;
@@ -29,7 +29,7 @@ public class wyHash64
         return A ^ B;
     }
 
-    static ulong _wyrot(ulong x) { return (x >> 32) | (x << 32); }
+    private static ulong _wyrot(ulong x) => (x >> 32) | (x << 32);
 
     public static ulong ComputeHash(byte[] data, ulong seed, ulong[] secret)
     {
@@ -101,6 +101,6 @@ public class wyHash64
             b = _wyr8(p + i - 8, data);
         }
 
-        return _wymix((secret[1] ^ len), _wymix(a ^ secret[1], b ^ seed));
+        return _wymix(secret[1] ^ len, _wymix(a ^ secret[1], b ^ seed));
     }
 }

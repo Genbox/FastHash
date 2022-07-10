@@ -16,9 +16,7 @@ public static class FNV1AWHIZ32Unsafe
         byte* p = data;
 
         for (; length >= sizeof(uint); length -= sizeof(uint), p += sizeof(uint))
-        {
             hash32 = (hash32 ^ *(uint*)p) * PRIME;
-        }
 
         int val = length & sizeof(ushort);
 

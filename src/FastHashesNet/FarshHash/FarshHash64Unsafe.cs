@@ -41,7 +41,7 @@ public static class FarshHash64Unsafe
     private static unsafe ulong farsh_partial_block(uint* data, int length)
     {
         ulong sum = 0;
-        int elements = (length / sizeof(uint)) & (~1);
+        int elements = (length / sizeof(uint)) & ~1;
         int i;
 
         for (i = 0; i < elements; i += 2)
@@ -118,7 +118,7 @@ public static class FarshHash64Unsafe
             sum = farsh_combine(sum, h);
         }
 
-        return farsh_final(sum) ^ FarshHashConstants.FARSH_KEYS[0];   /* ensure that zeroes at the end of data will affect the hash value */
+        return farsh_final(sum) ^ FarshHashConstants.FARSH_KEYS[0]; /* ensure that zeroes at the end of data will affect the hash value */
     }
 
     private static ulong farsh_combine(ulong sum, ulong h)
