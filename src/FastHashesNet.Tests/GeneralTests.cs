@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -6,6 +6,7 @@ using System.Text;
 using Genbox.FastHashesNet.DJBHash;
 using Genbox.FastHashesNet.FarmHash;
 using Genbox.FastHashesNet.FNVHash;
+using Genbox.FastHashesNet.Marvin;
 using Genbox.FastHashesNet.MurmurHash;
 using Genbox.FastHashesNet.SipHash;
 using Genbox.FastHashesNet.SuperFastHash;
@@ -38,6 +39,7 @@ public class GeneralTests
         yield return new object[] { nameof(DJBHash32), () => DJBHash32.ComputeHash(_data), new byte[] { 0xCE, 0xED, 0x14, 0x36 } };
         yield return new object[] { nameof(FarmHash32), () => FarmHash32.ComputeHash(_data), new byte[] { 0x7F, 0x0F, 0xF1, 0x11 } };
         yield return new object[] { nameof(FNV1A32), () => FNV1A32.ComputeHash(_data), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 } };
+        yield return new object[] { nameof(Marvin32), () => Marvin32.ComputeHash(_data, 42, 43), new byte[] { 173, 40, 191, 34 } };
         yield return new object[] { nameof(MurmurHash32), () => MurmurHash32.ComputeHash(_data), new byte[] { 0xF6, 0x08, 0x79, 0x87 } };
         yield return new object[] { nameof(SuperFastHash32), () => SuperFastHash32.ComputeHash(_data), new byte[] { 0x5E, 0xE8, 0x41, 0xB2 } };
         yield return new object[] { nameof(xxHash32), () => xxHash32.ComputeHash(_data), new byte[] { 0x2B, 0xC6, 0xC7, 0x94 } };

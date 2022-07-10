@@ -5,6 +5,7 @@ using Genbox.FastHashesNet.DJBHash;
 using Genbox.FastHashesNet.FarmHash;
 using Genbox.FastHashesNet.FarshHash;
 using Genbox.FastHashesNet.FNVHash;
+using Genbox.FastHashesNet.Marvin;
 using Genbox.FastHashesNet.MurmurHash;
 using Genbox.FastHashesNet.SipHash;
 using Genbox.FastHashesNet.SuperFastHash;
@@ -16,18 +17,23 @@ namespace Genbox.FastHashesNet.Benchmarks;
 [InProcess]
 public class HashBenchmark : IDisposable
 {
-    [Params( /*4,*/ 8 /*, 40, 1024, 1048576*/)]
+    [Params(2, 4, 8, 32)]
     public int TestSize { get; set; }
 
-    private readonly Random _rng = new Random(42);
-    private readonly byte[] _testData;
-    private unsafe readonly byte* _ptr;
+    private Random _rng = new Random(42);
+    private byte[] _testData;
+    private unsafe byte* _ptr;
 
-    public unsafe HashBenchmark()
+    [GlobalSetup]
+    public unsafe void Setup()
     {
         _testData = GetRandomBytes(TestSize);
         _ptr = (byte*)NativeMemory.Alloc((nuint)TestSize);
-        Unsafe.Copy(_ptr, ref _testData);
+
+        for (int i = 0; i < _testData.Length; i++)
+        {
+            _ptr[i] = _testData[i];
+        }
     }
 
     [Benchmark]
@@ -47,6 +53,9 @@ public class HashBenchmark : IDisposable
 
     [Benchmark]
     public ulong FNV1A64Test() => FNV1A64.ComputeHash(_testData);
+
+    [Benchmark]
+    public uint Marvin32Test() => Marvin32.ComputeHash(_testData, (uint)_testData.Length, 43);
 
     [Benchmark]
     public uint MurmurHash32Test() => MurmurHash32.ComputeHash(_testData);
