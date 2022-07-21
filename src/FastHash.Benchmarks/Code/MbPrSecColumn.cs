@@ -4,7 +4,7 @@ using BenchmarkDotNet.Mathematics;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 
-namespace Genbox.FastHash.Benchmarks;
+namespace Genbox.FastHash.Benchmarks.Code;
 
 public class MbPrSecColumn : IColumn
 {

@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using BenchmarkDotNet.Attributes;
+using Genbox.FastHash.Benchmarks.Code;
 using Genbox.FastHash.DJBHash;
 using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FarshHash;
@@ -16,11 +17,11 @@ namespace Genbox.FastHash.Benchmarks;
 [InProcess]
 public class HashBenchmark : IDisposable
 {
-    [Params(16, 32 * 1024 * 1024)]
+    [Params(16, 32, 1024)]
     public int Size { get; set; }
 
     private readonly Random _rng = new Random(42);
-    private byte[] _testData;
+    private byte[] _testData = null!;
     private unsafe byte* _ptr;
 
     [GlobalSetup]
@@ -78,7 +79,7 @@ public class HashBenchmark : IDisposable
     public unsafe uint DJBHash32UnsafeTest() => DJBHash32Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
-    public unsafe uint Farmhash32UnsafeTest() => FarmHash32Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe uint FarmHash32UnsafeTest() => FarmHash32Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
     public unsafe ulong FarshHash64UnsafeTest() => FarshHash64Unsafe.ComputeHash(_ptr, _testData.Length);
