@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Authors>Ian Qvist</Authors>
     <Copyright>Copyright 2022, by Ian Qvist. All rights reserved.</Copyright>
-    <Description>TODO</Description>
+    <Description>High performance non-cryptographic hash functions</Description>
   </PropertyGroup>
 
   <!--Default project settings-->
@@ -69,7 +69,7 @@
 
   <ItemGroup Condition="('$(BuildingInsideVisualStudio)' == 'true' OR '$(BuildingByReSharper)' == 'true') and !($(MSBuildProjectName.EndsWith('.Tests')) or $(MSBuildProjectName.Contains('.Benchmarks')) or $(MSBuildProjectName.Contains('.Examples')))">
     <PackageReference Include="ConfigureAwaitChecker.Analyzer" Version="5.0.0.1" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.3" PrivateAssets="all" />
+    <!--    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.3" PrivateAssets="all" />-->
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' AND ('$(BuildingInsideVisualStudio)' == 'true' OR '$(BuildingByReSharper)' == 'true')">
