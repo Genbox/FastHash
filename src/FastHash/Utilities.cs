@@ -18,6 +18,9 @@ internal static class Utilities
     internal static unsafe uint Fetch32(byte* ptr, int offset = 0) => *(uint*)(ptr + offset);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static unsafe uint Fetch8(byte* ptr, int offset = 0) => *(ptr + offset);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong Fetch64(byte[] p, uint offset = 0) => Unsafe.ReadUnaligned<ulong>(ref p[offset]);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

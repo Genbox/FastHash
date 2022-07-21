@@ -43,13 +43,14 @@ public static class xxHash32
 {
     public static uint ComputeHash(byte[] data, uint seed = 0)
     {
-        uint bEnd = (uint)data.Length;
+        uint len = (uint)data.Length;
         uint h32;
         uint offset = 0;
 
-        if (bEnd >= 16)
+        if (len >= 16)
         {
-            uint limit = bEnd - 16;
+            uint bEnd = len;
+            uint limit = bEnd - 15;
             uint v1 = seed + xxHashConstants.PRIME32_1 + xxHashConstants.PRIME32_2;
             uint v2 = seed + xxHashConstants.PRIME32_2;
             uint v3 = seed + 0;
@@ -65,27 +66,28 @@ public static class xxHash32
                 offset += 4;
                 v4 = Round(v4, Utilities.Fetch32(data, offset));
                 offset += 4;
-            } while (offset <= limit);
+            } while (offset < limit);
 
             h32 = Utilities.RotateLeft(v1, 1) + Utilities.RotateLeft(v2, 7) + Utilities.RotateLeft(v3, 12) + Utilities.RotateLeft(v4, 18);
         }
         else
             h32 = seed + xxHashConstants.PRIME32_5;
 
-        h32 += bEnd;
-
-        while (offset + 4 <= bEnd)
+        h32 += len;
+        len &= 15;
+        while (len >= 4)
         {
             h32 += Utilities.Fetch32(data, offset) * xxHashConstants.PRIME32_3;
-            h32 = Utilities.RotateLeft(h32, 17) * xxHashConstants.PRIME32_4;
             offset += 4;
+            h32 = Utilities.RotateLeft(h32, 17) * xxHashConstants.PRIME32_4;
+            len -= 4;
         }
 
-        while (offset < bEnd)
+        while (len > 0)
         {
-            h32 += data[offset] * xxHashConstants.PRIME32_5;
+            h32 += data[offset++] * xxHashConstants.PRIME32_5;
             h32 = Utilities.RotateLeft(h32, 11) * xxHashConstants.PRIME32_1;
-            offset++;
+            len--;
         }
 
         h32 ^= h32 >> 15;

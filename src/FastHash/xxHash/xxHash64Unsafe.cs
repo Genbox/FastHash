@@ -43,13 +43,13 @@ public static class xxHash64Unsafe
 {
     public static unsafe ulong ComputeHash(byte* data, int length, uint seed = 0)
     {
-        uint bEnd = (uint)length;
         ulong h64;
-        int offset = 0;
 
         if (length >= 32)
         {
-            uint limit = bEnd - 32;
+            byte* bEnd = data + length;
+            byte* limit = bEnd - 31;
+
             ulong v1 = seed + xxHashConstants.PRIME64_1 + xxHashConstants.PRIME64_2;
             ulong v2 = seed + xxHashConstants.PRIME64_2;
             ulong v3 = seed + 0;
@@ -57,15 +57,15 @@ public static class xxHash64Unsafe
 
             do
             {
-                v1 = Round(v1, Utilities.Fetch64(data, offset));
-                offset += 8;
-                v2 = Round(v2, Utilities.Fetch64(data, offset));
-                offset += 8;
-                v3 = Round(v3, Utilities.Fetch64(data, offset));
-                offset += 8;
-                v4 = Round(v4, Utilities.Fetch64(data, offset));
-                offset += 8;
-            } while (offset <= limit);
+                v1 = Round(v1, Utilities.Fetch64(data));
+                data += 8;
+                v2 = Round(v2, Utilities.Fetch64(data));
+                data += 8;
+                v3 = Round(v3, Utilities.Fetch64(data));
+                data += 8;
+                v4 = Round(v4, Utilities.Fetch64(data));
+                data += 8;
+            } while (data < limit);
 
             h64 = Utilities.RotateLeft(v1, 1) + Utilities.RotateLeft(v2, 7) + Utilities.RotateLeft(v3, 12) + Utilities.RotateLeft(v4, 18);
             h64 = MergeRound(h64, v1);
@@ -78,26 +78,30 @@ public static class xxHash64Unsafe
 
         h64 += (uint)length;
 
-        while (offset + 8 <= bEnd)
+        length &= 31;
+        while (length >= 8)
         {
-            ulong k1 = Round(0, Utilities.Fetch64(data, offset));
+            ulong k1 = Round(0, Utilities.Fetch64(data));
+            data += 8;
             h64 ^= k1;
             h64 = Utilities.RotateLeft(h64, 27) * xxHashConstants.PRIME64_1 + xxHashConstants.PRIME64_4;
-            offset += 8;
+            length -= 8;
         }
 
-        if (offset + 4 <= bEnd)
+        if (length >= 4)
         {
-            h64 ^= Utilities.Fetch32(data, offset) * xxHashConstants.PRIME64_1;
+            h64 ^= Utilities.Fetch32(data) * xxHashConstants.PRIME64_1;
+            data += 4;
             h64 = Utilities.RotateLeft(h64, 23) * xxHashConstants.PRIME64_2 + xxHashConstants.PRIME64_3;
-            offset += 4;
+            length -= 4;
         }
 
-        while (offset < bEnd)
+        while (length > 0)
         {
-            h64 ^= data[offset] * xxHashConstants.PRIME64_5;
+            h64 ^= Utilities.Fetch8(data) * xxHashConstants.PRIME64_5;
+            data++;
             h64 = Utilities.RotateLeft(h64, 11) * xxHashConstants.PRIME64_1;
-            offset++;
+            length--;
         }
 
         h64 ^= h64 >> 33;
