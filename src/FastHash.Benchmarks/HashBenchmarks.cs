@@ -19,7 +19,7 @@ namespace Genbox.FastHash.Benchmarks;
 [RankColumn]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [InProcess]
-public class HashBenchmark : IDisposable
+public class HashBenchmarks : IDisposable
 {
     private readonly Random _rng = new Random(42);
     private unsafe byte* _ptr;

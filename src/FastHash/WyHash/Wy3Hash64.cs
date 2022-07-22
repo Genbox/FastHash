@@ -97,19 +97,15 @@ public class Wy3Hash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void _wymum(ref ulong A, ref ulong B)
     {
-        unsafe
-        {
-            ulong lo;
-            ulong hi = Bmi2.X64.MultiplyNoFlags(A, B, &lo);
+        ulong high = Math.BigMul(A, B, out ulong low);
 
 #if WYHASH_CONDOM
-            A ^= lo;
-            B ^= hi;
+            A ^= low;
+            B ^= high;
 #else
-            A = lo;
-            B = hi;
+        A = low;
+        B = high;
 #endif
-        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

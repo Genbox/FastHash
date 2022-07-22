@@ -16,17 +16,17 @@ public class IndexBenchmarks
     private uint _value = 12808241;
 
     [Benchmark]
-    public uint DJB2Hash32Test() => Djb2Hash32.ComputeIndex(_value);
+    public uint Djb2Hash32Test() => Djb2Hash32.ComputeIndex(_value);
 
     [Benchmark]
-    public uint FNV1a32Test() => Fnv1aHash32.ComputeIndex(_value);
+    public uint Fnv1aHash32Test() => Fnv1aHash32.ComputeIndex(_value);
 
     [Benchmark]
-    public ulong FNV1a64Test() => Fnv1aHash64.ComputeIndex(_value);
+    public ulong Fnv1aHash64Test() => Fnv1aHash64.ComputeIndex(_value);
 
     [Benchmark]
-    public ulong wy3Hash64Test() => Wy3Hash64.ComputeIndex(_value);
+    public ulong Wy3Hash64Test() => Wy3Hash64.ComputeIndex(_value);
 
     [Benchmark]
-    public ulong xx2Hash64Test() => Xx2Hash64.ComputeIndex(_value);
+    public ulong Xx2Hash64Test() => Xx2Hash64.ComputeIndex(_value);
 }

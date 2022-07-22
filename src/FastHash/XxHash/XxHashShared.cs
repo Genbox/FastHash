@@ -69,28 +69,10 @@ internal static class XxHashShared
     internal static ulong XXH_xorshift64(ulong v64, int shift) => v64 ^ (v64 >> shift);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe Uint128 XXH_mult64to128(ulong lhs, ulong rhs)
+    internal static Uint128 XXH_mult64to128(ulong lhs, ulong rhs)
     {
-        if (Bmi2.IsSupported)
-        {
-            ulong product_low;
-            ulong product_high = Bmi2.X64.MultiplyNoFlags(lhs, rhs, &product_low);
-            return new Uint128(product_low, product_high);
-        }
-
-        ulong lo_lo = XXH_mult32to64(lhs & 0xFFFFFFFF, rhs & 0xFFFFFFFF);
-        ulong hi_lo = XXH_mult32to64(lhs >> 32, rhs & 0xFFFFFFFF);
-        ulong lo_hi = XXH_mult32to64(lhs & 0xFFFFFFFF, rhs >> 32);
-        ulong hi_hi = XXH_mult32to64(lhs >> 32, rhs >> 32);
-
-        ulong cross = (lo_lo >> 32) + (hi_lo & 0xFFFFFFFF) + lo_hi;
-        ulong upper = (hi_lo >> 32) + (cross >> 32) + hi_hi;
-        ulong lower = (cross << 32) | (lo_lo & 0xFFFFFFFF);
-
-        Uint128 r128;
-        r128.Low = lower;
-        r128.High = upper;
-        return r128;
+        ulong high = Math.BigMul(lhs, rhs, out ulong low);
+        return new Uint128(low, high);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -148,7 +130,7 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void XXH3_accumulate_512_avx2(ulong* acc, byte* input, byte* secret)
+    private static unsafe void XXH3_accumulate_512_avx2(ulong* acc, byte* input, byte* secret)
     {
         Vector256<ulong> acc_vec0 = Unsafe.Read<Vector256<ulong>>(acc + 0);
         Vector256<ulong> acc_vec1 = Unsafe.Read<Vector256<ulong>>(acc + 4);
@@ -182,7 +164,7 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void XXH3_accumulate_512_sse2(ulong* acc, byte* input, byte* secret)
+    private static unsafe void XXH3_accumulate_512_sse2(ulong* acc, byte* input, byte* secret)
     {
         Vector128<ulong> acc_vec0 = Unsafe.Read<Vector128<ulong>>(acc + 0);
         Vector128<ulong> acc_vec1 = Unsafe.Read<Vector128<ulong>>(acc + 2);
@@ -236,7 +218,7 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void XXH3_accumulate_512_scalar(ulong* acc, byte* input, byte* secret)
+    private static unsafe void XXH3_accumulate_512_scalar(ulong* acc, byte* input, byte* secret)
     {
         for (int i = 0; i < XxHashConstants.ACC_NB; i++)
             XXH3_scalarRound(acc, input, secret, i);
@@ -256,7 +238,7 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void XXH3_scrambleAcc_avx2(ulong* acc, byte* secret)
+    private static unsafe void XXH3_scrambleAcc_avx2(ulong* acc, byte* secret)
     {
         Vector256<ulong> acc_vec0 = Unsafe.Read<Vector256<ulong>>(acc + 0);
         Vector256<ulong> acc_vec1 = Unsafe.Read<Vector256<ulong>>(acc + 4);
@@ -290,7 +272,7 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void XXH3_scrambleAcc_sse2(ulong* acc, byte* secret)
+    private static unsafe void XXH3_scrambleAcc_sse2(ulong* acc, byte* secret)
     {
         Vector128<uint> acc_vec0 = Unsafe.Read<Vector128<ulong>>(acc + 0).AsUInt32();
         Vector128<uint> acc_vec1 = Unsafe.Read<Vector128<ulong>>(acc + 2).AsUInt32();
@@ -344,7 +326,7 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void XXH3_scrambleAcc_scalar(ulong* acc, byte* secret)
+    private static unsafe void XXH3_scrambleAcc_scalar(ulong* acc, byte* secret)
     {
         for (int i = 0; i < XxHashConstants.ACC_NB; i++)
             XXH3_scalarScrambleRound(acc, secret, i);
@@ -365,7 +347,7 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void XXH3_initCustomSecret_avx2(byte* customSecret, ulong seed64)
+    private static unsafe void XXH3_initCustomSecret_avx2(byte* customSecret, ulong seed64)
     {
         Vector256<ulong> seed = Vector256.Create(seed64, 0U - seed64, seed64, 0U - seed64);
 
@@ -395,7 +377,7 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void XXH3_initCustomSecret_sse2(byte* customSecret, ulong seed64)
+    private static unsafe void XXH3_initCustomSecret_sse2(byte* customSecret, ulong seed64)
     {
         Vector128<long> seed = Vector128.Create((long)seed64, (long)(0U - seed64));
 
@@ -443,7 +425,7 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void XXH3_initCustomSecret_scalar(byte* customSecret, ulong seed)
+    private static unsafe void XXH3_initCustomSecret_scalar(byte* customSecret, ulong seed)
     {
         fixed (byte* kSecretPtr = &XxHashConstants.kSecret[0])
         {

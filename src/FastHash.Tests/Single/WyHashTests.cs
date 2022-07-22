@@ -21,7 +21,7 @@ public class WyHashTests
     }
 
     [Fact]
-    public void wy3Hash64IndexTest()
+    public void Wy3Hash64IndexTest()
     {
         ulong val = 1ul;
         for (int i = 1; i <= 64; i++)
