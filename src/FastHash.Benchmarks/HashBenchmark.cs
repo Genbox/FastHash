@@ -40,7 +40,7 @@ public class HashBenchmark : IDisposable
     }
 
     [Benchmark]
-    public uint DJBHash32Test() => DJBHash32.ComputeHash(_testData);
+    public uint DJBHash32Test() => DJB2Hash32.ComputeHash(_testData);
 
     [Benchmark]
     public uint FarmHash32Test() => FarmHash32.ComputeHash(_testData);
@@ -79,7 +79,7 @@ public class HashBenchmark : IDisposable
     public ulong xx2Hash64Test() => xx2Hash64.ComputeHash(_testData);
 
     [Benchmark]
-    public unsafe uint DJBHash32UnsafeTest() => DJBHash32Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe uint DJBHash32UnsafeTest() => DJB2Hash32Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
     public unsafe uint FarmHash32UnsafeTest() => FarmHash32Unsafe.ComputeHash(_ptr, _testData.Length);

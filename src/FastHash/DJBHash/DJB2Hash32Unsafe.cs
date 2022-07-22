@@ -3,7 +3,7 @@
 
 namespace Genbox.FastHash.DJBHash;
 
-public static class DJBHash32Unsafe
+public static class DJB2Hash32Unsafe
 {
     public static unsafe uint ComputeHash(byte* data, int length)
     {

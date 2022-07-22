@@ -36,7 +36,7 @@ public class GeneralTests
 
     public static IEnumerable<object[]> CreateAlgorithms32()
     {
-        yield return new object[] { nameof(DJBHash32), () => DJBHash32.ComputeHash(_data), new byte[] { 0xCE, 0xED, 0x14, 0x36 } };
+        yield return new object[] { nameof(DJB2Hash32), () => DJB2Hash32.ComputeHash(_data), new byte[] { 0xCE, 0xED, 0x14, 0x36 } };
         yield return new object[] { nameof(FarmHash32), () => FarmHash32.ComputeHash(_data), new byte[] { 0x7F, 0x0F, 0xF1, 0x11 } };
         yield return new object[] { nameof(FNV1a32), () => FNV1a32.ComputeHash(_data), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 } };
         yield return new object[] { nameof(Marvin32), () => Marvin32.ComputeHash(_data, 42, 43), new byte[] { 173, 40, 191, 34 } };
@@ -63,7 +63,7 @@ public class GeneralTests
     {
         return new[]
         {
-            new object[] { nameof(DJBHash32Unsafe), () => DJBHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xCE, 0xED, 0x14, 0x36 } },
+            new object[] { nameof(DJB2Hash32Unsafe), () => DJB2Hash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xCE, 0xED, 0x14, 0x36 } },
             new object[] { nameof(FarmHash32Unsafe), () => FarmHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x7F, 0x0F, 0xF1, 0x11 } },
             new object[] { nameof(FNV1a32Unsafe), () => FNV1a32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 } },
             new object[] { nameof(MurmurHash32Unsafe), () => MurmurHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x08, 0x79, 0x87 } },
@@ -137,7 +137,7 @@ public class GeneralTests
 
     private IEnumerable<Type> GetAllTypesOf<T>()
     {
-        Assembly assembly = typeof(DJBHash32).GetTypeInfo().Assembly;
+        Assembly assembly = typeof(DJB2Hash32).GetTypeInfo().Assembly;
 
         foreach (Type type in assembly.GetTypes())
         {

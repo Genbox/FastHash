@@ -3,7 +3,7 @@
 
 namespace Genbox.FastHash.DJBHash;
 
-public static class DJBHash32
+public static class DJB2Hash32
 {
     public static uint ComputeHash(byte[] data)
     {
