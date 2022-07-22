@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Order;
 using Genbox.FastHash.Benchmarks.Code;
 using Genbox.FastHash.DJBHash;
 using Genbox.FastHash.FarmHash;
@@ -51,10 +52,10 @@ public class HashBenchmark : IDisposable
     public ulong FarshHash64Test() => FarshHash64.ComputeHash(_testData);
 
     [Benchmark]
-    public uint FNV1A32Test() => FNV1A32.ComputeHash(_testData);
+    public uint FNV1a32Test() => FNV1a32.ComputeHash(_testData);
 
     [Benchmark]
-    public ulong FNV1A64Test() => FNV1A64.ComputeHash(_testData);
+    public ulong FNV1a64Test() => FNV1a64.ComputeHash(_testData);
 
     [Benchmark]
     public uint Marvin32Test() => Marvin32.ComputeHash(_testData, (uint)_testData.Length, 43);
@@ -87,16 +88,13 @@ public class HashBenchmark : IDisposable
     public unsafe ulong FarshHash64UnsafeTest() => FarshHash64Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
-    public unsafe uint FNV1A32UnsafeTest() => FNV1A32Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe uint FNV1a32UnsafeTest() => FNV1a32Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
-    public unsafe ulong FNV1A64UnsafeTest() => FNV1A64Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe ulong FNV1a64UnsafeTest() => FNV1a64Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
-    public unsafe ulong FNV1AWHIZ32UnsafeTest() => FNV1AWHIZ32Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark]
-    public unsafe ulong FNV1AYoshimitsuTRIAD32UnsafeTest() => FNV1AYoshimitsuTRIAD32Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe ulong FNV1aYT32UnsafeTest() => FNV1aYT32Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
     public unsafe uint MurmurHash32UnsafeTest() => MurmurHash32Unsafe.ComputeHash(_ptr, _testData.Length);
