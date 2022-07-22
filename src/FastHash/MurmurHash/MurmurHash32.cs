@@ -18,7 +18,7 @@ public static class MurmurHash32
 
         for (uint i = 0; i < end; i += 4)
         {
-            k1 = Utilities.Fetch32(data, i);
+            k1 = Utilities.Read32(data, i);
 
             k1 *= MurmurHashConstants.C1_32;
             k1 = Utilities.RotateLeft(k1, 15);

@@ -2,7 +2,7 @@
 
 public unsafe class wyHash64Unsafe
 {
-    private static ulong _wyr8(byte* p) => Utilities.Fetch64(p);
+    private static ulong _wyr8(byte* p) => Utilities.Read64(p);
 
     private static ulong _wymix(ulong A, ulong B)
     {

@@ -39,7 +39,7 @@ using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.xxHash;
 
-public static class xxHash64
+public static class xx2Hash64
 {
     public static ulong ComputeHash(byte[] data, uint seed = 0)
     {
@@ -58,13 +58,13 @@ public static class xxHash64
 
             do
             {
-                v1 = Round(v1, Utilities.Fetch64(data, offset));
+                v1 = Round(v1, Utilities.Read64(data, offset));
                 offset += 8;
-                v2 = Round(v2, Utilities.Fetch64(data, offset));
+                v2 = Round(v2, Utilities.Read64(data, offset));
                 offset += 8;
-                v3 = Round(v3, Utilities.Fetch64(data, offset));
+                v3 = Round(v3, Utilities.Read64(data, offset));
                 offset += 8;
-                v4 = Round(v4, Utilities.Fetch64(data, offset));
+                v4 = Round(v4, Utilities.Read64(data, offset));
                 offset += 8;
             } while (offset < limit);
 
@@ -81,7 +81,7 @@ public static class xxHash64
         len &= 31;
         while (len >= 8)
         {
-            ulong k1 = Round(0, Utilities.Fetch64(data, offset));
+            ulong k1 = Round(0, Utilities.Read64(data, offset));
             offset += 8;
             h64 ^= k1;
             h64 = Utilities.RotateLeft(h64, 27) * xxHashConstants.PRIME64_1 + xxHashConstants.PRIME64_4;
@@ -90,7 +90,7 @@ public static class xxHash64
 
         if (len >= 4)
         {
-            h64 ^= Utilities.Fetch32(data, offset) * xxHashConstants.PRIME64_1;
+            h64 ^= Utilities.Read32(data, offset) * xxHashConstants.PRIME64_1;
             offset += 4;
             h64 = Utilities.RotateLeft(h64, 23) * xxHashConstants.PRIME64_2 + xxHashConstants.PRIME64_3;
             len -= 4;

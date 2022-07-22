@@ -8,7 +8,7 @@ public class wyHash64
     {
         unchecked
         {
-            return Utilities.Fetch64(data, (uint)p);
+            return Utilities.Read64(data, (uint)p);
         }
     }
 

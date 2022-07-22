@@ -41,12 +41,12 @@ public static class FarmHash32Unsafe
 
     private static unsafe uint Hash32Len13to24(byte* s, uint len, uint seed = 0)
     {
-        uint a = Utilities.Fetch32(s - 4 + (len >> 1));
-        uint b = Utilities.Fetch32(s + 4);
-        uint c = Utilities.Fetch32(s + len - 8);
-        uint d = Utilities.Fetch32(s + (len >> 1));
-        uint e = Utilities.Fetch32(s);
-        uint f = Utilities.Fetch32(s + len - 4);
+        uint a = Utilities.Read32(s - 4 + (len >> 1));
+        uint b = Utilities.Read32(s + 4);
+        uint c = Utilities.Read32(s + len - 8);
+        uint d = Utilities.Read32(s + (len >> 1));
+        uint e = Utilities.Read32(s);
+        uint f = Utilities.Read32(s + len - 4);
         uint h = d * FarmHashConstants.c1 + len + seed;
         a = Utilities.RotateRightCheck(a, 12) + f;
         h = FarmHash.Mur(c, h) + a;
@@ -60,9 +60,9 @@ public static class FarmHash32Unsafe
     private static unsafe uint Hash32Len5to12(byte* s, uint len, uint seed = 0)
     {
         uint a = len, b = len * 5, c = 9, d = b + seed;
-        a += Utilities.Fetch32(s);
-        b += Utilities.Fetch32(s + len - 4);
-        c += Utilities.Fetch32(s + ((len >> 1) & 4));
+        a += Utilities.Read32(s);
+        b += Utilities.Read32(s + len - 4);
+        c += Utilities.Read32(s + ((len >> 1) & 4));
         return Utilities.FMix(seed ^ FarmHash.Mur(c, FarmHash.Mur(b, FarmHash.Mur(a, d))));
     }
 
@@ -75,11 +75,11 @@ public static class FarmHash32Unsafe
             return len <= 12 ? Hash32Len5to12(s, (uint)len) : Hash32Len13to24(s, (uint)len);
 
         uint h = (uint)len, g = FarmHashConstants.c1 * (uint)len, f = g;
-        uint a0 = Utilities.RotateRightCheck(Utilities.Fetch32(s + len - 4) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
-        uint a1 = Utilities.RotateRightCheck(Utilities.Fetch32(s + len - 8) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
-        uint a2 = Utilities.RotateRightCheck(Utilities.Fetch32(s + len - 16) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
-        uint a3 = Utilities.RotateRightCheck(Utilities.Fetch32(s + len - 12) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
-        uint a4 = Utilities.RotateRightCheck(Utilities.Fetch32(s + len - 20) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
+        uint a0 = Utilities.RotateRightCheck(Utilities.Read32(s + len - 4) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
+        uint a1 = Utilities.RotateRightCheck(Utilities.Read32(s + len - 8) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
+        uint a2 = Utilities.RotateRightCheck(Utilities.Read32(s + len - 16) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
+        uint a3 = Utilities.RotateRightCheck(Utilities.Read32(s + len - 12) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
+        uint a4 = Utilities.RotateRightCheck(Utilities.Read32(s + len - 20) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
         h ^= a0;
         h = Utilities.RotateRightCheck(h, 19);
         h = h * 5 + 0xe6546b64;
@@ -97,11 +97,11 @@ public static class FarmHash32Unsafe
         uint iters = ((uint)len - 1) / 20;
         do
         {
-            uint a = Utilities.Fetch32(s);
-            uint b = Utilities.Fetch32(s + 4);
-            uint c = Utilities.Fetch32(s + 8);
-            uint d = Utilities.Fetch32(s + 12);
-            uint e = Utilities.Fetch32(s + 16);
+            uint a = Utilities.Read32(s);
+            uint b = Utilities.Read32(s + 4);
+            uint c = Utilities.Read32(s + 8);
+            uint d = Utilities.Read32(s + 12);
+            uint e = Utilities.Read32(s + 16);
             h += a;
             g += b;
             f += c;

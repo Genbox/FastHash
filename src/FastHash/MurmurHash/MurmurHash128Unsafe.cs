@@ -7,7 +7,7 @@ namespace Genbox.FastHash.MurmurHash;
 
 public static class MurmurHash128Unsafe
 {
-    public static unsafe byte[] ComputeHash(byte* data, int length, uint seed = 0)
+    public static unsafe Uint128 ComputeHash(byte* data, int length, uint seed = 0)
     {
         int nblocks = length / 16;
 
@@ -120,16 +120,6 @@ public static class MurmurHash128Unsafe
         h1 += h2;
         h2 += h1;
 
-        byte[] result = new byte[16];
-
-        fixed (byte* ptr = result)
-        {
-            ulong* ptr2 = (ulong*)ptr;
-
-            ptr2[0] = h1;
-            ptr2[1] = h2;
-        }
-
-        return result;
+        return new Uint128(h1, h2);
     }
 }

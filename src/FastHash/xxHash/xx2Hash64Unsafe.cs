@@ -39,7 +39,7 @@ using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.xxHash;
 
-public static class xxHash64Unsafe
+public static class xx2Hash64Unsafe
 {
     public static unsafe ulong ComputeHash(byte* data, int length, uint seed = 0)
     {
@@ -57,13 +57,13 @@ public static class xxHash64Unsafe
 
             do
             {
-                v1 = Round(v1, Utilities.Fetch64(data));
+                v1 = Round(v1, Utilities.Read64(data));
                 data += 8;
-                v2 = Round(v2, Utilities.Fetch64(data));
+                v2 = Round(v2, Utilities.Read64(data));
                 data += 8;
-                v3 = Round(v3, Utilities.Fetch64(data));
+                v3 = Round(v3, Utilities.Read64(data));
                 data += 8;
-                v4 = Round(v4, Utilities.Fetch64(data));
+                v4 = Round(v4, Utilities.Read64(data));
                 data += 8;
             } while (data < limit);
 
@@ -81,7 +81,7 @@ public static class xxHash64Unsafe
         length &= 31;
         while (length >= 8)
         {
-            ulong k1 = Round(0, Utilities.Fetch64(data));
+            ulong k1 = Round(0, Utilities.Read64(data));
             data += 8;
             h64 ^= k1;
             h64 = Utilities.RotateLeft(h64, 27) * xxHashConstants.PRIME64_1 + xxHashConstants.PRIME64_4;
@@ -90,7 +90,7 @@ public static class xxHash64Unsafe
 
         if (length >= 4)
         {
-            h64 ^= Utilities.Fetch32(data) * xxHashConstants.PRIME64_1;
+            h64 ^= Utilities.Read32(data) * xxHashConstants.PRIME64_1;
             data += 4;
             h64 = Utilities.RotateLeft(h64, 23) * xxHashConstants.PRIME64_2 + xxHashConstants.PRIME64_3;
             length -= 4;
@@ -98,7 +98,7 @@ public static class xxHash64Unsafe
 
         while (length > 0)
         {
-            h64 ^= Utilities.Fetch8(data) * xxHashConstants.PRIME64_5;
+            h64 ^= Utilities.Read8(data) * xxHashConstants.PRIME64_5;
             data++;
             h64 = Utilities.RotateLeft(h64, 11) * xxHashConstants.PRIME64_1;
             length--;

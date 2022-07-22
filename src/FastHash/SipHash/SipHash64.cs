@@ -43,7 +43,7 @@ public static class SipHash64
 
         for (i = 0; i < num; i++)
         {
-            ulong m = Utilities.Fetch64(data, 8 * i);
+            ulong m = Utilities.Read64(data, 8 * i);
             v3 ^= m;
 
             for (int j = 0; j < cRounds; ++j)

@@ -60,25 +60,25 @@ public static class FarshHash64Unsafe
         switch (length)
         {
             case 7:
-                v1 = Utilities.Fetch32(ptr);
+                v1 = Utilities.Read32(ptr);
                 ptr += 4;
                 v2 = (uint)(ptr[0] | (ptr[1] << 8) | (ptr[2] << 16));
                 sum += (v1 + FarshHashConstants.FARSH_KEYS[i]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[i + 1]);
                 break;
             case 6:
-                v1 = Utilities.Fetch32(ptr);
+                v1 = Utilities.Read32(ptr);
                 ptr += 4;
-                v2 = Utilities.Fetch16(ptr);
+                v2 = Utilities.Read16(ptr);
                 sum += (v1 + FarshHashConstants.FARSH_KEYS[i]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[i + 1]);
                 break;
             case 5:
-                v1 = Utilities.Fetch32(ptr);
+                v1 = Utilities.Read32(ptr);
                 ptr += 4;
                 v2 = *ptr;
                 sum += (v1 + FarshHashConstants.FARSH_KEYS[i]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[i + 1]);
                 break;
             case 4:
-                v1 = Utilities.Fetch32(ptr);
+                v1 = Utilities.Read32(ptr);
                 sum += (v1 + FarshHashConstants.FARSH_KEYS[i]) * (ulong)FarshHashConstants.FARSH_KEYS[i + 1];
                 break;
             case 3:
@@ -86,7 +86,7 @@ public static class FarshHash64Unsafe
                 sum += (v1 + FarshHashConstants.FARSH_KEYS[i]) * (ulong)FarshHashConstants.FARSH_KEYS[i + 1];
                 break;
             case 2:
-                v1 = Utilities.Fetch16(ptr);
+                v1 = Utilities.Read16(ptr);
                 sum += (v1 + FarshHashConstants.FARSH_KEYS[i]) * (ulong)FarshHashConstants.FARSH_KEYS[i + 1];
                 break;
             case 1:

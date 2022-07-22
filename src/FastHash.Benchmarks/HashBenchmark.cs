@@ -61,7 +61,7 @@ public class HashBenchmark : IDisposable
     public uint MurmurHash32Test() => MurmurHash32.ComputeHash(_testData);
 
     [Benchmark]
-    public byte[] MurmurHash128Test() => MurmurHash128.ComputeHash(_testData);
+    public Uint128 MurmurHash128Test() => MurmurHash128.ComputeHash(_testData);
 
     [Benchmark]
     public ulong SipHash64Test() => SipHash64.ComputeHash(_testData);
@@ -70,10 +70,10 @@ public class HashBenchmark : IDisposable
     public uint SuperFastHash32Test() => SuperFastHash32.ComputeHash(_testData);
 
     [Benchmark]
-    public uint xxHash32Test() => xxHash32.ComputeHash(_testData);
+    public uint xx2Hash32Test() => xx2Hash32.ComputeHash(_testData);
 
     [Benchmark]
-    public ulong xxHash64Test() => xxHash64.ComputeHash(_testData);
+    public ulong xx2Hash64Test() => xx2Hash64.ComputeHash(_testData);
 
     [Benchmark]
     public unsafe uint DJBHash32UnsafeTest() => DJBHash32Unsafe.ComputeHash(_ptr, _testData.Length);
@@ -100,7 +100,7 @@ public class HashBenchmark : IDisposable
     public unsafe uint MurmurHash32UnsafeTest() => MurmurHash32Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
-    public unsafe byte[] MurmurHash128UnsafeTest() => MurmurHash128Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe Uint128 MurmurHash128UnsafeTest() => MurmurHash128Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
     public unsafe ulong SipHash64UnsafeTest() => SipHash64Unsafe.ComputeHash(_ptr, _testData.Length);
@@ -109,10 +109,10 @@ public class HashBenchmark : IDisposable
     public unsafe uint SuperFastHash32UnsafeTest() => SuperFastHash32Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
-    public unsafe uint xxHash32UnsafeTest() => xxHash32Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe uint xx2Hash32UnsafeTest() => xx2Hash32Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
-    public unsafe ulong xxHash64UnsafeTest() => xxHash64Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe ulong xx2Hash64UnsafeTest() => xx2Hash64Unsafe.ComputeHash(_ptr, _testData.Length);
 
     private byte[] GetRandomBytes(int count)
     {

@@ -34,8 +34,8 @@ public static class FarshHash64
         uint j = 0;
         for (i = 0; i < FarshHashConstants.STRIPE; i += 8, j += 2)
         {
-            uint val1 = Utilities.Fetch32(data, offset + i);
-            uint val2 = Utilities.Fetch32(data, offset + i + sizeof(uint));
+            uint val1 = Utilities.Read32(data, offset + i);
+            uint val2 = Utilities.Read32(data, offset + i + sizeof(uint));
             sum += (val1 + FarshHashConstants.FARSH_KEYS[j]) * (ulong)(val2 + FarshHashConstants.FARSH_KEYS[j + 1]);
         }
 
@@ -50,8 +50,8 @@ public static class FarshHash64
 
         for (; chunks > 0; chunks--)
         {
-            uint val1 = Utilities.Fetch32(data, offset);
-            uint val2 = Utilities.Fetch32(data, offset + sizeof(uint));
+            uint val1 = Utilities.Read32(data, offset);
+            uint val2 = Utilities.Read32(data, offset + sizeof(uint));
             sum += (val1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(val2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
             offset += 8;
             keyindex += 2;
@@ -65,25 +65,25 @@ public static class FarshHash64
         switch (remaining)
         {
             case 7:
-                v1 = Utilities.Fetch32(data, offset);
+                v1 = Utilities.Read32(data, offset);
                 offset += 4;
                 v2 = (uint)(data[0 + offset] | (data[1 + offset] << 8) | (data[2 + offset] << 16));
                 sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
                 break;
             case 6:
-                v1 = Utilities.Fetch32(data, offset);
+                v1 = Utilities.Read32(data, offset);
                 offset += 4;
-                v2 = Utilities.Fetch16(data, offset);
+                v2 = Utilities.Read16(data, offset);
                 sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
                 break;
             case 5:
-                v1 = Utilities.Fetch32(data, offset);
+                v1 = Utilities.Read32(data, offset);
                 offset += 4;
                 v2 = data[offset];
                 sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
                 break;
             case 4:
-                v1 = Utilities.Fetch32(data, offset);
+                v1 = Utilities.Read32(data, offset);
                 sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
                 break;
             case 3:
@@ -91,7 +91,7 @@ public static class FarshHash64
                 sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
                 break;
             case 2:
-                v1 = Utilities.Fetch16(data, offset);
+                v1 = Utilities.Read16(data, offset);
                 sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
                 break;
             case 1:

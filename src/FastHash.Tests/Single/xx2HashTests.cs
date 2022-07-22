@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Genbox.FastHash.Tests.Single;
 
-public class xxHashTests
+public class xx2HashTests
 {
     [Fact]
     public void TestCase1()
@@ -13,13 +13,13 @@ public class xxHashTests
 
         byte[] bytes = Encoding.ASCII.GetBytes(Test);
 
-        ulong res = xxHash64.ComputeHash(bytes);
+        ulong res = xx2Hash64.ComputeHash(bytes);
 
         unsafe
         {
             fixed (byte* ptr = bytes)
             {
-                ulong res2 = xxHash64Unsafe.ComputeHash(ptr, bytes.Length);
+                ulong res2 = xx2Hash64Unsafe.ComputeHash(ptr, bytes.Length);
 
                 Assert.Equal(BitConverter.ToString(BitConverter.GetBytes(res)), BitConverter.ToString(BitConverter.GetBytes(res2)));
             }

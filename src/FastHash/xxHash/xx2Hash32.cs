@@ -39,16 +39,18 @@ using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.xxHash;
 
-public static class xxHash32Unsafe
+public static class xx2Hash32
 {
-    public static unsafe uint ComputeHash(byte* data, int length, uint seed = 0)
+    public static uint ComputeHash(byte[] data, uint seed = 0)
     {
+        uint len = (uint)data.Length;
         uint h32;
+        uint offset = 0;
 
-        if (length >= 16)
+        if (len >= 16)
         {
-            byte* bEnd = data + length;
-            byte* limit = bEnd - 15;
+            uint bEnd = len;
+            uint limit = bEnd - 15;
             uint v1 = seed + xxHashConstants.PRIME32_1 + xxHashConstants.PRIME32_2;
             uint v2 = seed + xxHashConstants.PRIME32_2;
             uint v3 = seed + 0;
@@ -56,37 +58,36 @@ public static class xxHash32Unsafe
 
             do
             {
-                v1 = Round(v1, Utilities.Fetch32(data));
-                data += 4;
-                v2 = Round(v2, Utilities.Fetch32(data));
-                data += 4;
-                v3 = Round(v3, Utilities.Fetch32(data));
-                data += 4;
-                v4 = Round(v4, Utilities.Fetch32(data));
-                data += 4;
-            } while (data < limit);
+                v1 = Round(v1, Utilities.Read32(data, offset));
+                offset += 4;
+                v2 = Round(v2, Utilities.Read32(data, offset));
+                offset += 4;
+                v3 = Round(v3, Utilities.Read32(data, offset));
+                offset += 4;
+                v4 = Round(v4, Utilities.Read32(data, offset));
+                offset += 4;
+            } while (offset < limit);
 
             h32 = Utilities.RotateLeft(v1, 1) + Utilities.RotateLeft(v2, 7) + Utilities.RotateLeft(v3, 12) + Utilities.RotateLeft(v4, 18);
         }
         else
             h32 = seed + xxHashConstants.PRIME32_5;
 
-        h32 += (uint)length;
-        length &= 15;
-        while (length >= 4)
+        h32 += len;
+        len &= 15;
+        while (len >= 4)
         {
-            h32 += Utilities.Fetch32(data) * xxHashConstants.PRIME32_3;
-            data += 4;
+            h32 += Utilities.Read32(data, offset) * xxHashConstants.PRIME32_3;
+            offset += 4;
             h32 = Utilities.RotateLeft(h32, 17) * xxHashConstants.PRIME32_4;
-            length -= 4;
+            len -= 4;
         }
 
-        while (length > 0)
+        while (len > 0)
         {
-            h32 += Utilities.Fetch8(data) * xxHashConstants.PRIME32_5;
-            data++;
+            h32 += data[offset++] * xxHashConstants.PRIME32_5;
             h32 = Utilities.RotateLeft(h32, 11) * xxHashConstants.PRIME32_1;
-            length--;
+            len--;
         }
 
         h32 ^= h32 >> 15;

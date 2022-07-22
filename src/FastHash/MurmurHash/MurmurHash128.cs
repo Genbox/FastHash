@@ -3,11 +3,13 @@
 //Note: This is the x64 version of 128bit MurmurHash3
 //Note: This hash algorithm is vulnerable to hash flodding: https://emboss.github.io/blog/2012/12/14/breaking-murmur-hash-flooding-dos-reloaded/
 
+using Genbox.FastHash.xxHash;
+
 namespace Genbox.FastHash.MurmurHash;
 
 public static class MurmurHash128
 {
-    public static byte[] ComputeHash(byte[] data, uint seed = 0)
+    public static Uint128 ComputeHash(byte[] data, uint seed = 0)
     {
         uint length = (uint)data.Length;
         uint nblocks = length / 16;
@@ -20,8 +22,8 @@ public static class MurmurHash128
 
         for (uint i = 0; i < nblocks; i++)
         {
-            k1 = Utilities.Fetch64(data, i * 2 + 0);
-            k2 = Utilities.Fetch64(data, i * 2 + 8);
+            k1 = Utilities.Read64(data, i * 2 + 0);
+            k2 = Utilities.Read64(data, i * 2 + 8);
 
             k1 *= MurmurHashConstants.C1_64;
             k1 = Utilities.RotateLeft(k1, 31);
@@ -120,10 +122,6 @@ public static class MurmurHash128
         h1 += h2;
         h2 += h1;
 
-        byte[] result = new byte[16];
-        Array.Copy(BitConverter.GetBytes(h1), 0, result, 0, 8);
-        Array.Copy(BitConverter.GetBytes(h2), 0, result, 8, 8);
-
-        return result;
+        return new Uint128(h1, h2);
     }
 }
