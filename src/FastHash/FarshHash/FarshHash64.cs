@@ -1,34 +1,40 @@
-﻿//Copyright(c) 2015-16 Bulat Ziganshin<bulat.ziganshin@gmail.com>
-//
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-//
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-//
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
+﻿//Ported to C# by Ian Qvist
+//Source: https://github.com/Bulat-Ziganshin/FARSH
 
-//Ported to C# by Ian Qvist
-//Website: https://github.com/Bulat-Ziganshin/FARSH
-//Source: https://github.com/Bulat-Ziganshin/FARSH/blob/master/farsh.c
+using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.FarshHash;
 
 public static class FarshHash64
 {
-    /* STRIPE bytes of key material plus extra keys for hashes up to 1024 bits long */
+    public static ulong ComputeHash(byte[] data, ulong seed = 0)
+    {
+        ulong sum = seed;
+        uint length = (uint)data.Length;
+        uint offset = 0;
+
+        while (length >= FarshHashConstants.STRIPE)
+        {
+            ulong h = farsh_full_block(data, offset);
+            sum = farsh_combine(sum, h);
+            offset += FarshHashConstants.STRIPE;
+            length -= FarshHashConstants.STRIPE;
+        }
+
+        if (length > 0)
+        {
+            ulong h = farsh_partial_block(data, offset);
+            sum = farsh_combine(sum, h);
+        }
+
+        return farsh_final(sum) ^ FarshHashConstants.FARSH_KEYS[0]; /* ensure that zeroes at the end of data will affect the hash value */
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong farsh_full_block(byte[] data, uint offset)
     {
+        // STRIPE bytes of key material plus extra keys for hashes up to 1024 bits long
+
         ulong sum = 0;
         uint i;
         uint j = 0;
@@ -46,7 +52,9 @@ public static class FarshHash64
     {
         ulong sum = 0;
         int keyindex = 0;
-        uint chunks = (uint)((data.Length - offset) >> 3);
+        int length = data.Length;
+
+        uint chunks = (uint)((length - offset) >> 3);
 
         for (; chunks > 0; chunks--)
         {
@@ -60,7 +68,7 @@ public static class FarshHash64
         uint v1;
         uint v2;
 
-        uint remaining = (uint)(data.Length - offset);
+        uint remaining = (uint)(length - offset);
 
         switch (remaining)
         {
@@ -103,29 +111,7 @@ public static class FarshHash64
         return sum;
     }
 
-    public static ulong ComputeHash(byte[] data, ulong seed = 0)
-    {
-        ulong sum = seed;
-        uint bytes = (uint)data.Length;
-        uint offset = 0;
-
-        while (bytes >= FarshHashConstants.STRIPE)
-        {
-            ulong h = farsh_full_block(data, offset);
-            sum = farsh_combine(sum, h);
-            offset += FarshHashConstants.STRIPE;
-            bytes -= FarshHashConstants.STRIPE;
-        }
-
-        if (bytes > 0)
-        {
-            ulong h = farsh_partial_block(data, offset);
-            sum = farsh_combine(sum, h);
-        }
-
-        return farsh_final(sum) ^ FarshHashConstants.FARSH_KEYS[0]; /* ensure that zeroes at the end of data will affect the hash value */
-    }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong farsh_combine(ulong sum, ulong h)
     {
         h *= FarshHashConstants.PRIME64_2;
@@ -136,6 +122,7 @@ public static class FarshHash64
         return sum;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint farsh_final(ulong sum)
     {
         sum ^= sum >> 33;

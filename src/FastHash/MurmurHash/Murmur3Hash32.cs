@@ -1,23 +1,22 @@
 ﻿//Ported to C# by Ian Qvist
 //Source: https://github.com/aappleby/smhasher/
-//Note: This is the x86 version of 32bit MurmurHash3
-//Note: This hash algorithm is vulnerable to hash flodding: https://emboss.github.io/blog/2012/12/14/breaking-murmur-hash-flooding-dos-reloaded/
 
 namespace Genbox.FastHash.MurmurHash;
 
-public static class MurmurHash32Unsafe
+public static class Murmur3Hash32
 {
-    public static unsafe uint ComputeHash(byte* data, int length, uint seed = 0)
+    public static uint ComputeHash(byte[] data, uint seed = 0)
     {
-        int nblocks = length / 4;
+        uint length = (uint)data.Length;
+        uint nblocks = length / 4;
         uint h1 = seed;
         uint k1;
 
-        uint* blocks = (uint*)(data + nblocks * 4);
+        uint end = nblocks * 4;
 
-        for (int i = -nblocks; i != 0; i++)
+        for (uint i = 0; i < end; i += 4)
         {
-            k1 = blocks[i];
+            k1 = Utilities.Read32(data, i);
 
             k1 *= MurmurHashConstants.C1_32;
             k1 = Utilities.RotateLeft(k1, 15);
@@ -28,19 +27,21 @@ public static class MurmurHash32Unsafe
             h1 = h1 * 5 + 0xe6546b64;
         }
 
-        byte* tail = data + nblocks * 4;
+        uint rem = length & 3;
+
+        uint tail = length - rem;
         k1 = 0;
 
-        switch (length & 3)
+        switch (rem)
         {
             case 3:
-                k1 ^= (uint)tail[2] << 16;
+                k1 ^= (uint)data[tail + 2] << 16;
                 goto case 2;
             case 2:
-                k1 ^= (uint)tail[1] << 8;
+                k1 ^= (uint)data[tail + 1] << 8;
                 goto case 1;
             case 1:
-                k1 ^= tail[0];
+                k1 ^= data[tail];
                 break;
         }
 
@@ -49,9 +50,7 @@ public static class MurmurHash32Unsafe
         k1 *= MurmurHashConstants.C2_32;
         h1 ^= k1;
 
-        uint len = (uint)length;
-
-        h1 ^= len;
+        h1 ^= length;
         h1 = Utilities.FMix(h1);
 
         return h1;

@@ -1,24 +1,9 @@
-﻿// Copyright 2015 Google Inc. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-//Ported to C# by Ian Qvist
-//Website: https://github.com/google/highwayhash/
+﻿//Ported to C# by Ian Qvist
 //Source: https://github.com/google/highwayhash/
 
 namespace Genbox.FastHash.HighwayHash;
 
-public static class HighwayTreeHash64
+public static class HighwayHash64
 {
     private const int kNumLanes = 4;
     private static readonly ulong[] v0 = new ulong[4];

@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Genbox.FastHash.xxHash;
@@ -16,18 +15,17 @@ public static class xx3Hash64Unsafe
     private static unsafe ulong XXH3_hashLong_64b_withSeed_internal(byte* input, int len, ulong seed, XXH3_f_accumulate_512 f_acc512, XXH3_f_scrambleAcc f_scramble, XXH3_f_initCustomSecret f_initSec)
     {
         if (seed == 0)
+        {
             fixed (byte* secretPtr = xxHashConstants.kSecret)
                 return XXH3_hashLong_64b_internal(input, len, secretPtr, xxHashConstants.SECRET_DEFAULT_SIZE, f_acc512, f_scramble);
+        }
 
         byte* secret = stackalloc byte[xxHashConstants.SECRET_DEFAULT_SIZE];
         f_initSec(secret, seed);
         return XXH3_hashLong_64b_internal(input, len, secret, xxHashConstants.SECRET_DEFAULT_SIZE, f_acc512, f_scramble);
     }
 
-    private static unsafe ulong XXH3_hashLong_64b_withSeed(byte* input, int len, ulong seed, byte* secret, int secretLen)
-    {
-        return XXH3_hashLong_64b_withSeed_internal(input, len, seed, ImplSwitch.XXH3_accumulate_512, ImplSwitch.XXH3_scrambleAcc, ImplSwitch.XXH3_initCustomSecret);
-    }
+    private static unsafe ulong XXH3_hashLong_64b_withSeed(byte* input, int len, ulong seed, byte* secret, int secretLen) => XXH3_hashLong_64b_withSeed_internal(input, len, seed, ImplSwitch.XXH3_accumulate_512, ImplSwitch.XXH3_scrambleAcc, ImplSwitch.XXH3_initCustomSecret);
 
     private static unsafe ulong XXH3_hashLong_64b_internal(byte* input, int len, byte* secret, int secretSize, XXH3_f_accumulate_512 f_acc512, XXH3_f_scrambleAcc f_scramble)
     {

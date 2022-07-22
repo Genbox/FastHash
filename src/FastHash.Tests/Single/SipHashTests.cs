@@ -7,7 +7,8 @@ public class SipHashTests
 {
     private const int MaxLength = 64;
 
-    private static readonly byte[][] _vectors = {
+    private static readonly byte[][] _vectors =
+    {
         new byte[] { 0x31, 0x0e, 0x0e, 0xdd, 0x47, 0xdb, 0x6f, 0x72 },
         new byte[] { 0xfd, 0x67, 0xdc, 0x93, 0xc5, 0x39, 0xf8, 0x74 },
         new byte[] { 0x5a, 0x4f, 0xa9, 0xd9, 0x09, 0x80, 0x6c, 0x0d },
@@ -83,9 +84,7 @@ public class SipHashTests
         {
             byte[] data = new byte[i];
             for (int j = 0; j < i; j++)
-            {
                 data[j] = (byte)j;
-            }
 
             ToULongs(_key, out ulong k0, out ulong k1);
 
@@ -102,9 +101,7 @@ public class SipHashTests
         {
             byte[] data = new byte[i];
             for (int j = 0; j < i; j++)
-            {
                 data[j] = (byte)j;
-            }
 
             ToULongs(_key, out ulong k0, out ulong k1);
 

@@ -1,11 +1,9 @@
 ﻿//Ported to C# by Ian Qvist
 //Source: https://github.com/aappleby/smhasher/
-//Note: This is the x64 version of 128bit MurmurHash3
-//Note: This hash algorithm is vulnerable to hash flodding: https://emboss.github.io/blog/2012/12/14/breaking-murmur-hash-flooding-dos-reloaded/
 
 namespace Genbox.FastHash.MurmurHash;
 
-public static class MurmurHash128Unsafe
+public static class Murmur3Hash128Unsafe
 {
     public static unsafe Uint128 ComputeHash(byte* data, int length, uint seed = 0)
     {
@@ -70,6 +68,12 @@ public static class MurmurHash128Unsafe
                 goto case 9;
             case 9:
                 k2 ^= (ulong)tail[8] << 0;
+
+                k2 *= MurmurHashConstants.C2_64;
+                k2 = Utilities.RotateLeft(k2, 33);
+                k2 *= MurmurHashConstants.C1_64;
+                h2 ^= k2;
+
                 goto case 8;
             case 8:
                 k1 ^= (ulong)tail[7] << 56;
@@ -94,18 +98,14 @@ public static class MurmurHash128Unsafe
                 goto case 1;
             case 1:
                 k1 ^= (ulong)tail[0] << 0;
+
+                k1 *= MurmurHashConstants.C1_64;
+                k1 = Utilities.RotateLeft(k1, 31);
+                k1 *= MurmurHashConstants.C2_64;
+                h1 ^= k1;
+
                 break;
         }
-
-        k2 *= MurmurHashConstants.C2_64;
-        k2 = Utilities.RotateLeft(k2, 33);
-        k2 *= MurmurHashConstants.C1_64;
-        h2 ^= k2;
-
-        k1 *= MurmurHashConstants.C1_64;
-        k1 = Utilities.RotateLeft(k1, 31);
-        k1 *= MurmurHashConstants.C2_64;
-        h1 ^= k1;
 
         ulong len = (ulong)length;
         h1 ^= len;

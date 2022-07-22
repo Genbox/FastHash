@@ -1,34 +1,39 @@
-﻿//Copyright(c) 2015-16 Bulat Ziganshin<bulat.ziganshin@gmail.com>
-//
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-//
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-//
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
+﻿//Ported to C# by Ian Qvist
+//Source: https://github.com/Bulat-Ziganshin/FARSH
 
-//Ported to C# by Ian Qvist
-//Website: https://github.com/Bulat-Ziganshin/FARSH
-//Source: https://github.com/Bulat-Ziganshin/FARSH/blob/master/farsh.c
+using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.FarshHash;
 
 public static class FarshHash64Unsafe
 {
-    /* STRIPE bytes of key material plus extra keys for hashes up to 1024 bits long */
+    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed = 0)
+    {
+        ulong sum = seed;
+
+        uint* uptr = (uint*)data;
+
+        while (length >= FarshHashConstants.STRIPE)
+        {
+            ulong h = farsh_full_block(uptr);
+            sum = farsh_combine(sum, h);
+            uptr += FarshHashConstants.STRIPE_ELEMENTS;
+            length -= FarshHashConstants.STRIPE;
+        }
+
+        if (length > 0)
+        {
+            ulong h = farsh_partial_block(uptr, length);
+            sum = farsh_combine(sum, h);
+        }
+
+        return farsh_final(sum) ^ FarshHashConstants.FARSH_KEYS[0]; /* ensure that zeroes at the end of data will affect the hash value */
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe ulong farsh_full_block(uint* data)
     {
+        // STRIPE bytes of key material plus extra keys for hashes up to 1024 bits long
         ulong sum = 0;
         int i;
 
@@ -98,29 +103,7 @@ public static class FarshHash64Unsafe
         return sum;
     }
 
-    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed = 0)
-    {
-        ulong sum = seed;
-
-        uint* uptr = (uint*)data;
-
-        while (length >= FarshHashConstants.STRIPE)
-        {
-            ulong h = farsh_full_block(uptr);
-            sum = farsh_combine(sum, h);
-            uptr += FarshHashConstants.STRIPE_ELEMENTS;
-            length -= FarshHashConstants.STRIPE;
-        }
-
-        if (length > 0)
-        {
-            ulong h = farsh_partial_block(uptr, length);
-            sum = farsh_combine(sum, h);
-        }
-
-        return farsh_final(sum) ^ FarshHashConstants.FARSH_KEYS[0]; /* ensure that zeroes at the end of data will affect the hash value */
-    }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong farsh_combine(ulong sum, ulong h)
     {
         h *= FarshHashConstants.PRIME64_2;
@@ -131,6 +114,7 @@ public static class FarshHash64Unsafe
         return sum;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint farsh_final(ulong sum)
     {
         sum ^= sum >> 33;

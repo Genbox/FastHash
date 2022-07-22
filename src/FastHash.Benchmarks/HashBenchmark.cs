@@ -20,12 +20,18 @@ namespace Genbox.FastHash.Benchmarks;
 [InProcess]
 public class HashBenchmark : IDisposable
 {
+    private readonly Random _rng = new Random(42);
+    private unsafe byte* _ptr;
+    private byte[] _testData = null!;
+
     [Params(16, 32, 1024)]
     public int Size { get; set; }
 
-    private readonly Random _rng = new Random(42);
-    private byte[] _testData = null!;
-    private unsafe byte* _ptr;
+    public unsafe void Dispose()
+    {
+        NativeMemory.Free(_ptr);
+        GC.SuppressFinalize(this);
+    }
 
     [GlobalSetup]
     public unsafe void Setup()
@@ -34,9 +40,7 @@ public class HashBenchmark : IDisposable
         _ptr = (byte*)NativeMemory.Alloc((nuint)Size);
 
         for (int i = 0; i < _testData.Length; i++)
-        {
             _ptr[i] = _testData[i];
-        }
     }
 
     [Benchmark]
@@ -61,10 +65,10 @@ public class HashBenchmark : IDisposable
     public uint Marvin32Test() => Marvin32.ComputeHash(_testData, (uint)_testData.Length, 43);
 
     [Benchmark]
-    public uint MurmurHash32Test() => MurmurHash32.ComputeHash(_testData);
+    public uint MurmurHash32Test() => Murmur3Hash32.ComputeHash(_testData);
 
     [Benchmark]
-    public Uint128 MurmurHash128Test() => MurmurHash128.ComputeHash(_testData);
+    public Uint128 MurmurHash128Test() => Murmur3Hash128.ComputeHash(_testData);
 
     [Benchmark]
     public ulong SipHash64Test() => SipHash64.ComputeHash(_testData);
@@ -97,10 +101,10 @@ public class HashBenchmark : IDisposable
     public unsafe ulong FNV1aYT32UnsafeTest() => FNV1aYT32Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
-    public unsafe uint MurmurHash32UnsafeTest() => MurmurHash32Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe uint MurmurHash32UnsafeTest() => Murmur3Hash32Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
-    public unsafe Uint128 MurmurHash128UnsafeTest() => MurmurHash128Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe Uint128 MurmurHash128UnsafeTest() => Murmur3Hash128Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
     public unsafe ulong SipHash64UnsafeTest() => SipHash64Unsafe.ComputeHash(_ptr, _testData.Length);
@@ -128,11 +132,5 @@ public class HashBenchmark : IDisposable
         byte[] bytes = GC.AllocateUninitializedArray<byte>(count);
         _rng.NextBytes(bytes);
         return bytes;
-    }
-
-    public unsafe void Dispose()
-    {
-        NativeMemory.Free(_ptr);
-        GC.SuppressFinalize(this);
     }
 }

@@ -6,7 +6,8 @@ namespace Genbox.FastHash.Tests.Single;
 
 public class FrashHashTests
 {
-    private static readonly uint[] _vectors = {
+    private static readonly uint[] _vectors =
+    {
         1295632426,
         1041987128,
         3954724792,

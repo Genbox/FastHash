@@ -15,28 +15,16 @@ public class BigMulBenchmark
     }
 
     [Benchmark]
-    public Uint128 xxHash_mul()
-    {
-        return XxMul(10280214UL, 89244214UL);
-    }
+    public Uint128 xxHash_mul() => XxMul(10280214UL, 89244214UL);
 
     [Benchmark]
-    public Uint128 Intrin()
-    {
-        return Bmi2Mul(10280214UL, 89244214UL);
-    }
+    public Uint128 Intrin() => Bmi2Mul(10280214UL, 89244214UL);
 
     [Benchmark]
-    public Uint128 Scalar32()
-    {
-        return Mul32(10280214UL, 89244214UL);
-    }
+    public Uint128 Scalar32() => Mul32(10280214UL, 89244214UL);
 
     [Benchmark]
-    public Uint128 Scalar64()
-    {
-        return Mul64(10280214UL, 89244214UL);
-    }
+    public Uint128 Scalar64() => Mul64(10280214UL, 89244214UL);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private unsafe Uint128 Bmi2Mul(ulong x, ulong y)

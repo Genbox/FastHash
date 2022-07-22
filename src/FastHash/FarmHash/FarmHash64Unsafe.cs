@@ -1,32 +1,85 @@
-﻿// Copyright (c) 2014 Google, Inc.
-//
-// FarmHash, by Geoff Pike
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
-//Ported to C# by Ian Qvist
+﻿//Ported to C# by Ian Qvist
 //Source: https://github.com/google/farmhash
 
 namespace Genbox.FastHash.FarmHash;
 
 public static class FarmHash64Unsafe
 {
+    public static unsafe ulong ComputeHash(byte* s, int len)
+    {
+        if (len <= 32)
+            return len <= 16 ? HashLen0to16(s, len) : HashLen17to32(s, len);
+
+        if (len <= 64)
+            return HashLen33to64(s, len);
+
+        if (len <= 96)
+            return HashLen65to96(s, len);
+
+        if (len <= 256)
+            return Hash64(s, len);
+
+        return Hash64WithSeeds(s, len, 81, 0);
+    }
+
+    private static unsafe ulong HashLen0to16(byte* data, int length)
+    {
+        if (length >= 8)
+        {
+            ulong mul = FarmHashConstants.k2 + (uint)length * 2;
+            ulong a = Utilities.Read64(data) + FarmHashConstants.k2;
+            ulong b = Utilities.Read64(data, length - 8);
+            ulong c = Utilities.RotateRightCheck(b, 37) * mul + a;
+            ulong d = (Utilities.RotateRightCheck(a, 25) + b) * mul;
+            return HashLen16(c, d, mul);
+        }
+        if (length >= 4)
+        {
+            ulong mul = FarmHashConstants.k2 + (uint)length * 2;
+            ulong a = Utilities.Read32(data);
+            return HashLen16((uint)length + (a << 3), Utilities.Read32(data, length - 4), mul);
+        }
+        if (length > 0)
+        {
+            byte a = data[0];
+            byte b = data[length >> 1];
+            byte c = data[length - 1];
+            uint y = a + ((uint)b << 8);
+            uint z = (uint)length + ((uint)c << 2);
+            return FarmHashShared.ShiftMix((y * FarmHashConstants.k2) ^ (z * FarmHashConstants.k0)) * FarmHashConstants.k2;
+        }
+        return FarmHashConstants.k2;
+    }
+
+    private static unsafe ulong HashLen17to32(byte* data, int length)
+    {
+        ulong mul = FarmHashConstants.k2 + (uint)length * 2;
+        ulong a = Utilities.Read64(data) * FarmHashConstants.k1;
+        ulong b = Utilities.Read64(data, 8);
+        ulong c = Utilities.Read64(data, length - 8) * mul;
+        ulong d = Utilities.Read64(data, length - 16) * FarmHashConstants.k2;
+        return HashLen16(Utilities.RotateRightCheck(a + b, 43) + Utilities.RotateRightCheck(c, 30) + d, a + Utilities.RotateRightCheck(b + FarmHashConstants.k2, 18) + c, mul);
+    }
+
+    private static unsafe ulong HashLen33to64(byte* data, int length)
+    {
+        const ulong mul0 = FarmHashConstants.k2 - 30;
+        ulong mul1 = FarmHashConstants.k2 - 30 + 2 * (uint)length;
+        ulong h0 = H32(data, 0, 32, mul0);
+        ulong h1 = H32(data, length - 32, 32, mul1);
+        return (h1 * mul1 + h0) * mul1;
+    }
+
+    private static unsafe ulong HashLen65to96(byte* data, int length)
+    {
+        const ulong mul0 = FarmHashConstants.k2 - 114;
+        ulong mul1 = FarmHashConstants.k2 - 114 + 2 * (uint)length;
+        ulong h0 = H32(data, 0, 32, mul0);
+        ulong h1 = H32(data, 32, 32, mul1);
+        ulong h2 = H32(data, length - 32, 32, mul1, h0, h1);
+        return (h2 * 9 + (h0 >> 17) + (h1 >> 21)) * mul1;
+    }
+
     private static ulong HashLen16(ulong u, ulong v, ulong mul)
     {
         // Murmur-inspired hashing.
@@ -56,45 +109,6 @@ public static class FarmHash64Unsafe
         a,
         b);
 
-    private static unsafe ulong HashLen0to16(byte* data, int length)
-    {
-        if (length >= 8)
-        {
-            ulong mul = FarmHashConstants.k2 + (uint)length * 2;
-            ulong a = Utilities.Read64(data) + FarmHashConstants.k2;
-            ulong b = Utilities.Read64(data, length - 8);
-            ulong c = Utilities.RotateRightCheck(b, 37) * mul + a;
-            ulong d = (Utilities.RotateRightCheck(a, 25) + b) * mul;
-            return HashLen16(c, d, mul);
-        }
-        if (length >= 4)
-        {
-            ulong mul = FarmHashConstants.k2 + (uint)length * 2;
-            ulong a = Utilities.Read32(data);
-            return HashLen16((uint)length + (a << 3), Utilities.Read32(data, length - 4), mul);
-        }
-        if (length > 0)
-        {
-            byte a = data[0];
-            byte b = data[length >> 1];
-            byte c = data[length - 1];
-            uint y = a + ((uint)b << 8);
-            uint z = (uint)length + ((uint)c << 2);
-            return FarmHash.ShiftMix((y * FarmHashConstants.k2) ^ (z * FarmHashConstants.k0)) * FarmHashConstants.k2;
-        }
-        return FarmHashConstants.k2;
-    }
-
-    private static unsafe ulong HashLen17to32(byte* data, int length)
-    {
-        ulong mul = FarmHashConstants.k2 + (uint)length * 2;
-        ulong a = Utilities.Read64(data) * FarmHashConstants.k1;
-        ulong b = Utilities.Read64(data, 8);
-        ulong c = Utilities.Read64(data, length - 8) * mul;
-        ulong d = Utilities.Read64(data, length - 16) * FarmHashConstants.k2;
-        return HashLen16(Utilities.RotateRightCheck(a + b, 43) + Utilities.RotateRightCheck(c, 30) + d, a + Utilities.RotateRightCheck(b + FarmHashConstants.k2, 18) + c, mul);
-    }
-
     private static ulong H(ulong x, ulong y, ulong mul, byte r)
     {
         ulong a = (x ^ y) * mul;
@@ -111,28 +125,9 @@ public static class FarmHash64Unsafe
         ulong d = Utilities.Read64(data, length - 16 + offset) * FarmHashConstants.k2;
         ulong u = Utilities.RotateRightCheck(a + b, 43) + Utilities.RotateRightCheck(c, 30) + d + seed0;
         ulong v = a + Utilities.RotateRightCheck(b + FarmHashConstants.k2, 18) + c + seed1;
-        a = FarmHash.ShiftMix((u ^ v) * mul);
-        b = FarmHash.ShiftMix((v ^ a) * mul);
+        a = FarmHashShared.ShiftMix((u ^ v) * mul);
+        b = FarmHashShared.ShiftMix((v ^ a) * mul);
         return b;
-    }
-
-    private static unsafe ulong HashLen33to64(byte* data, int length)
-    {
-        const ulong mul0 = FarmHashConstants.k2 - 30;
-        ulong mul1 = FarmHashConstants.k2 - 30 + 2 * (uint)length;
-        ulong h0 = H32(data, 0, 32, mul0);
-        ulong h1 = H32(data, length - 32, 32, mul1);
-        return (h1 * mul1 + h0) * mul1;
-    }
-
-    private static unsafe ulong HashLen65to96(byte* data, int length)
-    {
-        const ulong mul0 = FarmHashConstants.k2 - 114;
-        ulong mul1 = FarmHashConstants.k2 - 114 + 2 * (uint)length;
-        ulong h0 = H32(data, 0, 32, mul0);
-        ulong h1 = H32(data, 32, 32, mul1);
-        ulong h2 = H32(data, length - 32, 32, mul1, h0, h1);
-        return (h2 * 9 + (h0 >> 17) + (h1 >> 21)) * mul1;
     }
 
     private static unsafe ulong Hash64WithSeeds(byte* s, int len, ulong seed0, ulong seed1)
@@ -144,7 +139,7 @@ public static class FarmHash64Unsafe
         // 64 bytes: u, v, w, x, y, and z.
         ulong x = seed0;
         ulong y = seed1 * FarmHashConstants.k2 + 113;
-        ulong z = FarmHash.ShiftMix(y * FarmHashConstants.k2) * FarmHashConstants.k2;
+        ulong z = FarmHashShared.ShiftMix(y * FarmHashConstants.k2) * FarmHashConstants.k2;
         Uint128 v = new Uint128(seed0, seed1);
         Uint128 w = new Uint128(0, 0);
         ulong u = x - z;
@@ -244,7 +239,7 @@ public static class FarmHash64Unsafe
         // For strings over 64 bytes we loop. Internal state consists of 56 bytes: v, w, x, y, and z.
         ulong x = seed;
         ulong y = unchecked(seed * FarmHashConstants.k1) + 113;
-        ulong z = FarmHash.ShiftMix(y * FarmHashConstants.k2 + 113) * FarmHashConstants.k2;
+        ulong z = FarmHashShared.ShiftMix(y * FarmHashConstants.k2 + 113) * FarmHashConstants.k2;
         Uint128 v = new Uint128(0, 0);
         Uint128 w = new Uint128(0, 0);
         x = x * FarmHashConstants.k2 + Utilities.Read64(s);
@@ -280,25 +275,8 @@ public static class FarmHash64Unsafe
         v = WeakHashLen32WithSeeds(s, index + 0, v.High * mul, x + w.Low);
         w = WeakHashLen32WithSeeds(s, index + 32, z + w.High, y + Utilities.Read64(s, index + 16));
         Utilities.Swap(ref z, ref x);
-        return HashLen16(HashLen16(v.Low, w.Low, mul) + FarmHash.ShiftMix(y) * FarmHashConstants.k0 + z,
+        return HashLen16(HashLen16(v.Low, w.Low, mul) + FarmHashShared.ShiftMix(y) * FarmHashConstants.k0 + z,
             HashLen16(v.High, w.High, mul) + x,
             mul);
-    }
-
-    public static unsafe ulong ComputeHash(byte* s, int len)
-    {
-        if (len <= 32)
-            return len <= 16 ? HashLen0to16(s, len) : HashLen17to32(s, len);
-
-        if (len <= 64)
-            return HashLen33to64(s, len);
-
-        if (len <= 96)
-            return HashLen65to96(s, len);
-
-        if (len <= 256)
-            return Hash64(s, len);
-
-        return Hash64WithSeeds(s, len, 81, 0);
     }
 }

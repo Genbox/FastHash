@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -29,9 +28,7 @@ public class GeneralTests
         _ptr = (byte*)NativeMemory.Alloc((nuint)_data.Length);
 
         for (int i = 0; i < _data.Length; i++)
-        {
             _ptr[i] = _data[i];
-        }
     }
 
     public static IEnumerable<object[]> CreateAlgorithms32()
@@ -40,7 +37,7 @@ public class GeneralTests
         yield return new object[] { nameof(FarmHash32), () => FarmHash32.ComputeHash(_data), new byte[] { 0x7F, 0x0F, 0xF1, 0x11 } };
         yield return new object[] { nameof(FNV1a32), () => FNV1a32.ComputeHash(_data), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 } };
         yield return new object[] { nameof(Marvin32), () => Marvin32.ComputeHash(_data, 42, 43), new byte[] { 173, 40, 191, 34 } };
-        yield return new object[] { nameof(MurmurHash32), () => MurmurHash32.ComputeHash(_data), new byte[] { 0xF6, 0x08, 0x79, 0x87 } };
+        yield return new object[] { nameof(Murmur3Hash32), () => Murmur3Hash32.ComputeHash(_data), new byte[] { 0xF6, 0x08, 0x79, 0x87 } };
         yield return new object[] { nameof(SuperFastHash32), () => SuperFastHash32.ComputeHash(_data), new byte[] { 0x5E, 0xE8, 0x41, 0xB2 } };
         yield return new object[] { nameof(xx2Hash32), () => xx2Hash32.ComputeHash(_data), new byte[] { 0x2B, 0xC6, 0xC7, 0x94 } };
     }
@@ -55,7 +52,7 @@ public class GeneralTests
 
     public static IEnumerable<object[]> CreateAlgorithms128()
     {
-        yield return new object[] { nameof(MurmurHash128), () => MurmurHash128.ComputeHash(_data), new byte[] { 0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67 } };
+        yield return new object[] { nameof(Murmur3Hash128), () => Murmur3Hash128.ComputeHash(_data), new byte[] { 0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67 } };
         yield return new object[] { nameof(xx3Hash128), () => xx3Hash128.ComputeHash(_data), new byte[] { 106, 215, 124, 20, 15, 9, 111, 192, 223, 172, 108, 92, 53, 155, 47, 19 } };
     }
 
@@ -66,9 +63,9 @@ public class GeneralTests
             new object[] { nameof(DJB2Hash32Unsafe), () => DJB2Hash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xCE, 0xED, 0x14, 0x36 } },
             new object[] { nameof(FarmHash32Unsafe), () => FarmHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x7F, 0x0F, 0xF1, 0x11 } },
             new object[] { nameof(FNV1a32Unsafe), () => FNV1a32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 } },
-            new object[] { nameof(MurmurHash32Unsafe), () => MurmurHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x08, 0x79, 0x87 } },
+            new object[] { nameof(Murmur3Hash32Unsafe), () => Murmur3Hash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x08, 0x79, 0x87 } },
             new object[] { nameof(SuperFastHash32Unsafe), () => SuperFastHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x5E, 0xE8, 0x41, 0xB2 } },
-            new object[] { nameof(xx2Hash32Unsafe), () => xx2Hash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x2B, 0xC6, 0xC7, 0x94 } },
+            new object[] { nameof(xx2Hash32Unsafe), () => xx2Hash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x2B, 0xC6, 0xC7, 0x94 } }
         };
     }
 
@@ -87,7 +84,7 @@ public class GeneralTests
     {
         return new[]
         {
-            new object[] { nameof(MurmurHash128Unsafe), () => MurmurHash128Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67 } },
+            new object[] { nameof(Murmur3Hash128Unsafe), () => Murmur3Hash128Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67 } },
             new object[] { nameof(xx3Hash128Unsafe), () => xx3Hash128Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 106, 215, 124, 20, 15, 9, 111, 192, 223, 172, 108, 92, 53, 155, 47, 19 } }
         };
     }
@@ -130,9 +127,7 @@ public class GeneralTests
     public void CheckAllHaveCorrectName()
     {
         foreach (Type type in GetAllTypesOf<HashAlgorithm>())
-        {
             Assert.True(type.Name.Contains("32") || type.Name.Contains("64") || type.Name.Contains("128"));
-        }
     }
 
     private IEnumerable<Type> GetAllTypesOf<T>()
@@ -142,14 +137,10 @@ public class GeneralTests
         foreach (Type type in assembly.GetTypes())
         {
             if (type.GetInterfaces().Any(x => x == typeof(T)))
-            {
                 yield return type;
-            }
 
             if (type.GetTypeInfo().BaseType == typeof(T))
-            {
                 yield return type;
-            }
         }
     }
 }

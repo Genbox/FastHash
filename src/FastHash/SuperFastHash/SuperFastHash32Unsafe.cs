@@ -1,8 +1,6 @@
 ﻿//Ported to C# by Ian Qvist
 //Source: http://www.azillionmonkeys.com/qed/hash.html
 
-//Note: This algorithm has known issues. https://floodyberry.wordpress.com/2007/03/29/breaking-superfasthash/
-
 namespace Genbox.FastHash.SuperFastHash;
 
 public static class SuperFastHash32Unsafe

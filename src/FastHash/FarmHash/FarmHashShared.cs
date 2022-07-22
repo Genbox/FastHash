@@ -2,7 +2,7 @@
 
 namespace Genbox.FastHash.FarmHash;
 
-internal static class FarmHash
+internal static class FarmHashShared
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static uint Mur(uint a, uint h)

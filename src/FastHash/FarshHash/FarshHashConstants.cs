@@ -2,19 +2,15 @@
 
 internal static class FarshHashConstants
 {
-    internal const int FARSH_MAX_HASHES = 32; /* number of 32-bit hashes supported by the built-in key */
-    internal const int FARSH_BASE_KEY_SIZE = 1024; /* size of user-supplied key required to compute 32-bit hash with index 0 */
-    internal const int FARSH_EXTRA_KEY_SIZE = 16; /* extra bytes required to compute 32-bit hash with every next index */
-    //internal const int FARSH_BASE_KEY_ALIGNMENT = 16; /* user-supplied key should be aligned to this size, otherwise SSE2 code may fail. For maximum speed, it's recommended to align key to 64 bytes. */
+    private const int FARSH_BASE_KEY_SIZE = 1024; /* size of user-supplied key required to compute 32-bit hash with index 0 */
 
     internal const int STRIPE = FARSH_BASE_KEY_SIZE;
     internal const int STRIPE_ELEMENTS = STRIPE / sizeof(uint); /* should be power of 2 due to use of 'x % STRIPE_ELEMENTS' below */
-    //internal const int EXTRA_ELEMENTS = (((FARSH_MAX_HASHES - 1) * FARSH_EXTRA_KEY_SIZE) / sizeof(uint));
 
-    internal const ulong PRIME64_1 = 11400714785074694791UL;
-    internal const ulong PRIME64_2 = 14029467366897019727UL;
-    internal const ulong PRIME64_3 = 1609587929392839161UL;
-    internal const ulong PRIME64_4 = 9650029242287828579UL;
+    internal const ulong PRIME64_1 = 0x9E3779B185EBCA87UL;
+    internal const ulong PRIME64_2 = 0xC2B2AE3D27D4EB4FUL;
+    internal const ulong PRIME64_3 = 0x165667B19E3779F9UL;
+    internal const ulong PRIME64_4 = 0x85EBCA77C2B2AE63UL;
 
     internal static readonly uint[] FARSH_KEYS =
     {
