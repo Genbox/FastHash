@@ -6,7 +6,7 @@ namespace Genbox.FastHash.FNVHash;
 /// <summary>
 /// Fowler–Noll–Vo hash implementation
 /// </summary>
-public static class FNV1A32Unsafe
+public static class FNV1a32Unsafe
 {
     public static unsafe uint ComputeHash(byte* data, int length)
     {

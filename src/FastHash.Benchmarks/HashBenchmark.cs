@@ -14,6 +14,8 @@ using Genbox.FastHash.xxHash;
 namespace Genbox.FastHash.Benchmarks;
 
 [MbPrSecColumn]
+[RankColumn]
+[Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [InProcess]
 public class HashBenchmark : IDisposable
 {
@@ -113,6 +115,12 @@ public class HashBenchmark : IDisposable
 
     [Benchmark]
     public unsafe ulong xx2Hash64UnsafeTest() => xx2Hash64Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark]
+    public unsafe ulong xx3Hash64UnsafeTest() => xx3Hash64Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark]
+    public unsafe Uint128 xx3Hash128UnsafeTest() => xx3Hash128Unsafe.ComputeHash(_ptr, _testData.Length);
 
     private byte[] GetRandomBytes(int count)
     {

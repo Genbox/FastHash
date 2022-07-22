@@ -103,13 +103,7 @@ public static class xx2Hash64
             len--;
         }
 
-        h64 ^= h64 >> 33;
-        h64 *= xxHashConstants.PRIME64_2;
-        h64 ^= h64 >> 29;
-        h64 *= xxHashConstants.PRIME64_3;
-        h64 ^= h64 >> 32;
-
-        return h64;
+        return xxHashShared.XXH64_avalanche(h64);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

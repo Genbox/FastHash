@@ -49,11 +49,13 @@ public class GeneralTests
         yield return new object[] { nameof(FarmHash64), () => FarmHash64.ComputeHash(_data), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A } };
         yield return new object[] { nameof(SipHash64), () => SipHash64.ComputeHash(_data), new byte[] { 0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97 } };
         yield return new object[] { nameof(xx2Hash64), () => xx2Hash64.ComputeHash(_data), new byte[] { 0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE } };
+        yield return new object[] { nameof(xx3Hash64), () => xx3Hash64.ComputeHash(_data), new byte[] { 0xBF, 0x39, 0xFF, 0xB1, 0xB7, 0xF4, 0x3B, 0xC3 } };
     }
 
     public static IEnumerable<object[]> CreateAlgorithms128()
     {
         yield return new object[] { nameof(MurmurHash128), () => MurmurHash128.ComputeHash(_data), new byte[] { 0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67 } };
+        yield return new object[] { nameof(xx3Hash128), () => xx3Hash128.ComputeHash(_data), new byte[] { 106, 215, 124, 20, 15, 9, 111, 192, 223, 172, 108, 92, 53, 155, 47, 19 } };
     }
 
     public static unsafe ICollection<object[]> CreateAlgorithmsUnsafe32()
@@ -76,6 +78,7 @@ public class GeneralTests
             new object[] { nameof(FarmHash64Unsafe), () => FarmHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A } },
             new object[] { nameof(SipHash64Unsafe), () => SipHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97 } },
             new object[] { nameof(xx2Hash64Unsafe), () => xx2Hash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE } },
+            new object[] { nameof(xx3Hash64Unsafe), () => xx3Hash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xBF, 0x39, 0xFF, 0xB1, 0xB7, 0xF4, 0x3B, 0xC3 } }
         };
     }
 
@@ -84,6 +87,7 @@ public class GeneralTests
         return new[]
         {
             new object[] { nameof(MurmurHash128Unsafe), () => MurmurHash128Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67 } },
+            new object[] { nameof(xx3Hash128Unsafe), () => xx3Hash128Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 106, 215, 124, 20, 15, 9, 111, 192, 223, 172, 108, 92, 53, 155, 47, 19 } }
         };
     }
 
