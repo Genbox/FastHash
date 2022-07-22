@@ -8,6 +8,13 @@ namespace Genbox.FastHash.Benchmarks.Code;
 
 public class MbPrSecColumn : IColumn
 {
+    private readonly int _size;
+
+    public MbPrSecColumn(int size)
+    {
+        _size = size;
+    }
+
     public string Id => nameof(MbPrSecColumn);
     public string ColumnName => "MiB/s";
 
@@ -19,7 +26,11 @@ public class MbPrSecColumn : IColumn
             return "?";
 
         //Number of operations as determined by the Count parameter
-        int size = int.Parse(benchmarkCase.Parameters["Size"].ToString()!);
+
+        int size = _size;
+
+        if (size == 0)
+            size = int.Parse(benchmarkCase.Parameters["Size"].ToString()!, NumberFormatInfo.InvariantInfo);
 
         //Mean is in nanoseconds, which is 1.000.000.000x less than a second
         double time = stats.Mean / 1000 / 1000 / 1000;
