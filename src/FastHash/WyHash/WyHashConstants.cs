@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastHash.wyHash;
+﻿namespace Genbox.FastHash.WyHash;
 
 internal class WyHashConstants
 {

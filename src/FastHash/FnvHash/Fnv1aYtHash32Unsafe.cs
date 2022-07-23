@@ -2,7 +2,7 @@
 //Source: https://github.com/k0dai/fsbench-density/blob/cb719fdb07354e0c39a255d8d12f3cbd50b44406/src/codecs/sanmayce.c
 //A FNV1a variant created by Georgi (Sanmayce)
 
-namespace Genbox.FastHash.FNVHash;
+namespace Genbox.FastHash.FnvHash;
 
 /// <summary>
 /// FNV1a-YoshimitsuTRIAD 32bit version

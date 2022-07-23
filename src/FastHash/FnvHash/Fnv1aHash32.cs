@@ -3,7 +3,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace Genbox.FastHash.FNVHash;
+namespace Genbox.FastHash.FnvHash;
 
 /// <summary>
 /// Fowler–Noll–Vo hash implementation

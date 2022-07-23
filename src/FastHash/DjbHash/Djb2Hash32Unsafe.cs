@@ -1,7 +1,7 @@
 ﻿//Ported to C# by Ian Qvist
 //Source: http://www.cse.yorku.ca/~oz/hash.html
 
-namespace Genbox.FastHash.DJBHash;
+namespace Genbox.FastHash.DjbHash;
 
 public static class Djb2Hash32Unsafe
 {

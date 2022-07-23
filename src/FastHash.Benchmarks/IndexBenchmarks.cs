@@ -1,10 +1,10 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using Genbox.FastHash.Benchmarks.Code;
-using Genbox.FastHash.DJBHash;
-using Genbox.FastHash.FNVHash;
-using Genbox.FastHash.wyHash;
-using Genbox.FastHash.xxHash;
+using Genbox.FastHash.DjbHash;
+using Genbox.FastHash.FnvHash;
+using Genbox.FastHash.WyHash;
+using Genbox.FastHash.XxHash;
 
 namespace Genbox.FastHash.Benchmarks;
 

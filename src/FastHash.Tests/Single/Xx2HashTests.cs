@@ -1,4 +1,4 @@
-﻿using Genbox.FastHash.xxHash;
+﻿using Genbox.FastHash.XxHash;
 using Xunit;
 
 namespace Genbox.FastHash.Tests.Single;

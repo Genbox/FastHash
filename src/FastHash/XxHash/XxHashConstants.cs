@@ -37,7 +37,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 
-namespace Genbox.FastHash.xxHash;
+namespace Genbox.FastHash.XxHash;
 
 internal static class XxHashConstants
 {

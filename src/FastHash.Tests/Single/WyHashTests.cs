@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Genbox.FastHash.wyHash;
+using Genbox.FastHash.WyHash;
 using Xunit;
 
 namespace Genbox.FastHash.Tests.Single;

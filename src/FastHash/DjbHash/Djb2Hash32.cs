@@ -3,7 +3,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace Genbox.FastHash.DJBHash;
+namespace Genbox.FastHash.DjbHash;
 
 public static class Djb2Hash32
 {

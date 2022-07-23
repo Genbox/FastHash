@@ -2,16 +2,16 @@ using System.Runtime.InteropServices;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using Genbox.FastHash.Benchmarks.Code;
-using Genbox.FastHash.DJBHash;
+using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FarshHash;
-using Genbox.FastHash.FNVHash;
-using Genbox.FastHash.Marvin;
+using Genbox.FastHash.FnvHash;
+using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MurmurHash;
 using Genbox.FastHash.SipHash;
 using Genbox.FastHash.SuperFastHash;
-using Genbox.FastHash.wyHash;
-using Genbox.FastHash.xxHash;
+using Genbox.FastHash.WyHash;
+using Genbox.FastHash.XxHash;
 
 namespace Genbox.FastHash.Benchmarks;
 

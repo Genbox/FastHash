@@ -2,7 +2,7 @@
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
-namespace Genbox.FastHash.xxHash;
+namespace Genbox.FastHash.XxHash;
 
 internal static class XxHashShared
 {

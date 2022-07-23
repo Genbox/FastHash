@@ -1,4 +1,4 @@
-namespace Genbox.FastHash.xxHash;
+namespace Genbox.FastHash.XxHash;
 
 public static class Xx3Hash64
 {

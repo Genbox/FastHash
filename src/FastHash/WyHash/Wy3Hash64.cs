@@ -1,4 +1,4 @@
-﻿//#define WYHASH_CONDOM
+//#define WYHASH_CONDOM
 
 //WYHASH_CONDOM protections produce different results:
 //1: normal valid behavior
@@ -7,7 +7,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.X86;
 
-namespace Genbox.FastHash.wyHash;
+namespace Genbox.FastHash.WyHash;
 
 public class Wy3Hash64
 {

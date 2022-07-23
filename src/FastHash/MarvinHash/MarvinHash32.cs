@@ -5,7 +5,7 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Genbox.FastHash.Marvin;
+namespace Genbox.FastHash.MarvinHash;
 
 public static class MarvinHash32
 {

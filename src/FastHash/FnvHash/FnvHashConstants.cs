@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastHash.FNVHash;
+﻿namespace Genbox.FastHash.FnvHash;
 
 internal static class FnvHashConstants
 {
