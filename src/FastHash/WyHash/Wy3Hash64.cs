@@ -1,4 +1,4 @@
-//#define WYHASH_CONDOM
+﻿//#define WYHASH_CONDOM
 
 //WYHASH_CONDOM protections produce different results:
 //1: normal valid behavior
@@ -33,11 +33,8 @@ public class Wy3Hash64
         {
             if (len >= 4)
             {
-                uint offset = (len >> 3) << 2;
-                a = ((ulong)Utilities.Read32(data) << 32) | Utilities.Read32(data, offset);
-                uint offset1 = len - 4;
-                uint offset2 = len - 4 - ((len >> 3) << 2);
-                b = ((ulong)Utilities.Read32(data, offset1) << 32) | Utilities.Read32(data, offset2);
+                a = ((ulong)Utilities.Read32(data) << 32) | Utilities.Read32(data, (len >> 3) << 2);
+                b = ((ulong)Utilities.Read32(data, len - 4) << 32) | Utilities.Read32(data, len - 4 - ((len >> 3) << 2));
             }
             else if (len > 0)
             {
@@ -60,14 +57,9 @@ public class Wy3Hash64
                 ulong see1 = seed, see2 = seed;
                 do
                 {
-                    uint offset1 = offset + 8;
-                    seed = _wymix(Utilities.Read64(data, offset) ^ secret[1], Utilities.Read64(data, offset1) ^ seed);
-                    uint offset2 = offset + 16;
-                    uint offset3 = offset + 24;
-                    see1 = _wymix(Utilities.Read64(data, offset2) ^ secret[2], Utilities.Read64(data, offset3) ^ see1);
-                    uint offset4 = offset + 32;
-                    uint offset5 = offset + 40;
-                    see2 = _wymix(Utilities.Read64(data, offset4) ^ secret[3], Utilities.Read64(data, offset5) ^ see2);
+                    seed = _wymix(Utilities.Read64(data, offset) ^ secret[1], Utilities.Read64(data, offset + 8) ^ seed);
+                    see1 = _wymix(Utilities.Read64(data, offset + 16) ^ secret[2], Utilities.Read64(data, offset + 24) ^ see1);
+                    see2 = _wymix(Utilities.Read64(data, offset + 32) ^ secret[3], Utilities.Read64(data, offset + 40) ^ see2);
                     offset += 48;
                     i -= 48;
                 } while (i > 48);
@@ -80,10 +72,8 @@ public class Wy3Hash64
                 i -= 16;
                 offset += 16;
             }
-            uint offset6 = offset + i - 16;
-            a = Utilities.Read64(data, offset6);
-            uint offset7 = offset + i - 8;
-            b = Utilities.Read64(data, offset7);
+            a = Utilities.Read64(data, offset + i - 16);
+            b = Utilities.Read64(data, offset + i - 8);
         }
         return _wymix(secret[1] ^ len, _wymix(a ^ secret[1], b ^ seed));
     }
