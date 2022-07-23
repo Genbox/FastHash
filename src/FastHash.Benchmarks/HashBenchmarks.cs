@@ -21,7 +21,6 @@ namespace Genbox.FastHash.Benchmarks;
 [InProcess]
 public class HashBenchmarks : IDisposable
 {
-    private readonly Random _rng = new Random(42);
     private unsafe byte* _ptr;
     private byte[] _testData = null!;
 
@@ -37,7 +36,7 @@ public class HashBenchmarks : IDisposable
     [GlobalSetup]
     public unsafe void Setup()
     {
-        _testData = GetRandomBytes(Size);
+        _testData = BenchmarkHelper.GetRandomBytes(Size);
         _ptr = (byte*)NativeMemory.Alloc((nuint)Size);
 
         for (int i = 0; i < _testData.Length; i++)
@@ -130,14 +129,4 @@ public class HashBenchmarks : IDisposable
 
     [Benchmark]
     public unsafe ulong Wy3Hash64UnsafeTest() => Wy3Hash64Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    private byte[] GetRandomBytes(int count)
-    {
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count), "Number of bytes cannot be negative.");
-
-        byte[] bytes = GC.AllocateUninitializedArray<byte>(count);
-        _rng.NextBytes(bytes);
-        return bytes;
-    }
 }
