@@ -5,7 +5,6 @@
 //2: extra protection against entropy loss (probability=2^-63), aka. "blind multiplication"
 
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace Genbox.FastHash.WyHash;
 
@@ -15,9 +14,6 @@ public class Wy3Hash64Unsafe
     {
         fixed (ulong* secret = WyHashConstants.DefaultSecret)
         {
-            GCHandle handle = GCHandle.Alloc(WyHashConstants.DefaultSecret, GCHandleType.Pinned);
-            GCHandle.ToIntPtr(handle);
-
             uint len = (uint)length;
             seed ^= secret[0];
             ulong a, b;
