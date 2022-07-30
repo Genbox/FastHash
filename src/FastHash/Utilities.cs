@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+using System.Buffers.Binary;
+using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash;
@@ -27,53 +29,36 @@ internal static class Utilities
     internal static unsafe ulong Read64(byte* ptr, int offset = 0) => *(ulong*)(ptr + offset);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void Write64(byte* ptr, ulong value)
-    {
-        *(ulong*)ptr = value;
-    }
+    internal static unsafe void Write64(byte* ptr, ulong value) => *(ulong*)ptr = value;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Swap<T>(ref T a, ref T b) => (a, b) = (b, a);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint RotateRightCheck(uint x, byte r) => r == 0 ? x : RotateRight(x, r);
+    internal static uint ByteSwap(uint input) => BinaryPrimitives.ReverseEndianness(input);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong RotateRightCheck(ulong x, byte r) => r == 0 ? x : RotateRight(x, r);
+    internal static ulong ByteSwap(ulong input) => BinaryPrimitives.ReverseEndianness(input);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint RotateRight(uint x, byte r) => BitOperations.RotateRight(x, r);
+    internal static uint RotateRight(uint x, byte r)
+    {
+        Debug.Assert(r != 0);
+        return BitOperations.RotateRight(x, r);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong RotateRight(ulong x, byte r) => BitOperations.RotateRight(x, r);
+    internal static ulong RotateRight(ulong x, byte r)
+    {
+        Debug.Assert(r != 0);
+        return BitOperations.RotateRight(x, r);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static uint RotateLeft(uint x, byte r) => BitOperations.RotateLeft(x, r);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong RotateLeft(ulong x, byte r) => BitOperations.RotateLeft(x, r);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint FMix(uint h)
-    {
-        h ^= h >> 16;
-        h *= 0x85ebca6b;
-        h ^= h >> 13;
-        h *= 0xc2b2ae35;
-        h ^= h >> 16;
-        return h;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong FMix(ulong h)
-    {
-        h ^= h >> 33;
-        h *= 0xff51afd7ed558ccd;
-        h ^= h >> 33;
-        h *= 0xc4ceb9fe1a85ec53;
-        h ^= h >> 33;
-        return h;
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong XXH_swap64(ulong x) => ((x << 56) & 0xff00000000000000UL) |
