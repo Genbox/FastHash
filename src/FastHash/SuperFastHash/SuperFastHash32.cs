@@ -19,8 +19,8 @@ public static class SuperFastHash32
 
         for (; length > 0; length--)
         {
-            hash += Utilities.Read16(data, index);
-            tmp = (uint)((Utilities.Read16(data, index + 2) << 11) ^ hash);
+            hash += Read16(data, index);
+            tmp = (uint)((Read16(data, index + 2) << 11) ^ hash);
             hash = (hash << 16) ^ tmp;
             index += 2 * sizeof(ushort);
             hash += hash >> 11;
@@ -29,13 +29,13 @@ public static class SuperFastHash32
         switch (rem)
         {
             case 3:
-                hash += Utilities.Read16(data, index);
+                hash += Read16(data, index);
                 hash ^= hash << 16;
                 hash ^= (uint)(data[index + sizeof(ushort)] << 18);
                 hash += hash >> 11;
                 break;
             case 2:
-                hash += Utilities.Read16(data, index);
+                hash += Read16(data, index);
                 hash ^= hash << 11;
                 hash += hash >> 17;
                 break;

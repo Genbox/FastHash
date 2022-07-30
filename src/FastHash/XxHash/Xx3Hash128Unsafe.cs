@@ -69,8 +69,8 @@ public static class Xx3Hash128Unsafe
         if (len != 0) return XXH3_len_1to3_128b(input, len, secret, seed);
         {
             Uint128 h128;
-            ulong bitflipl = Utilities.Read64(secret + 64) ^ Utilities.Read64(secret + 72);
-            ulong bitfliph = Utilities.Read64(secret + 80) ^ Utilities.Read64(secret + 88);
+            ulong bitflipl = Read64(secret + 64) ^ Read64(secret + 72);
+            ulong bitfliph = Read64(secret + 80) ^ Read64(secret + 88);
             h128.Low = XxHashShared.XXH64_avalanche(seed ^ bitflipl);
             h128.High = XxHashShared.XXH64_avalanche(seed ^ bitfliph);
             return h128;
@@ -116,10 +116,10 @@ public static class Xx3Hash128Unsafe
 
     private static unsafe Uint128 XXH3_len_9to16_128b(byte* input, int len, byte* secret, ulong seed)
     {
-        ulong bitflipl = (Utilities.Read64(secret + 32) ^ Utilities.Read64(secret + 40)) - seed;
-        ulong bitfliph = (Utilities.Read64(secret + 48) ^ Utilities.Read64(secret + 56)) + seed;
-        ulong input_lo = Utilities.Read64(input);
-        ulong input_hi = Utilities.Read64(input + len - 8);
+        ulong bitflipl = (Read64(secret + 32) ^ Read64(secret + 40)) - seed;
+        ulong bitfliph = (Read64(secret + 48) ^ Read64(secret + 56)) + seed;
+        ulong input_lo = Read64(input);
+        ulong input_hi = Read64(input + len - 8);
         Uint128 m128 = XxHashShared.XXH_mult64to128(input_lo ^ input_hi ^ bitflipl, XxHashConstants.PRIME64_1);
 
         /*
@@ -142,7 +142,7 @@ public static class Xx3Hash128Unsafe
         m128.High += input_hi + XxHashShared.XXH_mult32to64((uint)input_hi, XxHashConstants.PRIME32_2 - 1);
 #endif
 
-        m128.Low ^= Utilities.XXH_swap64(m128.High);
+        m128.Low ^= XXH_swap64(m128.High);
 
         Uint128 h128 = XxHashShared.XXH_mult64to128(m128.Low, XxHashConstants.PRIME64_2);
         h128.High += m128.High * XxHashConstants.PRIME64_2;
@@ -170,10 +170,10 @@ public static class Xx3Hash128Unsafe
         byte c3 = input[len - 1];
 
         uint combinedl = ((uint)c1 << 16) | ((uint)c2 << 24) | ((uint)c3 << 0) | ((uint)len << 8);
-        uint combinedh = Utilities.RotateLeft(Utilities.XXH_swap32(combinedl), 13);
+        uint combinedh = RotateLeft(XXH_swap32(combinedl), 13);
 
-        ulong bitflipl = (Utilities.Read32(secret) ^ Utilities.Read32(secret + 4)) + seed;
-        ulong bitfliph = (Utilities.Read32(secret + 8) ^ Utilities.Read32(secret + 12)) - seed;
+        ulong bitflipl = (Read32(secret) ^ Read32(secret + 4)) + seed;
+        ulong bitfliph = (Read32(secret + 8) ^ Read32(secret + 12)) - seed;
         ulong keyed_lo = combinedl ^ bitflipl;
         ulong keyed_hi = combinedh ^ bitfliph;
         Uint128 h128;
@@ -188,12 +188,12 @@ public static class Xx3Hash128Unsafe
         // XXH_ASSERT(secret != NULL);
         // XXH_ASSERT(4 <= len && len <= 8);
 
-        seed ^= (ulong)Utilities.XXH_swap32((uint)seed) << 32;
+        seed ^= (ulong)XXH_swap32((uint)seed) << 32;
 
-        uint input_lo = Utilities.Read32(input);
-        uint input_hi = Utilities.Read32(input + len - 4);
+        uint input_lo = Read32(input);
+        uint input_hi = Read32(input + len - 4);
         ulong input_64 = input_lo + ((ulong)input_hi << 32);
-        ulong bitflip = (Utilities.Read64(secret + 16) ^ Utilities.Read64(secret + 24)) + seed;
+        ulong bitflip = (Read64(secret + 16) ^ Read64(secret + 24)) + seed;
         ulong keyed = input_64 ^ bitflip;
 
         Uint128 m128 = XxHashShared.XXH_mult64to128(keyed, XxHashConstants.PRIME64_1 + ((ulong)len << 2));
@@ -246,9 +246,9 @@ public static class Xx3Hash128Unsafe
     private static unsafe Uint128 XXH128_mix32B(Uint128 acc, byte* input_1, byte* input_2, byte* secret, ulong seed)
     {
         acc.Low += XxHashShared.XXH3_mix16B(input_1, secret + 0, seed);
-        acc.Low ^= Utilities.Read64(input_2) + Utilities.Read64(input_2, 8);
+        acc.Low ^= Read64(input_2) + Read64(input_2, 8);
         acc.High += XxHashShared.XXH3_mix16B(input_2, secret + 16, seed);
-        acc.High ^= Utilities.Read64(input_1) + Utilities.Read64(input_1, 8);
+        acc.High ^= Read64(input_1) + Read64(input_1, 8);
         return acc;
     }
 }

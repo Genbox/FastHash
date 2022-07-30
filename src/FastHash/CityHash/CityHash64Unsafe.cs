@@ -14,7 +14,7 @@ public static class CityHash64Unsafe
     public static unsafe ulong ComputeHash(byte* s, int length, ulong seed)
     {
         uint len = (uint)length;
-        return CityHash64WithSeeds(s, len, k2, seed);
+        return CityHash64WithSeeds(s, len, K2, seed);
     }
 
     public static unsafe ulong ComputeHash(byte* s, int length, ulong seed1, ulong seed2)
@@ -40,25 +40,25 @@ public static class CityHash64Unsafe
         ulong y = Read64(s + len - 16) + Read64(s + len - 56);
         ulong z = HashLen16(Read64(s + len - 48) + len, Read64(s + len - 24));
         Uint128 v = WeakHashLen32WithSeeds(s + len - 64, len, z);
-        Uint128 w = WeakHashLen32WithSeeds(s + len - 32, y + k1, x);
-        x = x * k1 + Read64(s);
+        Uint128 w = WeakHashLen32WithSeeds(s + len - 32, y + K1, x);
+        x = x * K1 + Read64(s);
 
         // Decrease len to the nearest multiple of 64, and operate on 64-byte chunks.
         len = (len - 1) & ~63u;
         do
         {
-            x = RotateRight(x + y + v.Low + Read64(s + 8), 37) * k1;
-            y = RotateRight(y + v.High + Read64(s + 48), 42) * k1;
+            x = RotateRight(x + y + v.Low + Read64(s + 8), 37) * K1;
+            y = RotateRight(y + v.High + Read64(s + 48), 42) * K1;
             x ^= w.High;
             y += v.Low + Read64(s + 40);
-            z = RotateRight(z + w.Low, 33) * k1;
-            v = WeakHashLen32WithSeeds(s, v.High * k1, x + w.Low);
+            z = RotateRight(z + w.Low, 33) * K1;
+            v = WeakHashLen32WithSeeds(s, v.High * K1, x + w.Low);
             w = WeakHashLen32WithSeeds(s + 32, z + w.High, y + Read64(s + 16));
             Swap(ref z, ref x);
             s += 64;
             len -= 64;
         } while (len != 0);
-        return HashLen16(HashLen16(v.Low, w.Low) + ShiftMix(y) * k1 + z,
+        return HashLen16(HashLen16(v.Low, w.Low) + ShiftMix(y) * K1 + z,
             HashLen16(v.High, w.High) + x);
     }
 
@@ -70,24 +70,24 @@ public static class CityHash64Unsafe
     // This probably works well for 16-byte strings as well, but it may be overkill in that case.
     private static unsafe ulong HashLen17to32(byte* s, uint len)
     {
-        ulong mul = k2 + len * 2;
-        ulong a = Read64(s) * k1;
+        ulong mul = K2 + len * 2;
+        ulong a = Read64(s) * K1;
         ulong b = Read64(s + 8);
         ulong c = Read64(s + len - 8) * mul;
-        ulong d = Read64(s + len - 16) * k2;
+        ulong d = Read64(s + len - 16) * K2;
         return HashLen16(RotateRight(a + b, 43) + RotateRight(c, 30) + d,
-            a + RotateRight(b + k2, 18) + c, mul);
+            a + RotateRight(b + K2, 18) + c, mul);
     }
 
     // Return an 8-byte hash for 33 to 64 bytes.
     private static unsafe ulong HashLen33to64(byte* s, uint len)
     {
-        ulong mul = k2 + len * 2;
-        ulong a = Read64(s) * k2;
+        ulong mul = K2 + len * 2;
+        ulong a = Read64(s) * K2;
         ulong b = Read64(s + 8);
         ulong c = Read64(s + len - 24);
         ulong d = Read64(s + len - 32);
-        ulong e = Read64(s + 16) * k2;
+        ulong e = Read64(s + 16) * K2;
         ulong f = Read64(s + 24) * 9;
         ulong g = Read64(s + len - 8);
         ulong h = Read64(s + len - 16) * mul;

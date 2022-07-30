@@ -1,6 +1,9 @@
 ﻿//Ported to C# by Ian Qvist
 //Source: https://github.com/aappleby/smhasher/
 
+using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
+using static Genbox.FastHash.MurmurHash.MurmurShared;
+
 namespace Genbox.FastHash.MurmurHash;
 
 public static class Murmur3Hash32Unsafe
@@ -17,12 +20,12 @@ public static class Murmur3Hash32Unsafe
         {
             k1 = blocks[i];
 
-            k1 *= MurmurHashConstants.C1_32;
-            k1 = Utilities.RotateLeft(k1, 15);
-            k1 *= MurmurHashConstants.C2_32;
+            k1 *= C1_32;
+            k1 = RotateLeft(k1, 15);
+            k1 *= C2_32;
 
             h1 ^= k1;
-            h1 = Utilities.RotateLeft(h1, 13);
+            h1 = RotateLeft(h1, 13);
             h1 = h1 * 5 + 0xe6546b64;
         }
 
@@ -42,15 +45,15 @@ public static class Murmur3Hash32Unsafe
                 break;
         }
 
-        k1 *= MurmurHashConstants.C1_32;
-        k1 = Utilities.RotateLeft(k1, 15);
-        k1 *= MurmurHashConstants.C2_32;
+        k1 *= C1_32;
+        k1 = RotateLeft(k1, 15);
+        k1 *= C2_32;
         h1 ^= k1;
 
         uint len = (uint)length;
 
         h1 ^= len;
-        h1 = Utilities.FMix(h1);
+        h1 = MurmurMix(h1);
 
         return h1;
     }

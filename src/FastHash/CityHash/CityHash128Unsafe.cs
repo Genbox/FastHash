@@ -7,7 +7,7 @@ public static class CityHash128Unsafe
 {
     public static unsafe Uint128 ComputeHash(byte* s, uint len)
     {
-        return len >= 16 ? CityHash128WithSeed(s + 16, len - 16, new Uint128(Read64(s), Read64(s + 8) + k0)) : CityHash128WithSeed(s, len, new Uint128(k0, k1));
+        return len >= 16 ? CityHash128WithSeed(s + 16, len - 16, new Uint128(Read64(s), Read64(s + 8) + K0)) : CityHash128WithSeed(s, len, new Uint128(K0, K1));
     }
 
     // A subroutine for CityHash128().  Returns a decent 128-bit hash for strings
@@ -20,23 +20,23 @@ public static class CityHash128Unsafe
         ulong d = 0;
         if (len <= 16)
         {
-            a = ShiftMix(a * k1) * k1;
-            c = b * k1 + HashLen0to16(s, len);
+            a = ShiftMix(a * K1) * K1;
+            c = b * K1 + HashLen0to16(s, len);
             d = ShiftMix(a + (len >= 8 ? Read64(s) : c));
         }
         else
         {
-            c = HashLen16(Read64(s + len - 8) + k1, a);
+            c = HashLen16(Read64(s + len - 8) + K1, a);
             d = HashLen16(b + len, c + Read64(s + len - 16));
             a += d;
             // len > 16 here, so do...while is safe
             do
             {
-                a ^= ShiftMix(Read64(s) * k1) * k1;
-                a *= k1;
+                a ^= ShiftMix(Read64(s) * K1) * K1;
+                a *= K1;
                 b ^= a;
-                c ^= ShiftMix(Read64(s + 8) * k1) * k1;
-                c *= k1;
+                c ^= ShiftMix(Read64(s + 8) * K1) * K1;
+                c *= K1;
                 d ^= c;
                 s += 16;
                 len -= 16;
@@ -57,51 +57,51 @@ public static class CityHash128Unsafe
         Uint128 v, w;
         ulong x = seed.Low;
         ulong y = seed.High;
-        ulong z = len * k1;
-        v.Low = RotateRight(y ^ k1, 49) * k1 + Read64(s);
-        v.High = RotateRight(v.Low, 42) * k1 + Read64(s + 8);
-        w.Low = RotateRight(y + z, 35) * k1 + x;
-        w.High = RotateRight(x + Read64(s + 88), 53) * k1;
+        ulong z = len * K1;
+        v.Low = RotateRight(y ^ K1, 49) * K1 + Read64(s);
+        v.High = RotateRight(v.Low, 42) * K1 + Read64(s + 8);
+        w.Low = RotateRight(y + z, 35) * K1 + x;
+        w.High = RotateRight(x + Read64(s + 88), 53) * K1;
 
         // This is the same inner loop as CityHash64(), manually unrolled.
         do
         {
-            x = RotateRight(x + y + v.Low + Read64(s + 8), 37) * k1;
-            y = RotateRight(y + v.High + Read64(s + 48), 42) * k1;
+            x = RotateRight(x + y + v.Low + Read64(s + 8), 37) * K1;
+            y = RotateRight(y + v.High + Read64(s + 48), 42) * K1;
             x ^= w.High;
             y += v.Low + Read64(s + 40);
-            z = RotateRight(z + w.Low, 33) * k1;
-            v = WeakHashLen32WithSeeds(s, v.High * k1, x + w.Low);
+            z = RotateRight(z + w.Low, 33) * K1;
+            v = WeakHashLen32WithSeeds(s, v.High * K1, x + w.Low);
             w = WeakHashLen32WithSeeds(s + 32, z + w.High, y + Read64(s + 16));
             Swap(ref z, ref x);
             s += 64;
-            x = RotateRight(x + y + v.Low + Read64(s + 8), 37) * k1;
-            y = RotateRight(y + v.High + Read64(s + 48), 42) * k1;
+            x = RotateRight(x + y + v.Low + Read64(s + 8), 37) * K1;
+            y = RotateRight(y + v.High + Read64(s + 48), 42) * K1;
             x ^= w.High;
             y += v.Low + Read64(s + 40);
-            z = RotateRight(z + w.Low, 33) * k1;
-            v = WeakHashLen32WithSeeds(s, v.High * k1, x + w.Low);
+            z = RotateRight(z + w.Low, 33) * K1;
+            v = WeakHashLen32WithSeeds(s, v.High * K1, x + w.Low);
             w = WeakHashLen32WithSeeds(s + 32, z + w.High, y + Read64(s + 16));
             Swap(ref z, ref x);
             s += 64;
             len -= 128;
         } while (len >= 128);
-        x += RotateRight(v.Low + z, 49) * k0;
-        y = y * k0 + RotateRight(w.High, 37);
-        z = z * k0 + RotateRight(w.Low, 27);
+        x += RotateRight(v.Low + z, 49) * K0;
+        y = y * K0 + RotateRight(w.High, 37);
+        z = z * K0 + RotateRight(w.Low, 27);
         w.Low *= 9;
-        v.Low *= k0;
+        v.Low *= K0;
         // If 0 < len < 128, hash up to 4 chunks of 32 bytes each from the end of s.
         for (uint tail_done = 0; tail_done < len;)
         {
             tail_done += 32;
-            y = RotateRight(x + y, 42) * k0 + v.High;
+            y = RotateRight(x + y, 42) * K0 + v.High;
             w.Low += Read64(s + len - tail_done + 16);
-            x = x * k0 + w.Low;
+            x = x * K0 + w.Low;
             z += w.High + Read64(s + len - tail_done);
             w.High += v.Low;
             v = WeakHashLen32WithSeeds(s + len - tail_done, v.Low + z, v.High);
-            v.Low *= k0;
+            v.Low *= K0;
         }
         // At this point our 56 bytes of state should contain more than
         // enough information for a strong 128-bit hash.  We use two

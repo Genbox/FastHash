@@ -8,7 +8,7 @@ public class CityHash
     private const int DataSize = 1 << 20;
     private const int TestSize = 300;
     private const ulong Seed0 = 1234567;
-    private const ulong Seed1 = CityHashConstants.k0;
+    private const ulong Seed1 = CityHashConstants.K0;
 
     private readonly ulong[][] _testData =
     {
@@ -326,8 +326,8 @@ public class CityHash
             {
                 a += b;
                 b += a;
-                a = (a ^ (a >> 41)) * CityHashConstants.k0;
-                b = (b ^ (b >> 41)) * CityHashConstants.k0 + (ulong)i;
+                a = (a ^ (a >> 41)) * CityHashConstants.K0;
+                b = (b ^ (b >> 41)) * CityHashConstants.K0 + (ulong)i;
                 byte u = (byte)(b >> 37);
                 _data[i] = u;
             }

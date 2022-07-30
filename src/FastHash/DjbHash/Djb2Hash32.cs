@@ -2,6 +2,7 @@
 //Source: http://www.cse.yorku.ca/~oz/hash.html
 
 using System.Runtime.CompilerServices;
+using static Genbox.FastHash.DjbHash.DjbHashConstants;
 
 namespace Genbox.FastHash.DjbHash;
 
@@ -9,7 +10,7 @@ public static class Djb2Hash32
 {
     public static uint ComputeHash(byte[] data)
     {
-        uint hash = DjbHashConstants.InitHash;
+        uint hash = InitHash;
 
         for (int x = 0; x < data.Length; x++)
             hash = ((hash << 5) + hash) ^ data[x];
@@ -20,7 +21,7 @@ public static class Djb2Hash32
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ComputeIndex(uint input)
     {
-        uint hash = DjbHashConstants.InitHash;
+        uint hash = InitHash;
         hash = ((hash << 5) + hash) ^ input & 0xFF;
         hash = ((hash << 5) + hash) ^ (input >> 8) & 0xFF;
         hash = ((hash << 5) + hash) ^ (input >> 16) & 0xFF;

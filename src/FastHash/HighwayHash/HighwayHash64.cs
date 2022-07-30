@@ -111,10 +111,10 @@ public static class HighwayHash64
 
     private static void Permute(ulong[] v, ulong[] permuted)
     {
-        permuted[0] = Utilities.RotateRight(v[2], 0);
-        permuted[1] = Utilities.RotateRight(v[3], 0);
-        permuted[2] = Utilities.RotateRight(v[0], 0);
-        permuted[3] = Utilities.RotateRight(v[1], 0);
+        permuted[0] = RotateRight(v[2], 0);
+        permuted[1] = RotateRight(v[3], 0);
+        permuted[2] = RotateRight(v[0], 0);
+        permuted[3] = RotateRight(v[1], 0);
     }
 
     private static void PermuteAndUpdate()

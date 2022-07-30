@@ -10,9 +10,9 @@ internal static class CityHashShared
     internal static uint Mur(uint a, uint h)
     {
         // Helper from Murmur3 for combining two 32-bit values.
-        a *= FarmHashConstants.c1;
+        a *= FarmHashConstants.C1;
         a = RotateRight(a, 17);
-        a *= FarmHashConstants.c2;
+        a *= FarmHashConstants.C2;
         h ^= a;
         h = RotateRight(h, 19);
         return h * 5 + 0xe6546b64;
@@ -51,8 +51,8 @@ internal static class CityHashShared
     {
         if (len >= 8)
         {
-            ulong mul = k2 + len * 2;
-            ulong a = Read64(s) + k2;
+            ulong mul = K2 + len * 2;
+            ulong a = Read64(s) + K2;
             ulong b = Read64(s + len - 8);
             ulong c = RotateRight(b, 37) * mul + a;
             ulong d = (RotateRight(a, 25) + b) * mul;
@@ -60,7 +60,7 @@ internal static class CityHashShared
         }
         if (len >= 4)
         {
-            ulong mul = k2 + len * 2;
+            ulong mul = K2 + len * 2;
             ulong a = Read32(s);
             return HashLen16(len + (a << 3), Read32(s + len - 4), mul);
         }
@@ -71,9 +71,9 @@ internal static class CityHashShared
             byte c = s[len - 1];
             uint y = (a + (uint)b) << 8;
             uint z = (len + c) << 2;
-            return ShiftMix((y * k2) ^ (z * k0)) * k2;
+            return ShiftMix((y * K2) ^ (z * K0)) * K2;
         }
-        return k2;
+        return K2;
     }
 
     // Return a 16-byte hash for s[0] ... s[31], a, and b.  Quick and dirty.

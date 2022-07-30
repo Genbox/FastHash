@@ -16,8 +16,8 @@ public static class SuperFastHash32Unsafe
 
         for (; length > 0; length--)
         {
-            hash += Utilities.Read16(data);
-            tmp = (uint)((Utilities.Read16(data + 2) << 11) ^ hash);
+            hash += Read16(data);
+            tmp = (uint)((Read16(data + 2) << 11) ^ hash);
             hash = (hash << 16) ^ tmp;
             data += 2 * sizeof(ushort);
             hash += hash >> 11;
@@ -26,13 +26,13 @@ public static class SuperFastHash32Unsafe
         switch (rem)
         {
             case 3:
-                hash += Utilities.Read16(data);
+                hash += Read16(data);
                 hash ^= hash << 16;
                 hash ^= (uint)(data[sizeof(ushort)] << 18);
                 hash += hash >> 11;
                 break;
             case 2:
-                hash += Utilities.Read16(data);
+                hash += Read16(data);
                 hash ^= hash << 11;
                 hash += hash >> 17;
                 break;

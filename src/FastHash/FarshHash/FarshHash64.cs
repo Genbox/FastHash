@@ -2,6 +2,7 @@
 //Source: https://github.com/Bulat-Ziganshin/FARSH
 
 using System.Runtime.CompilerServices;
+using static Genbox.FastHash.FarshHash.FarshHashConstants;
 
 namespace Genbox.FastHash.FarshHash;
 
@@ -13,12 +14,12 @@ public static class FarshHash64
         uint length = (uint)data.Length;
         uint offset = 0;
 
-        while (length >= FarshHashConstants.STRIPE)
+        while (length >= STRIPE)
         {
             ulong h = farsh_full_block(data, offset);
             sum = farsh_combine(sum, h);
-            offset += FarshHashConstants.STRIPE;
-            length -= FarshHashConstants.STRIPE;
+            offset += STRIPE;
+            length -= STRIPE;
         }
 
         if (length > 0)
@@ -27,7 +28,7 @@ public static class FarshHash64
             sum = farsh_combine(sum, h);
         }
 
-        return farsh_final(sum) ^ FarshHashConstants.FARSH_KEYS[0]; /* ensure that zeroes at the end of data will affect the hash value */
+        return farsh_final(sum) ^ FARSH_KEYS[0]; /* ensure that zeroes at the end of data will affect the hash value */
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -38,11 +39,11 @@ public static class FarshHash64
         ulong sum = 0;
         uint i;
         uint j = 0;
-        for (i = 0; i < FarshHashConstants.STRIPE; i += 8, j += 2)
+        for (i = 0; i < STRIPE; i += 8, j += 2)
         {
-            uint val1 = Utilities.Read32(data, offset + i);
-            uint val2 = Utilities.Read32(data, offset + i + sizeof(uint));
-            sum += (val1 + FarshHashConstants.FARSH_KEYS[j]) * (ulong)(val2 + FarshHashConstants.FARSH_KEYS[j + 1]);
+            uint val1 = Read32(data, offset + i);
+            uint val2 = Read32(data, offset + i + sizeof(uint));
+            sum += (val1 + FARSH_KEYS[j]) * (ulong)(val2 + FARSH_KEYS[j + 1]);
         }
 
         return sum;
@@ -58,9 +59,9 @@ public static class FarshHash64
 
         for (; chunks > 0; chunks--)
         {
-            uint val1 = Utilities.Read32(data, offset);
-            uint val2 = Utilities.Read32(data, offset + sizeof(uint));
-            sum += (val1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(val2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
+            uint val1 = Read32(data, offset);
+            uint val2 = Read32(data, offset + sizeof(uint));
+            sum += (val1 + FARSH_KEYS[keyindex]) * (ulong)(val2 + FARSH_KEYS[keyindex + 1]);
             offset += 8;
             keyindex += 2;
         }
@@ -73,38 +74,38 @@ public static class FarshHash64
         switch (remaining)
         {
             case 7:
-                v1 = Utilities.Read32(data, offset);
+                v1 = Read32(data, offset);
                 offset += 4;
                 v2 = (uint)(data[0 + offset] | (data[1 + offset] << 8) | (data[2 + offset] << 16));
-                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
+                sum += (v1 + FARSH_KEYS[keyindex]) * (ulong)(v2 + FARSH_KEYS[keyindex + 1]);
                 break;
             case 6:
-                v1 = Utilities.Read32(data, offset);
+                v1 = Read32(data, offset);
                 offset += 4;
-                v2 = Utilities.Read16(data, offset);
-                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
+                v2 = Read16(data, offset);
+                sum += (v1 + FARSH_KEYS[keyindex]) * (ulong)(v2 + FARSH_KEYS[keyindex + 1]);
                 break;
             case 5:
-                v1 = Utilities.Read32(data, offset);
+                v1 = Read32(data, offset);
                 offset += 4;
                 v2 = data[offset];
-                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)(v2 + FarshHashConstants.FARSH_KEYS[keyindex + 1]);
+                sum += (v1 + FARSH_KEYS[keyindex]) * (ulong)(v2 + FARSH_KEYS[keyindex + 1]);
                 break;
             case 4:
-                v1 = Utilities.Read32(data, offset);
-                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
+                v1 = Read32(data, offset);
+                sum += (v1 + FARSH_KEYS[keyindex]) * (ulong)FARSH_KEYS[keyindex + 1];
                 break;
             case 3:
                 v1 = (uint)(data[0 + offset] | (data[1 + offset] << 8) | (data[2 + offset] << 16));
-                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
+                sum += (v1 + FARSH_KEYS[keyindex]) * (ulong)FARSH_KEYS[keyindex + 1];
                 break;
             case 2:
-                v1 = Utilities.Read16(data, offset);
-                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
+                v1 = Read16(data, offset);
+                sum += (v1 + FARSH_KEYS[keyindex]) * (ulong)FARSH_KEYS[keyindex + 1];
                 break;
             case 1:
                 v1 = data[offset];
-                sum += (v1 + FarshHashConstants.FARSH_KEYS[keyindex]) * (ulong)FarshHashConstants.FARSH_KEYS[keyindex + 1];
+                sum += (v1 + FARSH_KEYS[keyindex]) * (ulong)FARSH_KEYS[keyindex + 1];
                 break;
         }
 
@@ -114,11 +115,11 @@ public static class FarshHash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong farsh_combine(ulong sum, ulong h)
     {
-        h *= FarshHashConstants.PRIME64_2;
+        h *= PRIME64_2;
         h += h >> 31;
-        h *= FarshHashConstants.PRIME64_1;
+        h *= PRIME64_1;
         sum ^= h;
-        sum = (sum + (sum >> 27)) * FarshHashConstants.PRIME64_1 + FarshHashConstants.PRIME64_4;
+        sum = (sum + (sum >> 27)) * PRIME64_1 + PRIME64_4;
         return sum;
     }
 
@@ -126,9 +127,9 @@ public static class FarshHash64
     private static uint farsh_final(ulong sum)
     {
         sum ^= sum >> 33;
-        sum *= FarshHashConstants.PRIME64_2;
+        sum *= PRIME64_2;
         sum ^= sum >> 29;
-        sum *= FarshHashConstants.PRIME64_3;
+        sum *= PRIME64_3;
         return (uint)sum ^ (uint)(sum >> 32);
     }
 }

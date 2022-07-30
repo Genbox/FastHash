@@ -17,6 +17,7 @@
 //Source: https://github.com/veorq/SipHash
 
 using System.Runtime.CompilerServices;
+using static Genbox.FastHash.SipHash.SipHashConstants;
 
 namespace Genbox.FastHash.SipHash;
 
@@ -25,10 +26,10 @@ public static class SipHash64
     public static ulong ComputeHash(byte[] data, ulong seed0 = 0, ulong seed1 = 0, byte cRounds = 2, byte dRounds = 4)
     {
         int length = data.Length;
-        ulong v0 = SipHashConstants.v0Init;
-        ulong v1 = SipHashConstants.v1Init;
-        ulong v2 = SipHashConstants.v2Init;
-        ulong v3 = SipHashConstants.v3Init;
+        ulong v0 = v0Init;
+        ulong v1 = v1Init;
+        ulong v2 = v2Init;
+        ulong v3 = v3Init;
 
         int left = length & 7;
         ulong b = (ulong)length << 56;
@@ -43,7 +44,7 @@ public static class SipHash64
 
         for (i = 0; i < num; i++)
         {
-            ulong m = Utilities.Read64(data, 8 * i);
+            ulong m = Read64(data, 8 * i);
             v3 ^= m;
 
             for (int j = 0; j < cRounds; ++j)
@@ -97,21 +98,21 @@ public static class SipHash64
     private static void SipRound(ref ulong v0, ref ulong v1, ref ulong v2, ref ulong v3)
     {
         v0 += v1;
-        v1 = Utilities.RotateLeft(v1, 13);
+        v1 = RotateLeft(v1, 13);
         v1 ^= v0;
-        v0 = Utilities.RotateLeft(v0, 32);
+        v0 = RotateLeft(v0, 32);
 
         v2 += v3;
-        v3 = Utilities.RotateLeft(v3, 16);
+        v3 = RotateLeft(v3, 16);
         v3 ^= v2;
 
         v2 += v1;
-        v1 = Utilities.RotateLeft(v1, 17);
+        v1 = RotateLeft(v1, 17);
         v1 ^= v2;
-        v2 = Utilities.RotateLeft(v2, 32);
+        v2 = RotateLeft(v2, 32);
 
         v0 += v3;
-        v3 = Utilities.RotateLeft(v3, 21);
+        v3 = RotateLeft(v3, 21);
         v3 ^= v0;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
+using static Genbox.FastHash.XxHash.XxHashConstants;
 
 namespace Genbox.FastHash.XxHash;
 
@@ -46,9 +47,9 @@ internal static class XxHashShared
     internal static ulong XXH64_avalanche(ulong hash)
     {
         hash ^= hash >> 33;
-        hash *= XxHashConstants.PRIME64_2;
+        hash *= PRIME64_2;
         hash ^= hash >> 29;
-        hash *= XxHashConstants.PRIME64_3;
+        hash *= PRIME64_3;
         hash ^= hash >> 32;
         return hash;
     }
@@ -94,29 +95,29 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe ulong XXH3_mix2Accs(ulong* acc, byte* secret) => XXH3_mul128_fold64(acc[0] ^ Utilities.Read64(secret), acc[1] ^ Utilities.Read64(secret + 8));
+    private static unsafe ulong XXH3_mix2Accs(ulong* acc, byte* secret) => XXH3_mul128_fold64(acc[0] ^ Read64(secret), acc[1] ^ Read64(secret + 8));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static unsafe void XXH3_hashLong_internal_loop(ulong* acc, byte* input, int len, byte* secret, int secretSize, XXH3_f_accumulate_512 f_acc512, XXH3_f_scrambleAcc f_scramble)
     {
-        int nbStripesPerBlock = (secretSize - XxHashConstants.STRIPE_LEN) / XxHashConstants.SECRET_CONSUME_RATE;
-        int block_len = XxHashConstants.STRIPE_LEN * nbStripesPerBlock;
+        int nbStripesPerBlock = (secretSize - STRIPE_LEN) / SECRET_CONSUME_RATE;
+        int block_len = STRIPE_LEN * nbStripesPerBlock;
         int nb_blocks = (len - 1) / block_len;
 
         for (int n = 0; n < nb_blocks; n++)
         {
             XXH3_accumulate(acc, input + n * block_len, secret, nbStripesPerBlock, f_acc512);
-            f_scramble(acc, secret + secretSize - XxHashConstants.STRIPE_LEN);
+            f_scramble(acc, secret + secretSize - STRIPE_LEN);
         }
 
         /* last partial block */
         //  XXH_ASSERT(len > XXH_STRIPE_LEN);
-        int nbStripes = (len - 1 - block_len * nb_blocks) / XxHashConstants.STRIPE_LEN;
+        int nbStripes = (len - 1 - block_len * nb_blocks) / STRIPE_LEN;
         // XXH_ASSERT(nbStripes <= (secretSize / XXH_SECRET_CONSUME_RATE));
         XXH3_accumulate(acc, input + nb_blocks * block_len, secret, nbStripes, f_acc512);
 
-        byte* p = input + len - XxHashConstants.STRIPE_LEN;
-        f_acc512(acc, p, secret + secretSize - XxHashConstants.STRIPE_LEN - XxHashConstants.SECRET_LASTACC_START);
+        byte* p = input + len - STRIPE_LEN;
+        f_acc512(acc, p, secret + secretSize - STRIPE_LEN - SECRET_LASTACC_START);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -124,8 +125,8 @@ internal static class XxHashShared
     {
         for (int n = 0; n < nbStripes; n++)
         {
-            byte* inp = input + n * XxHashConstants.STRIPE_LEN;
-            f_acc512(acc, inp, secret + n * XxHashConstants.SECRET_CONSUME_RATE);
+            byte* inp = input + n * STRIPE_LEN;
+            f_acc512(acc, inp, secret + n * SECRET_CONSUME_RATE);
         }
     }
 
@@ -144,14 +145,14 @@ internal static class XxHashShared
         Vector256<uint> data_key0 = Avx2.Xor(data_vec0, key_vec0);
         Vector256<uint> data_key1 = Avx2.Xor(data_vec1, key_vec1);
 
-        Vector256<uint> data_key_lo0 = Avx2.Shuffle(data_key0, XxHashConstants.MM_SHUFFLE_0_3_0_1);
-        Vector256<uint> data_key_lo1 = Avx2.Shuffle(data_key1, XxHashConstants.MM_SHUFFLE_0_3_0_1);
+        Vector256<uint> data_key_lo0 = Avx2.Shuffle(data_key0, MM_SHUFFLE_0_3_0_1);
+        Vector256<uint> data_key_lo1 = Avx2.Shuffle(data_key1, MM_SHUFFLE_0_3_0_1);
 
         Vector256<ulong> product0 = Avx2.Multiply(data_key0, data_key_lo0);
         Vector256<ulong> product1 = Avx2.Multiply(data_key1, data_key_lo1);
 
-        Vector256<ulong> data_swap0 = Avx2.Shuffle(data_vec0, XxHashConstants.MM_SHUFFLE_1_0_3_2).AsUInt64();
-        Vector256<ulong> data_swap1 = Avx2.Shuffle(data_vec1, XxHashConstants.MM_SHUFFLE_1_0_3_2).AsUInt64();
+        Vector256<ulong> data_swap0 = Avx2.Shuffle(data_vec0, MM_SHUFFLE_1_0_3_2).AsUInt64();
+        Vector256<ulong> data_swap1 = Avx2.Shuffle(data_vec1, MM_SHUFFLE_1_0_3_2).AsUInt64();
 
         Vector256<ulong> sum0 = Avx2.Add(acc_vec0, data_swap0);
         Vector256<ulong> sum1 = Avx2.Add(acc_vec1, data_swap1);
@@ -186,20 +187,20 @@ internal static class XxHashShared
         Vector128<uint> data_key2 = Sse2.Xor(data_vec2, key_vec2);
         Vector128<uint> data_key3 = Sse2.Xor(data_vec3, key_vec3);
 
-        Vector128<uint> data_key_lo0 = Sse2.Shuffle(data_key0, XxHashConstants.MM_SHUFFLE_0_3_0_1);
-        Vector128<uint> data_key_lo1 = Sse2.Shuffle(data_key1, XxHashConstants.MM_SHUFFLE_0_3_0_1);
-        Vector128<uint> data_key_lo2 = Sse2.Shuffle(data_key2, XxHashConstants.MM_SHUFFLE_0_3_0_1);
-        Vector128<uint> data_key_lo3 = Sse2.Shuffle(data_key3, XxHashConstants.MM_SHUFFLE_0_3_0_1);
+        Vector128<uint> data_key_lo0 = Sse2.Shuffle(data_key0, MM_SHUFFLE_0_3_0_1);
+        Vector128<uint> data_key_lo1 = Sse2.Shuffle(data_key1, MM_SHUFFLE_0_3_0_1);
+        Vector128<uint> data_key_lo2 = Sse2.Shuffle(data_key2, MM_SHUFFLE_0_3_0_1);
+        Vector128<uint> data_key_lo3 = Sse2.Shuffle(data_key3, MM_SHUFFLE_0_3_0_1);
 
         Vector128<ulong> product0 = Sse2.Multiply(data_key0, data_key_lo0);
         Vector128<ulong> product1 = Sse2.Multiply(data_key1, data_key_lo1);
         Vector128<ulong> product2 = Sse2.Multiply(data_key2, data_key_lo2);
         Vector128<ulong> product3 = Sse2.Multiply(data_key3, data_key_lo3);
 
-        Vector128<ulong> data_swap0 = Sse2.Shuffle(data_vec0, XxHashConstants.MM_SHUFFLE_1_0_3_2).AsUInt64();
-        Vector128<ulong> data_swap1 = Sse2.Shuffle(data_vec1, XxHashConstants.MM_SHUFFLE_1_0_3_2).AsUInt64();
-        Vector128<ulong> data_swap2 = Sse2.Shuffle(data_vec2, XxHashConstants.MM_SHUFFLE_1_0_3_2).AsUInt64();
-        Vector128<ulong> data_swap3 = Sse2.Shuffle(data_vec3, XxHashConstants.MM_SHUFFLE_1_0_3_2).AsUInt64();
+        Vector128<ulong> data_swap0 = Sse2.Shuffle(data_vec0, MM_SHUFFLE_1_0_3_2).AsUInt64();
+        Vector128<ulong> data_swap1 = Sse2.Shuffle(data_vec1, MM_SHUFFLE_1_0_3_2).AsUInt64();
+        Vector128<ulong> data_swap2 = Sse2.Shuffle(data_vec2, MM_SHUFFLE_1_0_3_2).AsUInt64();
+        Vector128<ulong> data_swap3 = Sse2.Shuffle(data_vec3, MM_SHUFFLE_1_0_3_2).AsUInt64();
 
         Vector128<ulong> sum0 = Sse2.Add(acc_vec0, data_swap0);
         Vector128<ulong> sum1 = Sse2.Add(acc_vec1, data_swap1);
@@ -220,7 +221,7 @@ internal static class XxHashShared
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void XXH3_accumulate_512_scalar(ulong* acc, byte* input, byte* secret)
     {
-        for (int i = 0; i < XxHashConstants.ACC_NB; i++)
+        for (int i = 0; i < ACC_NB; i++)
             XXH3_scalarRound(acc, input, secret, i);
     }
 
@@ -231,8 +232,8 @@ internal static class XxHashShared
         byte* xinput = input;
         byte* xsecret = secret;
 
-        ulong data_val = Utilities.Read64(xinput + lane * 8);
-        ulong data_key = data_val ^ Utilities.Read64(xsecret + lane * 8);
+        ulong data_val = Read64(xinput + lane * 8);
+        ulong data_key = data_val ^ Read64(xsecret + lane * 8);
         xacc[lane ^ 1] += data_val;
         xacc[lane] += XXH_mult32to64(data_key & 0xFFFFFFFF, data_key >> 32);
     }
@@ -255,14 +256,14 @@ internal static class XxHashShared
         Vector256<uint> data_key0 = Avx2.Xor(data_vec0, key_vec0).AsUInt32();
         Vector256<uint> data_key1 = Avx2.Xor(data_vec1, key_vec1).AsUInt32();
 
-        Vector256<uint> data_key_hi0 = Avx2.Shuffle(data_key0, XxHashConstants.MM_SHUFFLE_0_3_0_1);
-        Vector256<uint> data_key_hi1 = Avx2.Shuffle(data_key1, XxHashConstants.MM_SHUFFLE_0_3_0_1);
+        Vector256<uint> data_key_hi0 = Avx2.Shuffle(data_key0, MM_SHUFFLE_0_3_0_1);
+        Vector256<uint> data_key_hi1 = Avx2.Shuffle(data_key1, MM_SHUFFLE_0_3_0_1);
 
-        Vector256<ulong> prod_lo0 = Avx2.Multiply(data_key0, XxHashConstants.M256i_XXH_PRIME32_1);
-        Vector256<ulong> prod_lo1 = Avx2.Multiply(data_key1, XxHashConstants.M256i_XXH_PRIME32_1);
+        Vector256<ulong> prod_lo0 = Avx2.Multiply(data_key0, M256i_XXH_PRIME32_1);
+        Vector256<ulong> prod_lo1 = Avx2.Multiply(data_key1, M256i_XXH_PRIME32_1);
 
-        Vector256<ulong> prod_hi0 = Avx2.Multiply(data_key_hi0, XxHashConstants.M256i_XXH_PRIME32_1);
-        Vector256<ulong> prod_hi1 = Avx2.Multiply(data_key_hi1, XxHashConstants.M256i_XXH_PRIME32_1);
+        Vector256<ulong> prod_hi0 = Avx2.Multiply(data_key_hi0, M256i_XXH_PRIME32_1);
+        Vector256<ulong> prod_hi1 = Avx2.Multiply(data_key_hi1, M256i_XXH_PRIME32_1);
 
         Vector256<ulong> result0 = Avx2.Add(prod_lo0, Avx2.ShiftLeftLogical(prod_hi0, 32));
         Vector256<ulong> result1 = Avx2.Add(prod_lo1, Avx2.ShiftLeftLogical(prod_hi1, 32));
@@ -299,20 +300,20 @@ internal static class XxHashShared
         Vector128<uint> data_key2 = Sse2.Xor(data_vec2, key_vec2);
         Vector128<uint> data_key3 = Sse2.Xor(data_vec3, key_vec3);
 
-        Vector128<uint> data_key_hi0 = Sse2.Shuffle(data_key0.AsUInt32(), XxHashConstants.MM_SHUFFLE_0_3_0_1);
-        Vector128<uint> data_key_hi1 = Sse2.Shuffle(data_key1.AsUInt32(), XxHashConstants.MM_SHUFFLE_0_3_0_1);
-        Vector128<uint> data_key_hi2 = Sse2.Shuffle(data_key2.AsUInt32(), XxHashConstants.MM_SHUFFLE_0_3_0_1);
-        Vector128<uint> data_key_hi3 = Sse2.Shuffle(data_key3.AsUInt32(), XxHashConstants.MM_SHUFFLE_0_3_0_1);
+        Vector128<uint> data_key_hi0 = Sse2.Shuffle(data_key0.AsUInt32(), MM_SHUFFLE_0_3_0_1);
+        Vector128<uint> data_key_hi1 = Sse2.Shuffle(data_key1.AsUInt32(), MM_SHUFFLE_0_3_0_1);
+        Vector128<uint> data_key_hi2 = Sse2.Shuffle(data_key2.AsUInt32(), MM_SHUFFLE_0_3_0_1);
+        Vector128<uint> data_key_hi3 = Sse2.Shuffle(data_key3.AsUInt32(), MM_SHUFFLE_0_3_0_1);
 
-        Vector128<ulong> prod_lo0 = Sse2.Multiply(data_key0, XxHashConstants.M128i_XXH_PRIME32_1);
-        Vector128<ulong> prod_lo1 = Sse2.Multiply(data_key1, XxHashConstants.M128i_XXH_PRIME32_1);
-        Vector128<ulong> prod_lo2 = Sse2.Multiply(data_key2, XxHashConstants.M128i_XXH_PRIME32_1);
-        Vector128<ulong> prod_lo3 = Sse2.Multiply(data_key3, XxHashConstants.M128i_XXH_PRIME32_1);
+        Vector128<ulong> prod_lo0 = Sse2.Multiply(data_key0, M128i_XXH_PRIME32_1);
+        Vector128<ulong> prod_lo1 = Sse2.Multiply(data_key1, M128i_XXH_PRIME32_1);
+        Vector128<ulong> prod_lo2 = Sse2.Multiply(data_key2, M128i_XXH_PRIME32_1);
+        Vector128<ulong> prod_lo3 = Sse2.Multiply(data_key3, M128i_XXH_PRIME32_1);
 
-        Vector128<ulong> prod_hi0 = Sse2.Multiply(data_key_hi0, XxHashConstants.M128i_XXH_PRIME32_1);
-        Vector128<ulong> prod_hi1 = Sse2.Multiply(data_key_hi1, XxHashConstants.M128i_XXH_PRIME32_1);
-        Vector128<ulong> prod_hi2 = Sse2.Multiply(data_key_hi2, XxHashConstants.M128i_XXH_PRIME32_1);
-        Vector128<ulong> prod_hi3 = Sse2.Multiply(data_key_hi3, XxHashConstants.M128i_XXH_PRIME32_1);
+        Vector128<ulong> prod_hi0 = Sse2.Multiply(data_key_hi0, M128i_XXH_PRIME32_1);
+        Vector128<ulong> prod_hi1 = Sse2.Multiply(data_key_hi1, M128i_XXH_PRIME32_1);
+        Vector128<ulong> prod_hi2 = Sse2.Multiply(data_key_hi2, M128i_XXH_PRIME32_1);
+        Vector128<ulong> prod_hi3 = Sse2.Multiply(data_key_hi3, M128i_XXH_PRIME32_1);
 
         Vector128<ulong> result0 = Sse2.Add(prod_lo0, Sse2.ShiftLeftLogical(prod_hi0, 32));
         Vector128<ulong> result1 = Sse2.Add(prod_lo1, Sse2.ShiftLeftLogical(prod_hi1, 32));
@@ -328,7 +329,7 @@ internal static class XxHashShared
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void XXH3_scrambleAcc_scalar(ulong* acc, byte* secret)
     {
-        for (int i = 0; i < XxHashConstants.ACC_NB; i++)
+        for (int i = 0; i < ACC_NB; i++)
             XXH3_scalarScrambleRound(acc, secret, i);
     }
 
@@ -338,11 +339,11 @@ internal static class XxHashShared
         ulong* xacc = acc;
         byte* xsecret = secret;
 
-        ulong key64 = Utilities.Read64(xsecret + lane * 8);
+        ulong key64 = Read64(xsecret + lane * 8);
         ulong acc64 = xacc[lane];
         acc64 = XXH_xorshift64(acc64, 47);
         acc64 ^= key64;
-        acc64 *= XxHashConstants.PRIME32_1;
+        acc64 *= PRIME32_1;
         xacc[lane] = acc64;
     }
 
@@ -351,7 +352,7 @@ internal static class XxHashShared
     {
         Vector256<ulong> seed = Vector256.Create(seed64, 0U - seed64, seed64, 0U - seed64);
 
-        fixed (byte* secret = &XxHashConstants.kSecret[0])
+        fixed (byte* secret = &kSecret[0])
         {
             Vector256<ulong> src0 = Unsafe.Read<Vector256<ulong>>((ulong*)secret + 0);
             Vector256<ulong> src1 = Unsafe.Read<Vector256<ulong>>((ulong*)secret + 4);
@@ -381,7 +382,7 @@ internal static class XxHashShared
     {
         Vector128<long> seed = Vector128.Create((long)seed64, (long)(0U - seed64));
 
-        fixed (byte* secret = &XxHashConstants.kSecret[0])
+        fixed (byte* secret = &kSecret[0])
         {
             Vector128<long> src0 = Unsafe.Read<Vector128<long>>((long*)secret + 0);
             Vector128<long> src1 = Unsafe.Read<Vector128<long>>((long*)secret + 2);
@@ -427,28 +428,28 @@ internal static class XxHashShared
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void XXH3_initCustomSecret_scalar(byte* customSecret, ulong seed)
     {
-        fixed (byte* kSecretPtr = &XxHashConstants.kSecret[0])
+        fixed (byte* kSecretPtr = &kSecret[0])
         {
-            int nbRounds = XxHashConstants.SECRET_DEFAULT_SIZE / 16;
+            int nbRounds = SECRET_DEFAULT_SIZE / 16;
 
             for (int i = 0; i < nbRounds; i++)
             {
-                ulong lo = Utilities.Read64(kSecretPtr + 16 * i) + seed;
-                ulong hi = Utilities.Read64(kSecretPtr + 16 * i + 8) - seed;
-                Utilities.Write64(customSecret + 16 * i, lo);
-                Utilities.Write64(customSecret + 16 * i + 8, hi);
+                ulong lo = Read64(kSecretPtr + 16 * i) + seed;
+                ulong hi = Read64(kSecretPtr + 16 * i + 8) - seed;
+                Write64(customSecret + 16 * i, lo);
+                Write64(customSecret + 16 * i + 8, hi);
             }
         }
     }
 
     internal static unsafe ulong XXH3_mix16B(byte* input, byte* secret, ulong seed64)
     {
-        ulong input_lo = Utilities.Read64(input);
-        ulong input_hi = Utilities.Read64(input, 8);
+        ulong input_lo = Read64(input);
+        ulong input_hi = Read64(input, 8);
 
         return XXH3_mul128_fold64(
-            input_lo ^ (Utilities.Read64(secret) + seed64),
-            input_hi ^ (Utilities.Read64(secret, 8) - seed64)
+            input_lo ^ (Read64(secret) + seed64),
+            input_hi ^ (Read64(secret, 8) - seed64)
         );
     }
 }

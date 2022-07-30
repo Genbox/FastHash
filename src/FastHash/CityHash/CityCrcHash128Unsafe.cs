@@ -25,16 +25,16 @@ public static class CityCrcHash128Unsafe
         CityHashCrc256(s, len, result);
         ulong u = seed.High + result[0];
         ulong v = seed.Low + result[1];
-        return new Uint128(HashLen16(u, v + result[2]), HashLen16(RotateRight(v, 32), u * k0 + result[3]));
+        return new Uint128(HashLen16(u, v + result[2]), HashLen16(RotateRight(v, 32), u * K0 + result[3]));
     }
 
     // Requires len >= 240.
     private static unsafe void CityHashCrc256Long(byte* s, uint len, uint seed, ulong* result)
     {
-        ulong a = Read64(s + 56) + k0;
-        ulong b = Read64(s + 96) + k0;
+        ulong a = Read64(s + 56) + K0;
+        ulong b = Read64(s + 96) + K0;
         ulong c = result[0] = HashLen16(b, len);
-        ulong d = result[1] = Read64(s + 120) * k0 + len;
+        ulong d = result[1] = Read64(s + 120) * K0 + len;
         ulong e = Read64(s + 184) + seed;
         ulong f = 0;
         ulong g = 0;
@@ -95,11 +95,11 @@ public static class CityCrcHash128Unsafe
         z = HashLen16(b, c) + a;
         y = HashLen16(g, h) + c;
         result[0] = e + z + y + x;
-        a = ShiftMix((a + y) * k0) * k0 + b;
+        a = ShiftMix((a + y) * K0) * K0 + b;
         result[1] += a + result[0];
-        a = ShiftMix(a * k0) * k0 + c;
+        a = ShiftMix(a * K0) * K0 + c;
         result[2] = a + result[1];
-        a = ShiftMix((a + e) * k0) * k0;
+        a = ShiftMix((a + e) * K0) * K0;
         result[3] = a + result[2];
     }
 

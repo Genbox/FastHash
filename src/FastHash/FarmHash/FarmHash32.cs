@@ -2,68 +2,71 @@
 //Source: https://github.com/google/farmhash
 
 using System.Runtime.CompilerServices;
+using static Genbox.FastHash.CityHash.CityHashShared;
+using static Genbox.FastHash.MurmurHash.MurmurShared;
+using static Genbox.FastHash.FarmHash.FarmHashConstants;
 
 namespace Genbox.FastHash.FarmHash;
 
 public static class FarmHash32
 {
-    public static uint ComputeHash(byte[] s)
+    public static uint ComputeHash(byte[] data)
     {
-        uint length = (uint)s.Length;
+        uint length = (uint)data.Length;
 
         if (length <= 24)
-            return length <= 12 ? length <= 4 ? Hash32Len0to4(s, length) : Hash32Len5to12(s, length) : Hash32Len13to24(s, length);
+            return length <= 12 ? length <= 4 ? Hash32Len0to4(data, length) : Hash32Len5to12(data, length) : Hash32Len13to24(data, length);
 
         // len > 24
-        uint h = length, g = FarmHashConstants.c1 * length, f = g;
-        uint a0 = Utilities.RotateRightCheck(Utilities.Read32(s, length - 4) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
-        uint a1 = Utilities.RotateRightCheck(Utilities.Read32(s, length - 8) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
-        uint a2 = Utilities.RotateRightCheck(Utilities.Read32(s, length - 16) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
-        uint a3 = Utilities.RotateRightCheck(Utilities.Read32(s, length - 12) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
-        uint a4 = Utilities.RotateRightCheck(Utilities.Read32(s, length - 20) * FarmHashConstants.c1, 17) * FarmHashConstants.c2;
+        uint h = length, g = C1 * length, f = g;
+        uint a0 = RotateRight(Read32(data, length - 4) * C1, 17) * C2;
+        uint a1 = RotateRight(Read32(data, length - 8) * C1, 17) * C2;
+        uint a2 = RotateRight(Read32(data, length - 16) * C1, 17) * C2;
+        uint a3 = RotateRight(Read32(data, length - 12) * C1, 17) * C2;
+        uint a4 = RotateRight(Read32(data, length - 20) * C1, 17) * C2;
         h ^= a0;
-        h = Utilities.RotateRightCheck(h, 19);
+        h = RotateRight(h, 19);
         h = h * 5 + 0xe6546b64;
         h ^= a2;
-        h = Utilities.RotateRightCheck(h, 19);
+        h = RotateRight(h, 19);
         h = h * 5 + 0xe6546b64;
         g ^= a1;
-        g = Utilities.RotateRightCheck(g, 19);
+        g = RotateRight(g, 19);
         g = g * 5 + 0xe6546b64;
         g ^= a3;
-        g = Utilities.RotateRightCheck(g, 19);
+        g = RotateRight(g, 19);
         g = g * 5 + 0xe6546b64;
         f += a4;
-        f = Utilities.RotateRightCheck(f, 19) + 113;
+        f = RotateRight(f, 19) + 113;
         uint iters = (length - 1) / 20;
         uint index = 0;
         do
         {
-            uint a = Utilities.Read32(s, index);
-            uint b = Utilities.Read32(s, index + 4);
-            uint c = Utilities.Read32(s, index + 8);
-            uint d = Utilities.Read32(s, index + 12);
-            uint e = Utilities.Read32(s, index + 16);
+            uint a = Read32(data, index);
+            uint b = Read32(data, index + 4);
+            uint c = Read32(data, index + 8);
+            uint d = Read32(data, index + 12);
+            uint e = Read32(data, index + 16);
             h += a;
             g += b;
             f += c;
-            h = FarmHashShared.Mur(d, h) + e;
-            g = FarmHashShared.Mur(c, g) + a;
-            f = FarmHashShared.Mur(b + e * FarmHashConstants.c1, f) + d;
+            h = Mur(d, h) + e;
+            g = Mur(c, g) + a;
+            f = Mur(b + e * C1, f) + d;
             f += g;
             g += f;
             index += 20;
         } while (--iters != 0);
-        g = Utilities.RotateRightCheck(g, 11) * FarmHashConstants.c1;
-        g = Utilities.RotateRightCheck(g, 17) * FarmHashConstants.c1;
-        f = Utilities.RotateRightCheck(f, 11) * FarmHashConstants.c1;
-        f = Utilities.RotateRightCheck(f, 17) * FarmHashConstants.c1;
-        h = Utilities.RotateRightCheck(h + g, 19);
+        g = RotateRight(g, 11) * C1;
+        g = RotateRight(g, 17) * C1;
+        f = RotateRight(f, 11) * C1;
+        f = RotateRight(f, 17) * C1;
+        h = RotateRight(h + g, 19);
         h = h * 5 + 0xe6546b64;
-        h = Utilities.RotateRightCheck(h, 17) * FarmHashConstants.c1;
-        h = Utilities.RotateRightCheck(h + f, 19);
+        h = RotateRight(h, 17) * C1;
+        h = RotateRight(h + f, 19);
         h = h * 5 + 0xe6546b64;
-        h = Utilities.RotateRightCheck(h, 17) * FarmHashConstants.c1;
+        h = RotateRight(h, 17) * C1;
         return h;
     }
 
@@ -75,38 +78,38 @@ public static class FarmHash32
         for (int i = 0; i < len; i++)
         {
             byte v = s[i];
-            b = b * FarmHashConstants.c1 + v;
+            b = b * C1 + v;
             c ^= b;
         }
-        return Utilities.FMix(FarmHashShared.Mur(b, FarmHashShared.Mur(len, c)));
+        return MurmurMix(Mur(b, Mur(len, c)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint Hash32Len5to12(byte[] s, uint len, uint seed = 0)
     {
         uint a = len, b = len * 5, c = 9, d = b + seed;
-        a += Utilities.Read32(s);
-        b += Utilities.Read32(s, len - 4);
-        c += Utilities.Read32(s, (len >> 1) & 4);
-        return Utilities.FMix(seed ^ FarmHashShared.Mur(c, FarmHashShared.Mur(b, FarmHashShared.Mur(a, d))));
+        a += Read32(s);
+        b += Read32(s, len - 4);
+        c += Read32(s, (len >> 1) & 4);
+        return MurmurMix(seed ^ Mur(c, Mur(b, Mur(a, d))));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint Hash32Len13to24(byte[] s, uint len, uint seed = 0)
     {
-        uint a = Utilities.Read32(s, (len >> 1) - 4);
-        uint b = Utilities.Read32(s, 4);
-        uint c = Utilities.Read32(s, len - 8);
-        uint d = Utilities.Read32(s, len >> 1);
-        uint e = Utilities.Read32(s);
-        uint f = Utilities.Read32(s, len - 4);
-        uint h = d * FarmHashConstants.c1 + len + seed;
-        a = Utilities.RotateRightCheck(a, 12) + f;
-        h = FarmHashShared.Mur(c, h) + a;
-        a = Utilities.RotateRightCheck(a, 3) + c;
-        h = FarmHashShared.Mur(e, h) + a;
-        a = Utilities.RotateRightCheck(a + f, 12) + d;
-        h = FarmHashShared.Mur(b ^ seed, h) + a;
-        return Utilities.FMix(h);
+        uint a = Read32(s, (len >> 1) - 4);
+        uint b = Read32(s, 4);
+        uint c = Read32(s, len - 8);
+        uint d = Read32(s, len >> 1);
+        uint e = Read32(s);
+        uint f = Read32(s, len - 4);
+        uint h = d * C1 + len + seed;
+        a = RotateRight(a, 12) + f;
+        h = Mur(c, h) + a;
+        a = RotateRight(a, 3) + c;
+        h = Mur(e, h) + a;
+        a = RotateRight(a + f, 12) + d;
+        h = Mur(b ^ seed, h) + a;
+        return MurmurMix(h);
     }
 }

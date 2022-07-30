@@ -1,6 +1,6 @@
 ﻿namespace Genbox.FastHash.DjbHash;
 
-public static class DjbHashConstants
+internal static class DjbHashConstants
 {
-    public const int InitHash = 5381;
+    internal const int InitHash = 5381;
 }

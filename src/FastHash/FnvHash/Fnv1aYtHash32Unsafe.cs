@@ -20,18 +20,18 @@ public static class Fnv1aYtHash32Unsafe
 
         for (; length >= 3 * sizeof(ulong); length -= 3 * sizeof(ulong), p += 3 * sizeof(ulong))
         {
-            hash32 = (hash32 ^ Utilities.RotateLeft(*uPtr + 0, 5) ^ (*uPtr + 4)) * PRIME;
-            hash32B = (hash32B ^ Utilities.RotateLeft(*uPtr + 8, 5) ^ (*uPtr + 12)) * PRIME;
-            hash32C = (hash32C ^ Utilities.RotateLeft(*uPtr + 16, 5) ^ (*uPtr + 20)) * PRIME;
+            hash32 = (hash32 ^ RotateLeft(*uPtr + 0, 5) ^ (*uPtr + 4)) * PRIME;
+            hash32B = (hash32B ^ RotateLeft(*uPtr + 8, 5) ^ (*uPtr + 12)) * PRIME;
+            hash32C = (hash32C ^ RotateLeft(*uPtr + 16, 5) ^ (*uPtr + 20)) * PRIME;
         }
 
         if (p != data)
-            hash32 = (hash32 ^ Utilities.RotateLeft(hash32C, 5)) * PRIME;
+            hash32 = (hash32 ^ RotateLeft(hash32C, 5)) * PRIME;
 
         if ((length & (2 * sizeof(ulong))) > 0)
         {
-            hash32 = (hash32 ^ Utilities.RotateLeft(*uPtr + 0, 5) ^ (*uPtr + 4)) * PRIME;
-            hash32B = (hash32B ^ Utilities.RotateLeft(*uPtr + 8, 5) ^ (*uPtr + 12)) * PRIME;
+            hash32 = (hash32 ^ RotateLeft(*uPtr + 0, 5) ^ (*uPtr + 4)) * PRIME;
+            hash32B = (hash32B ^ RotateLeft(*uPtr + 8, 5) ^ (*uPtr + 12)) * PRIME;
             p += 2 * sizeof(ulong);
         }
 
@@ -60,7 +60,7 @@ public static class Fnv1aYtHash32Unsafe
         if ((length & 1) > 0)
             hash32 = (hash32 ^ *p) * PRIME;
 
-        hash32 = (hash32 ^ Utilities.RotateLeft(hash32B, 5)) * PRIME;
+        hash32 = (hash32 ^ RotateLeft(hash32B, 5)) * PRIME;
         return hash32 ^ (hash32 >> 16);
     }
 }

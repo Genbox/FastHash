@@ -2,6 +2,7 @@
 //Source: http://www.isthe.com/chongo/src/fnv/hash_64a.c
 
 using System.Runtime.CompilerServices;
+using static Genbox.FastHash.FnvHash.FnvHashConstants;
 
 namespace Genbox.FastHash.FnvHash;
 
@@ -12,12 +13,12 @@ public static class Fnv1aHash64
 {
     public static ulong ComputeHash(byte[] data)
     {
-        ulong hash = FnvHashConstants.FnvInit64;
+        ulong hash = FnvInit64;
 
         for (int i = 0; i < data.Length; i++)
         {
             hash ^= data[i];
-            hash *= FnvHashConstants.FnvPrime64;
+            hash *= FnvPrime64;
         }
 
         return hash;
@@ -26,9 +27,9 @@ public static class Fnv1aHash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
     {
-        ulong hash = FnvHashConstants.FnvInit64;
+        ulong hash = FnvInit64;
         hash ^= input;
-        hash *= FnvHashConstants.FnvPrime64;
+        hash *= FnvPrime64;
         return hash;
     }
 }

@@ -12,12 +12,12 @@ public static class CityHash32Unsafe
             return len <= 12 ? len <= 4 ? Hash32Len0to4(s, len) : Hash32Len5to12(s, len) : Hash32Len13to24(s, len);
 
         // len > 24
-        uint h = len, g = c1 * h, f = g;
-        uint a0 = RotateRight(Read32(s + len - 4) * c1, 17) * c2;
-        uint a1 = RotateRight(Read32(s + len - 8) * c1, 17) * c2;
-        uint a2 = RotateRight(Read32(s + len - 16) * c1, 17) * c2;
-        uint a3 = RotateRight(Read32(s + len - 12) * c1, 17) * c2;
-        uint a4 = RotateRight(Read32(s + len - 20) * c1, 17) * c2;
+        uint h = len, g = C1 * h, f = g;
+        uint a0 = RotateRight(Read32(s + len - 4) * C1, 17) * C2;
+        uint a1 = RotateRight(Read32(s + len - 8) * C1, 17) * C2;
+        uint a2 = RotateRight(Read32(s + len - 16) * C1, 17) * C2;
+        uint a3 = RotateRight(Read32(s + len - 12) * C1, 17) * C2;
+        uint a4 = RotateRight(Read32(s + len - 20) * C1, 17) * C2;
         h ^= a0;
         h = RotateRight(h, 19);
         h = h * 5 + 0xe6546b64;
@@ -36,17 +36,17 @@ public static class CityHash32Unsafe
         uint iters = (len - 1) / 20;
         do
         {
-            a0 = RotateRight(Read32(s) * c1, 17) * c2;
+            a0 = RotateRight(Read32(s) * C1, 17) * C2;
             a1 = Read32(s + 4);
-            a2 = RotateRight(Read32(s + 8) * c1, 17) * c2;
-            a3 = RotateRight(Read32(s + 12) * c1, 17) * c2;
+            a2 = RotateRight(Read32(s + 8) * C1, 17) * C2;
+            a3 = RotateRight(Read32(s + 12) * C1, 17) * C2;
             a4 = Read32(s + 16);
             h ^= a0;
             h = RotateRight(h, 18);
             h = h * 5 + 0xe6546b64;
             f += a1;
             f = RotateRight(f, 19);
-            f = f * c1;
+            f = f * C1;
             g += a2;
             g = RotateRight(g, 18);
             g = g * 5 + 0xe6546b64;
@@ -61,16 +61,16 @@ public static class CityHash32Unsafe
             Permute3(ref f, ref h, ref g);
             s += 20;
         } while (--iters != 0);
-        g = RotateRight(g, 11) * c1;
-        g = RotateRight(g, 17) * c1;
-        f = RotateRight(f, 11) * c1;
-        f = RotateRight(f, 17) * c1;
+        g = RotateRight(g, 11) * C1;
+        g = RotateRight(g, 17) * C1;
+        f = RotateRight(f, 11) * C1;
+        f = RotateRight(f, 17) * C1;
         h = RotateRight(h + g, 19);
         h = h * 5 + 0xe6546b64;
-        h = RotateRight(h, 17) * c1;
+        h = RotateRight(h, 17) * C1;
         h = RotateRight(h + f, 19);
         h = h * 5 + 0xe6546b64;
-        h = RotateRight(h, 17) * c1;
+        h = RotateRight(h, 17) * C1;
         return h;
     }
 
@@ -94,7 +94,7 @@ public static class CityHash32Unsafe
         for (uint i = 0; i < len; i++)
         {
             byte v = s[i];
-            b = b * c1 + v;
+            b = b * C1 + v;
             c ^= b;
         }
         return MurmurMix(Mur(b, Mur(len, c)));

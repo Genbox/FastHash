@@ -1,4 +1,4 @@
-using System.Buffers.Binary;
+﻿using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -17,7 +17,7 @@ internal static class Utilities
     internal static uint Read32(byte[] p, uint offset = 0) => Unsafe.ReadUnaligned<uint>(ref p[offset]);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe uint Read32(byte* ptr, int offset = 0) => *(uint*)(ptr + offset);
+    internal static unsafe uint Read32(byte* ptr, uint offset = 0) => *(uint*)(ptr + offset);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static unsafe uint Read8(byte* ptr, int offset = 0) => *(ptr + offset);
@@ -26,7 +26,7 @@ internal static class Utilities
     internal static ulong Read64(byte[] p, uint offset = 0) => Unsafe.ReadUnaligned<ulong>(ref p[offset]);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe ulong Read64(byte* ptr, int offset = 0) => *(ulong*)(ptr + offset);
+    internal static unsafe ulong Read64(byte* ptr, uint offset = 0) => *(ulong*)(ptr + offset);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static unsafe void Write64(byte* ptr, ulong value) => *(ulong*)ptr = value;

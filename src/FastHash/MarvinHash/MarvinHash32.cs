@@ -9,7 +9,7 @@ namespace Genbox.FastHash.MarvinHash;
 
 public static class MarvinHash32
 {
-    public static uint ComputeHash(byte[] data, uint p0, uint p1)
+    public static uint ComputeHash(byte[] data, uint p0 = 0, uint p1 = 0)
     {
         uint count = (uint)data.Length;
         ref byte ptr = ref data[0];
