@@ -25,10 +25,10 @@ public static class Fnv1aHash32
     public static uint ComputeIndex(uint input)
     {
         uint hash = FnvInit;
-        hash = (hash ^ input & 0xFF) * FnvPrime;
-        hash = (hash ^ (input >> 8) & 0xFF) * FnvPrime;
-        hash = (hash ^ (input >> 16) & 0xFF) * FnvPrime;
-        hash = (hash ^ (input >> 24) & 0xFF) * FnvPrime;
+        hash = (hash ^ (input & 0xFF)) * FnvPrime;
+        hash = (hash ^ ((input >> 8) & 0xFF)) * FnvPrime;
+        hash = (hash ^ ((input >> 16) & 0xFF)) * FnvPrime;
+        hash = (hash ^ ((input >> 24) & 0xFF)) * FnvPrime;
         return hash;
     }
 }

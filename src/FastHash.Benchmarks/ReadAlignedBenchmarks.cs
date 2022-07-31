@@ -28,9 +28,7 @@ public class ReadAlignedBenchmarks
         ulong acc = 0;
 
         for (int i = 0; i < _testData.Length; i++)
-        {
             acc += _testData[i];
-        }
 
         return acc;
     }
@@ -60,9 +58,7 @@ public class ReadAlignedBenchmarks
         int items = _testData.Length / sizeof(uint);
 
         for (int i = 0; i < items; i++)
-        {
             acc += intArr[i];
-        }
 
         return acc;
     }
@@ -76,9 +72,7 @@ public class ReadAlignedBenchmarks
         int items = _testData.Length / sizeof(ulong);
 
         for (int i = 0; i < items; i++)
-        {
             acc += intArr[i];
-        }
 
         return acc;
     }

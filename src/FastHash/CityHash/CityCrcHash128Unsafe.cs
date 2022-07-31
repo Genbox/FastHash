@@ -134,9 +134,7 @@ public static class CityCrcHash128Unsafe
         byte* buf = stackalloc byte[240];
 
         for (int i = 0; i < len; i++)
-        {
             buf[i] = s[i];
-        }
 
         // memcpy(buf, s, len);
         // memset(buf + len, 0, 240 - len);

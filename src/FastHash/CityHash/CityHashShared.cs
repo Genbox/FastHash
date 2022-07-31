@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Genbox.FastHash.FarmHash;
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 
 namespace Genbox.FastHash.CityHash;
@@ -10,9 +9,9 @@ internal static class CityHashShared
     internal static uint Mur(uint a, uint h)
     {
         // Helper from Murmur3 for combining two 32-bit values.
-        a *= FarmHashConstants.C1;
+        a *= C1;
         a = RotateRight(a, 17);
-        a *= FarmHashConstants.C2;
+        a *= C2;
         h ^= a;
         h = RotateRight(h, 19);
         return h * 5 + 0xe6546b64;

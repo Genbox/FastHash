@@ -6,8 +6,8 @@ namespace Genbox.FastHash.Benchmarks;
 [InProcess]
 public class Multiply64Benchmarks
 {
-    private ulong _valA = 10280214UL;
-    private ulong _valB = 89244214UL;
+    private readonly ulong _valA = 10280214UL;
+    private readonly ulong _valB = 89244214UL;
 
     [Benchmark]
     public Uint128 MathBigMul()
@@ -54,7 +54,7 @@ public class Multiply64Benchmarks
         ulong t = (ulong)ah * bl + (mull >> 32);
         ulong tl = (ulong)al * bh + (uint)t;
 
-        ulong low = tl << 32 | (uint)mull;
+        ulong low = (tl << 32) | (uint)mull;
         ulong high = (ulong)ah * bh + (t >> 32) + (tl >> 32);
         return new Uint128(low, high);
     }

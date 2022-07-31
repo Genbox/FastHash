@@ -10,6 +10,8 @@ public class CityHash
     private const ulong Seed0 = 1234567;
     private const ulong Seed1 = CityHashConstants.K0;
 
+    private readonly byte[] _data = new byte[DataSize];
+
     private readonly ulong[][] _testData =
     {
         new ulong[] { 0x9ae16a3b2f90404f, 0x75106db890237a4a, 0x3feac5f636039766, 0x3df09dfc64c09a2b, 0x3cb540c392e51e29, 0x6b56343feac0663, 0x5b7bc50fd8e8ad92, 0x3df09dfc64c09a2b, 0x3cb540c392e51e29, 0x6b56343feac0663, 0x5b7bc50fd8e8ad92, 0x95162f24e6a5f930, 0x6808bdf4f1eb06e0, 0xb3b1f3a67b624d82, 0xc9a62f12bd4cd80b, 0xdc56d17a },
@@ -314,8 +316,6 @@ public class CityHash
         new ulong[] { 0x5fb5e48ac7b7fa4f, 0xa96170f08f5acbc7, 0xbbf5c63d4f52a1e5, 0x6cc09e60700563e9, 0xd18f23221e964791, 0xffc23eeef7af26eb, 0x693a954a3622a315, 0x815308a32a9b0daf, 0xefb2ab27bf6fd0bd, 0x9f1ffc0986111118, 0xf9a3aa1778ea3985, 0x698fe54b2b93933b, 0xdacc2b28404d0f10, 0x815308a32a9b0daf, 0xefb2ab27bf6fd0bd, 0x5398210c }
     };
 
-    private readonly byte[] _data = new byte[DataSize];
-
     public CityHash()
     {
         unchecked
@@ -339,9 +339,7 @@ public class CityHash
     {
         int i = 0;
         for (; i < TestSize - 1; i++)
-        {
             RunTest(_testData[i], i * i, i);
-        }
 
         RunTest(_testData[i], 0, DataSize);
     }

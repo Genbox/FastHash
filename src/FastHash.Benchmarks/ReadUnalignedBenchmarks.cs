@@ -28,9 +28,7 @@ public class ReadUnalignedBenchmarks
         ulong acc = 0;
 
         for (int i = 0; i < _testData.Length; i++)
-        {
             acc += _testData[i];
-        }
 
         return acc;
     }
@@ -43,9 +41,7 @@ public class ReadUnalignedBenchmarks
         ref byte ptr = ref _testData[0];
 
         for (int i = 0; i < _testData.Length; i++)
-        {
             acc += Unsafe.Add(ref ptr, i); //This avoids the bounds check
-        }
 
         return acc;
     }

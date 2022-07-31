@@ -4,6 +4,9 @@
 using System.Runtime.CompilerServices;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.MurmurHash;
+using static Genbox.FastHash.CityHash.CityHashShared;
+using static Genbox.FastHash.MurmurHash.MurmurShared;
+using static Genbox.FastHash.FarmHash.FarmHashConstants;
 
 namespace Genbox.FastHash.FarmHash;
 
@@ -17,12 +20,12 @@ public static class FarmHash32Unsafe
             return len <= 12 ? len <= 4 ? Hash32Len0to4(dataPtr, len) : Hash32Len5to12(dataPtr, len) : Hash32Len13to24(dataPtr, len);
 
         // len > 24
-        uint h = len, g = FarmHashConstants.C1 * len, f = g;
-        uint a0 = RotateRight(Read32(dataPtr + len - 4) * FarmHashConstants.C1, 17) * FarmHashConstants.C2;
-        uint a1 = RotateRight(Read32(dataPtr + len - 8) * FarmHashConstants.C1, 17) * FarmHashConstants.C2;
-        uint a2 = RotateRight(Read32(dataPtr + len - 16) * FarmHashConstants.C1, 17) * FarmHashConstants.C2;
-        uint a3 = RotateRight(Read32(dataPtr + len - 12) * FarmHashConstants.C1, 17) * FarmHashConstants.C2;
-        uint a4 = RotateRight(Read32(dataPtr + len - 20) * FarmHashConstants.C1, 17) * FarmHashConstants.C2;
+        uint h = len, g = C1 * len, f = g;
+        uint a0 = RotateRight(Read32(dataPtr + len - 4) * C1, 17) * C2;
+        uint a1 = RotateRight(Read32(dataPtr + len - 8) * C1, 17) * C2;
+        uint a2 = RotateRight(Read32(dataPtr + len - 16) * C1, 17) * C2;
+        uint a3 = RotateRight(Read32(dataPtr + len - 12) * C1, 17) * C2;
+        uint a4 = RotateRight(Read32(dataPtr + len - 20) * C1, 17) * C2;
         h ^= a0;
         h = RotateRight(h, 19);
         h = h * 5 + 0xe6546b64;
@@ -48,23 +51,23 @@ public static class FarmHash32Unsafe
             h += a;
             g += b;
             f += c;
-            h = CityHashShared.Mur(d, h) + e;
-            g = CityHashShared.Mur(c, g) + a;
-            f = CityHashShared.Mur(b + e * FarmHashConstants.C1, f) + d;
+            h = Mur(d, h) + e;
+            g = Mur(c, g) + a;
+            f = Mur(b + e * C1, f) + d;
             f += g;
             g += f;
             dataPtr += 20;
         } while (--iters != 0);
-        g = RotateRight(g, 11) * FarmHashConstants.C1;
-        g = RotateRight(g, 17) * FarmHashConstants.C1;
-        f = RotateRight(f, 11) * FarmHashConstants.C1;
-        f = RotateRight(f, 17) * FarmHashConstants.C1;
+        g = RotateRight(g, 11) * C1;
+        g = RotateRight(g, 17) * C1;
+        f = RotateRight(f, 11) * C1;
+        f = RotateRight(f, 17) * C1;
         h = RotateRight(h + g, 19);
         h = h * 5 + 0xe6546b64;
-        h = RotateRight(h, 17) * FarmHashConstants.C1;
+        h = RotateRight(h, 17) * C1;
         h = RotateRight(h + f, 19);
         h = h * 5 + 0xe6546b64;
-        h = RotateRight(h, 17) * FarmHashConstants.C1;
+        h = RotateRight(h, 17) * C1;
         return h;
     }
 
@@ -75,10 +78,10 @@ public static class FarmHash32Unsafe
         uint c = 9;
         for (int i = 0; i < len; i++)
         {
-            b = b * FarmHashConstants.C1 + *(s + i);
+            b = b * C1 + *(s + i);
             c ^= b;
         }
-        return MurmurShared.MurmurMix(CityHashShared.Mur(b, CityHashShared.Mur(len, c)));
+        return MurmurMix(Mur(b, Mur(len, c)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -88,7 +91,7 @@ public static class FarmHash32Unsafe
         a += Read32(s);
         b += Read32(s + len - 4);
         c += Read32(s + ((len >> 1) & 4));
-        return MurmurShared.MurmurMix(seed ^ CityHashShared.Mur(c, CityHashShared.Mur(b, CityHashShared.Mur(a, d))));
+        return MurmurMix(seed ^ Mur(c, Mur(b, Mur(a, d))));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -100,13 +103,13 @@ public static class FarmHash32Unsafe
         uint d = Read32(s + (len >> 1));
         uint e = Read32(s);
         uint f = Read32(s + len - 4);
-        uint h = d * FarmHashConstants.C1 + len + seed;
+        uint h = d * C1 + len + seed;
         a = RotateRight(a, 12) + f;
-        h = CityHashShared.Mur(c, h) + a;
+        h = Mur(c, h) + a;
         a = RotateRight(a, 3) + c;
-        h = CityHashShared.Mur(e, h) + a;
+        h = Mur(e, h) + a;
         a = RotateRight(a + f, 12) + d;
-        h = CityHashShared.Mur(b ^ seed, h) + a;
-        return MurmurShared.MurmurMix(h);
+        h = Mur(b ^ seed, h) + a;
+        return MurmurMix(h);
     }
 }

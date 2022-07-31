@@ -22,10 +22,10 @@ public static class Djb2Hash32
     public static uint ComputeIndex(uint input)
     {
         uint hash = InitHash;
-        hash = ((hash << 5) + hash) ^ input & 0xFF;
-        hash = ((hash << 5) + hash) ^ (input >> 8) & 0xFF;
-        hash = ((hash << 5) + hash) ^ (input >> 16) & 0xFF;
-        hash = ((hash << 5) + hash) ^ (input >> 24) & 0xFF;
+        hash = ((hash << 5) + hash) ^ (input & 0xFF);
+        hash = ((hash << 5) + hash) ^ ((input >> 8) & 0xFF);
+        hash = ((hash << 5) + hash) ^ ((input >> 16) & 0xFF);
+        hash = ((hash << 5) + hash) ^ ((input >> 24) & 0xFF);
         return hash;
     }
 }

@@ -13,7 +13,7 @@ namespace Genbox.FastHash.Benchmarks;
 [InProcess]
 public class IndexBenchmarks
 {
-    private uint _value = 12808241;
+    private readonly uint _value = 12808241;
 
     [Benchmark]
     public uint Djb2Hash32Test() => Djb2Hash32.ComputeIndex(_value);

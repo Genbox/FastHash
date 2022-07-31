@@ -7,12 +7,6 @@ namespace Genbox.FastHash.XxHash;
 
 internal static class XxHashShared
 {
-    internal unsafe delegate ulong XXH3_hashLong64_f(byte* input, int len, ulong seed64, byte* secret, int secretLen);
-    internal unsafe delegate Uint128 XXH3_hashLong128_f(byte* input, int len, ulong seed64, byte* secret, int secretLen);
-    internal unsafe delegate void XXH3_f_scrambleAcc(ulong* acc, byte* secret);
-    internal unsafe delegate void XXH3_f_initCustomSecret(byte* customSecret, ulong seed);
-    internal unsafe delegate void XXH3_f_accumulate_512(ulong* acc, byte* input, byte* secret);
-
     internal static unsafe void XXH3_accumulate_512(ulong* acc, byte* input, byte* secret)
     {
         if (Avx2.IsSupported)
@@ -452,4 +446,10 @@ internal static class XxHashShared
             input_hi ^ (Read64(secret, 8) - seed64)
         );
     }
+
+    internal unsafe delegate ulong XXH3_hashLong64_f(byte* input, int len, ulong seed64, byte* secret, int secretLen);
+    internal unsafe delegate Uint128 XXH3_hashLong128_f(byte* input, int len, ulong seed64, byte* secret, int secretLen);
+    internal unsafe delegate void XXH3_f_scrambleAcc(ulong* acc, byte* secret);
+    internal unsafe delegate void XXH3_f_initCustomSecret(byte* customSecret, ulong seed);
+    internal unsafe delegate void XXH3_f_accumulate_512(ulong* acc, byte* input, byte* secret);
 }
