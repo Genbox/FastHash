@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Genbox.FastHash.Tests.Single;
 
-public class FrashHashTests
+public class FarshHashTests
 {
     private static readonly uint[] _vectors =
     {
