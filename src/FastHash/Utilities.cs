@@ -41,18 +41,10 @@ internal static class Utilities
     internal static ulong ByteSwap(ulong input) => BinaryPrimitives.ReverseEndianness(input);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint RotateRight(uint x, byte r)
-    {
-        Debug.Assert(r != 0);
-        return BitOperations.RotateRight(x, r);
-    }
+    internal static uint RotateRight(uint x, byte r) => BitOperations.RotateRight(x, r);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong RotateRight(ulong x, byte r)
-    {
-        Debug.Assert(r != 0);
-        return BitOperations.RotateRight(x, r);
-    }
+    internal static ulong RotateRight(ulong x, byte r) => BitOperations.RotateRight(x, r);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static uint RotateLeft(uint x, byte r) => BitOperations.RotateLeft(x, r);

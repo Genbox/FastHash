@@ -6,6 +6,7 @@ using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FarshHash;
 using Genbox.FastHash.FnvHash;
+using Genbox.FastHash.HighwayHash;
 using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MurmurHash;
 using Genbox.FastHash.SipHash;
@@ -67,10 +68,6 @@ public class HashBenchmarks : IDisposable
     [BenchmarkCategory("Fnv1aHash64")]
     public ulong Fnv1aHash64Test() => Fnv1aHash64.ComputeHash(_testData);
 
-    // [Benchmark]
-    // [BenchmarkCategory("Fnv1aYtHash32")]
-    // public unsafe ulong Fnv1aYtHash32Test() => Fnv1aYtHash32.ComputeHash(_ptr, _testData.Length);
-
     [Benchmark]
     [BenchmarkCategory("MarvinHash32")]
     public uint MarvinHash32Test() => MarvinHash32.ComputeHash(_testData);
@@ -130,6 +127,10 @@ public class HashBenchmarks : IDisposable
     [Benchmark]
     [BenchmarkCategory("Fnv1aYtHash32")]
     public unsafe ulong Fnv1aYtHash32UnsafeTest() => Fnv1aYtHash32Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark]
+    [BenchmarkCategory("HighwayHash64")]
+    public unsafe ulong HighwayHash64UnsafeTest() => HighwayHash64Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
     [BenchmarkCategory("Murmur3Hash32")]
