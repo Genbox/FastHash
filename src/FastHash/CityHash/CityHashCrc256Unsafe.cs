@@ -4,32 +4,32 @@ using static Genbox.FastHash.CityHash.CityHashConstants;
 
 namespace Genbox.FastHash.CityHash;
 
-public static class CityCrcHash128Unsafe
+public static class CityHashCrc256Unsafe
 {
-    public static unsafe Uint128 ComputeHash(byte* s, uint len)
+    public static unsafe void ComputeHash(byte* s, int length, ulong[] result)
     {
-        if (len <= 900)
-            return CityHash128Unsafe.ComputeHash(s, len);
+        uint len = (uint)length;
 
-        ulong* result = stackalloc ulong[4];
-        CityHashCrc256(s, len, result);
-        return new Uint128(result[2], result[3]);
-    }
+        if (len >= 240)
+            ComputeHash(s, len, 0, result);
+        else
+        {
+            byte* buf = stackalloc byte[240];
 
-    private static unsafe Uint128 CityHashCrc128WithSeed(byte* s, uint len, Uint128 seed)
-    {
-        if (len <= 900)
-            return CityHash128Unsafe.CityHash128WithSeed(s, len, seed);
+            for (int i = 0; i < len; i++)
+                buf[i] = s[i];
 
-        ulong* result = stackalloc ulong[4];
-        CityHashCrc256(s, len, result);
-        ulong u = seed.High + result[0];
-        ulong v = seed.Low + result[1];
-        return new Uint128(HashLen16(u, v + result[2]), HashLen16(RotateRight(v, 32), u * K0 + result[3]));
+            for (uint i = len; i < 240 - len; i++)
+                buf[i] = 0;
+
+            // memcpy(buf, s, len);
+            // memset(buf + len, 0, 240 - len);
+            ComputeHash(buf, 240, ~len, result);
+        }
     }
 
     // Requires len >= 240.
-    private static unsafe void CityHashCrc256Long(byte* s, uint len, uint seed, ulong* result)
+    public static unsafe void ComputeHash(byte* s, uint len, uint seed, ulong[] result)
     {
         ulong a = Read64(s + 56) + K0;
         ulong b = Read64(s + 96) + K0;
@@ -121,31 +121,11 @@ public static class CityCrcHash128Unsafe
         z = Crc32(z, b + g);
         y = Crc32(y, e + h);
         x = Crc32(x, f + a);
-        e = RotateRight(e, r);
+        if (r != 0)
+            e = RotateRight(e, r);
         c += e;
         s += 40;
     }
 
     private static uint Crc32(ulong a, ulong b) => Sse42.Crc32((uint)a, (uint)b); //_mm_crc32_u64
-
-    // Requires len < 240.
-    private static unsafe void CityHashCrc256Short(byte* s, uint len, ulong* result)
-    {
-        byte* buf = stackalloc byte[240];
-
-        for (int i = 0; i < len; i++)
-            buf[i] = s[i];
-
-        // memcpy(buf, s, len);
-        // memset(buf + len, 0, 240 - len);
-        CityHashCrc256Long(buf, 240, ~len, result);
-    }
-
-    private static unsafe void CityHashCrc256(byte* s, uint len, ulong* result)
-    {
-        if (len >= 240)
-            CityHashCrc256Long(s, len, 0, result);
-        else
-            CityHashCrc256Short(s, len, result);
-    }
 }

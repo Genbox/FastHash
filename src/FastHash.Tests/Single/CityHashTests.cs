@@ -3,13 +3,13 @@ using Xunit;
 
 namespace Genbox.FastHash.Tests.Single;
 
-public class CityHash
+public class CityHashTests
 {
     private const int DataSize = 1 << 20;
     private const int TestSize = 300;
     private const ulong Seed0 = 1234567;
     private const ulong Seed1 = CityHashConstants.K0;
-
+    private static readonly Uint128 Seed128 = new Uint128(Seed0, Seed1);
     private readonly byte[] _data = new byte[DataSize];
 
     private readonly ulong[][] _testData =
@@ -316,7 +316,7 @@ public class CityHash
         new ulong[] { 0x5fb5e48ac7b7fa4f, 0xa96170f08f5acbc7, 0xbbf5c63d4f52a1e5, 0x6cc09e60700563e9, 0xd18f23221e964791, 0xffc23eeef7af26eb, 0x693a954a3622a315, 0x815308a32a9b0daf, 0xefb2ab27bf6fd0bd, 0x9f1ffc0986111118, 0xf9a3aa1778ea3985, 0x698fe54b2b93933b, 0xdacc2b28404d0f10, 0x815308a32a9b0daf, 0xefb2ab27bf6fd0bd, 0x5398210c }
     };
 
-    public CityHash()
+    public CityHashTests()
     {
         unchecked
         {
@@ -335,55 +335,122 @@ public class CityHash
     }
 
     [Fact]
-    public void Test()
+    public unsafe void CityHash32Test()
     {
-        int i = 0;
-        for (; i < TestSize - 1; i++)
-            RunTest(_testData[i], i * i, i);
-
-        RunTest(_testData[i], 0, DataSize);
-    }
-
-    private void RunTest(ulong[] expected, int offset, int len)
-    {
-        unsafe
+        fixed (byte* data = _data)
         {
-            fixed (byte* data = _data)
+            int i = 0;
+            for (; i < TestSize - 1; i++)
             {
-                Check(expected[0], CityHash64Unsafe.ComputeHash(data + offset, len));
-                Check(expected[1], CityHash64Unsafe.ComputeHash(data + offset, len, Seed0));
-                Check(expected[2], CityHash64Unsafe.ComputeHash(data + offset, len, Seed0, Seed1));
-
-                // Uint128 u = CityHash128(data + offset, len);
-                // Uint128 v = CityHash128WithSeed(data + offset, len, kSeed128);
-                // Check(expected[3], u.Low);
-                // Check(expected[4], u.High);
-                // Check(expected[5], v.Low);
-                // Check(expected[6], v.High);
-                //
-                // Check(expected[15], CityHash32(data + offset, len));
-                //
-                // Uint128 y = CityHashCrc128(data + offset, len);
-                // Uint128 z = CityHashCrc128WithSeed(data + offset, len, kSeed128);
-                //
-                // Check(expected[7], y.Low);
-                // Check(expected[8], y.High);
-                // Check(expected[9], z.Low);
-                // Check(expected[10], z.High);
-
-                // ulong[] crc256_results = new ulong[4];
-                // CityHashCrc256(data + offset, len, crc256_results);
-                //
-                // for (int i = 0; i < 4; i++)
-                // {
-                //     Check(expected[11 + i], crc256_results[i]);
-                // }
+                Assert.Equal(_testData[i][15], CityHash32Unsafe.ComputeHash(data + i * i, i));
             }
+
+            Assert.Equal(_testData[i][15], CityHash32Unsafe.ComputeHash(data, DataSize));
         }
     }
 
-    private void Check(ulong expected, ulong actual)
+    [Fact]
+    public unsafe void CityHash64Test()
     {
-        Assert.Equal(expected, actual);
+        fixed (byte* data = _data)
+        {
+            int i = 0;
+            for (; i < TestSize - 1; i++)
+            {
+                Assert.Equal(_testData[i][0], CityHash64Unsafe.ComputeHash(data + i * i, i));
+                Assert.Equal(_testData[i][1], CityHash64Unsafe.ComputeHash(data + i * i, i, Seed0));
+                Assert.Equal(_testData[i][2], CityHash64Unsafe.ComputeHash(data + i * i, i, Seed0, Seed1));
+            }
+
+            Assert.Equal(_testData[i][0], CityHash64Unsafe.ComputeHash(data, DataSize));
+            Assert.Equal(_testData[i][1], CityHash64Unsafe.ComputeHash(data, DataSize, Seed0));
+            Assert.Equal(_testData[i][2], CityHash64Unsafe.ComputeHash(data, DataSize, Seed0, Seed1));
+        }
+    }
+
+    [Fact]
+    public unsafe void CityHash128Test()
+    {
+        fixed (byte* data = _data)
+        {
+            int i = 0;
+            Uint128 u;
+            Uint128 v;
+            for (; i < TestSize - 1; i++)
+            {
+                u = CityHash128Unsafe.ComputeHash(data + i * i, i);
+                Assert.Equal(_testData[i][3], u.Low);
+                Assert.Equal(_testData[i][4], u.High);
+
+                v = CityHash128Unsafe.ComputeHash(data + i * i, i, Seed128);
+                Assert.Equal(_testData[i][5], v.Low);
+                Assert.Equal(_testData[i][6], v.High);
+            }
+
+            u = CityHash128Unsafe.ComputeHash(data, DataSize);
+            Assert.Equal(_testData[i][3], u.Low);
+            Assert.Equal(_testData[i][4], u.High);
+
+            v = CityHash128Unsafe.ComputeHash(data, DataSize, Seed128);
+            Assert.Equal(_testData[i][5], v.Low);
+            Assert.Equal(_testData[i][6], v.High);
+        }
+    }
+
+    [Fact]
+    public unsafe void CityHashCrc128Test()
+    {
+        fixed (byte* data = _data)
+        {
+            int i = 0;
+            Uint128 y;
+            Uint128 z;
+            for (; i < TestSize - 1; i++)
+            {
+                y = CityHashCrc128Unsafe.ComputeHash(data + i * i, i);
+                Assert.Equal(_testData[i][7], y.Low);
+                Assert.Equal(_testData[i][8], y.High);
+
+                z = CityHashCrc128Unsafe.ComputeHash(data + i * i, i, Seed128);
+                Assert.Equal(_testData[i][9], z.Low);
+                Assert.Equal(_testData[i][10], z.High);
+            }
+
+            y = CityHashCrc128Unsafe.ComputeHash(data, DataSize);
+            Assert.Equal(_testData[i][7], y.Low);
+            Assert.Equal(_testData[i][8], y.High);
+
+            z = CityHashCrc128Unsafe.ComputeHash(data, DataSize, Seed128);
+            Assert.Equal(_testData[i][9], z.Low);
+            Assert.Equal(_testData[i][10], z.High);
+        }
+    }
+
+    [Fact]
+    public unsafe void CityHashCrc256Test()
+    {
+        fixed (byte* data = _data)
+        {
+            int i = 0;
+
+            ulong[] results = new ulong[4];
+
+            for (; i < TestSize - 1; i++)
+            {
+                CityHashCrc256Unsafe.ComputeHash(data + i * i, i, results);
+
+                for (int x = 0; x < 4; x++)
+                {
+                    Assert.Equal(_testData[i][11 + x], results[i]);
+                }
+            }
+
+            CityHashCrc256Unsafe.ComputeHash(data, DataSize, results);
+
+            for (int x = 0; x < 4; x++)
+            {
+                Assert.Equal(_testData[i][11 + x], results[i]);
+            }
+        }
     }
 }

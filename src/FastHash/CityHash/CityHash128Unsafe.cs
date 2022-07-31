@@ -5,9 +5,16 @@ namespace Genbox.FastHash.CityHash;
 
 public static class CityHash128Unsafe
 {
-    public static unsafe Uint128 ComputeHash(byte* s, uint len)
+    public static unsafe Uint128 ComputeHash(byte* s, int length)
     {
+        uint len = (uint)length;
         return len >= 16 ? CityHash128WithSeed(s + 16, len - 16, new Uint128(Read64(s), Read64(s + 8) + K0)) : CityHash128WithSeed(s, len, new Uint128(K0, K1));
+    }
+
+    public static unsafe Uint128 ComputeHash(byte* s, int length, Uint128 seed)
+    {
+        uint len = (uint)length;
+        return CityHash128WithSeed(s, len, seed);
     }
 
     // A subroutine for CityHash128().  Returns a decent 128-bit hash for strings

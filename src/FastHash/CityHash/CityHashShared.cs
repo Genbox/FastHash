@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 
 namespace Genbox.FastHash.CityHash;
@@ -68,8 +68,8 @@ internal static class CityHashShared
             byte a = s[0];
             byte b = s[len >> 1];
             byte c = s[len - 1];
-            uint y = (a + (uint)b) << 8;
-            uint z = (len + c) << 2;
+            uint y = a + ((uint)b << 8);
+            uint z = len + ((uint)c << 2);
             return ShiftMix((y * K2) ^ (z * K0)) * K2;
         }
         return K2;

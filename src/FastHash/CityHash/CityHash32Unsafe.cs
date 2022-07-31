@@ -1,4 +1,4 @@
-﻿using static Genbox.FastHash.CityHash.CityHashShared;
+using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 using static Genbox.FastHash.MurmurHash.MurmurShared;
 
@@ -6,8 +6,10 @@ namespace Genbox.FastHash.CityHash;
 
 public static class CityHash32Unsafe
 {
-    public static unsafe uint ComputeHash(byte* s, uint len)
+    public static unsafe uint ComputeHash(byte* s, int length)
     {
+        uint len = (uint)length;
+
         if (len <= 24)
             return len <= 12 ? len <= 4 ? Hash32Len0to4(s, len) : Hash32Len5to12(s, len) : Hash32Len13to24(s, len);
 
