@@ -95,7 +95,7 @@ public static class CityHash32Unsafe
         uint c = 9;
         for (uint i = 0; i < len; i++)
         {
-            byte v = s[i];
+            uint v = (uint)(sbyte)s[i];
             b = b * C1 + v;
             c ^= b;
         }
