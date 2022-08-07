@@ -1,4 +1,4 @@
-﻿//Ported to C# by Ian Qvist
+//Ported to C# by Ian Qvist
 //Source: https://github.com/google/farmhash
 
 using System.Runtime.CompilerServices;
@@ -77,7 +77,7 @@ public static class FarmHash32
         uint c = 9;
         for (int i = 0; i < len; i++)
         {
-            byte v = s[i];
+            uint v = (uint)(sbyte)s[i];
             b = b * C1 + v;
             c ^= b;
         }
