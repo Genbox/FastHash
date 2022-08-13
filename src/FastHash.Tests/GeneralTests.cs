@@ -1,23 +1,12 @@
 ﻿using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using System.Text;
 using Genbox.FastHash.DjbHash;
-using Genbox.FastHash.FarmHash;
-using Genbox.FastHash.FnvHash;
-using Genbox.FastHash.MarvinHash;
-using Genbox.FastHash.MurmurHash;
-using Genbox.FastHash.SipHash;
-using Genbox.FastHash.SuperFastHash;
-using Genbox.FastHash.WyHash;
-using Genbox.FastHash.XxHash;
 using Xunit;
 
 namespace Genbox.FastHash.Tests;
 
 public class GeneralTests
 {
-
     [Fact]
     public void CheckAllHaveCorrectName()
     {

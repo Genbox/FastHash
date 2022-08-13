@@ -1,4 +1,3 @@
-using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
@@ -130,7 +129,7 @@ public static class CityHash32
         uint a = len, b = a * 5, c = 9, d = b;
         a += Read32(s);
         b += Read32(s, len - 4);
-        c += Read32(s, ((len >> 1) & 4));
+        c += Read32(s, (len >> 1) & 4);
         return MurmurMix(Mur(c, Mur(b, Mur(a, d))));
     }
 }

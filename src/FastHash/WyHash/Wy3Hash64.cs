@@ -79,10 +79,7 @@ public class Wy3Hash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong _wyr3(byte[] data, uint offset = 0)
-    {
-        return ((ulong)data[0] << 16) | ((ulong)data[offset >> 1] << 8) | data[offset - 1];
-    }
+    private static ulong _wyr3(byte[] data, uint offset = 0) => ((ulong)data[0] << 16) | ((ulong)data[offset >> 1] << 8) | data[offset - 1];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void _wymum(ref ulong A, ref ulong B)

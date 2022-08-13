@@ -11,10 +11,7 @@ public static class CityHash128
         return CityHash128WithSeed(s, (uint)s.Length, seed);
     }
 
-    public static Uint128 ComputeHash(byte[] s, Uint128 seed)
-    {
-        return CityHash128WithSeed(s, (uint)s.Length, seed);
-    }
+    public static Uint128 ComputeHash(byte[] s, Uint128 seed) => CityHash128WithSeed(s, (uint)s.Length, seed);
 
     // A subroutine for CityHash128().  Returns a decent 128-bit hash for strings
     // of any length representable in signed long.  Based on City and Murmur.

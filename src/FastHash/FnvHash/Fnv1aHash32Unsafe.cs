@@ -5,9 +5,7 @@ using static Genbox.FastHash.FnvHash.FnvHashConstants;
 
 namespace Genbox.FastHash.FnvHash;
 
-/// <summary>
-/// Fowler–Noll–Vo hash implementation
-/// </summary>
+/// <summary>Fowler–Noll–Vo hash implementation</summary>
 public static class Fnv1aHash32Unsafe
 {
     public static unsafe uint ComputeHash(byte* data, int length)

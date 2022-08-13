@@ -5,7 +5,7 @@ namespace Genbox.FastHash.Tests.Single;
 
 public class HighwayHashTests
 {
-    const uint kMaxSize = 64;
+    private const uint kMaxSize = 64;
 
     private static readonly ulong[] _testKeys =
     {
@@ -57,9 +57,7 @@ public class HighwayHashTests
         }
 
         for (i = 0; i < 33; i++)
-        {
             data[i] = (byte)(128 + i);
-        }
         TestHash64(0x53c516cce478cad7ul, data, 33, _testKeys2);
     }
 

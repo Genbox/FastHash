@@ -35,7 +35,6 @@
 //Ported to C# by Ian Qvist
 //Source: http://cyan4973.github.io/xxHash/
 
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 using static Genbox.FastHash.XxHash.XxHashShared;
@@ -51,7 +50,7 @@ public static class Xx2Hash64
         acc = RotateLeft(acc, 31);
         acc *= PRIME64_1;
 
-        ulong h64 = PRIME64_5 + 8 ^ acc;
+        ulong h64 = (PRIME64_5 + 8) ^ acc;
         h64 = RotateLeft(h64, 27) * PRIME64_1 + PRIME64_4;
         h64 ^= h64 >> 33;
         h64 *= PRIME64_2;

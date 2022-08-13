@@ -10,10 +10,7 @@ public static class Xx3Hash128Unsafe
             return XXH3_128bits_internal(input, length, seed, secretPtr, XxHashConstants.SECRET_DEFAULT_SIZE, XXH3_hashLong_128b_withSeed);
     }
 
-    private static unsafe Uint128 XXH3_hashLong_128b_withSeed(byte* input, int len, ulong seed64, byte* secret, int secretLen)
-    {
-        return XXH3_hashLong_128b_withSeed_internal(input, len, seed64, secret, secretLen, XxHashShared.XXH3_accumulate_512, XxHashShared.XXH3_scrambleAcc, XxHashShared.XXH3_initCustomSecret);
-    }
+    private static unsafe Uint128 XXH3_hashLong_128b_withSeed(byte* input, int len, ulong seed64, byte* secret, int secretLen) => XXH3_hashLong_128b_withSeed_internal(input, len, seed64, secret, secretLen, XxHashShared.XXH3_accumulate_512, XxHashShared.XXH3_scrambleAcc, XxHashShared.XXH3_initCustomSecret);
 
     private static unsafe Uint128 XXH3_128bits_internal(byte* input, int len, ulong seed64, byte* secret, int secretLen, XxHashShared.XXH3_hashLong128_f f_hl128)
     {

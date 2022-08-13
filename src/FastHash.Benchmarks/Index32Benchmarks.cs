@@ -8,7 +8,6 @@ using Genbox.FastHash.FnvHash;
 using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MurmurHash;
 using Genbox.FastHash.SuperFastHash;
-using Genbox.FastHash.WyHash;
 using Genbox.FastHash.XxHash;
 
 namespace Genbox.FastHash.Benchmarks;

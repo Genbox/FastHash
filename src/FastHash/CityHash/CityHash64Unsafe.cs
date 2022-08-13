@@ -62,10 +62,7 @@ public static class CityHash64Unsafe
             HashLen16(v.High, w.High) + x);
     }
 
-    private static unsafe ulong CityHash64WithSeeds(byte* s, uint len, ulong seed0, ulong seed1)
-    {
-        return HashLen16(CityHash64(s, len) - seed0, seed1);
-    }
+    private static unsafe ulong CityHash64WithSeeds(byte* s, uint len, ulong seed0, ulong seed1) => HashLen16(CityHash64(s, len) - seed0, seed1);
 
     // This probably works well for 16-byte strings as well, but it may be overkill in that case.
     private static unsafe ulong HashLen17to32(byte* s, uint len)

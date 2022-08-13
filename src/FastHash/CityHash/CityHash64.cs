@@ -6,27 +6,18 @@ namespace Genbox.FastHash.CityHash;
 
 public static class CityHash64
 {
-    public static ulong ComputeHash(byte[] s)
-    {
-        return CityHash64_2(s);
-    }
+    public static ulong ComputeHash(byte[] s) => CityHash64_2(s);
 
-    public static ulong ComputeHash(byte[] s, ulong seed)
-    {
-        return CityHash64WithSeeds(s, K2, seed);
-    }
+    public static ulong ComputeHash(byte[] s, ulong seed) => CityHash64WithSeeds(s, K2, seed);
 
-    public static ulong ComputeHash(byte[] s, ulong seed1, ulong seed2)
-    {
-        return CityHash64WithSeeds(s, seed1, seed2);
-    }
+    public static ulong ComputeHash(byte[] s, ulong seed1, ulong seed2) => CityHash64WithSeeds(s, seed1, seed2);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
     {
         ulong mul = K2 + 16;
         ulong d = (RotateRight(input + K2, 25) + input) * mul;
-        ulong a = (RotateRight(input, 37) * mul + input + K2 ^ d) * mul;
+        ulong a = ((RotateRight(input, 37) * mul + input + K2) ^ d) * mul;
         a ^= a >> 47;
         ulong b = (d ^ a) * mul;
         b ^= b >> 47;
@@ -76,10 +67,7 @@ public static class CityHash64
             HashLen16(v.High, w.High) + x);
     }
 
-    private static ulong CityHash64WithSeeds(byte[] s, ulong seed0, ulong seed1)
-    {
-        return HashLen16(CityHash64_2(s) - seed0, seed1);
-    }
+    private static ulong CityHash64WithSeeds(byte[] s, ulong seed0, ulong seed1) => HashLen16(CityHash64_2(s) - seed0, seed1);
 
     // This probably works well for 16-byte strings as well, but it may be overkill in that case.
     private static ulong HashLen17to32(byte[] s, uint len)

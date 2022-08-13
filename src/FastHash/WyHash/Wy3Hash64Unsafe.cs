@@ -68,10 +68,7 @@ public class Wy3Hash64Unsafe
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe ulong _wyr3(byte* data, uint offset = 0)
-    {
-        return ((ulong)data[0] << 16) | ((ulong)data[offset >> 1] << 8) | data[offset - 1];
-    }
+    private static unsafe ulong _wyr3(byte* data, uint offset = 0) => ((ulong)data[0] << 16) | ((ulong)data[offset >> 1] << 8) | data[offset - 1];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void _wymum(ulong* A, ulong* B)

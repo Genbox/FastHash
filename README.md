@@ -3,6 +3,7 @@
 [![NuGet](https://img.shields.io/nuget/v/Genbox.FastHash.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Genbox.FastHash/)
 
 ### Hashes
+
 These hash functions are included in the library.
 
 | Name                                                                                                                                                    | Authors                                                         | Managed | Unsafe | 32bit | 64bit | 128bit |
@@ -21,13 +22,14 @@ These hash functions are included in the library.
 | [xxHash](https://github.com/Cyan4973/xxHash)                                                                                                            | Yann Collet                                                     |    x    |   x    |   x   |   x   |   x    |
 
 ### Performance
+
 Measured on 32 MB data. The unsafe versions are implemented using C# unsafe code.
 
-**Note:** Speed is not everything. The quality of a hash is just as important, but much more difficult to measure. [See SMHasher](https://github.com/rurban/smhasher) for more details on hash quality.
+**Note:** Speed is not everything. The quality of a hash is just as important, but much more difficult to measure. [See SMHasher](https://github.com/rurban/smhasher) for more
+details on hash quality.
 
 |           Hash method | MB/s   |
 |----------------------:|--------|
-|   Fnv1aYtHash32Unsafe | 19,926 |
 |       Wy3Hash64Unsafe | 15,721 |
 |       Xx2Hash64Unsafe | 12,813 |
 |             Wy3Hash64 | 11,572 |

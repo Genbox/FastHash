@@ -3,11 +3,7 @@ using BenchmarkDotNet.Order;
 using Genbox.FastHash.Benchmarks.Code;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
-using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FnvHash;
-using Genbox.FastHash.MarvinHash;
-using Genbox.FastHash.MurmurHash;
-using Genbox.FastHash.SuperFastHash;
 using Genbox.FastHash.WyHash;
 using Genbox.FastHash.XxHash;
 

@@ -6,9 +6,7 @@ using static Genbox.FastHash.FnvHash.FnvHashConstants;
 
 namespace Genbox.FastHash.FnvHash;
 
-/// <summary>
-/// Fowler–Noll–Vo hash implementation
-/// </summary>
+/// <summary>Fowler–Noll–Vo hash implementation</summary>
 public static class Fnv1aHash32
 {
     public static uint ComputeHash(byte[] data)

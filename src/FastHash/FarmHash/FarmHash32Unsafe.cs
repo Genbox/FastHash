@@ -2,8 +2,6 @@
 //Source: https://github.com/google/farmhash
 
 using System.Runtime.CompilerServices;
-using Genbox.FastHash.CityHash;
-using Genbox.FastHash.MurmurHash;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.MurmurHash.MurmurShared;
 using static Genbox.FastHash.FarmHash.FarmHashConstants;
