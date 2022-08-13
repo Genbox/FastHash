@@ -60,6 +60,10 @@ public class HashBenchmarks : IDisposable
     public uint Djb2Hash32Test() => Djb2Hash32.ComputeHash(_testData);
 
     [Benchmark]
+    [BenchmarkCategory("Djb2Hash64")]
+    public ulong Djb2Hash64Test() => Djb2Hash64.ComputeHash(_testData);
+
+    [Benchmark]
     [BenchmarkCategory("FarmHash32")]
     public uint FarmHash32Test() => FarmHash32.ComputeHash(_testData);
 
@@ -126,6 +130,10 @@ public class HashBenchmarks : IDisposable
     [Benchmark]
     [BenchmarkCategory("Djb2Hash32")]
     public unsafe uint Djb2Hash32UnsafeTest() => Djb2Hash32Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark]
+    [BenchmarkCategory("Djb2Hash64")]
+    public unsafe ulong Djb2Hash64UnsafeTest() => Djb2Hash64Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
     [BenchmarkCategory("FarmHash32")]

@@ -12,8 +12,8 @@ public static class Djb2Hash32
     {
         uint hash = InitHash;
 
-        for (int x = 0; x < data.Length; x++)
-            hash = ((hash << 5) + hash) ^ data[x];
+        for (int i = 0; i < data.Length; i++)
+            hash = ((hash << 5) + hash) ^ data[i];
 
         return hash;
     }
