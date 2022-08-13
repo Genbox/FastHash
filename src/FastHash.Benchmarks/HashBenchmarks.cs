@@ -2,11 +2,11 @@ using System.Runtime.InteropServices;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using Genbox.FastHash.Benchmarks.Code;
+using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FarshHash;
 using Genbox.FastHash.FnvHash;
-using Genbox.FastHash.HighwayHash;
 using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MurmurHash;
 using Genbox.FastHash.SipHash;
@@ -17,7 +17,6 @@ using Genbox.FastHash.XxHash;
 namespace Genbox.FastHash.Benchmarks;
 
 [MbPrSecColumn]
-[InProcess]
 [CategoriesColumn]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 public class HashBenchmarks : IDisposable
@@ -43,6 +42,18 @@ public class HashBenchmarks : IDisposable
         for (int i = 0; i < _testData.Length; i++)
             _ptr[i] = _testData[i];
     }
+
+    [Benchmark]
+    [BenchmarkCategory("CityHash32")]
+    public uint CityHash32Test() => CityHash32.ComputeHash(_testData);
+
+    [Benchmark]
+    [BenchmarkCategory("CityHash64")]
+    public ulong CityHash64Test() => CityHash64.ComputeHash(_testData);
+
+    [Benchmark]
+    [BenchmarkCategory("CityHash128")]
+    public Uint128 CityHash128Test() => CityHash128.ComputeHash(_testData);
 
     [Benchmark]
     [BenchmarkCategory("Djb2Hash32")]
@@ -101,6 +112,18 @@ public class HashBenchmarks : IDisposable
     public ulong Wy3Hash64Test() => Wy3Hash64.ComputeHash(_testData);
 
     [Benchmark]
+    [BenchmarkCategory("CityHash32")]
+    public unsafe uint CityHash32UnsafeTest() => CityHash32Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark]
+    [BenchmarkCategory("CityHash64")]
+    public unsafe ulong CityHash64UnsafeTest() => CityHash64Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark]
+    [BenchmarkCategory("CityHash128")]
+    public unsafe Uint128 CityHash128UnsafeTest() => CityHash128Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark]
     [BenchmarkCategory("Djb2Hash32")]
     public unsafe uint Djb2Hash32UnsafeTest() => Djb2Hash32Unsafe.ComputeHash(_ptr, _testData.Length);
 
@@ -127,10 +150,6 @@ public class HashBenchmarks : IDisposable
     [Benchmark]
     [BenchmarkCategory("Fnv1aYtHash32")]
     public unsafe ulong Fnv1aYtHash32UnsafeTest() => Fnv1aYtHash32Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark]
-    [BenchmarkCategory("HighwayHash64")]
-    public unsafe ulong HighwayHash64UnsafeTest() => HighwayHash64Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
     [BenchmarkCategory("Murmur3Hash32")]

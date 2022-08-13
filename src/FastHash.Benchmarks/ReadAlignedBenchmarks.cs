@@ -6,9 +6,7 @@ using Genbox.FastHash.Benchmarks.Code;
 namespace Genbox.FastHash.Benchmarks;
 
 [MbPrSecColumn]
-[RankColumn]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-[InProcess]
 public class ReadAlignedBenchmarks
 {
     private byte[] _testData;

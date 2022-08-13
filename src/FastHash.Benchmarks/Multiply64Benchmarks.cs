@@ -3,7 +3,6 @@ using BenchmarkDotNet.Attributes;
 
 namespace Genbox.FastHash.Benchmarks;
 
-[InProcess]
 public class Multiply64Benchmarks
 {
     private readonly ulong _valA = 10280214UL;

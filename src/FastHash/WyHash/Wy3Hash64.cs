@@ -12,13 +12,13 @@ namespace Genbox.FastHash.WyHash;
 public class Wy3Hash64
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input, ulong seed = 0)
+    public static ulong ComputeIndex(ulong input)
     {
         ulong a = ((ulong)(uint)input << 32) | (uint)(input >> 32);
         ulong b = ((ulong)(uint)(input >> 32) << 32) | (uint)input;
 
-        seed ^= 0xa0761d6478bd642ful;
-        return _wymix(0xe7037ed1a0b428dbul ^ 8, _wymix(a ^ 0xe7037ed1a0b428dbul, b ^ seed));
+        ulong high = Math.BigMul(a ^ 0xe7037ed1a0b428dbul, b ^ 0xa0761d6478bd642ful, out ulong low);
+        return _wymix(0xe7037ed1a0b428dbul ^ 8, low ^ high);
     }
 
     public static ulong ComputeHash(byte[] data, ulong seed = 0, ulong[]? secret = null)

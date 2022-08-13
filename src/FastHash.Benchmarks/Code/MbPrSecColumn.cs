@@ -10,7 +10,7 @@ public class MbPrSecColumn : IColumn
 {
     private readonly int _size;
 
-    public MbPrSecColumn(int size)
+    public MbPrSecColumn(int size = 0)
     {
         _size = size;
     }

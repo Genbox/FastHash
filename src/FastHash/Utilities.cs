@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Genbox.FastHash;
 
@@ -15,6 +16,9 @@ internal static class Utilities
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static uint Read32(byte[] p, uint offset = 0) => Unsafe.ReadUnaligned<uint>(ref p[offset]);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static uint Read32(Span<byte> p, uint offset = 0) => MemoryMarshal.Read<uint>(p[(int)offset..]);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static unsafe uint Read32(byte* ptr, uint offset = 0) => *(uint*)(ptr + offset);

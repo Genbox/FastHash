@@ -1,8 +1,13 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 using Genbox.FastHash.Benchmarks.Code;
+using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
+using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FnvHash;
+using Genbox.FastHash.MarvinHash;
+using Genbox.FastHash.MurmurHash;
+using Genbox.FastHash.SuperFastHash;
 using Genbox.FastHash.WyHash;
 using Genbox.FastHash.XxHash;
 
@@ -10,16 +15,15 @@ namespace Genbox.FastHash.Benchmarks;
 
 [MbPrSecColumn(8)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-[InProcess]
-public class IndexBenchmarks
+public class Index64Benchmarks
 {
-    private readonly uint _value = 12808241;
+    private readonly ulong _value = 12808224424451380151UL;
 
     [Benchmark]
-    public uint Djb2Hash32Test() => Djb2Hash32.ComputeIndex(_value);
+    public ulong CityHash64Test() => CityHash64.ComputeIndex(_value);
 
     [Benchmark]
-    public uint Fnv1aHash32Test() => Fnv1aHash32.ComputeIndex(_value);
+    public ulong Djb2Hash64Test() => Djb2Hash64.ComputeIndex(_value);
 
     [Benchmark]
     public ulong Fnv1aHash64Test() => Fnv1aHash64.ComputeIndex(_value);

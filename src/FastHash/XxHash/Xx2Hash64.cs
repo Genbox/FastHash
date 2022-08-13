@@ -35,6 +35,7 @@
 //Ported to C# by Ian Qvist
 //Source: http://cyan4973.github.io/xxHash/
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 using static Genbox.FastHash.XxHash.XxHashShared;
@@ -44,12 +45,20 @@ namespace Genbox.FastHash.XxHash;
 public static class Xx2Hash64
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input, ulong seed = 0)
+    public static ulong ComputeIndex(ulong input)
     {
-        ulong h64 = seed + PRIME64_5 + 8;
-        h64 ^= Round(0, input);
+        ulong acc = input * PRIME64_2;
+        acc = RotateLeft(acc, 31);
+        acc *= PRIME64_1;
+
+        ulong h64 = PRIME64_5 + 8 ^ acc;
         h64 = RotateLeft(h64, 27) * PRIME64_1 + PRIME64_4;
-        return XXH64_avalanche(h64);
+        h64 ^= h64 >> 33;
+        h64 *= PRIME64_2;
+        h64 ^= h64 >> 29;
+        h64 *= PRIME64_3;
+        h64 ^= h64 >> 32;
+        return h64;
     }
 
     public static ulong ComputeHash(byte[] data, uint seed = 0)

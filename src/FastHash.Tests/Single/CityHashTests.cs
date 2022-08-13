@@ -343,9 +343,11 @@ public class CityHashTests
             for (; i < TestSize - 1; i++)
             {
                 Assert.Equal(_testData[i][15], CityHash32Unsafe.ComputeHash(data + i * i, i));
+                Assert.Equal(_testData[i][15], CityHash32.ComputeHash(_data.AsSpan(i * i, i)));
             }
 
             Assert.Equal(_testData[i][15], CityHash32Unsafe.ComputeHash(data, DataSize));
+            Assert.Equal(_testData[i][15], CityHash32.ComputeHash(_data));
         }
     }
 

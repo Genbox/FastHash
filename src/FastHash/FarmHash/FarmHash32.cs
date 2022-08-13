@@ -1,6 +1,7 @@
-//Ported to C# by Ian Qvist
+﻿//Ported to C# by Ian Qvist
 //Source: https://github.com/google/farmhash
 
+using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.MurmurHash.MurmurShared;
@@ -71,7 +72,27 @@ public static class FarmHash32
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static uint Hash32Len0to4(byte[] s, uint len, uint seed = 0)
+    public static uint ComputeIndex(uint input)
+    {
+        uint b = (uint)(sbyte)(input & 0xFF);
+        uint c = 9 ^ b;
+
+        uint v2 = (uint)(sbyte)((input >> 8) & 0xFF);
+        b = b * C1 + v2;
+        c ^= b;
+
+        uint v3 = (uint)(sbyte)((input >> 16) & 0xFF);
+        b = b * C1 + v3;
+        c ^= b;
+
+        uint v4 = (uint)(sbyte)((input >> 24) & 0xFF);
+        b = b * C1 + v4;
+        c ^= b;
+        return MurmurMix(Mur(b, Mur(4, c)));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static uint Hash32Len0to4(Span<byte> s, uint len, uint seed = 0)
     {
         uint b = seed;
         uint c = 9;

@@ -188,6 +188,50 @@ public static class MarvinHash32
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeIndex(uint input)
+    {
+        uint p0 = input;
+        uint p1 = BitOperations.RotateLeft(input, 20);
+
+        p1 += p0;
+        p0 = BitOperations.RotateLeft(p0, 9);
+
+        p0 ^= p1;
+        p1 = BitOperations.RotateLeft(p1, 27);
+
+        p1 += p0;
+        p0 = BitOperations.RotateLeft(p0, 19);
+
+        p1 += 128;
+
+        p0 ^= p1;
+        p1 = BitOperations.RotateLeft(p1, 20);
+
+        p1 += p0;
+        p0 = BitOperations.RotateLeft(p0, 9);
+
+        p0 ^= p1;
+        p1 = BitOperations.RotateLeft(p1, 27);
+
+        p1 += p0;
+        p0 = BitOperations.RotateLeft(p0, 19);
+
+        p0 ^= p1;
+        p1 = BitOperations.RotateLeft(p1, 20);
+
+        p1 += p0;
+        p0 = BitOperations.RotateLeft(p0, 9);
+
+        p0 ^= p1;
+        p1 = BitOperations.RotateLeft(p1, 27);
+
+        p1 += p0;
+        p0 = BitOperations.RotateLeft(p0, 19);
+
+        return p0 ^ p1;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Block(ref uint rp0, ref uint rp1)
     {
         // Intrinsified in mono interpreter

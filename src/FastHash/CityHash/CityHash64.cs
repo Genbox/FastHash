@@ -1,4 +1,5 @@
-﻿using static Genbox.FastHash.CityHash.CityHashShared;
+﻿using System.Runtime.CompilerServices;
+using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 
 namespace Genbox.FastHash.CityHash;
@@ -18,6 +19,19 @@ public static class CityHash64
     public static ulong ComputeHash(byte[] s, ulong seed1, ulong seed2)
     {
         return CityHash64WithSeeds(s, seed1, seed2);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input)
+    {
+        ulong mul = K2 + 16;
+        ulong d = (RotateRight(input + K2, 25) + input) * mul;
+        ulong a = (RotateRight(input, 37) * mul + input + K2 ^ d) * mul;
+        a ^= a >> 47;
+        ulong b = (d ^ a) * mul;
+        b ^= b >> 47;
+        b *= mul;
+        return b;
     }
 
     private static ulong CityHash64_2(byte[] s)

@@ -1,6 +1,8 @@
 ﻿//Ported to C# by Ian Qvist
 //Source: http://www.azillionmonkeys.com/qed/hash.html
 
+using System.Runtime.CompilerServices;
+
 namespace Genbox.FastHash.SuperFastHash;
 
 public static class SuperFastHash32
@@ -54,6 +56,21 @@ public static class SuperFastHash32
         hash ^= hash << 25;
         hash += hash >> 6;
 
+        return hash;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeIndex(uint input)
+    {
+        uint hash = 4 + (uint)(ushort)input;
+        hash = (hash << 16) ^ ((input >> 16) << 11) ^ hash;
+        hash += hash >> 11;
+        hash ^= hash << 3;
+        hash += hash >> 5;
+        hash ^= hash << 4;
+        hash += hash >> 17;
+        hash ^= hash << 25;
+        hash += hash >> 6;
         return hash;
     }
 }

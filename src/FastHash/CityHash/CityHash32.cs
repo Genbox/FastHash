@@ -1,3 +1,5 @@
+using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 using static Genbox.FastHash.MurmurHash.MurmurShared;
@@ -6,7 +8,7 @@ namespace Genbox.FastHash.CityHash;
 
 public static class CityHash32
 {
-    public static uint ComputeHash(byte[] s)
+    public static uint ComputeHash(Span<byte> s)
     {
         uint len = (uint)s.Length;
 
@@ -77,7 +79,27 @@ public static class CityHash32
         return h;
     }
 
-    private static uint Hash32Len13to24(byte[] s, uint len)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeIndex(uint input)
+    {
+        uint b = (uint)(sbyte)(input & 0xFF);
+        uint c = 9 ^ b;
+
+        uint v2 = (uint)(sbyte)((input >> 8) & 0xFF);
+        b = b * C1 + v2;
+        c ^= b;
+
+        uint v3 = (uint)(sbyte)((input >> 16) & 0xFF);
+        b = b * C1 + v3;
+        c ^= b;
+
+        uint v4 = (uint)(sbyte)((input >> 24) & 0xFF);
+        b = b * C1 + v4;
+        c ^= b;
+        return MurmurMix(Mur(b, Mur(4, c)));
+    }
+
+    private static uint Hash32Len13to24(Span<byte> s, uint len)
     {
         uint a = Read32(s, (len >> 1) - 4);
         uint b = Read32(s, 4);
@@ -90,11 +112,11 @@ public static class CityHash32
         return MurmurMix(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
     }
 
-    private static uint Hash32Len0to4(byte[] s, uint len)
+    private static uint Hash32Len0to4(Span<byte> s, uint len)
     {
         uint b = 0;
         uint c = 9;
-        for (uint i = 0; i < len; i++)
+        for (int i = 0; i < len; i++)
         {
             uint v = (uint)(sbyte)s[i];
             b = b * C1 + v;
@@ -103,7 +125,7 @@ public static class CityHash32
         return MurmurMix(Mur(b, Mur(len, c)));
     }
 
-    private static uint Hash32Len5to12(byte[] s, uint len)
+    private static uint Hash32Len5to12(Span<byte> s, uint len)
     {
         uint a = len, b = a * 5, c = 9, d = b;
         a += Read32(s);

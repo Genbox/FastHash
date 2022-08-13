@@ -28,8 +28,14 @@ public static class Fnv1aHash64
     public static ulong ComputeIndex(ulong input)
     {
         ulong hash = FnvInit64;
-        hash ^= input;
-        hash *= FnvPrime64;
+        hash = (hash ^ (input & 0xFF)) * FnvPrime64;
+        hash = (hash ^ ((input >> 8) & 0xFF)) * FnvPrime64;
+        hash = (hash ^ ((input >> 16) & 0xFF)) * FnvPrime64;
+        hash = (hash ^ ((input >> 24) & 0xFF)) * FnvPrime64;
+        hash = (hash ^ ((input >> 32) & 0xFF)) * FnvPrime64;
+        hash = (hash ^ ((input >> 40) & 0xFF)) * FnvPrime64;
+        hash = (hash ^ ((input >> 48) & 0xFF)) * FnvPrime64;
+        hash = (hash ^ ((input >> 56) & 0xFF)) * FnvPrime64;
         return hash;
     }
 }
