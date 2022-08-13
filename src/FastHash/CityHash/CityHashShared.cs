@@ -46,36 +46,7 @@ internal static class CityHashShared
         return b;
     }
 
-    internal static unsafe ulong HashLen0to16(byte* s, uint len)
-    {
-        if (len >= 8)
-        {
-            ulong mul = K2 + len * 2;
-            ulong a = Read64(s) + K2;
-            ulong b = Read64(s + len - 8);
-            ulong c = RotateRight(b, 37) * mul + a;
-            ulong d = (RotateRight(a, 25) + b) * mul;
-            return HashLen16(c, d, mul);
-        }
-        if (len >= 4)
-        {
-            ulong mul = K2 + len * 2;
-            ulong a = Read32(s);
-            return HashLen16(len + (a << 3), Read32(s + len - 4), mul);
-        }
-        if (len > 0)
-        {
-            byte a = s[0];
-            byte b = s[len >> 1];
-            byte c = s[len - 1];
-            uint y = a + ((uint)b << 8);
-            uint z = len + ((uint)c << 2);
-            return ShiftMix((y * K2) ^ (z * K0)) * K2;
-        }
-        return K2;
-    }
-
-    internal static ulong HashLen0to16(byte[] s, uint len)
+    internal static ulong HashLen0to16(ReadOnlySpan<byte> s, uint len)
     {
         if (len >= 8)
         {
@@ -95,8 +66,8 @@ internal static class CityHashShared
         if (len > 0)
         {
             byte a = s[0];
-            byte b = s[len >> 1];
-            byte c = s[len - 1];
+            byte b = s[(int)(len >> 1)];
+            byte c = s[(int)(len - 1)];
             uint y = a + ((uint)b << 8);
             uint z = len + ((uint)c << 2);
             return ShiftMix((y * K2) ^ (z * K0)) * K2;
@@ -105,17 +76,7 @@ internal static class CityHashShared
     }
 
     // Return a 16-byte hash for s[0] ... s[31], a, and b.  Quick and dirty.
-    internal static unsafe Uint128 WeakHashLen32WithSeeds(byte* s, ulong a, ulong b)
-    {
-        return WeakHashLen32WithSeeds(Read64(s),
-            Read64(s + 8),
-            Read64(s + 16),
-            Read64(s + 24),
-            a,
-            b);
-    }
-
-    internal static Uint128 WeakHashLen32WithSeeds(byte[] s, uint offset, ulong a, ulong b)
+    internal static Uint128 WeakHashLen32WithSeeds(ReadOnlySpan<byte> s, uint offset, ulong a, ulong b)
     {
         return WeakHashLen32WithSeeds(Read64(s, offset),
             Read64(s, offset + 8),
@@ -127,7 +88,7 @@ internal static class CityHashShared
 
     // Return a 16-byte hash for 48 bytes.  Quick and dirty.
     // Callers do best to use "random-looking" values for a and b.
-    private static Uint128 WeakHashLen32WithSeeds(ulong w, ulong x, ulong y, ulong z, ulong a, ulong b)
+    internal static Uint128 WeakHashLen32WithSeeds(ulong w, ulong x, ulong y, ulong z, ulong a, ulong b)
     {
         a += w;
         b = RotateRight(b + a + z, 21);

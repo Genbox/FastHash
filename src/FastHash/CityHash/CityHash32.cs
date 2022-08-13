@@ -7,20 +7,20 @@ namespace Genbox.FastHash.CityHash;
 
 public static class CityHash32
 {
-    public static uint ComputeHash(Span<byte> s)
+    public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
-        uint len = (uint)s.Length;
+        uint len = (uint)data.Length;
 
         if (len <= 24)
-            return len <= 12 ? len <= 4 ? Hash32Len0to4(s, len) : Hash32Len5to12(s, len) : Hash32Len13to24(s, len);
+            return len <= 12 ? len <= 4 ? Hash32Len0to4(data, len) : Hash32Len5to12(data, len) : Hash32Len13to24(data, len);
 
         // len > 24
         uint h = len, g = C1 * h, f = g;
-        uint a0 = RotateRight(Read32(s, len - 4) * C1, 17) * C2;
-        uint a1 = RotateRight(Read32(s, len - 8) * C1, 17) * C2;
-        uint a2 = RotateRight(Read32(s, len - 16) * C1, 17) * C2;
-        uint a3 = RotateRight(Read32(s, len - 12) * C1, 17) * C2;
-        uint a4 = RotateRight(Read32(s, len - 20) * C1, 17) * C2;
+        uint a0 = RotateRight(Read32(data, len - 4) * C1, 17) * C2;
+        uint a1 = RotateRight(Read32(data, len - 8) * C1, 17) * C2;
+        uint a2 = RotateRight(Read32(data, len - 16) * C1, 17) * C2;
+        uint a3 = RotateRight(Read32(data, len - 12) * C1, 17) * C2;
+        uint a4 = RotateRight(Read32(data, len - 20) * C1, 17) * C2;
         h ^= a0;
         h = RotateRight(h, 19);
         h = h * 5 + 0xe6546b64;
@@ -40,11 +40,11 @@ public static class CityHash32
         uint offset = 0;
         do
         {
-            a0 = RotateRight(Read32(s, offset) * C1, 17) * C2;
-            a1 = Read32(s, offset + 4);
-            a2 = RotateRight(Read32(s, offset + 8) * C1, 17) * C2;
-            a3 = RotateRight(Read32(s, offset + 12) * C1, 17) * C2;
-            a4 = Read32(s, offset + 16);
+            a0 = RotateRight(Read32(data, offset) * C1, 17) * C2;
+            a1 = Read32(data, offset + 4);
+            a2 = RotateRight(Read32(data, offset + 8) * C1, 17) * C2;
+            a3 = RotateRight(Read32(data, offset + 12) * C1, 17) * C2;
+            a4 = Read32(data, offset + 16);
             h ^= a0;
             h = RotateRight(h, 18);
             h = h * 5 + 0xe6546b64;
@@ -98,7 +98,7 @@ public static class CityHash32
         return MurmurMix(Mur(b, Mur(4, c)));
     }
 
-    private static uint Hash32Len13to24(Span<byte> s, uint len)
+    private static uint Hash32Len13to24(ReadOnlySpan<byte> s, uint len)
     {
         uint a = Read32(s, (len >> 1) - 4);
         uint b = Read32(s, 4);
@@ -111,7 +111,7 @@ public static class CityHash32
         return MurmurMix(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
     }
 
-    private static uint Hash32Len0to4(Span<byte> s, uint len)
+    private static uint Hash32Len0to4(ReadOnlySpan<byte> s, uint len)
     {
         uint b = 0;
         uint c = 9;
@@ -124,7 +124,7 @@ public static class CityHash32
         return MurmurMix(Mur(b, Mur(len, c)));
     }
 
-    private static uint Hash32Len5to12(Span<byte> s, uint len)
+    private static uint Hash32Len5to12(ReadOnlySpan<byte> s, uint len)
     {
         uint a = len, b = a * 5, c = 9, d = b;
         a += Read32(s);

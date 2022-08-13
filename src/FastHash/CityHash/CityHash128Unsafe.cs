@@ -1,20 +1,21 @@
 ﻿using static Genbox.FastHash.CityHash.CityHashShared;
+using static Genbox.FastHash.CityHash.CityHashUnsafeShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 
 namespace Genbox.FastHash.CityHash;
 
 public static class CityHash128Unsafe
 {
-    public static unsafe Uint128 ComputeHash(byte* s, int length)
+    public static unsafe Uint128 ComputeHash(byte* data, int length)
     {
         uint len = (uint)length;
-        return len >= 16 ? CityHash128WithSeed(s + 16, len - 16, new Uint128(Read64(s), Read64(s + 8) + K0)) : CityHash128WithSeed(s, len, new Uint128(K0, K1));
+        return len >= 16 ? CityHash128WithSeed(data + 16, len - 16, new Uint128(Read64(data), Read64(data + 8) + K0)) : CityHash128WithSeed(data, len, new Uint128(K0, K1));
     }
 
-    public static unsafe Uint128 ComputeHash(byte* s, int length, Uint128 seed)
+    public static unsafe Uint128 ComputeHash(byte* data, int length, Uint128 seed)
     {
         uint len = (uint)length;
-        return CityHash128WithSeed(s, len, seed);
+        return CityHash128WithSeed(data, len, seed);
     }
 
     // A subroutine for CityHash128().  Returns a decent 128-bit hash for strings

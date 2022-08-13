@@ -6,11 +6,11 @@ namespace Genbox.FastHash.CityHash;
 
 public static class CityHash64
 {
-    public static ulong ComputeHash(byte[] s) => CityHash64_2(s);
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => CityHash64Internal(data);
 
-    public static ulong ComputeHash(byte[] s, ulong seed) => CityHash64WithSeeds(s, K2, seed);
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed) => CityHash64WithSeeds(data, K2, seed);
 
-    public static ulong ComputeHash(byte[] s, ulong seed1, ulong seed2) => CityHash64WithSeeds(s, seed1, seed2);
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2) => CityHash64WithSeeds(data, seed1, seed2);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
@@ -25,7 +25,7 @@ public static class CityHash64
         return b;
     }
 
-    private static ulong CityHash64_2(byte[] s)
+    private static ulong CityHash64Internal(ReadOnlySpan<byte> s)
     {
         uint len = (uint)s.Length;
 
@@ -67,10 +67,10 @@ public static class CityHash64
             HashLen16(v.High, w.High) + x);
     }
 
-    private static ulong CityHash64WithSeeds(byte[] s, ulong seed0, ulong seed1) => HashLen16(CityHash64_2(s) - seed0, seed1);
+    private static ulong CityHash64WithSeeds(ReadOnlySpan<byte> s, ulong seed0, ulong seed1) => HashLen16(CityHash64Internal(s) - seed0, seed1);
 
     // This probably works well for 16-byte strings as well, but it may be overkill in that case.
-    private static ulong HashLen17to32(byte[] s, uint len)
+    private static ulong HashLen17to32(ReadOnlySpan<byte> s, uint len)
     {
         ulong mul = K2 + len * 2;
         ulong a = Read64(s) * K1;
@@ -82,7 +82,7 @@ public static class CityHash64
     }
 
     // Return an 8-byte hash for 33 to 64 bytes.
-    private static ulong HashLen33to64(byte[] s, uint len)
+    private static ulong HashLen33to64(ReadOnlySpan<byte> s, uint len)
     {
         ulong mul = K2 + len * 2;
         ulong a = Read64(s) * K2;

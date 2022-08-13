@@ -6,20 +6,20 @@ namespace Genbox.FastHash.CityHash;
 
 public static class CityHash32Unsafe
 {
-    public static unsafe uint ComputeHash(byte* s, int length)
+    public static unsafe uint ComputeHash(byte* data, int length)
     {
         uint len = (uint)length;
 
         if (len <= 24)
-            return len <= 12 ? len <= 4 ? Hash32Len0to4(s, len) : Hash32Len5to12(s, len) : Hash32Len13to24(s, len);
+            return len <= 12 ? len <= 4 ? Hash32Len0to4(data, len) : Hash32Len5to12(data, len) : Hash32Len13to24(data, len);
 
         // len > 24
         uint h = len, g = C1 * h, f = g;
-        uint a0 = RotateRight(Read32(s + len - 4) * C1, 17) * C2;
-        uint a1 = RotateRight(Read32(s + len - 8) * C1, 17) * C2;
-        uint a2 = RotateRight(Read32(s + len - 16) * C1, 17) * C2;
-        uint a3 = RotateRight(Read32(s + len - 12) * C1, 17) * C2;
-        uint a4 = RotateRight(Read32(s + len - 20) * C1, 17) * C2;
+        uint a0 = RotateRight(Read32(data + len - 4) * C1, 17) * C2;
+        uint a1 = RotateRight(Read32(data + len - 8) * C1, 17) * C2;
+        uint a2 = RotateRight(Read32(data + len - 16) * C1, 17) * C2;
+        uint a3 = RotateRight(Read32(data + len - 12) * C1, 17) * C2;
+        uint a4 = RotateRight(Read32(data + len - 20) * C1, 17) * C2;
         h ^= a0;
         h = RotateRight(h, 19);
         h = h * 5 + 0xe6546b64;
@@ -38,11 +38,11 @@ public static class CityHash32Unsafe
         uint iters = (len - 1) / 20;
         do
         {
-            a0 = RotateRight(Read32(s) * C1, 17) * C2;
-            a1 = Read32(s + 4);
-            a2 = RotateRight(Read32(s + 8) * C1, 17) * C2;
-            a3 = RotateRight(Read32(s + 12) * C1, 17) * C2;
-            a4 = Read32(s + 16);
+            a0 = RotateRight(Read32(data) * C1, 17) * C2;
+            a1 = Read32(data + 4);
+            a2 = RotateRight(Read32(data + 8) * C1, 17) * C2;
+            a3 = RotateRight(Read32(data + 12) * C1, 17) * C2;
+            a4 = Read32(data + 16);
             h ^= a0;
             h = RotateRight(h, 18);
             h = h * 5 + 0xe6546b64;
@@ -61,7 +61,7 @@ public static class CityHash32Unsafe
             h = ByteSwap(h);
             f += a0;
             Permute3(ref f, ref h, ref g);
-            s += 20;
+            data += 20;
         } while (--iters != 0);
         g = RotateRight(g, 11) * C1;
         g = RotateRight(g, 17) * C1;

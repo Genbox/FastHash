@@ -5,17 +5,17 @@ namespace Genbox.FastHash.CityHash;
 
 public static class CityHash128
 {
-    public static Uint128 ComputeHash(byte[] s)
+    public static Uint128 ComputeHash(ReadOnlySpan<byte> data)
     {
         Uint128 seed = new Uint128(K0, K1);
-        return CityHash128WithSeed(s, (uint)s.Length, seed);
+        return CityHash128WithSeed(data, (uint)data.Length, seed);
     }
 
-    public static Uint128 ComputeHash(byte[] s, Uint128 seed) => CityHash128WithSeed(s, (uint)s.Length, seed);
+    public static Uint128 ComputeHash(ReadOnlySpan<byte> data, Uint128 seed) => CityHash128WithSeed(data, (uint)data.Length, seed);
 
     // A subroutine for CityHash128().  Returns a decent 128-bit hash for strings
     // of any length representable in signed long.  Based on City and Murmur.
-    private static Uint128 CityMurmur(byte[] s, uint len, Uint128 seed)
+    private static Uint128 CityMurmur(ReadOnlySpan<byte> s, uint len, Uint128 seed)
     {
         ulong a = seed.Low;
         ulong b = seed.High;
@@ -51,7 +51,7 @@ public static class CityHash128
         return new Uint128(a ^ b, HashLen16(b, a));
     }
 
-    private static Uint128 CityHash128WithSeed(byte[] s, uint len, Uint128 seed)
+    private static Uint128 CityHash128WithSeed(ReadOnlySpan<byte> s, uint len, Uint128 seed)
     {
         if (len < 128)
             return CityMurmur(s, len, seed);

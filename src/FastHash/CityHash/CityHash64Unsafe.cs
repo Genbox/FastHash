@@ -1,26 +1,27 @@
 ﻿using static Genbox.FastHash.CityHash.CityHashShared;
+using static Genbox.FastHash.CityHash.CityHashUnsafeShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 
 namespace Genbox.FastHash.CityHash;
 
 public static class CityHash64Unsafe
 {
-    public static unsafe ulong ComputeHash(byte* s, int length)
+    public static unsafe ulong ComputeHash(byte* data, int length)
     {
         uint len = (uint)length;
-        return CityHash64(s, len);
+        return CityHash64(data, len);
     }
 
-    public static unsafe ulong ComputeHash(byte* s, int length, ulong seed)
+    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed)
     {
         uint len = (uint)length;
-        return CityHash64WithSeeds(s, len, K2, seed);
+        return CityHash64WithSeeds(data, len, K2, seed);
     }
 
-    public static unsafe ulong ComputeHash(byte* s, int length, ulong seed1, ulong seed2)
+    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1, ulong seed2)
     {
         uint len = (uint)length;
-        return CityHash64WithSeeds(s, len, seed1, seed2);
+        return CityHash64WithSeeds(data, len, seed1, seed2);
     }
 
     private static unsafe ulong CityHash64(byte* s, uint len)

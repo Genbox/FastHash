@@ -17,7 +17,10 @@ internal static class Utilities
     internal static uint Read32(byte[] p, uint offset = 0) => Unsafe.ReadUnaligned<uint>(ref p[offset]);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint Read32(Span<byte> p, uint offset = 0) => MemoryMarshal.Read<uint>(p[(int)offset..]);
+    internal static uint Read32(ReadOnlySpan<byte> p, uint offset = 0)
+    {
+        return MemoryMarshal.Read<uint>(p[(int)offset..]);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static unsafe uint Read32(byte* ptr, uint offset = 0) => *(uint*)(ptr + offset);
@@ -30,6 +33,12 @@ internal static class Utilities
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static unsafe ulong Read64(byte* ptr, uint offset = 0) => *(ulong*)(ptr + offset);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ulong Read64(ReadOnlySpan<byte> p, uint offset = 0)
+    {
+        return MemoryMarshal.Read<ulong>(p[(int)offset..]);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static unsafe void Write64(byte* ptr, ulong value) => *(ulong*)ptr = value;
