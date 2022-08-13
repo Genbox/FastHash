@@ -42,11 +42,11 @@ namespace Genbox.FastHash.XxHash;
 
 public static class Xx2Hash32
 {
-    public static uint ComputeHash(byte[] data, uint seed = 0)
+    public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
         uint len = (uint)data.Length;
         uint h32;
-        uint offset = 0;
+        int offset = 0;
 
         if (len >= 16)
         {

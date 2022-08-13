@@ -8,11 +8,11 @@ namespace Genbox.FastHash.FarshHash;
 
 public static class FarshHash64
 {
-    public static ulong ComputeHash(byte[] data, ulong seed = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
     {
         ulong sum = seed;
         uint length = (uint)data.Length;
-        uint offset = 0;
+        int offset = 0;
 
         while (length >= STRIPE)
         {
@@ -32,7 +32,7 @@ public static class FarshHash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong farsh_full_block(byte[] data, uint offset)
+    private static ulong farsh_full_block(ReadOnlySpan<byte> data, int offset)
     {
         // STRIPE bytes of key material plus extra keys for hashes up to 1024 bits long
 
@@ -41,15 +41,15 @@ public static class FarshHash64
         uint j = 0;
         for (i = 0; i < STRIPE; i += 8, j += 2)
         {
-            uint val1 = Read32(data, offset + i);
-            uint val2 = Read32(data, offset + i + sizeof(uint));
+            uint val1 = Read32(data, (uint)offset + i);
+            uint val2 = Read32(data, (uint)offset + i + sizeof(uint));
             sum += (val1 + FARSH_KEYS[j]) * (ulong)(val2 + FARSH_KEYS[j + 1]);
         }
 
         return sum;
     }
 
-    private static ulong farsh_partial_block(byte[] data, uint offset)
+    private static ulong farsh_partial_block(ReadOnlySpan<byte> data, int offset)
     {
         ulong sum = 0;
         int keyindex = 0;

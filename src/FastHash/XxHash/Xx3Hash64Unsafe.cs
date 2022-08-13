@@ -87,7 +87,7 @@ public static class Xx3Hash64Unsafe
         ulong input_lo = Read64(input) ^ bitflip1;
         ulong input_hi = Read64(input + len - 8) ^ bitflip2;
         ulong acc = (ulong)len
-                    + XXH_swap64(input_lo) + input_hi
+                    + ByteSwap(input_lo) + input_hi
                     + XXH3_mul128_fold64(input_lo, input_hi);
         return XXH3_avalanche(acc);
     }
@@ -98,7 +98,7 @@ public static class Xx3Hash64Unsafe
         // XXH_ASSERT(secret != NULL);
         // XXH_ASSERT(4 <= len && len <= 8);
 
-        seed ^= (ulong)XXH_swap32((uint)seed) << 32;
+        seed ^= (ulong)ByteSwap((uint)seed) << 32;
 
         uint input1 = Read32(input);
         uint input2 = Read32(input + len - 4);

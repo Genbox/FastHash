@@ -4,15 +4,16 @@
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Genbox.FastHash.MarvinHash;
 
 public static class MarvinHash32
 {
-    public static uint ComputeHash(byte[] data, uint p0 = 0, uint p1 = 0)
+    public static uint ComputeHash(ReadOnlySpan<byte> data, uint p0 = 0, uint p1 = 0)
     {
         uint count = (uint)data.Length;
-        ref byte ptr = ref data[0];
+        ref byte ptr = ref MemoryMarshal.GetReference(data);
 
         // Control flow of this method generally flows top-to-bottom, trying to
         // minimize the number of branches taken for large (>= 8 bytes, 4 chars) inputs.

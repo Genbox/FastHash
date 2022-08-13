@@ -21,11 +21,11 @@ public class Wy3Hash64
         return _wymix(0xe7037ed1a0b428dbul ^ 8, low ^ high);
     }
 
-    public static ulong ComputeHash(byte[] data, ulong seed = 0, ulong[]? secret = null)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0, ulong[]? secret = null)
     {
         secret ??= DefaultSecret;
 
-        uint len = (uint)data.Length;
+        int len = data.Length;
         seed ^= secret[0];
         ulong a, b;
 
@@ -49,7 +49,7 @@ public class Wy3Hash64
         }
         else
         {
-            uint i = len;
+            int i = len;
             uint offset = 0;
 
             if (i > 48)
@@ -72,14 +72,14 @@ public class Wy3Hash64
                 i -= 16;
                 offset += 16;
             }
-            a = Read64(data, offset + i - 16);
-            b = Read64(data, offset + i - 8);
+            a = Read64(data, (uint)(offset + i - 16));
+            b = Read64(data, (uint)(offset + i - 8));
         }
-        return _wymix(secret[1] ^ len, _wymix(a ^ secret[1], b ^ seed));
+        return _wymix(secret[1] ^ (uint)len, _wymix(a ^ secret[1], b ^ seed));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong _wyr3(byte[] data, uint offset = 0) => ((ulong)data[0] << 16) | ((ulong)data[offset >> 1] << 8) | data[offset - 1];
+    private static ulong _wyr3(ReadOnlySpan<byte> data, int offset = 0) => ((ulong)data[0] << 16) | ((ulong)data[offset >> 1] << 8) | data[offset - 1];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void _wymum(ref ulong A, ref ulong B)

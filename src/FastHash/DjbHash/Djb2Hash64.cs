@@ -8,7 +8,7 @@ namespace Genbox.FastHash.DjbHash;
 
 public static class Djb2Hash64
 {
-    public static ulong ComputeHash(byte[] data)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data)
     {
         ulong hash = InitHash;
 

@@ -139,7 +139,7 @@ public static class Xx3Hash128Unsafe
         m128.High += input_hi + XxHashShared.XXH_mult32to64((uint)input_hi, XxHashConstants.PRIME32_2 - 1);
 #endif
 
-        m128.Low ^= XXH_swap64(m128.High);
+        m128.Low ^= ByteSwap(m128.High);
 
         Uint128 h128 = XxHashShared.XXH_mult64to128(m128.Low, XxHashConstants.PRIME64_2);
         h128.High += m128.High * XxHashConstants.PRIME64_2;
@@ -167,7 +167,7 @@ public static class Xx3Hash128Unsafe
         byte c3 = input[len - 1];
 
         uint combinedl = ((uint)c1 << 16) | ((uint)c2 << 24) | ((uint)c3 << 0) | ((uint)len << 8);
-        uint combinedh = RotateLeft(XXH_swap32(combinedl), 13);
+        uint combinedh = RotateLeft(ByteSwap(combinedl), 13);
 
         ulong bitflipl = (Read32(secret) ^ Read32(secret + 4)) + seed;
         ulong bitfliph = (Read32(secret + 8) ^ Read32(secret + 12)) - seed;
@@ -185,7 +185,7 @@ public static class Xx3Hash128Unsafe
         // XXH_ASSERT(secret != NULL);
         // XXH_ASSERT(4 <= len && len <= 8);
 
-        seed ^= (ulong)XXH_swap32((uint)seed) << 32;
+        seed ^= (ulong)ByteSwap((uint)seed) << 32;
 
         uint input_lo = Read32(input);
         uint input_hi = Read32(input + len - 4);
@@ -243,9 +243,9 @@ public static class Xx3Hash128Unsafe
     private static unsafe Uint128 XXH128_mix32B(Uint128 acc, byte* input_1, byte* input_2, byte* secret, ulong seed)
     {
         acc.Low += XxHashShared.XXH3_mix16B(input_1, secret + 0, seed);
-        acc.Low ^= Read64(input_2) + Read64(input_2, 8);
+        acc.Low ^= Read64(input_2) + Read64(input_2 + 8);
         acc.High += XxHashShared.XXH3_mix16B(input_2, secret + 16, seed);
-        acc.High ^= Read64(input_1) + Read64(input_1, 8);
+        acc.High ^= Read64(input_1) + Read64(input_1 + 8);
         return acc;
     }
 }

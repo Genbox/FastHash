@@ -439,11 +439,11 @@ internal static class XxHashShared
     internal static unsafe ulong XXH3_mix16B(byte* input, byte* secret, ulong seed64)
     {
         ulong input_lo = Read64(input);
-        ulong input_hi = Read64(input, 8);
+        ulong input_hi = Read64(input + 8);
 
         return XXH3_mul128_fold64(
             input_lo ^ (Read64(secret) + seed64),
-            input_hi ^ (Read64(secret, 8) - seed64)
+            input_hi ^ (Read64(secret + 8) - seed64)
         );
     }
 

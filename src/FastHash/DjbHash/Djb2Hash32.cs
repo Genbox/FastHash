@@ -8,7 +8,7 @@ namespace Genbox.FastHash.DjbHash;
 
 public static class Djb2Hash32
 {
-    public static uint ComputeHash(byte[] data)
+    public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
         uint hash = InitHash;
 

@@ -9,7 +9,7 @@ namespace Genbox.FastHash.MurmurHash;
 
 public static class Murmur3Hash32
 {
-    public static uint ComputeHash(byte[] data, uint seed = 0)
+    public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
         uint length = (uint)data.Length;
         uint nblocks = length / 4;
@@ -33,7 +33,7 @@ public static class Murmur3Hash32
 
         uint rem = length & 3;
 
-        uint tail = length - rem;
+        int tail = (int)(length - rem);
         k1 = 0;
 
         switch (rem)

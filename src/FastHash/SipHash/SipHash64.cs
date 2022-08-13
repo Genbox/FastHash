@@ -23,7 +23,7 @@ namespace Genbox.FastHash.SipHash;
 
 public static class SipHash64
 {
-    public static ulong ComputeHash(byte[] data, ulong seed0 = 0, ulong seed1 = 0, byte cRounds = 2, byte dRounds = 4)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed0 = 0, ulong seed1 = 0, byte cRounds = 2, byte dRounds = 4)
     {
         int length = data.Length;
         ulong v0 = v0Init;

@@ -10,7 +10,7 @@ namespace Genbox.FastHash.FarmHash;
 
 public static class FarmHash32
 {
-    public static uint ComputeHash(byte[] data)
+    public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
         uint length = (uint)data.Length;
 
@@ -91,7 +91,7 @@ public static class FarmHash32
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static uint Hash32Len0to4(Span<byte> s, uint len, uint seed = 0)
+    private static uint Hash32Len0to4(ReadOnlySpan<byte> s, uint len, uint seed = 0)
     {
         uint b = seed;
         uint c = 9;
@@ -105,7 +105,7 @@ public static class FarmHash32
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static uint Hash32Len5to12(byte[] s, uint len, uint seed = 0)
+    private static uint Hash32Len5to12(ReadOnlySpan<byte> s, uint len, uint seed = 0)
     {
         uint a = len, b = len * 5, c = 9, d = b + seed;
         a += Read32(s);
@@ -115,7 +115,7 @@ public static class FarmHash32
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static uint Hash32Len13to24(byte[] s, uint len, uint seed = 0)
+    private static uint Hash32Len13to24(ReadOnlySpan<byte> s, uint len, uint seed = 0)
     {
         uint a = Read32(s, (len >> 1) - 4);
         uint b = Read32(s, 4);

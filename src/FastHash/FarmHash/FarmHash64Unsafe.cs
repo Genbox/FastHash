@@ -33,7 +33,7 @@ public static class FarmHash64Unsafe
         {
             ulong mul = K2 + length * 2;
             ulong a = Read64(data) + K2;
-            ulong b = Read64(data, length - 8);
+            ulong b = Read64(data + length - 8);
             ulong c = RotateRight(b, 37) * mul + a;
             ulong d = (RotateRight(a, 25) + b) * mul;
             return HashLen16(c, d, mul);
@@ -42,7 +42,7 @@ public static class FarmHash64Unsafe
         {
             ulong mul = K2 + length * 2;
             ulong a = Read32(data);
-            return HashLen16(length + (a << 3), Read32(data, length - 4), mul);
+            return HashLen16(length + (a << 3), Read32(data + length - 4), mul);
         }
         if (length > 0)
         {
@@ -60,9 +60,9 @@ public static class FarmHash64Unsafe
     {
         ulong mul = K2 + length * 2;
         ulong a = Read64(data) * K1;
-        ulong b = Read64(data, 8);
-        ulong c = Read64(data, length - 8) * mul;
-        ulong d = Read64(data, length - 16) * K2;
+        ulong b = Read64(data + 8);
+        ulong c = Read64(data + length - 8) * mul;
+        ulong d = Read64(data + length - 16) * K2;
         return HashLen16(RotateRight(a + b, 43) + RotateRight(c, 30) + d, a + RotateRight(b + K2, 18) + c, mul);
     }
 
@@ -107,10 +107,10 @@ public static class FarmHash64Unsafe
         return new Uint128(a + z, b + c);
     }
 
-    private static unsafe Uint128 WeakHashLen32WithSeeds(byte* data, uint offset, ulong a, ulong b) => WeakHashLen32WithSeeds(Read64(data, offset),
-        Read64(data, 8 + offset),
-        Read64(data, 16 + offset),
-        Read64(data, 24 + offset),
+    private static unsafe Uint128 WeakHashLen32WithSeeds(byte* data, uint offset, ulong a, ulong b) => WeakHashLen32WithSeeds(Read64(data + offset),
+        Read64(data + 8 + offset),
+        Read64(data + 16 + offset),
+        Read64(data + 24 + offset),
         a,
         b);
 
@@ -124,10 +124,10 @@ public static class FarmHash64Unsafe
 
     private static unsafe ulong H32(byte* data, uint offset, uint length, ulong mul, ulong seed0 = 0, ulong seed1 = 0)
     {
-        ulong a = Read64(data, offset) * K1;
-        ulong b = Read64(data, 8 + offset);
-        ulong c = Read64(data, length - 8 + offset) * mul;
-        ulong d = Read64(data, length - 16 + offset) * K2;
+        ulong a = Read64(data + offset) * K1;
+        ulong b = Read64(data + 8 + offset);
+        ulong c = Read64(data + length - 8 + offset) * mul;
+        ulong d = Read64(data + length - 16 + offset) * K2;
         ulong u = RotateRight(a + b, 43) + RotateRight(c, 30) + d + seed0;
         ulong v = a + RotateRight(b + K2, 18) + c + seed1;
         a = ShiftMix((u ^ v) * mul);
@@ -158,13 +158,13 @@ public static class FarmHash64Unsafe
         do
         {
             ulong a0 = Read64(s);
-            ulong a1 = Read64(s, 8);
-            ulong a2 = Read64(s, 16);
-            ulong a3 = Read64(s, 24);
-            ulong a4 = Read64(s, 32);
-            ulong a5 = Read64(s, 40);
-            ulong a6 = Read64(s, 48);
-            ulong a7 = Read64(s, 56);
+            ulong a1 = Read64(s + 8);
+            ulong a2 = Read64(s + 16);
+            ulong a3 = Read64(s + 24);
+            ulong a4 = Read64(s + 32);
+            ulong a5 = Read64(s + 40);
+            ulong a6 = Read64(s + 48);
+            ulong a7 = Read64(s + 56);
             x += a0 + a1;
             y += a2;
             z += a3;
@@ -213,13 +213,13 @@ public static class FarmHash64Unsafe
         w.Low += (len - 1) & 63;
         u += y;
         y += u;
-        x = RotateRight(y - x + v.Low + Read64(s, index + 8), 37) * mul;
-        y = RotateRight(y ^ v.High ^ Read64(s, index + 48), 42) * mul;
+        x = RotateRight(y - x + v.Low + Read64(s + index + 8), 37) * mul;
+        y = RotateRight(y ^ v.High ^ Read64(s + index + 48), 42) * mul;
         x ^= w.High * 9;
-        y += v.Low + Read64(s, index + 40);
+        y += v.Low + Read64(s + index + 40);
         z = RotateRight(z + w.Low, 33) * mul;
         v = WeakHashLen32WithSeeds(s, index + 0, v.High * mul, x + w.Low);
-        w = WeakHashLen32WithSeeds(s, index + 32, z + w.High, y + Read64(s, index + 16));
+        w = WeakHashLen32WithSeeds(s, index + 32, z + w.High, y + Read64(s + index + 16));
         return H(HashLen16(v.Low + x, w.Low ^ y, mul) + z - u, H(v.High + y, w.High + z, K2, 30) ^ x, K2, 31);
     }
 
@@ -252,13 +252,13 @@ public static class FarmHash64Unsafe
         uint last64 = end + ((len - 1) & 63) - 63;
         do
         {
-            x = RotateRight(x + y + v.Low + Read64(s, 8), 37) * K1;
-            y = RotateRight(y + v.High + Read64(s, 48), 42) * K1;
+            x = RotateRight(x + y + v.Low + Read64(s + 8), 37) * K1;
+            y = RotateRight(y + v.High + Read64(s + 48), 42) * K1;
             x ^= w.High;
-            y += v.Low + Read64(s, 40);
+            y += v.Low + Read64(s + 40);
             z = RotateRight(z + w.Low, 33) * K1;
             v = WeakHashLen32WithSeeds(s, 0, v.High * K1, x + w.Low);
-            w = WeakHashLen32WithSeeds(s, 32, z + w.High, y + Read64(s, 16));
+            w = WeakHashLen32WithSeeds(s, 32, z + w.High, y + Read64(s + 16));
             Swap(ref z, ref x);
             index += 64;
         } while (index != end);
@@ -269,13 +269,13 @@ public static class FarmHash64Unsafe
         w.Low += (len - 1) & 63;
         v.Low += w.Low;
         w.Low += v.Low;
-        x = RotateRight(x + y + v.Low + Read64(s, index + 8), 37) * mul;
-        y = RotateRight(y + v.High + Read64(s, index + 48), 42) * mul;
+        x = RotateRight(x + y + v.Low + Read64(s + index + 8), 37) * mul;
+        y = RotateRight(y + v.High + Read64(s + index + 48), 42) * mul;
         x ^= w.High * 9;
-        y += v.Low * 9 + Read64(s, index + 40);
+        y += v.Low * 9 + Read64(s + index + 40);
         z = RotateRight(z + w.Low, 33) * mul;
         v = WeakHashLen32WithSeeds(s, index + 0, v.High * mul, x + w.Low);
-        w = WeakHashLen32WithSeeds(s, index + 32, z + w.High, y + Read64(s, index + 16));
+        w = WeakHashLen32WithSeeds(s, index + 32, z + w.High, y + Read64(s + index + 16));
         Swap(ref z, ref x);
         return HashLen16(HashLen16(v.Low, w.Low, mul) + ShiftMix(y) * K0 + z, HashLen16(v.High, w.High, mul) + x, mul);
     }

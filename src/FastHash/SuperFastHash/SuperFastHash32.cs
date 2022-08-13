@@ -7,7 +7,7 @@ namespace Genbox.FastHash.SuperFastHash;
 
 public static class SuperFastHash32
 {
-    public static uint ComputeHash(byte[] data)
+    public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
         if (data == null || data.Length <= 0)
             return 0;
@@ -17,7 +17,7 @@ public static class SuperFastHash32
         int rem = length & 3;
         length >>= 2;
 
-        uint index = 0;
+        int index = 0;
 
         for (; length > 0; length--)
         {

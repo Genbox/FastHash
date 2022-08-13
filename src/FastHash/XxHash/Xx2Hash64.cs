@@ -60,11 +60,11 @@ public static class Xx2Hash64
         return h64;
     }
 
-    public static ulong ComputeHash(byte[] data, uint seed = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
         uint len = (uint)data.Length;
         ulong h64;
-        uint offset = 0;
+        int offset = 0;
 
         if (len >= 32)
         {

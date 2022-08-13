@@ -9,7 +9,7 @@ namespace Genbox.FastHash.FnvHash;
 /// <summary>Fowler–Noll–Vo hash implementation</summary>
 public static class Fnv1aHash32
 {
-    public static uint ComputeHash(byte[] data)
+    public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
         uint hash = FnvInit;
 

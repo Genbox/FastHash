@@ -9,7 +9,7 @@ namespace Genbox.FastHash.FnvHash;
 /// <summary>Fowler–Noll–Vo hash implementation</summary>
 public static class Fnv1aHash64
 {
-    public static ulong ComputeHash(byte[] data)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data)
     {
         ulong hash = FnvInit64;
 

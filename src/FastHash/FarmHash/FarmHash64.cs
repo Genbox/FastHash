@@ -8,7 +8,7 @@ namespace Genbox.FastHash.FarmHash;
 
 public static class FarmHash64
 {
-    public static ulong ComputeHash(byte[] data, ulong seed0 = 81, ulong seed1 = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed0 = 81, ulong seed1 = 0)
     {
         uint len = (uint)data.Length;
 
@@ -27,7 +27,7 @@ public static class FarmHash64
         return Hash64WithSeeds(data, len, seed0, seed1);
     }
 
-    private static ulong HashLen0to16(byte[] data, uint length)
+    private static ulong HashLen0to16(ReadOnlySpan<byte> data, uint length)
     {
         if (length >= 8)
         {
@@ -47,8 +47,8 @@ public static class FarmHash64
         if (length > 0)
         {
             byte a = data[0];
-            byte b = data[length >> 1];
-            byte c = data[length - 1];
+            byte b = data[(int)(length >> 1)];
+            byte c = data[(int)(length - 1)];
             uint y = a + ((uint)b << 8);
             uint z = length + ((uint)c << 2);
             return ShiftMix((y * K2) ^ (z * K0)) * K2;
@@ -56,7 +56,7 @@ public static class FarmHash64
         return K2;
     }
 
-    private static ulong HashLen17to32(byte[] data, uint length)
+    private static ulong HashLen17to32(ReadOnlySpan<byte> data, uint length)
     {
         ulong mul = K2 + length * 2;
         ulong a = Read64(data) * K1;
@@ -66,7 +66,7 @@ public static class FarmHash64
         return HashLen16(RotateRight(a + b, 43) + RotateRight(c, 30) + d, a + RotateRight(b + K2, 18) + c, mul);
     }
 
-    private static ulong HashLen33to64(byte[] data, uint length)
+    private static ulong HashLen33to64(ReadOnlySpan<byte> data, uint length)
     {
         const ulong mul0 = K2 - 30;
         ulong mul1 = K2 - 30 + 2 * length;
@@ -75,7 +75,7 @@ public static class FarmHash64
         return (h1 * mul1 + h0) * mul1;
     }
 
-    private static ulong HashLen65to96(byte[] data, uint length)
+    private static ulong HashLen65to96(ReadOnlySpan<byte> data, uint length)
     {
         const ulong mul0 = K2 - 114;
         ulong mul1 = K2 - 114 + 2 * length;
@@ -93,7 +93,7 @@ public static class FarmHash64
         return RotateRight(b, r) * mul;
     }
 
-    private static ulong H32(byte[] data, uint offset, uint length, ulong mul, ulong seed0 = 0, ulong seed1 = 0)
+    private static ulong H32(ReadOnlySpan<byte> data, uint offset, uint length, ulong mul, ulong seed0 = 0, ulong seed1 = 0)
     {
         ulong a = Read64(data, offset) * K1;
         ulong b = Read64(data, 8 + offset);
@@ -117,7 +117,7 @@ public static class FarmHash64
         return new Uint128(a + z, b + c);
     }
 
-    private static Uint128 WeakHashLen32WithSeeds(byte[] data, uint offset, ulong a, ulong b)
+    private static Uint128 WeakHashLen32WithSeeds(ReadOnlySpan<byte> data, uint offset, ulong a, ulong b)
     {
         return WeakHashLen32WithSeeds(Read64(data, offset),
             Read64(data, 8 + offset),
@@ -127,7 +127,7 @@ public static class FarmHash64
             b);
     }
 
-    private static ulong Hash64WithSeeds(byte[] s, uint len, ulong seed0, ulong seed1)
+    private static ulong Hash64WithSeeds(ReadOnlySpan<byte> s, uint len, ulong seed0, ulong seed1)
     {
         if (len <= 64)
             return HashLen16(Hash64(s, len) - seed0, seed1, 0x9ddfea08eb382d69UL); //PORT NOTE: This used to refer to Hash128to64, which was the same as HashLen16, just with hardcoded mul
@@ -218,7 +218,7 @@ public static class FarmHash64
             31);
     }
 
-    private static ulong Hash64(byte[] s, uint len)
+    private static ulong Hash64(ReadOnlySpan<byte> s, uint len)
     {
         const ulong seed = 81;
 
@@ -237,8 +237,8 @@ public static class FarmHash64
         ulong x = seed;
         ulong y = unchecked(seed * K1) + 113;
         ulong z = ShiftMix(y * K2 + 113) * K2;
-        Uint128 v = new Uint128(0, 0);
-        Uint128 w = new Uint128(0, 0);
+        Uint128 v = Uint128.Zero;
+        Uint128 w = Uint128.Zero;
         x = x * K2 + Read64(s);
 
         // Set end so that after the loop we have 1 to 64 bytes left to process.
