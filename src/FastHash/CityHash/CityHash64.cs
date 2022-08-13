@@ -63,8 +63,7 @@ public static class CityHash64
             offset += 64;
             len -= 64;
         } while (len != 0);
-        return HashLen16(HashLen16(v.Low, w.Low) + ShiftMix(y) * K1 + z,
-            HashLen16(v.High, w.High) + x);
+        return HashLen16(HashLen16(v.Low, w.Low) + ShiftMix(y) * K1 + z, HashLen16(v.High, w.High) + x);
     }
 
     private static ulong CityHash64WithSeeds(ReadOnlySpan<byte> s, ulong seed0, ulong seed1) => HashLen16(CityHash64Internal(s) - seed0, seed1);
@@ -77,8 +76,7 @@ public static class CityHash64
         ulong b = Read64(s, 8);
         ulong c = Read64(s, len - 8) * mul;
         ulong d = Read64(s, len - 16) * K2;
-        return HashLen16(RotateRight(a + b, 43) + RotateRight(c, 30) + d,
-            a + RotateRight(b + K2, 18) + c, mul);
+        return HashLen16(RotateRight(a + b, 43) + RotateRight(c, 30) + d, a + RotateRight(b + K2, 18) + c, mul);
     }
 
     // Return an 8-byte hash for 33 to 64 bytes.

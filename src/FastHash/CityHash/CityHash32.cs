@@ -111,19 +111,6 @@ public static class CityHash32
         return MurmurMix(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
     }
 
-    private static uint Hash32Len0to4(ReadOnlySpan<byte> s, uint len)
-    {
-        uint b = 0;
-        uint c = 9;
-        for (int i = 0; i < len; i++)
-        {
-            uint v = (uint)(sbyte)s[i];
-            b = b * C1 + v;
-            c ^= b;
-        }
-        return MurmurMix(Mur(b, Mur(len, c)));
-    }
-
     private static uint Hash32Len5to12(ReadOnlySpan<byte> s, uint len)
     {
         uint a = len, b = a * 5, c = 9, d = b;

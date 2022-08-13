@@ -85,17 +85,6 @@ public static class FarmHash64Unsafe
         return (h2 * 9 + (h0 >> 17) + (h1 >> 21)) * mul1;
     }
 
-    private static ulong HashLen16(ulong u, ulong v, ulong mul)
-    {
-        // Murmur-inspired hashing.
-        ulong a = (u ^ v) * mul;
-        a ^= a >> 47;
-        ulong b = (v ^ a) * mul;
-        b ^= b >> 47;
-        b *= mul;
-        return b;
-    }
-
     private static Uint128 WeakHashLen32WithSeeds(ulong w, ulong x, ulong y, ulong z, ulong a, ulong b)
     {
         a += w;

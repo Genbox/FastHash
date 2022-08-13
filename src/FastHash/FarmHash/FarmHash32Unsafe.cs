@@ -3,6 +3,7 @@
 
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashShared;
+using static Genbox.FastHash.CityHash.CityHashUnsafeShared;
 using static Genbox.FastHash.MurmurHash.MurmurShared;
 using static Genbox.FastHash.FarmHash.FarmHashConstants;
 
@@ -67,29 +68,6 @@ public static class FarmHash32Unsafe
         h = h * 5 + 0xe6546b64;
         h = RotateRight(h, 17) * C1;
         return h;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe uint Hash32Len0to4(byte* s, uint len, uint seed = 0)
-    {
-        uint b = seed;
-        uint c = 9;
-        for (int i = 0; i < len; i++)
-        {
-            b = b * C1 + *(s + i);
-            c ^= b;
-        }
-        return MurmurMix(Mur(b, Mur(len, c)));
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe uint Hash32Len5to12(byte* s, uint len, uint seed = 0)
-    {
-        uint a = len, b = len * 5, c = 9, d = b + seed;
-        a += Read32(s);
-        b += Read32(s + len - 4);
-        c += Read32(s + ((len >> 1) & 4));
-        return MurmurMix(seed ^ Mur(c, Mur(b, Mur(a, d))));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

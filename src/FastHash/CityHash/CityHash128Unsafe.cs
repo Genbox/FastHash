@@ -55,7 +55,7 @@ public static class CityHash128Unsafe
         return new Uint128(a ^ b, HashLen16(b, a));
     }
 
-    internal static unsafe Uint128 CityHash128WithSeed(byte* s, uint len, Uint128 seed)
+    private static unsafe Uint128 CityHash128WithSeed(byte* s, uint len, Uint128 seed)
     {
         if (len < 128)
             return CityMurmur(s, len, seed);
@@ -116,7 +116,6 @@ public static class CityHash128Unsafe
         // different 56-byte-to-8-byte hashes to get a 16-byte final result.
         x = HashLen16(x, v.Low);
         y = HashLen16(y + z, w.Low);
-        return new Uint128(HashLen16(x + v.High, w.High) + y,
-            HashLen16(x + w.High, y + v.High));
+        return new Uint128(HashLen16(x + v.High, w.High) + y, HashLen16(x + w.High, y + v.High));
     }
 }

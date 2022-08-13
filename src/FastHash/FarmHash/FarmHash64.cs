@@ -212,10 +212,7 @@ public static class FarmHash64
         z = RotateRight(z + w.Low, 33) * mul;
         v = WeakHashLen32WithSeeds(s, index + 0, v.High * mul, x + w.Low);
         w = WeakHashLen32WithSeeds(s, index + 32, z + w.High, y + Read64(s, index + 16));
-        return H(HashLen16(v.Low + x, w.Low ^ y, mul) + z - u,
-            H(v.High + y, w.High + z, K2, 30) ^ x,
-            K2,
-            31);
+        return H(HashLen16(v.Low + x, w.Low ^ y, mul) + z - u, H(v.High + y, w.High + z, K2, 30) ^ x, K2, 31);
     }
 
     private static ulong Hash64(ReadOnlySpan<byte> s, uint len)
