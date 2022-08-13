@@ -148,10 +148,6 @@ public class HashBenchmarks : IDisposable
     public unsafe ulong Fnv1aHash64UnsafeTest() => Fnv1aHash64Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
-    [BenchmarkCategory("Fnv1aYtHash32")]
-    public unsafe ulong Fnv1aYtHash32UnsafeTest() => Fnv1aYtHash32Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark]
     [BenchmarkCategory("Murmur3Hash32")]
     public unsafe uint Murmur3Hash32UnsafeTest() => Murmur3Hash32Unsafe.ComputeHash(_ptr, _testData.Length);
 
