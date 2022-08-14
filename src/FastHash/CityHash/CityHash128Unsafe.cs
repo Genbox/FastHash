@@ -9,7 +9,13 @@ public static class CityHash128Unsafe
     public static unsafe Uint128 ComputeHash(byte* data, int length)
     {
         uint len = (uint)length;
-        return len >= 16 ? CityHash128WithSeed(data + 16, len - 16, new Uint128(Read64(data), Read64(data + 8) + K0)) : CityHash128WithSeed(data, len, new Uint128(K0, K1));
+        if (len >= 16)
+        {
+            Uint128 seed = new Uint128(Read64(data), Read64(data + 8) + K0);
+            return CityHash128WithSeed(data + 16, len - 16, seed);
+        }
+
+        return CityHash128WithSeed(data, len, new Uint128(K0, K1));
     }
 
     public static unsafe Uint128 ComputeHash(byte* data, int length, Uint128 seed)

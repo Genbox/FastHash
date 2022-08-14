@@ -1,4 +1,4 @@
-﻿using static Genbox.FastHash.CityHash.CityHashShared;
+using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 
 namespace Genbox.FastHash.CityHash;
@@ -7,8 +7,15 @@ public static class CityHash128
 {
     public static Uint128 ComputeHash(ReadOnlySpan<byte> data)
     {
-        Uint128 seed = new Uint128(K0, K1);
-        return CityHash128WithSeed(data, (uint)data.Length, seed);
+        uint len = (uint)data.Length;
+
+        if (len >= 16)
+        {
+            Uint128 seed = new Uint128(Read64(data), Read64(data, 8) + K0);
+            return CityHash128WithSeed(data.Slice(16, (int)(len - 16)), len - 16, seed);
+        }
+
+        return CityHash128WithSeed(data, len, new Uint128(K0, K1));
     }
 
     public static Uint128 ComputeHash(ReadOnlySpan<byte> data, Uint128 seed) => CityHash128WithSeed(data, (uint)data.Length, seed);
@@ -76,8 +83,8 @@ public static class CityHash128
             x ^= w.High;
             y += v.Low + Read64(s, offset + 40);
             z = RotateRight(z + w.Low, 33) * K1;
-            v = WeakHashLen32WithSeeds(s, 0, v.High * K1, x + w.Low);
-            w = WeakHashLen32WithSeeds(s, 32, z + w.High, y + Read64(s, offset + 16));
+            v = WeakHashLen32WithSeeds(s, offset + 0, v.High * K1, x + w.Low);
+            w = WeakHashLen32WithSeeds(s, offset + 32, z + w.High, y + Read64(s, offset + 16));
             Swap(ref z, ref x);
             offset += 64;
             x = RotateRight(x + y + v.Low + Read64(s, offset + 8), 37) * K1;
@@ -85,8 +92,8 @@ public static class CityHash128
             x ^= w.High;
             y += v.Low + Read64(s, offset + 40);
             z = RotateRight(z + w.Low, 33) * K1;
-            v = WeakHashLen32WithSeeds(s, 0, v.High * K1, x + w.Low);
-            w = WeakHashLen32WithSeeds(s, 32, z + w.High, y + Read64(s, offset + 16));
+            v = WeakHashLen32WithSeeds(s, offset, v.High * K1, x + w.Low);
+            w = WeakHashLen32WithSeeds(s, offset + 32, z + w.High, y + Read64(s, offset + 16));
             Swap(ref z, ref x);
             offset += 64;
             len -= 128;
@@ -101,11 +108,11 @@ public static class CityHash128
         {
             tail_done += 32;
             y = RotateRight(x + y, 42) * K0 + v.High;
-            w.Low += Read64(s, len - tail_done + 16);
+            w.Low += Read64(s, offset + len - tail_done + 16);
             x = x * K0 + w.Low;
-            z += w.High + Read64(s, len - tail_done);
+            z += w.High + Read64(s, offset + len - tail_done);
             w.High += v.Low;
-            v = WeakHashLen32WithSeeds(s, len - tail_done, v.Low + z, v.High);
+            v = WeakHashLen32WithSeeds(s, offset + len - tail_done, v.Low + z, v.High);
             v.Low *= K0;
         }
         // At this point our 56 bytes of state should contain more than
@@ -113,7 +120,6 @@ public static class CityHash128
         // different 56-byte-to-8-byte hashes to get a 16-byte final result.
         x = HashLen16(x, v.Low);
         y = HashLen16(y + z, w.Low);
-        return new Uint128(HashLen16(x + v.High, w.High) + y,
-            HashLen16(x + w.High, y + v.High));
+        return new Uint128(HashLen16(x + v.High, w.High) + y, HashLen16(x + w.High, y + v.High));
     }
 }
