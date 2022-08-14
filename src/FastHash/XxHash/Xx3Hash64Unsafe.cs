@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 using static Genbox.FastHash.XxHash.XxHashShared;
+using static Genbox.FastHash.XxHash.XxHashUnsafeShared;
 
 namespace Genbox.FastHash.XxHash;
 
@@ -12,7 +13,7 @@ public static class Xx3Hash64Unsafe
             return XXH3_64bits_internal(input, length, seed, secretPtr, SECRET_DEFAULT_SIZE, XXH3_hashLong_64b_withSeed);
     }
 
-    private static unsafe ulong XXH3_hashLong_64b_withSeed_internal(byte* input, int len, ulong seed, XXH3_f_accumulate_512 f_acc512, XXH3_f_scrambleAcc f_scramble, XXH3_f_initCustomSecret f_initSec)
+    private static unsafe ulong XXH3_hashLong_64b_withSeed_internal(byte* input, int len, ulong seed, XXH3_f_accumulate_512_unsafe f_acc512, XXH3_f_scrambleAcc_unsafe f_scramble, XXH3_f_initCustomSecret_unsafe f_initSec)
     {
         if (seed == 0)
         {
@@ -27,7 +28,7 @@ public static class Xx3Hash64Unsafe
 
     private static unsafe ulong XXH3_hashLong_64b_withSeed(byte* input, int len, ulong seed, byte* secret, int secretLen) => XXH3_hashLong_64b_withSeed_internal(input, len, seed, XXH3_accumulate_512, XXH3_scrambleAcc, XXH3_initCustomSecret);
 
-    private static unsafe ulong XXH3_hashLong_64b_internal(byte* input, int len, byte* secret, int secretSize, XXH3_f_accumulate_512 f_acc512, XXH3_f_scrambleAcc f_scramble)
+    private static unsafe ulong XXH3_hashLong_64b_internal(byte* input, int len, byte* secret, int secretSize, XXH3_f_accumulate_512_unsafe f_acc512, XXH3_f_scrambleAcc_unsafe f_scramble)
     {
         fixed (ulong* orgAcc = &INIT_ACC[0])
         {
@@ -48,7 +49,7 @@ public static class Xx3Hash64Unsafe
         }
     }
 
-    private static unsafe ulong XXH3_64bits_internal(byte* input, int len, ulong seed64, byte* secret, int secretLen, XXH3_hashLong64_f f_hashLong)
+    private static unsafe ulong XXH3_64bits_internal(byte* input, int len, ulong seed64, byte* secret, int secretLen, XXH3_hashLong64_f_unsafe f_hashLong)
     {
         // XXH_ASSERT(secretLen >= XXH3_SECRET_SIZE_MIN);
 

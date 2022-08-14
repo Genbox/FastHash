@@ -51,9 +51,9 @@ public class HashTests
 
     public static IEnumerable<object[]> CreateAlgorithms128()
     {
-        yield return new object[] { nameof(CityHash128), () => CityHash128.ComputeHash(_data), new byte[] { 202, 69, 230, 157, 197, 169, 55, 252, 230, 47, 35, 189, 238, 9, 60, 154 } };
+        yield return new object[] { nameof(CityHash128), () => CityHash128.ComputeHash(_data), new byte[] { 0xCA, 0x45, 0xE6, 0x9D, 0xC5, 0xA9, 0x37, 0xFC, 0xE6, 0x2F, 0x23, 0xBD, 0xEE, 0x9, 0x3C, 0x9A } };
         yield return new object[] { nameof(Murmur3Hash128), () => Murmur3Hash128.ComputeHash(_data), new byte[] { 0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67 } };
-        yield return new object[] { nameof(Xx3Hash128), () => Xx3Hash128.ComputeHash(_data), new byte[] { 106, 215, 124, 20, 15, 9, 111, 192, 223, 172, 108, 92, 53, 155, 47, 19 } };
+        yield return new object[] { nameof(Xx3Hash128), () => Xx3Hash128.ComputeHash(_data), new byte[] { 0x6A, 0xD7, 0x7C, 0x14, 0xF, 0x9, 0x6F, 0xC0, 0xDF, 0xAC, 0x6C, 0x5C, 0x35, 0x9B, 0x2F, 0x13 } };
     }
 
     public static unsafe ICollection<object[]> CreateAlgorithmsUnsafe32()

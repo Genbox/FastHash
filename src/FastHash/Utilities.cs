@@ -76,6 +76,9 @@ internal static class Utilities
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static void Write64(Span<byte> data, int offset, ulong value) => Unsafe.WriteUnaligned(ref data[offset], value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Swap<T>(ref T a, ref T b) => (a, b) = (b, a);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
