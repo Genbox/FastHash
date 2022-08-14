@@ -31,7 +31,7 @@ public class HashTests
     {
         yield return new object[] { nameof(CityHash32), () => CityHash32.ComputeHash(_data), new byte[] { 0x2A, 0x81, 0x7A, 0xBF } };
         yield return new object[] { nameof(Djb2Hash32), () => Djb2Hash32.ComputeHash(_data), new byte[] { 0xCE, 0xED, 0x14, 0x36 } };
-        yield return new object[] { nameof(FarmHash32), () => FarmHash32.ComputeHash(_data), new byte[] { 0x7F, 0x0F, 0xF1, 0x11 } };
+        yield return new object[] { nameof(FarmHash32), () => FarmHash32.ComputeHash(_data), new byte[] { 0x2A, 0x81, 0x7A, 0xBF } };
         yield return new object[] { nameof(Fnv1aHash32), () => Fnv1aHash32.ComputeHash(_data), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 } };
         yield return new object[] { nameof(MarvinHash32), () => MarvinHash32.ComputeHash(_data, 42, 43), new byte[] { 0xAD, 0x28, 0xBF, 0x22 } };
         yield return new object[] { nameof(Murmur3Hash32), () => Murmur3Hash32.ComputeHash(_data), new byte[] { 0xF6, 0x08, 0x79, 0x87 } };
@@ -62,7 +62,7 @@ public class HashTests
         {
             new object[] { nameof(CityHash32Unsafe), () => CityHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x2A, 0x81, 0x7A, 0xBF } },
             new object[] { nameof(Djb2Hash32Unsafe), () => Djb2Hash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xCE, 0xED, 0x14, 0x36 } },
-            new object[] { nameof(FarmHash32Unsafe), () => FarmHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x7F, 0x0F, 0xF1, 0x11 } },
+            new object[] { nameof(FarmHash32Unsafe), () => FarmHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x2A, 0x81, 0x7A, 0xBF } },
             new object[] { nameof(Fnv1aHash32Unsafe), () => Fnv1aHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 } },
             new object[] { nameof(Murmur3Hash32Unsafe), () => Murmur3Hash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x08, 0x79, 0x87 } },
             new object[] { nameof(SuperFastHash32Unsafe), () => SuperFastHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x5E, 0xE8, 0x41, 0xB2 } },
