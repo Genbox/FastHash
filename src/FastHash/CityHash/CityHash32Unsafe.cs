@@ -1,5 +1,5 @@
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashShared;
-using static Genbox.FastHash.CityHash.CityHashUnsafeShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 using static Genbox.FastHash.MurmurHash.MurmurShared;
 
@@ -77,7 +77,32 @@ public static class CityHash32Unsafe
         return h;
     }
 
-    private static unsafe uint Hash32Len13to24(byte* s, uint len)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static unsafe uint Hash32Len0to4(byte* s, uint len)
+    {
+        uint b = 0;
+        uint c = 9;
+        for (int i = 0; i < len; i++)
+        {
+            uint v = (uint)(sbyte)*(s + i);
+            b = b * C1 + v;
+            c ^= b;
+        }
+        return MurmurMix(Mur(b, Mur(len, c)));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static unsafe uint Hash32Len5to12(byte* s, uint len)
+    {
+        uint a = len, b = len * 5, c = 9, d = b;
+        a += Read32(s);
+        b += Read32(s + len - 4);
+        c += Read32(s + ((len >> 1) & 4));
+        return MurmurMix(Mur(c, Mur(b, Mur(a, d))));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static unsafe uint Hash32Len13to24(byte* s, uint len)
     {
         uint a = Read32(s - 4 + (len >> 1));
         uint b = Read32(s + 4);
@@ -88,14 +113,5 @@ public static class CityHash32Unsafe
         uint h = len;
 
         return MurmurMix(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
-    }
-
-    private static unsafe uint Hash32Len5to12(byte* s, uint len)
-    {
-        uint a = len, b = a * 5, c = 9, d = b;
-        a += Read32(s);
-        b += Read32(s + len - 4);
-        c += Read32(s + ((len >> 1) & 4));
-        return MurmurMix(Mur(c, Mur(b, Mur(a, d))));
     }
 }
