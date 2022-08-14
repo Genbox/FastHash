@@ -1,7 +1,4 @@
-﻿//Ported to C# by Ian Qvist
-//Source: https://github.com/google/farmhash
-
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.MurmurHash.MurmurShared;
 using static Genbox.FastHash.FarmHash.FarmHashConstants;

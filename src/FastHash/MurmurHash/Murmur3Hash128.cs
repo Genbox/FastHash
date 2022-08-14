@@ -1,7 +1,4 @@
-﻿//Ported to C# by Ian Qvist
-//Source: https://github.com/aappleby/smhasher/
-
-using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
+﻿using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
 using static Genbox.FastHash.MurmurHash.MurmurShared;
 
 namespace Genbox.FastHash.MurmurHash;

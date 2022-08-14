@@ -5,9 +5,9 @@ namespace Genbox.FastHash.XxHash;
 
 public static class Xx3Hash128
 {
-    public static Uint128 ComputeHash(ReadOnlySpan<byte> input, ulong seed = 0)
+    public static Uint128 ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
     {
-        return XXH3_128bits_internal(input, input.Length, seed, kSecret, SECRET_DEFAULT_SIZE, XXH3_hashLong_128b_withSeed);
+        return XXH3_128bits_internal(data, data.Length, seed, kSecret, SECRET_DEFAULT_SIZE, XXH3_hashLong_128b_withSeed);
     }
 
     private static Uint128 XXH3_hashLong_128b_withSeed(ReadOnlySpan<byte> input, int len, ulong seed64, ReadOnlySpan<byte> secret, int secretLen) => XXH3_hashLong_128b_withSeed_internal(input, len, seed64, secret, secretLen, XXH3_accumulate_512_scalar, XXH3_scrambleAcc_scalar, XXH3_initCustomSecret_scalar);

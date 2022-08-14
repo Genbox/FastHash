@@ -1,29 +1,11 @@
-﻿/*
-   SipHash reference C implementation
-   Copyright (c) 2012-2014 Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
-   Copyright (c) 2012-2014 Daniel J. Bernstein <djb@cr.yp.to>
-
-   To the extent possible under law, the author(s) have dedicated all copyright
-   and related and neighboring rights to this software to the public domain
-   worldwide. This software is distributed without any warranty.
-   You should have received a copy of the CC0 Public Domain Dedication along
-   with
-   this software. If not, see
-   <http://creativecommons.org/publicdomain/zero/1.0/>.
- */
-
-//Ported to C# by Ian Qvist
-//Website: https://131002.net/siphash/
-//Source: https://github.com/veorq/SipHash
-
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using static Genbox.FastHash.SipHash.SipHashConstants;
 
 namespace Genbox.FastHash.SipHash;
 
 public static class SipHash64Unsafe
 {
-    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed0 = 0, ulong seed1 = 0, byte cRounds = 2, byte dRounds = 4)
+    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1 = 0, ulong seed2 = 0, byte cRounds = 2, byte dRounds = 4)
     {
         ulong v0 = v0Init;
         ulong v1 = v1Init;
@@ -36,10 +18,10 @@ public static class SipHash64Unsafe
         int offset1 = length - left;
         int i;
 
-        v3 ^= seed1;
-        v2 ^= seed0;
-        v1 ^= seed1;
-        v0 ^= seed0;
+        v3 ^= seed2;
+        v2 ^= seed1;
+        v1 ^= seed2;
+        v0 ^= seed1;
 
         ulong* pInput = (ulong*)data;
         ulong* pEnd = pInput + num;

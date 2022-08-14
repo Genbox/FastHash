@@ -1,7 +1,4 @@
-﻿//Ported to C# by Ian Qvist
-//Source: http://www.isthe.com/chongo/src/fnv/hash_32a.c
-
-using static Genbox.FastHash.FnvHash.FnvHashConstants;
+﻿using static Genbox.FastHash.FnvHash.FnvHashConstants;
 
 namespace Genbox.FastHash.FnvHash;
 
@@ -10,12 +7,12 @@ public static class Fnv1aHash32Unsafe
 {
     public static unsafe uint ComputeHash(byte* data, int length)
     {
-        uint hash = FnvInit;
+        uint hash = FNV1_32_INIT;
 
         for (int i = 0; i < length; i++)
         {
             hash ^= data[i];
-            hash *= FnvPrime;
+            hash *= FNV_32_PRIME;
         }
 
         return hash;

@@ -5,10 +5,10 @@ namespace Genbox.FastHash.XxHash;
 
 public static class Xx3Hash64
 {
-    public static ulong ComputeHash(ReadOnlySpan<byte> input, ulong seed = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
     {
-        int length = input.Length;
-        return XXH3_64bits_internal(input, length, seed, kSecret, SECRET_DEFAULT_SIZE, XXH3_hashLong_64b_withSeed);
+        int length = data.Length;
+        return XXH3_64bits_internal(data, length, seed, kSecret, SECRET_DEFAULT_SIZE, XXH3_hashLong_64b_withSeed);
     }
 
     private static ulong XXH3_hashLong_64b_withSeed_internal(ReadOnlySpan<byte> input, int len, ulong seed, XXH3_f_accumulate_512 f_acc512, XXH3_f_scrambleAcc f_scramble, XXH3_f_initCustomSecret f_initSec)

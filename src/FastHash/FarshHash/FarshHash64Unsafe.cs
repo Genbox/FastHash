@@ -1,7 +1,4 @@
-﻿//Ported to C# by Ian Qvist
-//Source: https://github.com/Bulat-Ziganshin/FARSH
-
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using static Genbox.FastHash.FarshHash.FarshHashConstants;
 
 namespace Genbox.FastHash.FarshHash;

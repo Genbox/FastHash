@@ -1,7 +1,4 @@
-﻿//Ported to C# by Ian Qvist
-//Source: https://github.com/google/farmhash
-
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.CityHash.CityHashUnsafeShared;
 using static Genbox.FastHash.MurmurHash.MurmurShared;
@@ -11,20 +8,20 @@ namespace Genbox.FastHash.FarmHash;
 
 public static class FarmHash32Unsafe
 {
-    public static unsafe uint ComputeHash(byte* dataPtr, int length)
+    public static unsafe uint ComputeHash(byte* data, int length)
     {
         uint len = (uint)length;
 
         if (len <= 24)
-            return len <= 12 ? len <= 4 ? Hash32Len0to4(dataPtr, len) : Hash32Len5to12(dataPtr, len) : Hash32Len13to24(dataPtr, len);
+            return len <= 12 ? len <= 4 ? Hash32Len0to4(data, len) : Hash32Len5to12(data, len) : Hash32Len13to24(data, len);
 
         // len > 24
         uint h = len, g = C1 * len, f = g;
-        uint a0 = RotateRight(Read32(dataPtr + len - 4) * C1, 17) * C2;
-        uint a1 = RotateRight(Read32(dataPtr + len - 8) * C1, 17) * C2;
-        uint a2 = RotateRight(Read32(dataPtr + len - 16) * C1, 17) * C2;
-        uint a3 = RotateRight(Read32(dataPtr + len - 12) * C1, 17) * C2;
-        uint a4 = RotateRight(Read32(dataPtr + len - 20) * C1, 17) * C2;
+        uint a0 = RotateRight(Read32(data + len - 4) * C1, 17) * C2;
+        uint a1 = RotateRight(Read32(data + len - 8) * C1, 17) * C2;
+        uint a2 = RotateRight(Read32(data + len - 16) * C1, 17) * C2;
+        uint a3 = RotateRight(Read32(data + len - 12) * C1, 17) * C2;
+        uint a4 = RotateRight(Read32(data + len - 20) * C1, 17) * C2;
         h ^= a0;
         h = RotateRight(h, 19);
         h = h * 5 + 0xe6546b64;
@@ -42,11 +39,11 @@ public static class FarmHash32Unsafe
         uint iters = (len - 1) / 20;
         do
         {
-            uint a = Read32(dataPtr);
-            uint b = Read32(dataPtr + 4);
-            uint c = Read32(dataPtr + 8);
-            uint d = Read32(dataPtr + 12);
-            uint e = Read32(dataPtr + 16);
+            uint a = Read32(data);
+            uint b = Read32(data + 4);
+            uint c = Read32(data + 8);
+            uint d = Read32(data + 12);
+            uint e = Read32(data + 16);
             h += a;
             g += b;
             f += c;
@@ -55,7 +52,7 @@ public static class FarmHash32Unsafe
             f = Mur(b + e * C1, f) + d;
             f += g;
             g += f;
-            dataPtr += 20;
+            data += 20;
         } while (--iters != 0);
         g = RotateRight(g, 11) * C1;
         g = RotateRight(g, 17) * C1;

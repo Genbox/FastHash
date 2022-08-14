@@ -7,10 +7,10 @@ namespace Genbox.FastHash.XxHash;
 
 public static class Xx3Hash64Unsafe
 {
-    public static unsafe ulong ComputeHash(byte* input, int length, ulong seed = 0)
+    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed = 0)
     {
         fixed (byte* secretPtr = kSecret)
-            return XXH3_64bits_internal(input, length, seed, secretPtr, SECRET_DEFAULT_SIZE, XXH3_hashLong_64b_withSeed);
+            return XXH3_64bits_internal(data, length, seed, secretPtr, SECRET_DEFAULT_SIZE, XXH3_hashLong_64b_withSeed);
     }
 
     private static unsafe ulong XXH3_hashLong_64b_withSeed_internal(byte* input, int len, ulong seed, XXH3_f_accumulate_512_unsafe f_acc512, XXH3_f_scrambleAcc_unsafe f_scramble, XXH3_f_initCustomSecret_unsafe f_initSec)

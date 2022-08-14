@@ -1,17 +1,14 @@
-﻿//Ported to C# by Ian Qvist
-//Source: https://github.com/google/highwayhash/
-
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.HighwayHash;
 
 public static class HighwayHash64Unsafe
 {
-    public static unsafe ulong ComputeHash(byte* data, int size, ulong seed0, ulong seed1, ulong seed2, ulong seed3)
+    public static unsafe ulong ComputeHash(byte* data, int size, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
     {
         uint len = (uint)size;
 
-        ulong[] key = { seed0, seed1, seed2, seed3 };
+        ulong[] key = { seed1, seed2, seed3, seed4 };
 
         HighwayHashState state = new HighwayHashState();
         ProcessAll(data, len, key, ref state);

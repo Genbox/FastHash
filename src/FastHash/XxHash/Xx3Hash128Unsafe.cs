@@ -6,10 +6,10 @@ namespace Genbox.FastHash.XxHash;
 
 public static class Xx3Hash128Unsafe
 {
-    public static unsafe Uint128 ComputeHash(byte* input, int length, ulong seed = 0)
+    public static unsafe Uint128 ComputeHash(byte* data, int length, ulong seed = 0)
     {
         fixed (byte* secretPtr = XxHashConstants.kSecret)
-            return XXH3_128bits_internal(input, length, seed, secretPtr, XxHashConstants.SECRET_DEFAULT_SIZE, XXH3_hashLong_128b_withSeed);
+            return XXH3_128bits_internal(data, length, seed, secretPtr, XxHashConstants.SECRET_DEFAULT_SIZE, XXH3_hashLong_128b_withSeed);
     }
 
     private static unsafe Uint128 XXH3_hashLong_128b_withSeed(byte* input, int len, ulong seed64, byte* secret, int secretLen) => XXH3_hashLong_128b_withSeed_internal(input, len, seed64, secret, secretLen, XXH3_accumulate_512, XXH3_scrambleAcc, XXH3_initCustomSecret);

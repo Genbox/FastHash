@@ -2,9 +2,9 @@
 
 internal static class FnvHashConstants
 {
-    internal const uint FnvPrime = 0x1000193; //FNV_32_PRIME
-    internal const uint FnvInit = 0x811C9DC5; //FNV1_32_INIT
+    internal const uint FNV_32_PRIME = 0x1000193;
+    internal const uint FNV1_32_INIT = 0x811C9DC5;
 
-    internal const ulong FnvPrime64 = 0x100000001B3; //FNV_64_PRIME
-    internal const ulong FnvInit64 = 0xCBF29CE484222325; //FNV1_64_INIT
+    internal const ulong FNV_64_PRIME = 0x100000001B3;
+    internal const ulong FNV1_64_INIT = 0xCBF29CE484222325;
 }

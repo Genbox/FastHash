@@ -1,14 +1,11 @@
-﻿//Ported to C# by Ian Qvist
-//Source: https://github.com/google/farmhash
-
-using static Genbox.FastHash.CityHash.CityHashShared;
+﻿using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.FarmHash.FarmHashConstants;
 
 namespace Genbox.FastHash.FarmHash;
 
 public static class FarmHash64
 {
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed0 = 81, ulong seed1 = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1 = 81, ulong seed2 = 0)
     {
         uint len = (uint)data.Length;
 
@@ -24,7 +21,7 @@ public static class FarmHash64
         if (len <= 256)
             return Hash64(data, len);
 
-        return Hash64WithSeeds(data, len, seed0, seed1);
+        return Hash64WithSeeds(data, len, seed1, seed2);
     }
 
     private static ulong HashLen0to16(ReadOnlySpan<byte> data, uint length)

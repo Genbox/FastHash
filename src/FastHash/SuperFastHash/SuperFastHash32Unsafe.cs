@@ -1,7 +1,4 @@
-﻿//Ported to C# by Ian Qvist
-//Source: http://www.azillionmonkeys.com/qed/hash.html
-
-namespace Genbox.FastHash.SuperFastHash;
+﻿namespace Genbox.FastHash.SuperFastHash;
 
 public static class SuperFastHash32Unsafe
 {

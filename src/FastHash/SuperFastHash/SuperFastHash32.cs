@@ -1,7 +1,4 @@
-﻿//Ported to C# by Ian Qvist
-//Source: http://www.azillionmonkeys.com/qed/hash.html
-
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.SuperFastHash;
 

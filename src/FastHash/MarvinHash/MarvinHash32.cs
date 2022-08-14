@@ -1,8 +1,4 @@
-﻿//Source code originally from https://github.com/dotnet/runtime/blob/05473449c1db9edbbbc565b39d73a59bf517de96/src/libraries/System.Private.CoreLib/src/System/Marvin.cs
-//Minor changes to make it work on byte[]
-//Debug statements removed for brevity
-
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -10,7 +6,7 @@ namespace Genbox.FastHash.MarvinHash;
 
 public static class MarvinHash32
 {
-    public static uint ComputeHash(ReadOnlySpan<byte> data, uint p0 = 0, uint p1 = 0)
+    public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed1 = 0, uint seed2 = 0)
     {
         uint count = (uint)data.Length;
         ref byte ptr = ref MemoryMarshal.GetReference(data);
@@ -44,14 +40,14 @@ public static class MarvinHash32
             // layout of String instances means the starting data is never 8-byte aligned when
             // running in a 64-bit process.
 
-            p0 += Unsafe.ReadUnaligned<uint>(ref ptr);
+            seed1 += Unsafe.ReadUnaligned<uint>(ref ptr);
             uint nextUInt32 = Unsafe.ReadUnaligned<uint>(ref Unsafe.AddByteOffset(ref ptr, 4));
 
             // One block round for each of the 32-bit integers we just read, 2x rounds total.
 
-            Block(ref p0, ref p1);
-            p0 += nextUInt32;
-            Block(ref p0, ref p1);
+            Block(ref seed1, ref seed2);
+            seed1 += nextUInt32;
+            Block(ref seed1, ref seed2);
 
             // Bump the data reference pointer and decrement the loop count.
 
@@ -77,8 +73,8 @@ public static class MarvinHash32
         // 4 .. 7 bytes to begin with and couldn't enter the loop in the first place, we need to
         // consume 4 bytes immediately and send them through one round of the block function.
 
-        p0 += Unsafe.ReadUnaligned<uint>(ref ptr);
-        Block(ref p0, ref p1);
+        seed1 += Unsafe.ReadUnaligned<uint>(ref ptr);
+        Block(ref seed1, ref seed2);
 
         DoFinalPartialRead:
 
@@ -123,11 +119,11 @@ public static class MarvinHash32
         // Now that we've computed the final partial result, merge it in and run two rounds of
         // the block function to finish out the Marvin algorithm.
 
-        p0 += partialResult;
-        Block(ref p0, ref p1);
-        Block(ref p0, ref p1);
+        seed1 += partialResult;
+        Block(ref seed1, ref seed2);
+        Block(ref seed1, ref seed2);
 
-        return p1 ^ p0;
+        return seed2 ^ seed1;
 
         InputTooSmallToEnterMainLoop:
 

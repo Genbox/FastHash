@@ -1,7 +1,4 @@
-﻿//Ported to C# by Ian Qvist
-//Source: http://www.cse.yorku.ca/~oz/hash.html
-
-using static Genbox.FastHash.DjbHash.DjbHashConstants;
+﻿using static Genbox.FastHash.DjbHash.DjbHashConstants;
 
 namespace Genbox.FastHash.DjbHash;
 
