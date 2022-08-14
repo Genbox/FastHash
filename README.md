@@ -2,24 +2,60 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Genbox.FastHash.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Genbox.FastHash/)
 
+### Features
+
+* API supports [ReadOnlySpan<T>](https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1) for optimal performance and flexibility
+* Unmanaged API supports byte*. Use this when performance is important.
+* Most of the hashes are verified with test vectors from the original author
+* High-performance zero-allocation implementations
+
 ### Hashes
 
 These hash functions are included in the library.
 
-| Name                                                                                                                                                    | Authors                                                         | Managed | Unsafe | 32bit | 64bit | 128bit |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|:-------:|:------:|:-----:|:-----:|:------:|
-| [CityHash](https://github.com/google/cityhash)                                                                                                          | Geoff Pike, Jyrki Alakuijala                                    |         |   x    |   x   |   x   |        |
-| DJBHash                                                                                                                                                 | Daniel J. Bernstein                                             |    x    |   x    |   x   |       |        |
-| [FarmHash](https://github.com/google/farmhash)                                                                                                          | Geoff Pike                                                      |    x    |   x    |   x   |   x   |        |
-| [FarshHash](https://github.com/Bulat-Ziganshin/FARSH)                                                                                                   | Bulat Ziganshin                                                 |    x    |   x    |       |   x   |        |
-| [FNVHash](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function)                                                                   | Glenn Fowler, Landon Curt Noll, Kiem-Phong Vo                   |    x    |   x    |   x   |   x   |        |
-| [HighwayHash](https://github.com/google/highwayhash)                                                                                                    | Jyrki Alakuijala, Bill Cox, Jan Wassenberg                      |         |   x    |       |   x   |        |
-| [MarvinHash](https://github.com/dotnet/runtime/blob/4017327955f1d8ddc43980eb1848c52fbb131dfc/src/libraries/System.Private.CoreLib/src/System/Marvin.cs) | Niels Ferguson, Reid Borsuk, Jeffrey Cooperstein, Matthew Ellis |    x    |        |   x   |       |        |
-| [MurmurHash](https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp)                                                                      | Austin Appleby                                                  |    x    |   x    |   x   |       |   x    |
-| [SipHash](https://github.com/veorq/SipHash)                                                                                                             | Jean-Philippe Aumasson, Daniel J. Bernstein                     |    x    |   x    |       |   x   |        |
-| [SuperFastHash](http://www.azillionmonkeys.com/qed/hash.html)                                                                                           | Paul Hsieh                                                      |    x    |   x    |   x   |       |        |
-| [WyHash](https://github.com/wangyi-fudan/wyhash)                                                                                                        | Wang Yi                                                         |    x    |   x    |       |   x   |        |
-| [xxHash](https://github.com/Cyan4973/xxHash)                                                                                                            | Yann Collet                                                     |    x    |   x    |   x   |   x   |   x    |
+| Name                                                                                                                                                    | Version | Authors                                                         |   License    |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|-----------------------------------------------------------------|:------------:|
+| [CityHash](https://github.com/google/cityhash)                                                                                                          |   1.1   | Geoff Pike, Jyrki Alakuijala                                    |     MIT      |
+| [DJBHash](http://www.cse.yorku.ca/~oz/hash.html)                                                                                                        |    -    | Daniel J. Bernstein                                             |     None     |
+| [FarmHash](https://github.com/google/farmhash)                                                                                                          |   1.1   | Geoff Pike                                                      |     MIT      |
+| [FarshHash](https://github.com/Bulat-Ziganshin/FARSH)                                                                                                   |    -    | Bulat Ziganshin                                                 |     MIT      |
+| [FNVHash](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function)                                                                   |    -    | Glenn Fowler, Landon Curt Noll, Kiem-Phong Vo                   |     None     |
+| [HighwayHash](https://github.com/google/highwayhash)                                                                                                    |    -    | Jyrki Alakuijala, Bill Cox, Jan Wassenberg                      |  Apache 2.0  |
+| [MarvinHash](https://github.com/dotnet/runtime/blob/4017327955f1d8ddc43980eb1848c52fbb131dfc/src/libraries/System.Private.CoreLib/src/System/Marvin.cs) |    -    | Niels Ferguson, Reid Borsuk, Jeffrey Cooperstein, Matthew Ellis |     MIT      |
+| [MurmurHash](https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp)                                                                      |   3.0   | Austin Appleby                                                  |     None     |
+| [SipHash](https://github.com/veorq/SipHash)                                                                                                             |   1.0   | Jean-Philippe Aumasson, Daniel J. Bernstein                     |   CC0 1.0    |
+| [SuperFastHash](http://www.azillionmonkeys.com/qed/hash.html)                                                                                           |    -    | Paul Hsieh                                                      |   LGPL 2.1   |
+| [WyHash](https://github.com/wangyi-fudan/wyhash)                                                                                                        | final 3 | Wang Yi                                                         |     None     |
+| [xxHash](https://github.com/Cyan4973/xxHash)                                                                                                            |  0.8.1  | Yann Collet                                                     | BSD 2-Clause |
+
+### Implementation status
+
+The table below gives an overview of the implementations.
+
+* **Managed**: Means the there is a fully managed implementation in C#.
+* **Unsafe**: There is an unmanaged implementation that uses pointers etc. These are usually faster.
+* **Bits**: "32bit" means there is a 32bit optimized implementation that returns an uint. 64bit means optimized for 64bit platforms.
+* **Index**: If there is an "index" version, which can hash a 32/64bit integer directly. Usually used for [Hash Table](https://en.wikipedia.org/wiki/Hash_table) mapping.
+* **Seeded**: The implementation takes an input seed which can help prevent denial-of-service due to hash collisions.
+* **Secret**: Supports a user-provided secret. Much like seeded version it protects against DoS attacks, but with stronger security guarantees.
+* **Verified**: Means the original author has provided test vectors and they have been tested against the implementation. A '-' means test vectors
+  exist, but not yet implemented.
+
+| Name          | Managed | Unsafe | 32bit | 64bit | 128bit | Index | Seeded | Secret | Verified |
+|---------------|:-------:|:------:|:-----:|:-----:|:------:|:-----:|:------:|:------:|:--------:|
+| CityHash      |    x    |   x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
+| DJBHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |          |
+| FarmHash      |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    -     |
+| FarshHash     |    x    |   x    |       |   x   |        |       |   x    |        |    x     |
+| FNVHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |          |
+| HighwayHash   |         |   x    |       |   x   |        |       |   x    |        |    x     |
+| MarvinHash    |    x    |        |   x   |       |        |   x   |   x    |        |          |
+| MurmurHash    |    x    |   x    |   x   |       |   x    |   x   |   x    |        |    -     |
+| SipHash       |    x    |   x    |       |   x   |        |       |   x    |        |    x     |
+| SuperFastHash |    x    |   x    |       |       |        |   x   |        |        |          |
+| WyHash        |    x    |   x    |       |   x   |        |   x   |        |        |    x     |
+| xxHash2       |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    x     |
+| xxHash3       |    x    |   x    |       |   x   |   x    |   x   |   x    |        |    x     |
 
 ### Performance
 
@@ -28,35 +64,42 @@ Measured on 32 MB data. The unsafe versions are implemented using C# unsafe code
 **Note:** Speed is not everything. The quality of a hash is just as important, but much more difficult to measure. [See SMHasher](https://github.com/rurban/smhasher) for more
 details on hash quality.
 
-|           Hash method | MB/s   |
-|----------------------:|--------|
-|       Wy3Hash64Unsafe | 15,721 |
-|       Xx2Hash64Unsafe | 12,813 |
-|             Wy3Hash64 | 11,572 |
-|      Xx3Hash128Unsafe | 11,083 |
-|       Xx3Hash64Unsafe | 11,057 |
-|             Xx2Hash64 | 10,590 |
-|      FarmHash64Unsafe | 7,970  |
-|       Xx2Hash32Unsafe | 7,929  |
-|            FarmHash64 | 7,739  |
-|  Murmur3Hash128Unsafe | 7,152  |
-|      FarmHash32Unsafe | 6,997  |
-|     FarshHash64Unsafe | 6,969  |
-|        Murmur3Hash128 | 6,473  |
-|             Xx2Hash32 | 5,551  |
-|            FarmHash32 | 5,037  |
-|   Murmur3Hash32Unsafe | 3,746  |
-|         Murmur3Hash32 | 3,524  |
-| SuperFastHash32Unsafe | 3,236  |
-|          MarvinHash32 | 3,120  |
-|           FarshHash64 | 2,998  |
-|       SuperFastHash32 | 2,875  |
-|       SipHash64Unsafe | 2,545  |
-|             SipHash64 | 2,315  |
-|            Djb2Hash32 | 1,437  |
-|      Djb2Hash32Unsafe | 1,433  |
-|   HighwayHash64Unsafe | 1,312  |
-|           Fnv1aHash32 | 1,090  |
-|           Fnv1aHash64 | 1,089  |
-|     Fnv1aHash64Unsafe | 1,087  |
-|     Fnv1aHash32Unsafe | 1,070  |
+|               Hash method | MB/s    |
+|--------------------------:|---------|
+|       Wy3Hash64UnsafeTest | 	15,909 |
+|             Wy3Hash64Test | 	15,256 |
+|       Xx2Hash64UnsafeTest | 	13,374 |
+|      Xx3Hash128UnsafeTest | 	12,582 |
+|     CityHash128UnsafeTest | 	12,558 |
+|             Xx2Hash64Test | 	12,438 |
+|      CityHash64UnsafeTest | 	12,424 |
+|       Xx3Hash64UnsafeTest | 	12,418 |
+|           CityHash128Test | 	10,630 |
+|            CityHash64Test | 	9,047  |
+|       Xx2Hash32UnsafeTest | 	8,128  |
+|            FarmHash64Test | 	8,089  |
+|      FarmHash64UnsafeTest | 	7,987  |
+|        Murmur3Hash128Test | 	7,982  |
+|  Murmur3Hash128UnsafeTest | 	7,356  |
+|             Xx2Hash32Test | 	7,287  |
+|      FarmHash32UnsafeTest | 	7,233  |
+|     FarshHash64UnsafeTest | 	7,186  |
+|            FarmHash32Test | 	6,621  |
+|      CityHash32UnsafeTest | 	6,433  |
+|            CityHash32Test | 	5,712  |
+|         Murmur3Hash32Test | 	3,796  |
+|   Murmur3Hash32UnsafeTest | 	3,760  |
+|           FarshHash64Test | 	3,474  |
+|       SuperFastHash32Test | 	3,304  |
+| SuperFastHash32UnsafeTest | 	3,259  |
+|          MarvinHash32Test | 	3,135  |
+|       SipHash64UnsafeTest | 	2,581  |
+|             SipHash64Test | 	2,576  |
+|            Djb2Hash32Test | 	1,451  |
+|            Djb2Hash64Test | 	1,448  |
+|      Djb2Hash64UnsafeTest | 	1,447  |
+|      Djb2Hash32UnsafeTest | 	1,444  |
+|           Fnv1aHash32Test | 	1,092  |
+|     Fnv1aHash32UnsafeTest | 	1,092  |
+|     Fnv1aHash64UnsafeTest | 	1,092  |
+|           Fnv1aHash64Test | 	1,079  |
