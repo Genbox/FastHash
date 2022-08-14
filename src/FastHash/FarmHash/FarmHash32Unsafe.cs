@@ -7,6 +7,10 @@ namespace Genbox.FastHash.FarmHash;
 
 public static class FarmHash32Unsafe
 {
+    // farmhashmk is a seeded version of CityHash
+    // farmhashcc is a non-seeded version of CityHash
+    // The non-seeded version is a slightly modified version of CityHash for inputs larger than 24, and identical with CityHash on lengths less than 24.
+
     public static unsafe uint ComputeHash(byte* data, int length, uint seed)
     {
         uint len = (uint)length;
@@ -93,7 +97,6 @@ public static class FarmHash32Unsafe
         return h;
     }
 
-    // Seeded versions of CityHash - called farmhashmk in FarmHash
     private static unsafe uint Hash32Len0to4(byte* s, uint len, uint seed)
     {
         uint b = seed;

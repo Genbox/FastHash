@@ -8,6 +8,10 @@ namespace Genbox.FastHash.FarmHash;
 
 public static class FarmHash32
 {
+    // farmhashmk is a seeded version of CityHash
+    // farmhashcc is a non-seeded version of CityHash
+    // The non-seeded version is a slightly modified version of CityHash for inputs larger than 24, and identical with CityHash on lengths less than 24.
+
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         uint len = (uint)data.Length;
@@ -115,7 +119,6 @@ public static class FarmHash32
         return MurmurMix(Mur(b, Mur(4, c)));
     }
 
-    // Seeded versions of CityHash - called farmhashmk in FarmHash
     private static uint Hash32Len0to4(ReadOnlySpan<byte> s, uint len, uint seed)
     {
         uint b = seed;
