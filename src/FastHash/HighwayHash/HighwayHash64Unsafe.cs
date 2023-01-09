@@ -65,7 +65,7 @@ public static class HighwayHash64Unsafe
             HighwayHashUpdateRemainder(data + i, size & 31, ref state);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void HighwayHashUpdatePacket(byte* packet, ref HighwayHashState state)
     {
         ulong* lanes = stackalloc ulong[4];
@@ -104,7 +104,7 @@ public static class HighwayHash64Unsafe
         ZipperMergeAndAdd(state.v0_3, state.v0_2, ref state.v1_3, ref state.v1_2);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void ZipperMergeAndAdd(ulong v1, ulong v0, ref ulong add1, ref ulong add0)
     {
         add0 += (((v0 & 0xff000000ul) | (v1 & 0xff00000000ul)) >> 24) |
@@ -172,7 +172,7 @@ public static class HighwayHash64Unsafe
         HighwayHashUpdatePacket(packet, ref state);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong HighwayHashFinalize64(HighwayHashState state)
     {
         for (int i = 0; i < 4; i++)
@@ -181,7 +181,7 @@ public static class HighwayHash64Unsafe
         return state.v0_0 + state.v1_0 + state.mul0_0 + state.mul1_0;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void PermuteAndUpdate(ref HighwayHashState state)
     {
         ulong* permuted = stackalloc ulong[4];
