@@ -4,8 +4,8 @@
 
 ### Features
 
-* API supports [ReadOnlySpan<T>](https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1) for optimal performance and flexibility
-* Unmanaged API supports byte*. Use this when performance is important.
+* API supports [ReadOnlySpan](https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1) for optimal performance and flexibility
+* Unsafe API that takes [byte*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/unsafe-code) as input. Use this when performance is important.
 * Most of the hashes are verified with test vectors from the original author
 * High-performance zero-allocation implementations
 
