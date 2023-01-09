@@ -1,18 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\..\imports\Project_Benchmark.props" />
+
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OutputType>Exe</OutputType>
-    <Packable>false</Packable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FastHash\FastHash.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
   </ItemGroup>
 
 </Project>

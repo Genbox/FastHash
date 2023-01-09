@@ -15,6 +15,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Items", "Items", "{59D2E407
 		..\Directory.Build.props = ..\Directory.Build.props
 		..\LICENSE.txt = ..\LICENSE.txt
 		..\README.md = ..\README.md
+		..\ProjectInfo.props = ..\ProjectInfo.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Imports", "Imports", "{CA1FCD5F-3C9D-42DD-8050-6AADFAAD38D1}"
+	ProjectSection(SolutionItems) = preProject
+		..\imports\Project_Application.props = ..\imports\Project_Application.props
+		..\imports\Project_Benchmark.props = ..\imports\Project_Benchmark.props
+		..\imports\Project_Example.props = ..\imports\Project_Example.props
+		..\imports\Project_Library.props = ..\imports\Project_Library.props
+		..\imports\Project_Test.props = ..\imports\Project_Test.props
 	EndProjectSection
 EndProject
 Global

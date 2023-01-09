@@ -1,0 +1,15 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <BaseProject>$(MSBuildProjectName.Replace('.Benchmarks',''))</BaseProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+    <PackageReference Include="BenchmarkDotNet" />
+    <ProjectReference Include="..\$(BaseProject)\$(BaseProject).csproj" Condition="Exists('$(MSBuildProjectDirectory)\..\$(BaseProject)\$(BaseProject).csproj')" />
+  </ItemGroup>
+
+</Project>

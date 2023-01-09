@@ -1,0 +1,7 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <Description>High performance non-cryptographic hash functions</Description>
+  </PropertyGroup>
+
+</Project>

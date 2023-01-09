@@ -1,20 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\..\imports\Project_Test.props" />
+
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OutputType>Exe</OutputType>
-    <Packable>false</Packable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\FastHash\FastHash.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" PrivateAssets="all" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5" PrivateAssets="all" />
-    <PackageReference Include="xunit" Version="2.4.2" />
-  </ItemGroup>
 
 </Project>
