@@ -13,10 +13,10 @@
     <PackageVersion Include="Puma.Security.Rules.2022" Version="2.4.23" />
     <PackageVersion Include="SmartanAlyzers.ExceptionAnalyzer" Version="1.0.10" />
     <PackageVersion Include="SmartAnalyzers.MultithreadingAnalyzer" Version="1.1.31" />
-    <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.4.27" />
-    <PackageVersion Include="SharpSource" Version="1.15.0" />
+    <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.4.33" />
+    <PackageVersion Include="SharpSource" Version="1.17.6" />
     <PackageVersion Include="Blowin.Required" Version="1.0.4" />
-    <PackageVersion Include="Meziantou.Analyzer" Version="1.0.757" />
+    <PackageVersion Include="Meziantou.Analyzer" Version="2.0.4" />
     <PackageVersion Include="NetFabric.Hyperlinq.Analyzer" Version="2.0.4" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="8.51.0.59060" />
     <!--test analyzers-->

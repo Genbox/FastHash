@@ -40,9 +40,9 @@
       },
       "Meziantou.Analyzer": {
         "type": "Direct",
-        "requested": "[1.0.757, )",
-        "resolved": "1.0.757",
-        "contentHash": "040stLWnhMObeRc55j6c2hVuskwY/eiJ2JdwSidJIMhxhTcUBdGhfSeILBxGQUC8N+2AUaCda3MUvABQq1r4HQ=="
+        "requested": "[2.0.4, )",
+        "resolved": "2.0.4",
+        "contentHash": "TQ30bzcfysuAWVj77uHD6zntvT2jNQm9ZkR8wnhEvzrz2Qga8QpHEReBUUYmwIvwF18ASOll3MAOD+jIJk9RnQ=="
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
@@ -56,9 +56,9 @@
       },
       "Microsoft.VisualStudio.Threading.Analyzers": {
         "type": "Direct",
-        "requested": "[17.4.27, )",
-        "resolved": "17.4.27",
-        "contentHash": "G1rm7mLDS3axxm6ANzwdNwFJ0fchi3vBe/LsZAEQksEz5qr5XGpf2DdqzgY5JhTATdC+ULSa1TdUfeXM9t3mjg=="
+        "requested": "[17.4.33, )",
+        "resolved": "17.4.33",
+        "contentHash": "gpf500WFCqnhJmbIEDvVYgeNLpHZ6PAyhcewyqqpE8UoKNHoCDdMgogulYuJERbRaGqywqD1pRwPNplVteNZ8g=="
       },
       "MinVer": {
         "type": "Direct",
@@ -106,9 +106,9 @@
       },
       "SharpSource": {
         "type": "Direct",
-        "requested": "[1.15.0, )",
-        "resolved": "1.15.0",
-        "contentHash": "9fuWofXsrWavl0Bd5XYWI6dZUOCPI9tU5xhaCauj3O3Q3/39UDAeaqDyDoqBBymc7gARJHM1tBzlth+hfLauvg=="
+        "requested": "[1.17.6, )",
+        "resolved": "1.17.6",
+        "contentHash": "jA0mBAwvcoaElIlNcaP03lKJoBqdBmgy7XfBx3KbdIA1HtvtFhTbU00m+MVdhfANc5V0/qaOHq/G5IFtzn4Z/w=="
       },
       "SmartAnalyzers.ExceptionAnalyzer": {
         "type": "Direct",
