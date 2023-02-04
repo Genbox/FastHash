@@ -5,6 +5,9 @@ namespace Genbox.FastHash.FarmHash;
 
 public static class FarmHash64Unsafe
 {
+    //farmhashxo - 64bit without seed
+    //farmhashuo - 64bit with seed
+
     public static unsafe ulong ComputeHash(byte* data, int length)
     {
         uint len = (uint)length;

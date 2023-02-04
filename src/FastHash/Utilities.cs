@@ -1,5 +1,4 @@
 ﻿using System.Buffers.Binary;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -44,7 +43,7 @@ internal static class Utilities
     internal static uint Read32(ReadOnlySpan<byte> data, uint offset)
     {
         ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref ptr, offset));
+        return Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref ptr, (IntPtr)offset));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -65,7 +64,7 @@ internal static class Utilities
     internal static ulong Read64(ReadOnlySpan<byte> data, uint offset)
     {
         ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref ptr, offset));
+        return Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref ptr, (IntPtr)offset));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -88,14 +87,35 @@ internal static class Utilities
     internal static ulong ByteSwap(ulong input) => BinaryPrimitives.ReverseEndianness(input);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint RotateRight(uint x, byte r) => BitOperations.RotateRight(x, r);
+    internal static uint RotateRight(uint x, byte r) => (x >> r) | (x << (32 - r));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong RotateRight(ulong x, byte r) => BitOperations.RotateRight(x, r);
+    internal static ulong RotateRight(ulong x, byte r) => (x >> r) | (x << (64 - r));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint RotateLeft(uint x, byte r) => BitOperations.RotateLeft(x, r);
+    internal static uint RotateLeft(uint x, byte r) => (x << r) | (x >> (32 - r));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong RotateLeft(ulong x, byte r) => BitOperations.RotateLeft(x, r);
+    internal static ulong RotateLeft(ulong x, byte r) => (x << r) | (x >> (64 - r));
+
+    public static ulong BigMul(ulong a, ulong b, out ulong low)
+    {
+        // Adaptation of algorithm for multiplication of 32-bit unsigned integers described
+        // in Hacker's Delight by Henry S. Warren, Jr. (ISBN 0-201-91465-4), Chapter 8
+        // Basically, it's an optimized version of FOIL method applied to low and high dwords of each operand
+
+        // Use 32-bit uints to optimize the fallback for 32-bit platforms.
+        uint al = (uint)a;
+        uint ah = (uint)(a >> 32);
+        uint bl = (uint)b;
+        uint bh = (uint)(b >> 32);
+
+        ulong mull = (ulong)al * bl;
+        ulong t = (ulong)ah * bl + (mull >> 32);
+        ulong tl = (ulong)al * bh + (uint)t;
+
+        low = tl << 32 | (uint)mull;
+
+        return (ulong)ah * bh + (t >> 32) + (tl >> 32);
+    }
 }

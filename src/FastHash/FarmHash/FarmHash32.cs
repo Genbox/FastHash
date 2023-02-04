@@ -23,7 +23,7 @@ public static class FarmHash32
             return Hash32Len0to4(data, len, seed);
         }
         uint h = Hash32Len13to24(data, 24, seed ^ len);
-        return Mur(ComputeHash(data[24..]) + seed, h);
+        return Mur(ComputeHash(data.Slice(24)) + seed, h);
     }
 
     public static uint ComputeHash(ReadOnlySpan<byte> data)

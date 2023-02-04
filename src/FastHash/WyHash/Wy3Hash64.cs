@@ -17,7 +17,7 @@ public class Wy3Hash64
         ulong a = ((ulong)(uint)input << 32) | (uint)(input >> 32);
         ulong b = ((ulong)(uint)(input >> 32) << 32) | (uint)input;
 
-        ulong high = Math.BigMul(a ^ 0xe7037ed1a0b428dbul, b ^ 0xa0761d6478bd642ful, out ulong low);
+        ulong high = BigMul(a ^ 0xe7037ed1a0b428dbul, b ^ 0xa0761d6478bd642ful, out ulong low);
         return _wymix(0xe7037ed1a0b428dbul ^ 8, low ^ high);
     }
 
@@ -84,7 +84,7 @@ public class Wy3Hash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void _wymum(ref ulong A, ref ulong B)
     {
-        ulong high = Math.BigMul(A, B, out ulong low);
+        ulong high = BigMul(A, B, out ulong low);
 
 #if WYHASH_CONDOM
             A ^= low;

@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics;
 
 namespace Genbox.FastHash.XxHash;
 
@@ -35,11 +34,11 @@ internal static class XxHashConstants
     internal const ulong PRIME64_4 = 9650029242287828579UL;
     internal const ulong PRIME64_5 = 2870177450012600261UL;
 
-    [FixedAddressValueType]
-    internal static readonly Vector256<uint> M256i_XXH_PRIME32_1 = Vector256.Create(PRIME32_1);
-
-    [FixedAddressValueType]
-    internal static readonly Vector128<uint> M128i_XXH_PRIME32_1 = Vector128.Create(PRIME32_1);
+    // [FixedAddressValueType]
+    // internal static readonly Vector256<uint> M256i_XXH_PRIME32_1 = Vector256.Create(PRIME32_1);
+    //
+    // [FixedAddressValueType]
+    // internal static readonly Vector128<uint> M128i_XXH_PRIME32_1 = Vector128.Create(PRIME32_1);
 
     internal static readonly byte[] kSecret =
     {

@@ -41,7 +41,7 @@ public static class Xx3Hash128Unsafe
     {
         fixed (ulong* orgAcc = XxHashConstants.INIT_ACC)
         {
-            ulong* accPtr = (ulong*)NativeMemory.AlignedAlloc(XxHashConstants.ACC_NB * 8, XxHashConstants.ACC_ALIGN);
+            ulong* accPtr = stackalloc ulong[XxHashConstants.ACC_NB * 8];
             accPtr[0] = orgAcc[0];
             accPtr[1] = orgAcc[1];
             accPtr[2] = orgAcc[2];
@@ -56,7 +56,6 @@ public static class Xx3Hash128Unsafe
             Uint128 uint128;
             uint128.Low = XXH3_mergeAccs(accPtr, secret + XxHashConstants.SECRET_MERGEACCS_START, (ulong)len * XxHashConstants.PRIME64_1);
             uint128.High = XXH3_mergeAccs(accPtr, secret + secretSize - XxHashConstants.ACC_SIZE - XxHashConstants.SECRET_MERGEACCS_START, ~((ulong)len * XxHashConstants.PRIME64_2));
-            NativeMemory.AlignedFree(accPtr);
             return uint128;
         }
     }

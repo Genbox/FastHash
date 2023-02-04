@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Genbox.FastHash.MarvinHash;
@@ -41,7 +40,7 @@ public static class MarvinHash32
             // running in a 64-bit process.
 
             seed1 += Unsafe.ReadUnaligned<uint>(ref ptr);
-            uint nextUInt32 = Unsafe.ReadUnaligned<uint>(ref Unsafe.AddByteOffset(ref ptr, 4));
+            uint nextUInt32 = Unsafe.ReadUnaligned<uint>(ref Unsafe.AddByteOffset(ref ptr, (IntPtr)4));
 
             // One block round for each of the 32-bit integers we just read, 2x rounds total.
 
@@ -56,7 +55,7 @@ public static class MarvinHash32
             // Requires https://github.com/dotnet/runtime/issues/6794 to be addressed first
             // before we can realize the full benefits of this.
 
-            ptr = ref Unsafe.AddByteOffset(ref ptr, 8);
+            ptr = ref Unsafe.AddByteOffset(ref ptr, (IntPtr)8);
         } while (--loopCount > 0);
 
         // n.b. We've not been updating the original 'count' parameter, so its actual value is
@@ -85,7 +84,7 @@ public static class MarvinHash32
         // some data we've already processed, but we can handle that below.
 
         // Read the last 4 bytes of the buffer.
-        uint partialResult = Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref Unsafe.AddByteOffset(ref ptr, (nuint)count & 7), -4));
+        uint partialResult = Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref Unsafe.AddByteOffset(ref ptr, (IntPtr)(count & 7)), -4));
 
         // The 'partialResult' local above contains any data we have yet to read, plus some number
         // of bytes which we've already read from the buffer. An example of this is given below
@@ -147,7 +146,7 @@ public static class MarvinHash32
             // [ AA          ]  -> 0x0000_80AA / 0xAA80_0000
             // [ AA BB CC    ]  -> 0x0000_80CC / 0xCC80_0000
 
-            partialResult = Unsafe.AddByteOffset(ref ptr, (nuint)count & 2);
+            partialResult = Unsafe.AddByteOffset(ref ptr, (IntPtr)(count & 2));
 
             if (BitConverter.IsLittleEndian)
                 partialResult |= 0x8000;
@@ -176,7 +175,7 @@ public static class MarvinHash32
             else
             {
                 partialResult |= Unsafe.ReadUnaligned<ushort>(ref ptr);
-                partialResult = BitOperations.RotateLeft(partialResult, 16);
+                partialResult = RotateLeft(partialResult, 16);
             }
         }
 
@@ -188,42 +187,42 @@ public static class MarvinHash32
     public static uint ComputeIndex(uint input)
     {
         uint p0 = input;
-        uint p1 = BitOperations.RotateLeft(input, 20);
+        uint p1 = RotateLeft(input, 20);
 
         p1 += p0;
-        p0 = BitOperations.RotateLeft(p0, 9);
+        p0 = RotateLeft(p0, 9);
 
         p0 ^= p1;
-        p1 = BitOperations.RotateLeft(p1, 27);
+        p1 = RotateLeft(p1, 27);
 
         p1 += p0;
-        p0 = BitOperations.RotateLeft(p0, 19);
+        p0 = RotateLeft(p0, 19);
 
         p1 += 128;
 
         p0 ^= p1;
-        p1 = BitOperations.RotateLeft(p1, 20);
+        p1 = RotateLeft(p1, 20);
 
         p1 += p0;
-        p0 = BitOperations.RotateLeft(p0, 9);
+        p0 = RotateLeft(p0, 9);
 
         p0 ^= p1;
-        p1 = BitOperations.RotateLeft(p1, 27);
+        p1 = RotateLeft(p1, 27);
 
         p1 += p0;
-        p0 = BitOperations.RotateLeft(p0, 19);
+        p0 = RotateLeft(p0, 19);
 
         p0 ^= p1;
-        p1 = BitOperations.RotateLeft(p1, 20);
+        p1 = RotateLeft(p1, 20);
 
         p1 += p0;
-        p0 = BitOperations.RotateLeft(p0, 9);
+        p0 = RotateLeft(p0, 9);
 
         p0 ^= p1;
-        p1 = BitOperations.RotateLeft(p1, 27);
+        p1 = RotateLeft(p1, 27);
 
         p1 += p0;
-        p0 = BitOperations.RotateLeft(p0, 19);
+        p0 = RotateLeft(p0, 19);
 
         return p0 ^ p1;
     }
@@ -236,16 +235,16 @@ public static class MarvinHash32
         uint p1 = rp1;
 
         p1 ^= p0;
-        p0 = BitOperations.RotateLeft(p0, 20);
+        p0 = RotateLeft(p0, 20);
 
         p0 += p1;
-        p1 = BitOperations.RotateLeft(p1, 9);
+        p1 = RotateLeft(p1, 9);
 
         p1 ^= p0;
-        p0 = BitOperations.RotateLeft(p0, 27);
+        p0 = RotateLeft(p0, 27);
 
         p0 += p1;
-        p1 = BitOperations.RotateLeft(p1, 19);
+        p1 = RotateLeft(p1, 19);
 
         rp0 = p0;
         rp1 = p1;

@@ -34,7 +34,7 @@ internal static class XxHashShared
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Uint128 XXH_mult64to128(ulong lhs, ulong rhs)
     {
-        ulong high = Math.BigMul(lhs, rhs, out ulong low);
+        ulong high = BigMul(lhs, rhs, out ulong low);
         return new Uint128(low, high);
     }
 
@@ -101,8 +101,8 @@ internal static class XxHashShared
     {
         for (int n = 0; n < nbStripes; n++)
         {
-            ReadOnlySpan<byte> inp = input[(n * STRIPE_LEN)..];
-            f_acc512(acc, inp, secret[(n * SECRET_CONSUME_RATE)..]);
+            ReadOnlySpan<byte> inp = input.Slice(n * STRIPE_LEN);
+            f_acc512(acc, inp, secret.Slice(n * SECRET_CONSUME_RATE));
         }
     }
 

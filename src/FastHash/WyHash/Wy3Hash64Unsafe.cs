@@ -74,7 +74,7 @@ public class Wy3Hash64Unsafe
     private static unsafe void _wymum(ulong* A, ulong* B)
     {
         ulong low;
-        ulong high = Math.BigMul(*A, *B, out low);
+        ulong high = BigMul(*A, *B, out low);
 
 #if WYHASH_CONDOM
         *A ^= low;

@@ -32,7 +32,7 @@ public static class Xx3Hash64Unsafe
     {
         fixed (ulong* orgAcc = &INIT_ACC[0])
         {
-            ulong* accPtr = (ulong*)NativeMemory.AlignedAlloc(ACC_NB * 8, ACC_ALIGN);
+            ulong* accPtr = stackalloc ulong[ACC_NB * 8];
             accPtr[0] = orgAcc[0];
             accPtr[1] = orgAcc[1];
             accPtr[2] = orgAcc[2];
@@ -43,9 +43,7 @@ public static class Xx3Hash64Unsafe
             accPtr[7] = orgAcc[7];
 
             XXH3_hashLong_internal_loop(accPtr, input, len, secret, secretSize, f_acc512, f_scramble);
-            ulong res = XXH3_mergeAccs(accPtr, secret + SECRET_MERGEACCS_START, (ulong)len * PRIME64_1);
-            NativeMemory.AlignedFree(accPtr);
-            return res;
+            return XXH3_mergeAccs(accPtr, secret + SECRET_MERGEACCS_START, (ulong)len * PRIME64_1);
         }
     }
 
