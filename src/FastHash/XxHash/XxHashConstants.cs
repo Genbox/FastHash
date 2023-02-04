@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Genbox.FastHash.XxHash;
+﻿namespace Genbox.FastHash.XxHash;
 
 internal static class XxHashConstants
 {

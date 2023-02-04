@@ -1,7 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Genbox.FastHash.CityHash;
 using static Genbox.FastHash.CityHash.CityHashShared;
-using static Genbox.FastHash.MurmurHash.MurmurShared;
 using static Genbox.FastHash.FarmHash.FarmHashConstants;
 
 namespace Genbox.FastHash.FarmHash;
@@ -11,6 +10,26 @@ public static class FarmHash32
     // farmhashmk is a seeded version of CityHash
     // farmhashcc is a non-seeded version of CityHash
     // The non-seeded version is a slightly modified version of CityHash for inputs larger than 24, and identical with CityHash on lengths less than 24.
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeIndex(uint input)
+    {
+        uint b = (uint)(sbyte)(input & 0xFF);
+        uint c = 9 ^ b;
+
+        uint v2 = (uint)(sbyte)((input >> 8) & 0xFF);
+        b = b * C1 + v2;
+        c ^= b;
+
+        uint v3 = (uint)(sbyte)((input >> 16) & 0xFF);
+        b = b * C1 + v3;
+        c ^= b;
+
+        uint v4 = (uint)(sbyte)((input >> 24) & 0xFF);
+        b = b * C1 + v4;
+        c ^= b;
+        return Murmur_32(Mur(b, Mur(4, c)));
+    }
 
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
@@ -99,26 +118,6 @@ public static class FarmHash32
         return h;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint ComputeIndex(uint input)
-    {
-        uint b = (uint)(sbyte)(input & 0xFF);
-        uint c = 9 ^ b;
-
-        uint v2 = (uint)(sbyte)((input >> 8) & 0xFF);
-        b = b * C1 + v2;
-        c ^= b;
-
-        uint v3 = (uint)(sbyte)((input >> 16) & 0xFF);
-        b = b * C1 + v3;
-        c ^= b;
-
-        uint v4 = (uint)(sbyte)((input >> 24) & 0xFF);
-        b = b * C1 + v4;
-        c ^= b;
-        return MurmurMix(Mur(b, Mur(4, c)));
-    }
-
     private static uint Hash32Len0to4(ReadOnlySpan<byte> s, uint len, uint seed)
     {
         uint b = seed;
@@ -129,7 +128,7 @@ public static class FarmHash32
             b = b * C1 + v;
             c ^= b;
         }
-        return MurmurMix(Mur(b, Mur(len, c)));
+        return Murmur_32(Mur(b, Mur(len, c)));
     }
 
     private static uint Hash32Len5to12(ReadOnlySpan<byte> s, uint len, uint seed)
@@ -138,7 +137,7 @@ public static class FarmHash32
         a += Read32(s);
         b += Read32(s, len - 4);
         c += Read32(s, (len >> 1) & 4);
-        return MurmurMix(seed ^ Mur(c, Mur(b, Mur(a, d))));
+        return Murmur_32(seed ^ Mur(c, Mur(b, Mur(a, d))));
     }
 
     private static uint Hash32Len13to24(ReadOnlySpan<byte> s, uint len, uint seed)
@@ -156,6 +155,6 @@ public static class FarmHash32
         h = Mur(e, h) + a;
         a = RotateRight(a + f, 12) + d;
         h = Mur(b ^ seed, h) + a;
-        return MurmurMix(h);
+        return Murmur_32(h);
     }
 }

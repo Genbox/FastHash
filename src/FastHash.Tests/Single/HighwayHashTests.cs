@@ -1,5 +1,4 @@
 ﻿using Genbox.FastHash.HighwayHash;
-using Xunit;
 
 namespace Genbox.FastHash.Tests.Single;
 

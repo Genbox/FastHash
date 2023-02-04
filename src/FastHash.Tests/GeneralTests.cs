@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using System.Security.Cryptography;
 using Genbox.FastHash.DjbHash;
-using Xunit;
 
 namespace Genbox.FastHash.Tests;
 

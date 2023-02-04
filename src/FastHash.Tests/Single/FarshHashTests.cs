@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using Genbox.FastHash.FarshHash;
-using Xunit;
 
 namespace Genbox.FastHash.Tests.Single;
 

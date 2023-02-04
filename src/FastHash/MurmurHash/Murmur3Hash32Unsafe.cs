@@ -1,5 +1,4 @@
 ﻿using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
-using static Genbox.FastHash.MurmurHash.MurmurShared;
 
 namespace Genbox.FastHash.MurmurHash;
 
@@ -50,7 +49,7 @@ public static class Murmur3Hash32Unsafe
         uint len = (uint)length;
 
         h1 ^= len;
-        h1 = MurmurMix(h1);
+        h1 = Murmur_32(h1);
 
         return h1;
     }

@@ -1,5 +1,4 @@
 ﻿using Genbox.FastHash.CityHash;
-using Xunit;
 
 namespace Genbox.FastHash.Tests.Single;
 

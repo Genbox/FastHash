@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashConstants;
-using static Genbox.FastHash.MurmurHash.MurmurShared;
 
 namespace Genbox.FastHash.CityHash;
 
@@ -15,13 +14,13 @@ internal static class CityHashShared
             ulong b = Read64(s, len - 8);
             ulong c = RotateRight(b, 37) * mul + a;
             ulong d = (RotateRight(a, 25) + b) * mul;
-            return HashLen16(c, d, mul);
+            return City_128_Seed(c, d, mul);
         }
         if (len >= 4)
         {
             ulong mul = K2 + len * 2;
             ulong a = Read32(s);
-            return HashLen16(len + (a << 3), Read32(s, len - 4), mul);
+            return City_128_Seed(len + (a << 3), Read32(s, len - 4), mul);
         }
         if (len > 0)
         {
@@ -39,6 +38,8 @@ internal static class CityHashShared
     internal static uint Mur(uint a, uint h)
     {
         // Helper from Murmur3 for combining two 32-bit values.
+
+        //IQV: The rotate constants are different than murmur
         a *= C1;
         a = RotateRight(a, 17);
         a *= C2;
@@ -49,32 +50,6 @@ internal static class CityHashShared
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong ShiftMix(ulong val) => val ^ (val >> 47);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong HashLen16(ulong u, ulong v, ulong mul)
-    {
-        // Murmur-inspired hashing.
-        ulong a = (u ^ v) * mul;
-        a ^= a >> 47;
-        ulong b = (v ^ a) * mul;
-        b ^= b >> 47;
-        b *= mul;
-        return b;
-    }
-
-    // Hash 128 input bits down to 64 bits of output.
-    // This is intended to be a reasonably good hash function.
-    internal static ulong HashLen16(ulong u, ulong v)
-    {
-        // Murmur-inspired hashing.
-        const ulong kMul = 0x9ddfea08eb382d69UL;
-        ulong a = (u ^ v) * kMul;
-        a ^= a >> 47;
-        ulong b = (v ^ a) * kMul;
-        b ^= b >> 47;
-        b *= kMul;
-        return b;
-    }
 
     // Return a 16-byte hash for s[0] ... s[31], a, and b.  Quick and dirty.
     internal static Uint128 WeakHashLen32WithSeeds(ReadOnlySpan<byte> s, uint offset, ulong a, ulong b)

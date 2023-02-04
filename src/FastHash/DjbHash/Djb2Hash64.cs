@@ -5,16 +5,6 @@ namespace Genbox.FastHash.DjbHash;
 
 public static class Djb2Hash64
 {
-    public static ulong ComputeHash(ReadOnlySpan<byte> data)
-    {
-        ulong hash = InitHash;
-
-        for (int i = 0; i < data.Length; i++)
-            hash = ((hash << 5) + hash) ^ data[i];
-
-        return hash;
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
     {
@@ -27,6 +17,16 @@ public static class Djb2Hash64
         hash = ((hash << 5) + hash) ^ ((input >> 40) & 0xFF);
         hash = ((hash << 5) + hash) ^ ((input >> 48) & 0xFF);
         hash = ((hash << 5) + hash) ^ ((input >> 56) & 0xFF);
+        return hash;
+    }
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data)
+    {
+        ulong hash = InitHash;
+
+        for (int i = 0; i < data.Length; i++)
+            hash = ((hash << 5) + hash) ^ data[i];
+
         return hash;
     }
 }

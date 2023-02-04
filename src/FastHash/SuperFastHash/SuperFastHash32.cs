@@ -4,9 +4,24 @@ namespace Genbox.FastHash.SuperFastHash;
 
 public static class SuperFastHash32
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeIndex(uint input)
+    {
+        uint hash = 4 + (uint)(ushort)input;
+        hash = (hash << 16) ^ ((input >> 16) << 11) ^ hash;
+        hash += hash >> 11;
+        hash ^= hash << 3;
+        hash += hash >> 5;
+        hash ^= hash << 4;
+        hash += hash >> 17;
+        hash ^= hash << 25;
+        hash += hash >> 6;
+        return hash;
+    }
+
     public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
-        if (data == null || data.Length <= 0)
+        if (data.Length <= 0)
             return 0;
 
         int length = data.Length;
@@ -53,21 +68,6 @@ public static class SuperFastHash32
         hash ^= hash << 25;
         hash += hash >> 6;
 
-        return hash;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint ComputeIndex(uint input)
-    {
-        uint hash = 4 + (uint)(ushort)input;
-        hash = (hash << 16) ^ ((input >> 16) << 11) ^ hash;
-        hash += hash >> 11;
-        hash ^= hash << 3;
-        hash += hash >> 5;
-        hash ^= hash << 4;
-        hash += hash >> 17;
-        hash ^= hash << 25;
-        hash += hash >> 6;
         return hash;
     }
 }

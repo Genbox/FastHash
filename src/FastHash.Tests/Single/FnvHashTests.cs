@@ -1,5 +1,4 @@
 ﻿using Genbox.FastHash.FnvHash;
-using Xunit;
 
 namespace Genbox.FastHash.Tests.Single;
 

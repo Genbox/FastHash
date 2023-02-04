@@ -1,5 +1,4 @@
 ﻿using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
-using static Genbox.FastHash.MurmurHash.MurmurShared;
 
 namespace Genbox.FastHash.MurmurHash;
 
@@ -114,8 +113,8 @@ public static class Murmur3Hash128Unsafe
         h1 += h2;
         h2 += h1;
 
-        h1 = MurmurMix(h1);
-        h2 = MurmurMix(h2);
+        h1 = Murmur_64(h1);
+        h2 = Murmur_64(h2);
 
         h1 += h2;
         h2 += h1;

@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using static Genbox.FastHash.XxHash.XxHashShared;
 using static Genbox.FastHash.XxHash.XxHashUnsafeShared;
 

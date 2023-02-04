@@ -1,7 +1,6 @@
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
-using static Genbox.FastHash.MurmurHash.MurmurShared;
 
 namespace Genbox.FastHash.CityHash;
 
@@ -88,7 +87,7 @@ public static class CityHash32Unsafe
             b = b * C1 + v;
             c ^= b;
         }
-        return MurmurMix(Mur(b, Mur(len, c)));
+        return Murmur_32(Mur(b, Mur(len, c)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -98,7 +97,7 @@ public static class CityHash32Unsafe
         a += Read32(s);
         b += Read32(s + len - 4);
         c += Read32(s + ((len >> 1) & 4));
-        return MurmurMix(Mur(c, Mur(b, Mur(a, d))));
+        return Murmur_32(Mur(c, Mur(b, Mur(a, d))));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -112,6 +111,6 @@ public static class CityHash32Unsafe
         uint f = Read32(s + len - 4);
         uint h = len;
 
-        return MurmurMix(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
+        return Murmur_32(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
     }
 }

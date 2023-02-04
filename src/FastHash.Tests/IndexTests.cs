@@ -8,7 +8,6 @@ using Genbox.FastHash.MurmurHash;
 using Genbox.FastHash.SuperFastHash;
 using Genbox.FastHash.WyHash;
 using Genbox.FastHash.XxHash;
-using Xunit;
 
 namespace Genbox.FastHash.Tests;
 

@@ -1,6 +1,5 @@
 ﻿using Genbox.FastHash.CityHash;
 using static Genbox.FastHash.CityHash.CityHashShared;
-using static Genbox.FastHash.MurmurHash.MurmurShared;
 using static Genbox.FastHash.FarmHash.FarmHashConstants;
 
 namespace Genbox.FastHash.FarmHash;
@@ -107,7 +106,7 @@ public static class FarmHash32Unsafe
             b = b * C1 + v;
             c ^= b;
         }
-        return MurmurMix(Mur(b, Mur(len, c)));
+        return Murmur_32(Mur(b, Mur(len, c)));
     }
 
     private static unsafe uint Hash32Len5to12(byte* s, uint len, uint seed)
@@ -116,7 +115,7 @@ public static class FarmHash32Unsafe
         a += Read32(s);
         b += Read32(s + len - 4);
         c += Read32(s + ((len >> 1) & 4));
-        return MurmurMix(seed ^ Mur(c, Mur(b, Mur(a, d))));
+        return Murmur_32(seed ^ Mur(c, Mur(b, Mur(a, d))));
     }
 
     private static unsafe uint Hash32Len13to24(byte* s, uint len, uint seed)
@@ -134,6 +133,6 @@ public static class FarmHash32Unsafe
         h = Mur(e, h) + a;
         a = RotateRight(a + f, 12) + d;
         h = Mur(b ^ seed, h) + a;
-        return MurmurMix(h);
+        return Murmur_32(h);
     }
 }

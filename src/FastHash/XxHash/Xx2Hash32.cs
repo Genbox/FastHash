@@ -5,6 +5,22 @@ namespace Genbox.FastHash.XxHash;
 
 public static class Xx2Hash32
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeIndex(uint input)
+    {
+        uint acc = input * PRIME32_3;
+        acc += PRIME32_5;
+        acc += 4;
+
+        uint h32 = RotateLeft(acc, 17) * PRIME32_4;
+        h32 ^= h32 >> 15;
+        h32 *= PRIME32_2;
+        h32 ^= h32 >> 13;
+        h32 *= PRIME32_3;
+        h32 ^= h32 >> 16;
+        return h32;
+    }
+
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
         uint len = (uint)data.Length;
@@ -60,22 +76,6 @@ public static class Xx2Hash32
         h32 *= PRIME32_3;
         h32 ^= h32 >> 16;
 
-        return h32;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint ComputeIndex(uint input)
-    {
-        uint acc = input * PRIME32_3;
-        acc += PRIME32_5;
-        acc += 4;
-
-        uint h32 = RotateLeft(acc, 17) * PRIME32_4;
-        h32 ^= h32 >> 15;
-        h32 *= PRIME32_2;
-        h32 ^= h32 >> 13;
-        h32 *= PRIME32_3;
-        h32 ^= h32 >> 16;
         return h32;
     }
 

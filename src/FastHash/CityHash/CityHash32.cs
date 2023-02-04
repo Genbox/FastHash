@@ -1,12 +1,31 @@
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
-using static Genbox.FastHash.MurmurHash.MurmurShared;
 
 namespace Genbox.FastHash.CityHash;
 
 public static class CityHash32
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeIndex(uint input)
+    {
+        uint b = (uint)(sbyte)(input & 0xFF);
+        uint c = 9 ^ b;
+
+        uint v2 = (uint)(sbyte)((input >> 8) & 0xFF);
+        b = b * C1 + v2;
+        c ^= b;
+
+        uint v3 = (uint)(sbyte)((input >> 16) & 0xFF);
+        b = b * C1 + v3;
+        c ^= b;
+
+        uint v4 = (uint)(sbyte)((input >> 24) & 0xFF);
+        b = b * C1 + v4;
+        c ^= b;
+        return Murmur_32(Mur(b, Mur(4, c)));
+    }
+
     public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
         uint len = (uint)data.Length;
@@ -79,26 +98,6 @@ public static class CityHash32
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint ComputeIndex(uint input)
-    {
-        uint b = (uint)(sbyte)(input & 0xFF);
-        uint c = 9 ^ b;
-
-        uint v2 = (uint)(sbyte)((input >> 8) & 0xFF);
-        b = b * C1 + v2;
-        c ^= b;
-
-        uint v3 = (uint)(sbyte)((input >> 16) & 0xFF);
-        b = b * C1 + v3;
-        c ^= b;
-
-        uint v4 = (uint)(sbyte)((input >> 24) & 0xFF);
-        b = b * C1 + v4;
-        c ^= b;
-        return MurmurMix(Mur(b, Mur(4, c)));
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static uint Hash32Len0to4(ReadOnlySpan<byte> s, uint len)
     {
         uint b = 0;
@@ -109,7 +108,7 @@ public static class CityHash32
             b = b * C1 + v;
             c ^= b;
         }
-        return MurmurMix(Mur(b, Mur(len, c)));
+        return Murmur_32(Mur(b, Mur(len, c)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -119,7 +118,7 @@ public static class CityHash32
         a += Read32(s);
         b += Read32(s, len - 4);
         c += Read32(s, (len >> 1) & 4);
-        return MurmurMix(Mur(c, Mur(b, Mur(a, d))));
+        return Murmur_32(Mur(c, Mur(b, Mur(a, d))));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -133,6 +132,6 @@ public static class CityHash32
         uint f = Read32(s, len - 4);
         uint h = len;
 
-        return MurmurMix(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
+        return Murmur_32(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
     }
 }

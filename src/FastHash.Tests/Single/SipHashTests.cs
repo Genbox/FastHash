@@ -1,5 +1,4 @@
 ﻿using Genbox.FastHash.SipHash;
-using Xunit;
 
 namespace Genbox.FastHash.Tests.Single;
 

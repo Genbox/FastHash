@@ -1,11 +1,23 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
-using static Genbox.FastHash.MurmurHash.MurmurShared;
 
 namespace Genbox.FastHash.MurmurHash;
 
 public static class Murmur3Hash32
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeIndex(uint input)
+    {
+        input *= C1_32;
+        input = RotateLeft(input, 15);
+        input *= C2_32;
+
+        input = RotateLeft(input, 13);
+        input = input * 5 + 0xe6546b64;
+        input ^= 4;
+        return Murmur_32(input);
+    }
+
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
         uint length = (uint)data.Length;
@@ -52,21 +64,8 @@ public static class Murmur3Hash32
         h1 ^= k1;
 
         h1 ^= length;
-        h1 = MurmurMix(h1);
+        h1 = Murmur_32(h1);
 
         return h1;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint ComputeIndex(uint input)
-    {
-        input *= C1_32;
-        input = RotateLeft(input, 15);
-        input *= C2_32;
-
-        input = RotateLeft(input, 13);
-        input = input * 5 + 0xe6546b64;
-        input ^= 4;
-        return MurmurMix(input);
     }
 }
