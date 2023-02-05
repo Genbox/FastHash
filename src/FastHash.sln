@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Imports", "_Imports", "{CA
 		..\imports\Project_Test.props = ..\imports\Project_Test.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastHash.TestShared", "FastHash.TestShared\FastHash.TestShared.csproj", "{F68DF291-9B10-426C-BC8F-7669092C1AA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{20FF2DA6-D0C4-4D5A-83F8-C48F8146EA71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20FF2DA6-D0C4-4D5A-83F8-C48F8146EA71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20FF2DA6-D0C4-4D5A-83F8-C48F8146EA71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F68DF291-9B10-426C-BC8F-7669092C1AA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F68DF291-9B10-426C-BC8F-7669092C1AA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F68DF291-9B10-426C-BC8F-7669092C1AA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F68DF291-9B10-426C-BC8F-7669092C1AA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

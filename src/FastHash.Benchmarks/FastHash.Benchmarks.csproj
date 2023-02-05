@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FastHash.TestShared\FastHash.TestShared.csproj" />
     <ProjectReference Include="..\FastHash\FastHash.csproj" />
   </ItemGroup>
 

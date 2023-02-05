@@ -98,24 +98,30 @@ internal static class Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong RotateLeft(ulong x, byte r) => (x << r) | (x >> (64 - r));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong BigMul(ulong a, ulong b, out ulong low)
     {
-        // Adaptation of algorithm for multiplication of 32-bit unsigned integers described
-        // in Hacker's Delight by Henry S. Warren, Jr. (ISBN 0-201-91465-4), Chapter 8
-        // Basically, it's an optimized version of FOIL method applied to low and high dwords of each operand
+#if NET5_0_OR_GREATER
+        return BigMul(a, b, out low);
+#else
+        unchecked
+        {
+            low = a * b;
 
-        // Use 32-bit uints to optimize the fallback for 32-bit platforms.
-        uint al = (uint)a;
-        uint ah = (uint)(a >> 32);
-        uint bl = (uint)b;
-        uint bh = (uint)(b >> 32);
+            ulong x0 = (uint)a;
+            ulong x1 = a >> 32;
 
-        ulong mull = (ulong)al * bl;
-        ulong t = (ulong)ah * bl + (mull >> 32);
-        ulong tl = (ulong)al * bh + (uint)t;
+            ulong y0 = (uint)b;
+            ulong y1 = b >> 32;
 
-        low = tl << 32 | (uint)mull;
+            ulong p11 = x1 * y1;
+            ulong p01 = x0 * y1;
+            ulong p10 = x1 * y0;
+            ulong p00 = x0 * y0;
 
-        return (ulong)ah * bh + (t >> 32) + (tl >> 32);
+            ulong middle = p10 + (p00 >> 32) + (uint)p01;
+            return p11 + (middle >> 32) + (p01 >> 32);
+        }
+#endif
     }
 }
