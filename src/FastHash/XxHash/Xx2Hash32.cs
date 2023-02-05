@@ -70,13 +70,7 @@ public static class Xx2Hash32
             len--;
         }
 
-        h32 ^= h32 >> 15;
-        h32 *= PRIME32_2;
-        h32 ^= h32 >> 13;
-        h32 *= PRIME32_3;
-        h32 ^= h32 >> 16;
-
-        return h32;
+        return XXH2_32(h32);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

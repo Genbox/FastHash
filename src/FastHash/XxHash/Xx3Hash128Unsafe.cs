@@ -68,8 +68,8 @@ public static class Xx3Hash128Unsafe
             Uint128 h128;
             ulong bitflipl = Read64(secret + 64) ^ Read64(secret + 72);
             ulong bitfliph = Read64(secret + 80) ^ Read64(secret + 88);
-            h128.Low = XXH64_avalanche(seed ^ bitflipl);
-            h128.High = XXH64_avalanche(seed ^ bitfliph);
+            h128.Low = XXH2_64(seed ^ bitflipl);
+            h128.High = XXH2_64(seed ^ bitfliph);
             return h128;
         }
     }
@@ -174,8 +174,8 @@ public static class Xx3Hash128Unsafe
         ulong keyed_lo = combinedl ^ bitflipl;
         ulong keyed_hi = combinedh ^ bitfliph;
         Uint128 h128;
-        h128.Low = XXH64_avalanche(keyed_lo);
-        h128.High = XXH64_avalanche(keyed_hi);
+        h128.Low = XXH2_64(keyed_lo);
+        h128.High = XXH2_64(keyed_hi);
         return h128;
     }
 

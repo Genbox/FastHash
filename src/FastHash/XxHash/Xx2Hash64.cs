@@ -23,7 +23,7 @@ public static class Xx2Hash64
         return h64;
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
     {
         uint len = (uint)data.Length;
         ulong h64;
@@ -85,7 +85,7 @@ public static class Xx2Hash64
             len--;
         }
 
-        return XXH64_avalanche(h64);
+        return XXH2_64(h64);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

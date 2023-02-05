@@ -8,6 +8,7 @@ public class Xx3HashTests
     private const ulong PRIME64 = 11400714785074694797UL;
     private readonly byte[] _sanityBuffer;
 
+    //https://github.com/Cyan4973/xxHash/blob/dev/cli/xsum_sanity_check.c#L131
     private static readonly (int, ulong, ulong)[] _testVectors64 =
     {
         (0, 0, 0x2D06800538D394C2UL), /* empty string */

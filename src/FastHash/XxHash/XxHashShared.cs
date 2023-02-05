@@ -6,17 +6,6 @@ namespace Genbox.FastHash.XxHash;
 internal static class XxHashShared
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong XXH64_avalanche(ulong hash)
-    {
-        hash ^= hash >> 33;
-        hash *= PRIME64_2;
-        hash ^= hash >> 29;
-        hash *= PRIME64_3;
-        hash ^= hash >> 32;
-        return hash;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong XXH3_avalanche(ulong hash)
     {
         hash ^= hash >> 37;

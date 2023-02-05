@@ -68,7 +68,7 @@ public static class Xx3Hash64
         if (len > 0)
             return XXH3_len_1to3_64b(input, len, secret, seed);
 
-        return XXH64_avalanche(seed ^ Read64(secret, 56) ^ Read64(secret, 64));
+        return XXH2_64(seed ^ Read64(secret, 56) ^ Read64(secret, 64));
     }
 
     private static ulong XXH3_len_9to16_64b(ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, ulong seed)
@@ -125,7 +125,7 @@ public static class Xx3Hash64
         uint combined = ((uint)c1 << 16) | ((uint)c2 << 24) | ((uint)c3 << 0) | ((uint)len << 8);
         ulong bitflip = (Read32(secret) ^ Read32(secret, 4)) + seed;
         ulong keyed = combined ^ bitflip;
-        return XXH64_avalanche(keyed);
+        return XXH2_64(keyed);
     }
 
     private static ulong XXH3_len_17to128_64b(ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, ulong seed)
