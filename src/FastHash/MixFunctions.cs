@@ -98,7 +98,7 @@ public static class MixFunctions
         return b;
     }
 
-    //http://jonkagstrom.com/mx3/mx3_rev2.html
+    // http://jonkagstrom.com/mx3/mx3_rev2.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong Mx3_64(ulong h)
     {
@@ -139,7 +139,7 @@ public static class MixFunctions
         return h;
     }
 
-    //http://jonkagstrom.com/tuning-bit-mixers/index.html
+    // http://jonkagstrom.com/tuning-bit-mixers/index.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong Xmx_64(ulong h)
     {
@@ -168,7 +168,7 @@ public static class MixFunctions
         return h;
     }
 
-    //http://mostlymangling.blogspot.com/
+    // http://mostlymangling.blogspot.com/
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong MoreMur_64(ulong h)
     {
@@ -203,7 +203,7 @@ public static class MixFunctions
         return h;
     }
 
-    //http://zimbry.blogspot.com/2011/09/better-bit-mixing-improving-on.html
+    // http://zimbry.blogspot.com/2011/09/better-bit-mixing-improving-on.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong Murmur14_64(ulong h)
     {
@@ -314,7 +314,7 @@ public static class MixFunctions
 
     #region Others
 
-    /// <summary>https://github.com/ztanml/fast-hash</summary>
+    // https://github.com/ztanml/fast-hash
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong FastHash_64(ulong h)
     {
@@ -343,7 +343,7 @@ public static class MixFunctions
         return h;
     }
 
-    /// <summary>http://mostlymangling.blogspot.com/2020/01/nasam-not-another-strange-acronym-mixer.html</summary>
+    // http://mostlymangling.blogspot.com/2020/01/nasam-not-another-strange-acronym-mixer.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong Nasam_64(ulong h)
     {
