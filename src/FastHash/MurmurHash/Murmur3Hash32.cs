@@ -21,11 +21,11 @@ public static class Murmur3Hash32
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
         uint length = (uint)data.Length;
-        uint nblocks = length / 4;
+        uint nBlocks = length / 4;
         uint h1 = seed;
         uint k1;
 
-        uint end = nblocks * 4;
+        uint end = nBlocks * 4;
 
         for (uint i = 0; i < end; i += 4)
         {
@@ -64,8 +64,6 @@ public static class Murmur3Hash32
         h1 ^= k1;
 
         h1 ^= length;
-        h1 = Murmur_32(h1);
-
-        return h1;
+        return Murmur_32(h1);
     }
 }

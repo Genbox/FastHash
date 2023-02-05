@@ -8,11 +8,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        Job shortInProcess = new Job(InfrastructureMode.InProcess);
-
-        ManualConfig config = ManualConfig.Create(DefaultConfig.Instance.AddJob(shortInProcess));
-
-        BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly)
-                         .Run(args, config);
+        IConfig config = DefaultConfig.Instance.AddJob(new Job(InfrastructureMode.InProcess));
+        BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, config);
     }
 }

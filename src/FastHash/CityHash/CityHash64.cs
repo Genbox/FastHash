@@ -9,7 +9,7 @@ public static class CityHash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
     {
-        ulong mul = K2 + 16;
+        const ulong mul = K2 + 16;
         ulong d = (RotateRight(input + K2, 25) + input) * mul;
         ulong a = ((RotateRight(input, 37) * mul + input + K2) ^ d) * mul;
         a ^= a >> 47;

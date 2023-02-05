@@ -7,7 +7,7 @@ public static class Murmur3Hash128
     public static Uint128 ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
         uint length = (uint)data.Length;
-        uint nblocks = length / 16;
+        uint nBlocks = length / 16;
 
         ulong h1 = seed;
         ulong h2 = seed;
@@ -15,7 +15,7 @@ public static class Murmur3Hash128
         ulong k1;
         ulong k2;
 
-        for (uint i = 0; i < nblocks; i++)
+        for (uint i = 0; i < nBlocks; i++)
         {
             k1 = Read64(data, i * 2 + 0);
             k2 = Read64(data, i * 2 + 8);
@@ -67,7 +67,7 @@ public static class Murmur3Hash128
                 k2 ^= (ulong)data[tail + 9] << 8;
                 goto case 9;
             case 9:
-                k2 ^= (ulong)data[tail + 8] << 0;
+                k2 ^= data[tail + 8];
 
                 k2 *= C2_64;
                 k2 = RotateLeft(k2, 33);
@@ -97,7 +97,7 @@ public static class Murmur3Hash128
                 k1 ^= (ulong)data[tail + 1] << 8;
                 goto case 1;
             case 1:
-                k1 ^= (ulong)data[0] << 0;
+                k1 ^= data[0];
 
                 k1 *= C1_64;
                 k1 = RotateLeft(k1, 31);

@@ -5,6 +5,7 @@ using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FnvHash;
 using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MurmurHash;
+using Genbox.FastHash.SipHash;
 using Genbox.FastHash.SuperFastHash;
 using Genbox.FastHash.WyHash;
 using Genbox.FastHash.XxHash;
@@ -29,7 +30,9 @@ public class IndexTests
     {
         yield return new object[] { nameof(CityHash64), (ulong val) => CityHash64.ComputeIndex(val), (byte[] val) => CityHash64.ComputeHash(val) };
         yield return new object[] { nameof(Djb2Hash64), (ulong val) => Djb2Hash64.ComputeIndex(val), (byte[] val) => Djb2Hash64.ComputeHash(val) };
+        yield return new object[] { nameof(FarmHash64), (ulong val) => FarmHash64.ComputeIndex(val), (byte[] val) => FarmHash64.ComputeHash(val) };
         yield return new object[] { nameof(Fnv1aHash64), (ulong val) => Fnv1aHash64.ComputeIndex(val), (byte[] val) => Fnv1aHash64.ComputeHash(val) };
+        yield return new object[] { nameof(SipHash64), (ulong val) => SipHash64.ComputeIndex(val), (byte[] val) => SipHash64.ComputeHash(val) };
         yield return new object[] { nameof(Wy3Hash64), (ulong val) => Wy3Hash64.ComputeIndex(val), (byte[] val) => Wy3Hash64.ComputeHash(val) };
         yield return new object[] { nameof(Xx2Hash64), (ulong val) => Xx2Hash64.ComputeIndex(val), (byte[] val) => Xx2Hash64.ComputeHash(val) };
     }

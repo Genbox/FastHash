@@ -17,16 +17,13 @@ public static class FarmHash32
         uint b = (uint)(sbyte)(input & 0xFF);
         uint c = 9 ^ b;
 
-        uint v2 = (uint)(sbyte)((input >> 8) & 0xFF);
-        b = b * C1 + v2;
+        b = b * C1 + (uint)(sbyte)((input >> 8) & 0xFF);
         c ^= b;
 
-        uint v3 = (uint)(sbyte)((input >> 16) & 0xFF);
-        b = b * C1 + v3;
+        b = b * C1 + (uint)(sbyte)((input >> 16) & 0xFF);
         c ^= b;
 
-        uint v4 = (uint)(sbyte)((input >> 24) & 0xFF);
-        b = b * C1 + v4;
+        b = b * C1 + (uint)(sbyte)((input >> 24) & 0xFF);
         c ^= b;
         return Murmur_32(Mur(b, Mur(4, c)));
     }

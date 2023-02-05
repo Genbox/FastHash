@@ -5,6 +5,50 @@ namespace Genbox.FastHash.MarvinHash;
 
 public static class MarvinHash32
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeIndex(uint input)
+    {
+        uint p0 = input;
+        uint p1 = RotateLeft(input, 20);
+
+        p1 += p0;
+        p0 = RotateLeft(p0, 9);
+
+        p0 ^= p1;
+        p1 = RotateLeft(p1, 27);
+
+        p1 += p0;
+        p0 = RotateLeft(p0, 19);
+
+        p1 += 128;
+
+        p0 ^= p1;
+        p1 = RotateLeft(p1, 20);
+
+        p1 += p0;
+        p0 = RotateLeft(p0, 9);
+
+        p0 ^= p1;
+        p1 = RotateLeft(p1, 27);
+
+        p1 += p0;
+        p0 = RotateLeft(p0, 19);
+
+        p0 ^= p1;
+        p1 = RotateLeft(p1, 20);
+
+        p1 += p0;
+        p0 = RotateLeft(p0, 9);
+
+        p0 ^= p1;
+        p1 = RotateLeft(p1, 27);
+
+        p1 += p0;
+        p0 = RotateLeft(p0, 19);
+
+        return p0 ^ p1;
+    }
+
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed1 = 0, uint seed2 = 0)
     {
         uint count = (uint)data.Length;
@@ -99,19 +143,9 @@ public static class MarvinHash32
         // count mod 4 = 3 -> [ ## ## ## ## | AA BB CC    ] -> 0xCCBB_AA##             -> 0x80CC_BBAA
 
         count = ~count << 3;
-
-        if (BitConverter.IsLittleEndian)
-        {
-            partialResult >>= 8; // make some room for the 0x80 byte
-            partialResult |= 0x8000_0000u; // put the 0x80 byte at the beginning
-            partialResult >>= (int)count & 0x1F; // shift out all previously consumed bytes
-        }
-        else
-        {
-            partialResult <<= 8; // make some room for the 0x80 byte
-            partialResult |= 0x80u; // put the 0x80 byte at the end
-            partialResult <<= (int)count & 0x1F; // shift out all previously consumed bytes
-        }
+        partialResult >>= 8; // make some room for the 0x80 byte
+        partialResult |= 0x8000_0000u; // put the 0x80 byte at the beginning
+        partialResult >>= (int)count & 0x1F; // shift out all previously consumed bytes
 
         DoFinalRoundsAndReturn:
 
@@ -130,11 +164,7 @@ public static class MarvinHash32
         // This means that we're going to be building up the final result right away and
         // will only ever run two rounds total of the block function. Let's initialize
         // the partial result to "no data".
-
-        if (BitConverter.IsLittleEndian)
-            partialResult = 0x80u;
-        else
-            partialResult = 0x80000000u;
+        partialResult = 0x80u;
 
         if ((count & 0b_0001) != 0)
         {
@@ -147,14 +177,7 @@ public static class MarvinHash32
             // [ AA BB CC    ]  -> 0x0000_80CC / 0xCC80_0000
 
             partialResult = Unsafe.AddByteOffset(ref ptr, (IntPtr)(count & 2));
-
-            if (BitConverter.IsLittleEndian)
-                partialResult |= 0x8000;
-            else
-            {
-                partialResult <<= 24;
-                partialResult |= 0x800000u;
-            }
+            partialResult |= 0x8000;
         }
 
         if ((count & 0b_0010) != 0)
@@ -166,65 +189,12 @@ public static class MarvinHash32
             //                  (little-endian / big-endian)
             // [ AA BB       ]  -> 0x0080_BBAA / 0xAABB_8000
             // [ AA BB CC    ]  -> 0x80CC_BBAA / 0xAABB_CC80 (carried over from above)
-
-            if (BitConverter.IsLittleEndian)
-            {
-                partialResult <<= 16;
-                partialResult |= Unsafe.ReadUnaligned<ushort>(ref ptr);
-            }
-            else
-            {
-                partialResult |= Unsafe.ReadUnaligned<ushort>(ref ptr);
-                partialResult = RotateLeft(partialResult, 16);
-            }
+            partialResult <<= 16;
+            partialResult |= Unsafe.ReadUnaligned<ushort>(ref ptr);
         }
 
         // Everything is consumed! Go perform the final rounds and return.
         goto DoFinalRoundsAndReturn;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint ComputeIndex(uint input)
-    {
-        uint p0 = input;
-        uint p1 = RotateLeft(input, 20);
-
-        p1 += p0;
-        p0 = RotateLeft(p0, 9);
-
-        p0 ^= p1;
-        p1 = RotateLeft(p1, 27);
-
-        p1 += p0;
-        p0 = RotateLeft(p0, 19);
-
-        p1 += 128;
-
-        p0 ^= p1;
-        p1 = RotateLeft(p1, 20);
-
-        p1 += p0;
-        p0 = RotateLeft(p0, 9);
-
-        p0 ^= p1;
-        p1 = RotateLeft(p1, 27);
-
-        p1 += p0;
-        p0 = RotateLeft(p0, 19);
-
-        p0 ^= p1;
-        p1 = RotateLeft(p1, 20);
-
-        p1 += p0;
-        p0 = RotateLeft(p0, 9);
-
-        p0 ^= p1;
-        p1 = RotateLeft(p1, 27);
-
-        p1 += p0;
-        p0 = RotateLeft(p0, 19);
-
-        return p0 ^ p1;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

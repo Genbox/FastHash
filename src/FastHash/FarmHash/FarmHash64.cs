@@ -1,10 +1,24 @@
-﻿using static Genbox.FastHash.CityHash.CityHashShared;
+﻿using System.Runtime.CompilerServices;
+using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.FarmHash.FarmHashConstants;
 
 namespace Genbox.FastHash.FarmHash;
 
 public static class FarmHash64
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input)
+    {
+        const ulong mul = K2 + 16;
+        ulong d = (RotateRight(input + K2, 25) + input) * mul;
+        ulong a = ((RotateRight(input, 37) * mul + input + K2) ^ d) * mul;
+        a ^= a >> 47;
+        ulong b = (d ^ a) * mul;
+        b ^= b >> 47;
+        b *= mul;
+        return b;
+    }
+
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1 = 81, ulong seed2 = 0)
     {
         uint len = (uint)data.Length;
