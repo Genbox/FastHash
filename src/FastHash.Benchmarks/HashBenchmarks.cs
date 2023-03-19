@@ -53,7 +53,7 @@ public class HashBenchmarks : IDisposable
 
     [Benchmark]
     [BenchmarkCategory("CityHash128")]
-    public Uint128 CityHash128Test() => CityHash128.ComputeHash(_testData);
+    public UInt128 CityHash128Test() => CityHash128.ComputeHash(_testData);
 
     [Benchmark]
     [BenchmarkCategory("Djb2Hash32")]
@@ -93,7 +93,7 @@ public class HashBenchmarks : IDisposable
 
     [Benchmark]
     [BenchmarkCategory("Murmur3Hash128")]
-    public Uint128 Murmur3Hash128Test() => Murmur3Hash128.ComputeHash(_testData);
+    public UInt128 Murmur3Hash128Test() => Murmur3Hash128.ComputeHash(_testData);
 
     [Benchmark]
     [BenchmarkCategory("SipHash64")]
@@ -125,7 +125,7 @@ public class HashBenchmarks : IDisposable
 
     [Benchmark]
     [BenchmarkCategory("CityHash128")]
-    public unsafe Uint128 CityHash128UnsafeTest() => CityHash128Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe UInt128 CityHash128UnsafeTest() => CityHash128Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
     [BenchmarkCategory("Djb2Hash32")]
@@ -161,7 +161,7 @@ public class HashBenchmarks : IDisposable
 
     [Benchmark]
     [BenchmarkCategory("Murmur3Hash128")]
-    public unsafe Uint128 Murmur3Hash128UnsafeTest() => Murmur3Hash128Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe UInt128 Murmur3Hash128UnsafeTest() => Murmur3Hash128Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
     [BenchmarkCategory("SipHash64")]
@@ -185,7 +185,7 @@ public class HashBenchmarks : IDisposable
 
     [Benchmark]
     [BenchmarkCategory("Xx3Hash128")]
-    public unsafe Uint128 Xx3Hash128UnsafeTest() => Xx3Hash128Unsafe.ComputeHash(_ptr, _testData.Length);
+    public unsafe UInt128 Xx3Hash128UnsafeTest() => Xx3Hash128Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
     [BenchmarkCategory("Wy3Hash64")]

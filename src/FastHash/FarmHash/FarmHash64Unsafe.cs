@@ -85,7 +85,7 @@ public static class FarmHash64Unsafe
         return (h2 * 9 + (h0 >> 17) + (h1 >> 21)) * mul1;
     }
 
-    private static Uint128 WeakHashLen32WithSeeds(ulong w, ulong x, ulong y, ulong z, ulong a, ulong b)
+    private static UInt128 WeakHashLen32WithSeeds(ulong w, ulong x, ulong y, ulong z, ulong a, ulong b)
     {
         a += w;
         b = RotateRight(b + a + z, 21);
@@ -93,10 +93,10 @@ public static class FarmHash64Unsafe
         a += x;
         a += y;
         b += RotateRight(a, 44);
-        return new Uint128(a + z, b + c);
+        return new UInt128(a + z, b + c);
     }
 
-    private static unsafe Uint128 WeakHashLen32WithSeeds(byte* data, uint offset, ulong a, ulong b) => WeakHashLen32WithSeeds(Read64(data + offset),
+    private static unsafe UInt128 WeakHashLen32WithSeeds(byte* data, uint offset, ulong a, ulong b) => WeakHashLen32WithSeeds(Read64(data + offset),
         Read64(data + 8 + offset),
         Read64(data + 16 + offset),
         Read64(data + 24 + offset),
@@ -134,8 +134,8 @@ public static class FarmHash64Unsafe
         ulong x = seed0;
         ulong y = seed1 * K2 + 113;
         ulong z = ShiftMix(y * K2) * K2;
-        Uint128 v = new Uint128(seed0, seed1);
-        Uint128 w = new Uint128(0, 0);
+        UInt128 v = new UInt128(seed0, seed1);
+        UInt128 w = new UInt128(0, 0);
         ulong u = x - z;
         x *= K2;
         ulong mul = K2 + (u & 0x82);
@@ -231,8 +231,8 @@ public static class FarmHash64Unsafe
         ulong x = seed;
         ulong y = unchecked(seed * K1) + 113;
         ulong z = ShiftMix(y * K2 + 113) * K2;
-        Uint128 v = new Uint128(0, 0);
-        Uint128 w = new Uint128(0, 0);
+        UInt128 v = new UInt128(0, 0);
+        UInt128 w = new UInt128(0, 0);
         x = x * K2 + Read64(s);
 
         // Set end so that after the loop we have 1 to 64 bytes left to process.

@@ -5,24 +5,24 @@ namespace Genbox.FastHash.CityHash;
 
 public static class CityHash128
 {
-    public static Uint128 ComputeHash(ReadOnlySpan<byte> data)
+    public static UInt128 ComputeHash(ReadOnlySpan<byte> data)
     {
         uint len = (uint)data.Length;
 
         if (len >= 16)
         {
-            Uint128 seed = new Uint128(Read64(data), Read64(data, 8) + K0);
+            UInt128 seed = new UInt128(Read64(data), Read64(data, 8) + K0);
             return CityHash128WithSeed(data.Slice(16, (int)(len - 16)), len - 16, seed);
         }
 
-        return CityHash128WithSeed(data, len, new Uint128(K0, K1));
+        return CityHash128WithSeed(data, len, new UInt128(K0, K1));
     }
 
-    public static Uint128 ComputeHash(ReadOnlySpan<byte> data, Uint128 seed) => CityHash128WithSeed(data, (uint)data.Length, seed);
+    public static UInt128 ComputeHash(ReadOnlySpan<byte> data, UInt128 seed) => CityHash128WithSeed(data, (uint)data.Length, seed);
 
     // A subroutine for CityHash128().  Returns a decent 128-bit hash for strings
     // of any length representable in signed long.  Based on City and Murmur.
-    private static Uint128 CityMurmur(ReadOnlySpan<byte> s, uint len, Uint128 seed)
+    private static UInt128 CityMurmur(ReadOnlySpan<byte> s, uint len, UInt128 seed)
     {
         ulong a = seed.Low;
         ulong b = seed.High;
@@ -55,17 +55,17 @@ public static class CityHash128
         }
         a = City_64_Seed(a, c);
         b = City_64_Seed(d, b);
-        return new Uint128(a ^ b, City_64_Seed(b, a));
+        return new UInt128(a ^ b, City_64_Seed(b, a));
     }
 
-    private static Uint128 CityHash128WithSeed(ReadOnlySpan<byte> s, uint len, Uint128 seed)
+    private static UInt128 CityHash128WithSeed(ReadOnlySpan<byte> s, uint len, UInt128 seed)
     {
         if (len < 128)
             return CityMurmur(s, len, seed);
 
         // We expect len >= 128 to be the common case.  Keep 56 bytes of state:
         // v, w, x, y, and z.
-        Uint128 v, w;
+        UInt128 v, w;
         ulong x = seed.Low;
         ulong y = seed.High;
         ulong z = len * K1;
@@ -120,6 +120,6 @@ public static class CityHash128
         // different 56-byte-to-8-byte hashes to get a 16-byte final result.
         x = City_64_Seed(x, v.Low);
         y = City_64_Seed(y + z, w.Low);
-        return new Uint128(City_64_Seed(x + v.High, w.High) + y, City_64_Seed(x + w.High, y + v.High));
+        return new UInt128(City_64_Seed(x + v.High, w.High) + y, City_64_Seed(x + w.High, y + v.High));
     }
 }

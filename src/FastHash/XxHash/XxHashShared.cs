@@ -21,16 +21,16 @@ internal static class XxHashShared
     internal static ulong XXH_xorshift64(ulong v64, int shift) => v64 ^ (v64 >> shift);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Uint128 XXH_mult64to128(ulong lhs, ulong rhs)
+    internal static UInt128 XXH_mult64to128(ulong lhs, ulong rhs)
     {
         ulong high = BigMul(lhs, rhs, out ulong low);
-        return new Uint128(low, high);
+        return new UInt128(low, high);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong XXH3_mul128_fold64(ulong lhs, ulong rhs)
     {
-        Uint128 product = XXH_mult64to128(lhs, rhs);
+        UInt128 product = XXH_mult64to128(lhs, rhs);
         return product.Low ^ product.High;
     }
 
@@ -151,7 +151,7 @@ internal static class XxHashShared
     }
 
     internal delegate ulong XXH3_hashLong64_f(ReadOnlySpan<byte> input, int len, ulong seed64, ReadOnlySpan<byte> secret, int secretLen);
-    internal delegate Uint128 XXH3_hashLong128_f(ReadOnlySpan<byte> input, int len, ulong seed64, ReadOnlySpan<byte> secret, int secretLen);
+    internal delegate UInt128 XXH3_hashLong128_f(ReadOnlySpan<byte> input, int len, ulong seed64, ReadOnlySpan<byte> secret, int secretLen);
     internal delegate void XXH3_f_scrambleAcc(Span<ulong> acc, ReadOnlySpan<byte> secret);
     internal delegate void XXH3_f_initCustomSecret(Span<byte> customSecret, ulong seed);
     internal delegate void XXH3_f_accumulate_512(Span<ulong> acc, ReadOnlySpan<byte> input, ReadOnlySpan<byte> secret);

@@ -102,9 +102,9 @@ public class HashTests
 
     [Theory]
     [MemberData(nameof(CreateAlgorithms128))]
-    public void Check128(string _, Func<Uint128> func, byte[] expected)
+    public void Check128(string _, Func<UInt128> func, byte[] expected)
     {
-        Uint128 val = func();
+        UInt128 val = func();
         Assert.Equal(BitConverter.ToUInt64(expected), val.Low);
         Assert.Equal(BitConverter.ToUInt64(expected, 8), val.High);
     }
@@ -119,9 +119,9 @@ public class HashTests
 
     [Theory]
     [MemberData(nameof(CreateAlgorithmsUnsafe128))]
-    public void CheckUnsafe128(string _, Func<Uint128> func, byte[] expected)
+    public void CheckUnsafe128(string _, Func<UInt128> func, byte[] expected)
     {
-        Uint128 val = func();
+        UInt128 val = func();
         Assert.Equal(BitConverter.ToUInt64(expected), val.Low);
         Assert.Equal(BitConverter.ToUInt64(expected, 8), val.High);
     }

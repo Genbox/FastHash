@@ -3,11 +3,11 @@
 namespace Genbox.FastHash;
 
 [StructLayout(LayoutKind.Sequential)]
-public struct Uint128
+public struct UInt128
 {
-    public static Uint128 Zero;
+    public static UInt128 Zero;
 
-    public Uint128(ulong low, ulong high)
+    public UInt128(ulong low, ulong high)
     {
         Low = low;
         High = high;

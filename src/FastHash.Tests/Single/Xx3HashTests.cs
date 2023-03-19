@@ -103,14 +103,14 @@ public class Xx3HashTests
         {
             (int len, ulong seed, (ulong low, ulong high)) = _testVectors128[i];
 
-            Uint128 res = Xx3Hash128.ComputeHash(_sanityBuffer[..len], seed);
+            UInt128 res = Xx3Hash128.ComputeHash(_sanityBuffer[..len], seed);
 
             Assert.Equal(low, res.Low);
             Assert.Equal(high, res.High);
 
             fixed (byte* ptr = _sanityBuffer[..len])
             {
-                Uint128 res2 = Xx3Hash128Unsafe.ComputeHash(ptr, len, seed);
+                UInt128 res2 = Xx3Hash128Unsafe.ComputeHash(ptr, len, seed);
                 Assert.Equal(low, res2.Low);
                 Assert.Equal(high, res2.High);
             }
@@ -138,7 +138,7 @@ public class Xx3HashTests
         ulong expectedH = 9749042676328415322;
         ulong expectedL = 4085474917644329103;
 
-        Uint128 actual = Xx3Hash128.ComputeHash(bytes);
+        UInt128 actual = Xx3Hash128.ComputeHash(bytes);
 
         Assert.Equal(expectedH, actual.High);
         Assert.Equal(expectedL, actual.Low);

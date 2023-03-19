@@ -40,8 +40,8 @@ public static class CityHash64Unsafe
         ulong x = Read64(s + len - 40);
         ulong y = Read64(s + len - 16) + Read64(s + len - 56);
         ulong z = City_64_Seed(Read64(s + len - 48) + len, Read64(s + len - 24));
-        Uint128 v = WeakHashLen32WithSeeds(s + len - 64, len, z);
-        Uint128 w = WeakHashLen32WithSeeds(s + len - 32, y + K1, x);
+        UInt128 v = WeakHashLen32WithSeeds(s + len - 64, len, z);
+        UInt128 w = WeakHashLen32WithSeeds(s + len - 32, y + K1, x);
         x = x * K1 + Read64(s);
 
         // Decrease len to the nearest multiple of 64, and operate on 64-byte chunks.

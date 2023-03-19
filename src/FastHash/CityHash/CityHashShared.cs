@@ -52,7 +52,7 @@ internal static class CityHashShared
     internal static ulong ShiftMix(ulong val) => val ^ (val >> 47);
 
     // Return a 16-byte hash for s[0] ... s[31], a, and b.  Quick and dirty.
-    internal static Uint128 WeakHashLen32WithSeeds(ReadOnlySpan<byte> s, uint offset, ulong a, ulong b)
+    internal static UInt128 WeakHashLen32WithSeeds(ReadOnlySpan<byte> s, uint offset, ulong a, ulong b)
     {
         return WeakHashLen32WithSeeds(Read64(s, offset),
             Read64(s, offset + 8),
@@ -64,7 +64,7 @@ internal static class CityHashShared
 
     // Return a 16-byte hash for 48 bytes.  Quick and dirty.
     // Callers do best to use "random-looking" values for a and b.
-    internal static Uint128 WeakHashLen32WithSeeds(ulong w, ulong x, ulong y, ulong z, ulong a, ulong b)
+    internal static UInt128 WeakHashLen32WithSeeds(ulong w, ulong x, ulong y, ulong z, ulong a, ulong b)
     {
         a += w;
         b = RotateRight(b + a + z, 21);
@@ -72,7 +72,7 @@ internal static class CityHashShared
         a += x;
         a += y;
         b += RotateRight(a, 44);
-        return new Uint128(a + z, b + c);
+        return new UInt128(a + z, b + c);
     }
 
     internal static void Permute3<T>(ref T a, ref T b, ref T c)

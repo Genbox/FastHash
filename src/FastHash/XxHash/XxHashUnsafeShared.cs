@@ -407,7 +407,7 @@ internal static class XxHashUnsafeShared
     }
 
     internal unsafe delegate ulong XXH3_hashLong64_f_unsafe(byte* input, int len, ulong seed64, byte* secret, int secretLen);
-    internal unsafe delegate Uint128 XXH3_hashLong128_f_unsafe(byte* input, int len, ulong seed64, byte* secret, int secretLen);
+    internal unsafe delegate UInt128 XXH3_hashLong128_f_unsafe(byte* input, int len, ulong seed64, byte* secret, int secretLen);
     internal unsafe delegate void XXH3_f_scrambleAcc_unsafe(ulong* acc, byte* secret);
     internal unsafe delegate void XXH3_f_initCustomSecret_unsafe(byte* customSecret, ulong seed);
     internal unsafe delegate void XXH3_f_accumulate_512_unsafe(ulong* acc, byte* input, byte* secret);

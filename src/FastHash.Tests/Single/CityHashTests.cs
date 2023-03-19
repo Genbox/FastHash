@@ -8,7 +8,7 @@ public class CityHashTests
     private const int TestSize = 300;
     private const ulong Seed0 = 1234567;
     private const ulong Seed1 = CityHashConstants.K0;
-    private static readonly Uint128 Seed128 = new Uint128(Seed0, Seed1);
+    private static readonly UInt128 Seed128 = new UInt128(Seed0, Seed1);
     private readonly byte[] _data = new byte[DataSize];
 
     private readonly ulong[][] _testData =
@@ -383,8 +383,8 @@ public class CityHashTests
         fixed (byte* data = _data)
         {
             int i = 0;
-            Uint128 u;
-            Uint128 v;
+            UInt128 u;
+            UInt128 v;
             for (; i < TestSize - 1; i++)
             {
                 u = CityHash128Unsafe.ComputeHash(data + i * i, i);

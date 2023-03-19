@@ -35,7 +35,7 @@ internal static class CityHashUnsafeShared
     }
 
     // Return a 16-byte hash for s[0] ... s[31], a, and b.  Quick and dirty.
-    internal static unsafe Uint128 WeakHashLen32WithSeeds(byte* s, ulong a, ulong b)
+    internal static unsafe UInt128 WeakHashLen32WithSeeds(byte* s, ulong a, ulong b)
     {
         return CityHashShared.WeakHashLen32WithSeeds(Read64(s),
             Read64(s + 8),
