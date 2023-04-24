@@ -7,6 +7,7 @@ using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FarshHash;
 using Genbox.FastHash.FnvHash;
+using Genbox.FastHash.JenkinsHash;
 using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MurmurHash;
 using Genbox.FastHash.SipHash;
@@ -82,6 +83,14 @@ public class HashBenchmarks : IDisposable
     [Benchmark]
     [BenchmarkCategory("Fnv1aHash64")]
     public ulong Fnv1aHash64Test() => Fnv1aHash64.ComputeHash(_testData);
+
+    [Benchmark]
+    [BenchmarkCategory("JenkinsLookup2Hash96")]
+    public UInt96 JenkinsLookup2Hash96Test() => JenkinsLookup2Hash96.ComputeHash(_testData);
+
+    // [Benchmark]
+    // [BenchmarkCategory("JenkinsSpooky2Hash128")]
+    // public UInt96 JenkinsSpooky2Hash128Test() => JenkinsSpooky2Hash128.ComputeHash(_testData);
 
     [Benchmark]
     [BenchmarkCategory("MarvinHash32")]

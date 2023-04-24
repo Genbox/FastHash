@@ -1,9 +1,11 @@
+using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using System.Text;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FnvHash;
+using Genbox.FastHash.JenkinsHash;
 using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MurmurHash;
 using Genbox.FastHash.SipHash;
@@ -46,6 +48,11 @@ public class HashTests
         yield return new object[] { nameof(Wy3Hash64), () => Wy3Hash64.ComputeHash(_data), new byte[] { 0x3F, 0xA2, 0x72, 0x2A, 0x57, 0x74, 0x52, 0xC2 } };
         yield return new object[] { nameof(Xx2Hash64), () => Xx2Hash64.ComputeHash(_data), new byte[] { 0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE } };
         yield return new object[] { nameof(Xx3Hash64), () => Xx3Hash64.ComputeHash(_data), new byte[] { 0xBF, 0x39, 0xFF, 0xB1, 0xB7, 0xF4, 0x3B, 0xC3 } };
+    }
+
+    public static IEnumerable<object[]> CreateAlgorithms96()
+    {
+        yield return new object[] { nameof(JenkinsLookup2Hash96), () => JenkinsLookup2Hash96.ComputeHash(_data), new byte[] { 0xA7, 0x8D, 0xBF, 0xAF, 0x83, 0x23, 0x67, 0xEB, 0x66, 0x2, 0x30, 0xEC } };
     }
 
     public static IEnumerable<object[]> CreateAlgorithms128()
@@ -99,6 +106,17 @@ public class HashTests
     [Theory]
     [MemberData(nameof(CreateAlgorithms64))]
     public void Check64(string _, Func<ulong> func, byte[] expected) => Assert.Equal(expected, BitConverter.GetBytes(func()));
+
+    [Theory]
+    [MemberData(nameof(CreateAlgorithms96))]
+    public void Check96(string _, Func<UInt96> func, byte[] expected)
+    {
+        UInt96 val = func();
+
+        Assert.Equal(BitConverter.ToUInt32(expected), val.First);
+        Assert.Equal(BitConverter.ToUInt32(expected, 4), val.Second);
+        Assert.Equal(BitConverter.ToUInt32(expected, 8), val.Third);
+    }
 
     [Theory]
     [MemberData(nameof(CreateAlgorithms128))]
