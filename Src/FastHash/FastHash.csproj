@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\imports\Project_Library.props" />
+  <Import Project="../../Imports/Library.props" />
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -8,9 +8,8 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
   </PropertyGroup>
 
-  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
-    <PackageReference Include="System.Memory" />
+  <ItemGroup>
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" />
   </ItemGroup>
-  
+
 </Project>

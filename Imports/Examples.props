@@ -3,13 +3,16 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
-    <BaseProject>$(MSBuildProjectName.Replace('.Benchmarks',''))</BaseProject>
   </PropertyGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
-    <PackageReference Include="BenchmarkDotNet" />
-    <ProjectReference Include="..\$(BaseProject)\$(BaseProject).csproj" Condition="Exists('$(MSBuildProjectDirectory)\..\$(BaseProject)\$(BaseProject).csproj')" />
   </ItemGroup>
+
+  <ItemGroup Condition="'$(IncludeBaseProject)' == 'True'">
+    <ProjectReference Include="../$(BaseProject)/$(BaseProject).csproj" Condition="Exists('../$(BaseProject)/$(BaseProject).csproj')" />
+  </ItemGroup>
+
+  <Import Project="../Locals/Examples.props" Condition="Exists('../Locals/Examples.props')" />
 
 </Project>

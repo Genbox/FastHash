@@ -1,14 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\imports\Project_Test.props" />
+  <Import Project="../../Imports/Library.props" />
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\FastHash.TestShared\FastHash.TestShared.csproj" />
-  </ItemGroup>
 
 </Project>

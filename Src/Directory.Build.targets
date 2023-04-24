@@ -24,4 +24,7 @@
       <AssemblyVersion>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch).0</AssemblyVersion>
     </PropertyGroup>
   </Target>
+
+  <Import Project="../Locals/Directory.Build.targets" Condition="Exists('../Locals/Directory.Build.targets')" />
+
 </Project>

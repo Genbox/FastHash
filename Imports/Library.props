@@ -2,12 +2,9 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-
-    <!--avoid generating the deps.json file on each build-->
-    <GenerateDependencyFile>false</GenerateDependencyFile>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(IncludeInternalsVisibleTo)' == 'True'">
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>$(AssemblyName).Tests</_Parameter1>
     </AssemblyAttribute>
@@ -22,11 +19,8 @@
     <PackageReference Include="JetBrains.Annotations" PrivateAssets="all" />
   </ItemGroup>
 
-  <ItemGroup Condition="('$(BuildingInsideVisualStudio)' == 'true' OR '$(BuildingByReSharper)' == 'true') AND '$(Configuration)' == 'Release'">
+  <ItemGroup Condition="'$(IncludeAnalyzers)' == 'True'">
     <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="all" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' OR '$(BuildingByReSharper)' == 'true'">
     <PackageReference Include="ConfigureAwaitChecker.Analyzer" PrivateAssets="all" />
     <PackageReference Include="IDisposableAnalyzers" PrivateAssets="all" />
     <PackageReference Include="Roslynator.Analyzers" PrivateAssets="all" />
@@ -45,5 +39,7 @@
     <PackageReference Include="NetFabric.Hyperlinq.Analyzer" PrivateAssets="all" />
     <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all" />
   </ItemGroup>
+
+  <Import Project="../Locals/Library.props" Condition="Exists('../Locals/Library.props')" />
 
 </Project>

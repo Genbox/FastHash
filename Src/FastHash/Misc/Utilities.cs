@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Genbox.FastHash;
+namespace Genbox.FastHash.Misc;
 
 internal static class Utilities
 {
