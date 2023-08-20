@@ -98,6 +98,17 @@ public static class MixFunctions
         return b;
     }
 
+    //https://jonkagstrom.com/mx3/mx3_rev2.html
+    public static ulong Mx2_64(ulong h)
+    {
+        h ^= h >> 32;
+        h *= 0xe9846af9b1a615dUL;
+        h ^= h >> 32;
+        h *= 0xe9846af9b1a615dUL;
+        h ^= h >> 28;
+        return h;
+    }
+
     // http://jonkagstrom.com/mx3/mx3_rev2.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong Mx3_64(ulong h)

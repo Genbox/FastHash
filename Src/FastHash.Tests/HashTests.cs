@@ -1,11 +1,11 @@
 using System.Runtime.InteropServices;
-using System.Text;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FnvHash;
 using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MurmurHash;
+using Genbox.FastHash.PolymurHash;
 using Genbox.FastHash.SipHash;
 using Genbox.FastHash.SuperFastHash;
 using Genbox.FastHash.WyHash;
@@ -15,7 +15,7 @@ namespace Genbox.FastHash.Tests;
 
 public class HashTests
 {
-    private static readonly byte[] _data = Encoding.ASCII.GetBytes("This is a test!!");
+    private static readonly byte[] _data = "This is a test!!"u8.ToArray();
     private static unsafe readonly byte* _ptr;
 
     static unsafe HashTests()
@@ -42,6 +42,7 @@ public class HashTests
     {
         yield return new object[] { nameof(CityHash64), () => CityHash64.ComputeHash(_data), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A } };
         yield return new object[] { nameof(FarmHash64), () => FarmHash64.ComputeHash(_data), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A } };
+        yield return new object[] { nameof(Polymur2Hash64), () => Polymur2Hash64.ComputeHash(_data), new byte[] { 0x5B, 0x4B, 0xE3, 0xBC, 0xE2, 0x3, 0xB, 0xC5 } };
         yield return new object[] { nameof(SipHash64), () => SipHash64.ComputeHash(_data), new byte[] { 0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97 } };
         yield return new object[] { nameof(Wy3Hash64), () => Wy3Hash64.ComputeHash(_data), new byte[] { 0x3F, 0xA2, 0x72, 0x2A, 0x57, 0x74, 0x52, 0xC2 } };
         yield return new object[] { nameof(Xx2Hash64), () => Xx2Hash64.ComputeHash(_data), new byte[] { 0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE } };

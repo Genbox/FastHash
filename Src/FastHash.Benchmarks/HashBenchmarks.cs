@@ -9,6 +9,7 @@ using Genbox.FastHash.FarshHash;
 using Genbox.FastHash.FnvHash;
 using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MurmurHash;
+using Genbox.FastHash.PolymurHash;
 using Genbox.FastHash.SipHash;
 using Genbox.FastHash.SuperFastHash;
 using Genbox.FastHash.WyHash;
@@ -94,6 +95,10 @@ public class HashBenchmarks : IDisposable
     [Benchmark]
     [BenchmarkCategory("Murmur3Hash128")]
     public UInt128 Murmur3Hash128Test() => Murmur3Hash128.ComputeHash(_testData);
+
+    [Benchmark]
+    [BenchmarkCategory("Polymur2Hash64")]
+    public ulong Polymur2Hash64Test() => Polymur2Hash64.ComputeHash(_testData);
 
     [Benchmark]
     [BenchmarkCategory("SipHash64")]
