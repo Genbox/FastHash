@@ -5,7 +5,7 @@ namespace Genbox.FastHash;
 [StructLayout(LayoutKind.Sequential)]
 public struct UInt128
 {
-    public static UInt128 Zero;
+    public static readonly UInt128 Zero;
 
     public UInt128(ulong low, ulong high)
     {
@@ -15,4 +15,9 @@ public struct UInt128
 
     public ulong Low;
     public ulong High;
+
+    public override string ToString()
+    {
+        return Low + "," + High;
+    }
 }

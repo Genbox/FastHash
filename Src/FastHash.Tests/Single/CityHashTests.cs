@@ -385,40 +385,42 @@ public class CityHashTests
             int i = 0;
             UInt128 u;
             UInt128 v;
+            UInt128 val;
+
             for (; i < TestSize - 1; i++)
             {
                 u = CityHash128Unsafe.ComputeHash(data + i * i, i);
-                Assert.Equal(_testData[i][3], u.Low);
-                Assert.Equal(_testData[i][4], u.High);
+                val = new UInt128(_testData[i][3], _testData[i][4]);
+                Assert.Equal(val, u);
 
                 v = CityHash128Unsafe.ComputeHash(data + i * i, i, Seed128);
-                Assert.Equal(_testData[i][5], v.Low);
-                Assert.Equal(_testData[i][6], v.High);
+                val = new UInt128(_testData[i][5], _testData[i][6]);
+                Assert.Equal(val, v);
 
                 u = CityHash128.ComputeHash(_data.AsSpan(i * i, i));
-                Assert.Equal(_testData[i][3], u.Low);
-                Assert.Equal(_testData[i][4], u.High);
+                val = new UInt128(_testData[i][3], _testData[i][4]);
+                Assert.Equal(val, u);
 
                 v = CityHash128.ComputeHash(_data.AsSpan(i * i, i), Seed128);
-                Assert.Equal(_testData[i][5], v.Low);
-                Assert.Equal(_testData[i][6], v.High);
+                val = new UInt128(_testData[i][5], _testData[i][6]);
+                Assert.Equal(val, v);
             }
 
             u = CityHash128Unsafe.ComputeHash(data, DataSize);
-            Assert.Equal(_testData[i][3], u.Low);
-            Assert.Equal(_testData[i][4], u.High);
+            val = new UInt128(_testData[i][3], _testData[i][4]);
+            Assert.Equal(val, u);
 
             v = CityHash128Unsafe.ComputeHash(data, DataSize, Seed128);
-            Assert.Equal(_testData[i][5], v.Low);
-            Assert.Equal(_testData[i][6], v.High);
+            val = new UInt128(_testData[i][5], _testData[i][6]);
+            Assert.Equal(val, v);
 
             u = CityHash128.ComputeHash(_data);
-            Assert.Equal(_testData[i][3], u.Low);
-            Assert.Equal(_testData[i][4], u.High);
+            val = new UInt128(_testData[i][3], _testData[i][4]);
+            Assert.Equal(val, u);
 
             v = CityHash128.ComputeHash(_data, Seed128);
-            Assert.Equal(_testData[i][5], v.Low);
-            Assert.Equal(_testData[i][6], v.High);
+            val = new UInt128(_testData[i][5], _testData[i][6]);
+            Assert.Equal(val, v);
         }
     }
 }

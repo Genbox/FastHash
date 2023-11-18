@@ -1,4 +1,4 @@
-﻿#if NET8_0
+#if NET8_0
 
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
