@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
+using Genbox.FastHash.AesniHash;
 using Genbox.FastHash.Benchmarks.Code;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
@@ -43,6 +44,14 @@ public class HashBenchmarks : IDisposable
         for (int i = 0; i < _testData.Length; i++)
             _ptr[i] = _testData[i];
     }
+
+    [Benchmark]
+    [BenchmarkCategory("AesniHash64")]
+    public ulong AesniHash64Test() => AesniHash64.ComputeHash(_testData);
+
+    [Benchmark]
+    [BenchmarkCategory("AesniHash128")]
+    public UInt128 AesniHash128Test() => AesniHash128.ComputeHash(_testData);
 
     [Benchmark]
     [BenchmarkCategory("CityHash32")]

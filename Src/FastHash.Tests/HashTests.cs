@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Genbox.FastHash.AesniHash;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
@@ -32,7 +33,7 @@ public class HashTests
         yield return new object[] { nameof(Djb2Hash32), () => Djb2Hash32.ComputeHash(_data), new byte[] { 0xCE, 0xED, 0x14, 0x36 } };
         yield return new object[] { nameof(FarmHash32), () => FarmHash32.ComputeHash(_data), new byte[] { 0x2A, 0x81, 0x7A, 0xBF } };
         yield return new object[] { nameof(Fnv1aHash32), () => Fnv1aHash32.ComputeHash(_data), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 } };
-        yield return new object[] { nameof(MarvinHash32), () => MarvinHash32.ComputeHash(_data, 42, 43), new byte[] { 0xAD, 0x28, 0xBF, 0x22 } };
+        yield return new object[] { nameof(MarvinHash32), () => MarvinHash32.ComputeHash(_data, 0x2A, 0x2B), new byte[] { 0xAD, 0x28, 0xBF, 0x22 } };
         yield return new object[] { nameof(Murmur3Hash32), () => Murmur3Hash32.ComputeHash(_data), new byte[] { 0xF6, 0x08, 0x79, 0x87 } };
         yield return new object[] { nameof(SuperFastHash32), () => SuperFastHash32.ComputeHash(_data), new byte[] { 0x5E, 0xE8, 0x41, 0xB2 } };
         yield return new object[] { nameof(Xx2Hash32), () => Xx2Hash32.ComputeHash(_data), new byte[] { 0x2B, 0xC6, 0xC7, 0x94 } };
@@ -40,6 +41,7 @@ public class HashTests
 
     public static IEnumerable<object[]> CreateAlgorithms64()
     {
+        yield return new object[] { nameof(AesniHash64), () => AesniHash64.ComputeHash(_data), new byte[] { 0x28, 0x1C, 0x4A, 0x87, 0x26, 0x2B, 0x3E, 0xF6 } };
         yield return new object[] { nameof(CityHash64), () => CityHash64.ComputeHash(_data), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A } };
         yield return new object[] { nameof(FarmHash64), () => FarmHash64.ComputeHash(_data), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A } };
         yield return new object[] { nameof(Polymur2Hash64), () => Polymur2Hash64.ComputeHash(_data), new byte[] { 0x5B, 0x4B, 0xE3, 0xBC, 0xE2, 0x3, 0xB, 0xC5 } };
@@ -51,6 +53,7 @@ public class HashTests
 
     public static IEnumerable<object[]> CreateAlgorithms128()
     {
+        yield return new object[] { nameof(AesniHash128), () => AesniHash128.ComputeHash(_data), new byte[] { 0x28, 0x1C, 0x4A, 0x87, 0x26, 0x2B, 0x3E, 0xF6, 0xF6, 0x53, 0x23, 0xBE, 0xED, 0xAF, 0xB2, 0x2F } };
         yield return new object[] { nameof(CityHash128), () => CityHash128.ComputeHash(_data), new byte[] { 0x18, 0xFE, 0x91, 0x9D, 0xAA, 0xA8, 0xF0, 0x6B, 0x35, 0xDC, 0x63, 0xAF, 0x2D, 0xFA, 0xEA, 0x61 } };
         yield return new object[] { nameof(Murmur3Hash128), () => Murmur3Hash128.ComputeHash(_data), new byte[] { 0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67 } };
         yield return new object[] { nameof(Xx3Hash128), () => Xx3Hash128.ComputeHash(_data), new byte[] { 0x6A, 0xD7, 0x7C, 0x14, 0xF, 0x9, 0x6F, 0xC0, 0xDF, 0xAC, 0x6C, 0x5C, 0x35, 0x9B, 0x2F, 0x13 } };
