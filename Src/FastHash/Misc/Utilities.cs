@@ -102,7 +102,7 @@ internal static class Utilities
     public static ulong BigMul(ulong a, ulong b, out ulong low)
     {
 #if NET5_0_OR_GREATER
-        return BigMul(a, b, out low);
+        return Math.BigMul(a, b, out low);
 #else
         unchecked
         {
