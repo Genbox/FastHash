@@ -53,7 +53,10 @@ public static class Polymur2Hash64
         return polymur_hash(data, data.Length, ref _params, seed);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint polymur_load_le_u32(ReadOnlySpan<byte> p, int offset) => Read32(p, offset);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong polymur_load_le_u64(ReadOnlySpan<byte> p, int offset) => Read64(p, offset);
 
     // Loads 0 to 8 bytes from buf with length len as a 64-bit little-endian integer.
@@ -75,6 +78,7 @@ public static class Polymur2Hash64
         return lo | (hi << 8 * (len - 4));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static UInt128 polymur_add128(UInt128 a, UInt128 b)
     {
         a.Low += b.Low;
@@ -82,6 +86,7 @@ public static class Polymur2Hash64
         return a;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static UInt128 polymur_mul128(ulong a, ulong b)
     {
         UInt128 ret;
@@ -89,14 +94,17 @@ public static class Polymur2Hash64
         return ret;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong polymur_red611(UInt128 x)
     {
         // return ((( ulong) x.lo) & POLYMUR_P611) + __shiftright128(x.lo, x.hi, 61);
         return (x.Low & POLYMUR_P611) + ((x.Low >> 61) | (x.High << 3));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong polymur_extrared611(ulong x) => (x & POLYMUR_P611) + (x >> 61);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong polymur_mix(ulong x) => Mx2_64(x);
 
     private static void polymur_init_params(ref PolymurHashParams p, ulong k_seed, ulong s_seed)
@@ -150,6 +158,7 @@ public static class Polymur2Hash64
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void polymur_init_params_from_seed(ref PolymurHashParams p, ulong seed)
     {
         polymur_init_params(ref p, polymur_mix(seed + POLYMUR_ARBITRARY3), polymur_mix(seed + POLYMUR_ARBITRARY4));
@@ -222,6 +231,7 @@ public static class Polymur2Hash64
         return poly_acc + polymur_red611(polymur_mul128(p.k + m[0], p.k2 + (uint)len));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong polymur_hash(ReadOnlySpan<byte> buf, int len, ref PolymurHashParams p, ulong tweak)
     {
         ulong h = polymur_hash_poly611(buf, len, ref p, tweak);
