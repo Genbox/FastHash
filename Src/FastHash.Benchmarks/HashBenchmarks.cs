@@ -27,7 +27,7 @@ public class HashBenchmarks : IDisposable
     private unsafe byte* _ptr;
     private byte[] _testData = null!;
 
-    [Params(8, 32, 128, 1024, 1024 * 1024 * 32)]
+    [Params(4, 8, 32, 128, 1024)]
     public int Size { get; set; }
 
     public unsafe void Dispose()
