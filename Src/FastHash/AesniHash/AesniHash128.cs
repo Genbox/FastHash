@@ -1,32 +1,21 @@
 #if NET8_0
-
 using System.Buffers.Binary;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
-using System.Text;
 
 namespace Genbox.FastHash.AesniHash;
 
 public static class AesniHash128
 {
-    static void Print(string str, Vector128<byte> var)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.Append(str).Append(": ");
-
-        for (int i = 0; i < 16; ++i)
-            sb.Append(var[i]).Append(" ");
-
-        Console.WriteLine(sb.ToString());
-    }
-
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
-        Vector128<ulong> res = Hash128(data, seed).AsUInt64();
-        return new UInt128(res[0], res[1]);
+        Vector128<byte> res = Hash128(data, seed);
+        return Unsafe.As<Vector128<byte>, UInt128>(ref res);
     }
 
+    [SuppressMessage("Major Code Smell", "S907:\"goto\" statement should not be used")]
     internal static Vector128<byte> Hash128(ReadOnlySpan<byte> data, uint seed = 0)
     {
         uint len = (uint)data.Length;
@@ -87,7 +76,7 @@ public static class AesniHash128
                 goto case 12;
             case 12:
                 x |= BinaryPrimitives.ReadUInt32LittleEndian(data[(msg + 8)..]);
-                Mix( Vector128.Create(BinaryPrimitives.ReadUInt64LittleEndian(data[msg..]), x).AsByte());
+                Mix(Vector128.Create(BinaryPrimitives.ReadUInt64LittleEndian(data[msg..]), x).AsByte());
                 break;
             case 11:
                 x |= (uint)data[msg + 10] << 16;
