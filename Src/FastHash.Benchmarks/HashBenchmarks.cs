@@ -10,6 +10,7 @@ using Genbox.FastHash.FarshHash;
 using Genbox.FastHash.FnvHash;
 using Genbox.FastHash.GxHash;
 using Genbox.FastHash.MarvinHash;
+using Genbox.FastHash.MeowHash;
 using Genbox.FastHash.MurmurHash;
 using Genbox.FastHash.PolymurHash;
 using Genbox.FastHash.SipHash;
@@ -181,6 +182,14 @@ public class HashBenchmarks : IDisposable
     [Benchmark]
     [BenchmarkCategory("Fnv1aHash64")]
     public unsafe ulong Fnv1aHash64UnsafeTest() => Fnv1aHash64Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark]
+    [BenchmarkCategory("MeowHash64")]
+    public unsafe ulong MeowHash64UnsafeTest() => MeowHash64Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark]
+    [BenchmarkCategory("MeowHash128")]
+    public unsafe UInt128 MeowHash128UnsafeTest() => MeowHash128Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark]
     [BenchmarkCategory("Murmur3Hash32")]
