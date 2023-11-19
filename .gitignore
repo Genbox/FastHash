@@ -22,3 +22,4 @@
 # Rider cache folder
 .idea/
 *.sln.DotSettings.user
+*BenchmarkDotNet.Artifacts/
