@@ -8,6 +8,7 @@ using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FarshHash;
 using Genbox.FastHash.FnvHash;
+using Genbox.FastHash.GxHash;
 using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MurmurHash;
 using Genbox.FastHash.PolymurHash;
@@ -92,6 +93,18 @@ public class HashBenchmarks : IDisposable
     [Benchmark]
     [BenchmarkCategory("Fnv1aHash64")]
     public ulong Fnv1aHash64Test() => Fnv1aHash64.ComputeHash(_testData);
+
+    [Benchmark]
+    [BenchmarkCategory("GxHash32")]
+    public uint GxHash32Test() => GxHash32.ComputeHash(_testData);
+
+    [Benchmark]
+    [BenchmarkCategory("GxHash64")]
+    public ulong GxHash64Test() => GxHash64.ComputeHash(_testData);
+
+    [Benchmark]
+    [BenchmarkCategory("GxHash128")]
+    public UInt128 GxHash128Test() => GxHash128.ComputeHash(_testData);
 
     [Benchmark]
     [BenchmarkCategory("MarvinHash32")]
