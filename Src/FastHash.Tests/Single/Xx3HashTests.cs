@@ -10,7 +10,7 @@ public class Xx3HashTests
 
     //https://github.com/Cyan4973/xxHash/blob/dev/cli/xsum_sanity_check.c#L131
     private static readonly (int, ulong, ulong)[] _testVectors64 =
-    {
+    [
         (0, 0, 0x2D06800538D394C2UL), /* empty string */
         (0, PRIME64, 0xA8A6B918B2F0364AUL), /* empty string */
         (1, 0, 0xC44BDFF4074EECDBUL), /*  1 -  3 */
@@ -38,10 +38,10 @@ public class Xx3HashTests
         (2240, PRIME64, 0x757BA8487D1B5247UL), /* 3 blocks, finishing at stripe boundary */
         (2367, 0, 0xCB37AEB9E5D361EDUL), /* 3 blocks, last stripe is overlapping */
         (2367, PRIME64, 0xD2DB3415B942B42AUL) /* 3 blocks, last stripe is overlapping */
-    };
+    ];
 
     private static readonly (int, ulong, UInt128)[] _testVectors128 =
-    {
+    [
         (0, 0, new UInt128(0x6001C324468D497FUL, 0x99AA06D3014798D8UL)), /* empty string */
         (0, PRIME32, new UInt128(0x5444F7869C671AB0UL, 0x92220AE55E14AB50UL)), /* empty string */
         (1, 0, new UInt128(0xC44BDFF4074EECDBUL, 0xA6CD5E9392000F6AUL)), /*  1 -  3 */
@@ -69,7 +69,7 @@ public class Xx3HashTests
         (2240, PRIME32, new UInt128(0xED385111126FBA6FUL, 0x50A1FE17B338995FUL)), /* 3 blocks, finishing at stripe boundary */
         (2367, 0, new UInt128(0xCB37AEB9E5D361EDUL, 0xE89C0F6FF369B427UL)), /* 3 blocks, last stripe is overlapping */
         (2367, PRIME32, new UInt128(0x6F5360AE69C2F406UL, 0xD23AAE4B76C31ECBUL)) /* 3 blocks, last stripe is overlapping */
-    };
+    ];
 
     public Xx3HashTests()
     {

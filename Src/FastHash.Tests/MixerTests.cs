@@ -6,7 +6,7 @@ namespace Genbox.FastHash.Tests;
 public class MixerTests
 {
     private static readonly MixSpec[] _all =
-    {
+    [
         new MixSpec(nameof(Murmur_32), static (h, seed) => Murmur_32((uint)(h + seed))),
         new MixSpec(nameof(Murmur_32_Seed), static (h, seed) => Murmur_32_Seed((uint)h, (uint)seed)),
         new MixSpec(nameof(Murmur_32_SeedMix), static (h, seed) => Murmur_32_SeedMix((uint)h, (uint)seed)),
@@ -38,7 +38,7 @@ public class MixerTests
         new MixSpec(nameof(Nasam_64_Seed), Nasam_64_Seed),
         new MixSpec(nameof(Nasam_64_SeedMix), Nasam_64_SeedMix),
         new MixSpec(nameof(City_64_Seed), City_64_Seed)
-    };
+    ];
 
     [Theory]
     [MemberData(nameof(GetFunctions))]

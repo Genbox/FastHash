@@ -8,7 +8,7 @@ public static class HighwayHash64Unsafe
     {
         uint len = (uint)size;
 
-        ulong[] key = { seed1, seed2, seed3, seed4 };
+        ulong[] key = [seed1, seed2, seed3, seed4];
 
         HighwayHashState state = new HighwayHashState();
         ProcessAll(data, len, key, ref state);

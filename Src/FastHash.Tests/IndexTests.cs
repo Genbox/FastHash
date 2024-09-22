@@ -16,25 +16,25 @@ public class IndexTests
 {
     public static IEnumerable<object[]> CreateAlgorithms32()
     {
-        yield return new object[] { nameof(CityHash32), (uint val) => CityHash32.ComputeIndex(val), (byte[] val) => CityHash32.ComputeHash(val) };
-        yield return new object[] { nameof(Djb2Hash32), (uint val) => Djb2Hash32.ComputeIndex(val), (byte[] val) => Djb2Hash32.ComputeHash(val) };
-        yield return new object[] { nameof(FarmHash32), (uint val) => FarmHash32.ComputeIndex(val), (byte[] val) => FarmHash32.ComputeHash(val) };
-        yield return new object[] { nameof(Fnv1aHash32), (uint val) => Fnv1aHash32.ComputeIndex(val), (byte[] val) => Fnv1aHash32.ComputeHash(val) };
-        yield return new object[] { nameof(MarvinHash32), (uint val) => MarvinHash32.ComputeIndex(val), (byte[] val) => MarvinHash32.ComputeHash(val) };
-        yield return new object[] { nameof(Murmur3Hash32), (uint val) => Murmur3Hash32.ComputeIndex(val), (byte[] val) => Murmur3Hash32.ComputeHash(val) };
-        yield return new object[] { nameof(SuperFastHash32), (uint val) => SuperFastHash32.ComputeIndex(val), (byte[] val) => SuperFastHash32.ComputeHash(val) };
-        yield return new object[] { nameof(Xx2Hash32), (uint val) => Xx2Hash32.ComputeIndex(val), (byte[] val) => Xx2Hash32.ComputeHash(val) };
+        yield return [nameof(CityHash32), (uint val) => CityHash32.ComputeIndex(val), (byte[] val) => CityHash32.ComputeHash(val)];
+        yield return [nameof(Djb2Hash32), (uint val) => Djb2Hash32.ComputeIndex(val), (byte[] val) => Djb2Hash32.ComputeHash(val)];
+        yield return [nameof(FarmHash32), (uint val) => FarmHash32.ComputeIndex(val), (byte[] val) => FarmHash32.ComputeHash(val)];
+        yield return [nameof(Fnv1aHash32), (uint val) => Fnv1aHash32.ComputeIndex(val), (byte[] val) => Fnv1aHash32.ComputeHash(val)];
+        yield return [nameof(MarvinHash32), (uint val) => MarvinHash32.ComputeIndex(val), (byte[] val) => MarvinHash32.ComputeHash(val)];
+        yield return [nameof(Murmur3Hash32), (uint val) => Murmur3Hash32.ComputeIndex(val), (byte[] val) => Murmur3Hash32.ComputeHash(val)];
+        yield return [nameof(SuperFastHash32), (uint val) => SuperFastHash32.ComputeIndex(val), (byte[] val) => SuperFastHash32.ComputeHash(val)];
+        yield return [nameof(Xx2Hash32), (uint val) => Xx2Hash32.ComputeIndex(val), (byte[] val) => Xx2Hash32.ComputeHash(val)];
     }
 
     public static IEnumerable<object[]> CreateAlgorithms64()
     {
-        yield return new object[] { nameof(CityHash64), (ulong val) => CityHash64.ComputeIndex(val), (byte[] val) => CityHash64.ComputeHash(val) };
-        yield return new object[] { nameof(Djb2Hash64), (ulong val) => Djb2Hash64.ComputeIndex(val), (byte[] val) => Djb2Hash64.ComputeHash(val) };
-        yield return new object[] { nameof(FarmHash64), (ulong val) => FarmHash64.ComputeIndex(val), (byte[] val) => FarmHash64.ComputeHash(val) };
-        yield return new object[] { nameof(Fnv1aHash64), (ulong val) => Fnv1aHash64.ComputeIndex(val), (byte[] val) => Fnv1aHash64.ComputeHash(val) };
-        yield return new object[] { nameof(SipHash64), (ulong val) => SipHash64.ComputeIndex(val), (byte[] val) => SipHash64.ComputeHash(val) };
-        yield return new object[] { nameof(Wy3Hash64), (ulong val) => Wy3Hash64.ComputeIndex(val), (byte[] val) => Wy3Hash64.ComputeHash(val) };
-        yield return new object[] { nameof(Xx2Hash64), (ulong val) => Xx2Hash64.ComputeIndex(val), (byte[] val) => Xx2Hash64.ComputeHash(val) };
+        yield return [nameof(CityHash64), (ulong val) => CityHash64.ComputeIndex(val), (byte[] val) => CityHash64.ComputeHash(val)];
+        yield return [nameof(Djb2Hash64), (ulong val) => Djb2Hash64.ComputeIndex(val), (byte[] val) => Djb2Hash64.ComputeHash(val)];
+        yield return [nameof(FarmHash64), (ulong val) => FarmHash64.ComputeIndex(val), (byte[] val) => FarmHash64.ComputeHash(val)];
+        yield return [nameof(Fnv1aHash64), (ulong val) => Fnv1aHash64.ComputeIndex(val), (byte[] val) => Fnv1aHash64.ComputeHash(val)];
+        yield return [nameof(SipHash64), (ulong val) => SipHash64.ComputeIndex(val), (byte[] val) => SipHash64.ComputeHash(val)];
+        yield return [nameof(Wy3Hash64), (ulong val) => Wy3Hash64.ComputeIndex(val), (byte[] val) => Wy3Hash64.ComputeHash(val)];
+        yield return [nameof(Xx2Hash64), (ulong val) => Xx2Hash64.ComputeIndex(val), (byte[] val) => Xx2Hash64.ComputeHash(val)];
     }
 
     [Theory]

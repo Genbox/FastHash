@@ -9,9 +9,9 @@ namespace Genbox.FastHash.MeowHash;
 
 public static class MeowHash128Unsafe
 {
-    private static readonly byte[] _shiftAdjust = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+    private static readonly byte[] _shiftAdjust = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
     private static readonly byte[] _maskLen =
-    {
+    [
         255, 255, 255, 255,
         255, 255, 255, 255,
         255, 255, 255, 255,
@@ -20,11 +20,11 @@ public static class MeowHash128Unsafe
         0, 0, 0, 0,
         0, 0, 0, 0,
         0, 0, 0, 0
-    };
+    ];
 
     // NOTE(casey): The default seed is now a "nothing-up-our-sleeves" number for good measure.  You may verify that it is just an encoding of Pi.
     public static readonly byte[] _defaultSeed =
-    {
+    [
         0x32, 0x43, 0xF6, 0xA8, 0x88, 0x5A, 0x30, 0x8D,
         0x31, 0x31, 0x98, 0xA2, 0xE0, 0x37, 0x07, 0x34,
         0x4A, 0x40, 0x93, 0x82, 0x22, 0x99, 0xF3, 0x1D,
@@ -41,7 +41,7 @@ public static class MeowHash128Unsafe
         0x92, 0x4A, 0x19, 0x94, 0x7B, 0x39, 0x16, 0xCF,
         0x70, 0x80, 0x1F, 0x2E, 0x28, 0x58, 0xEF, 0xC1,
         0x66, 0x36, 0x92, 0x0D, 0x87, 0x15, 0x74, 0xE6
-    };
+    ];
 
     private const int MEOW_PREFETCH_LIMIT = 0x3ff;
     private const int MEOW_PREFETCH = 4096;

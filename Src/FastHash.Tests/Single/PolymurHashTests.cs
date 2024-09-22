@@ -8,7 +8,7 @@ namespace Genbox.FastHash.Tests.Single;
 public class PolymurHashTests
 {
     private string[] POLYMUR_TEST_STRINGS =
-    {
+    [
         "",
         "i",
         "es",
@@ -109,10 +109,10 @@ public class PolymurHashTests
         "d1aot9216s547uk1rg651iscb1bjpgth5j4f6arx1902npcykk8niz3ffpbed47idgzvt4u59fyi5e0e2afpjb5gjk4rysn8j",
         "2jef2xl4o9yub0z6jnxu8gm87g9iv9zdtu9yolvxtensjrtgplnmnuhz43nsxztk8s936k6eruckkiwc5hnch4qdzft093986x",
         "oo70ed77jci4bgodhnyf37axrx4f8gf8qs94f4l9xi9h0jkdl2ozoi2p7q7qu1945l21dzj6rhvqearzrmblfo3ljjldj0m9fue"
-    };
+    ];
 
     private ulong[] POLYMUR_REFERENCE_VALUES =
-    {
+    [
         0x1a6ef9f9d6c576fbUL, 0xd16d059771c65e13UL, 0x5ee4e0c09f562f87UL, 0x535b5311db007b0bUL,
         0xd17124f14bd16b5dUL, 0xe84c87105c5b5cadUL, 0xb16ce684b89df9c0UL, 0x656525cace200667UL,
         0x92b460794885d16dUL, 0xe6cc0fd9725b46b9UL, 0xc875ade1929bc93dUL, 0x68a2686ced37268aUL,
@@ -138,7 +138,7 @@ public class PolymurHashTests
         0x71f4e35bf761bacfUL, 0x87d7c01f2b11659cUL, 0x95de608c3ad2653cUL, 0x51b50e6996b8de93UL,
         0xd21e837b2121e8c9UL, 0x73d07c7cb3fa0ba7UL, 0x8113fab03cab6df3UL, 0x57cdddea972cc490UL,
         0xc3df94778f1eec30UL, 0x7509771e4127701eUL, 0x28240c74c56f8f7cUL, 0x194fa4f68aab8e27UL
-    };
+    ];
 
     [Fact]
     public void TestVectors()

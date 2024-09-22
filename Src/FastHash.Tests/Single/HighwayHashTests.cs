@@ -7,19 +7,19 @@ public class HighwayHashTests
     private const uint kMaxSize = 64;
 
     private static readonly ulong[] _testKeys =
-    {
+    [
         0x0706050403020100UL, 0x0F0E0D0C0B0A0908UL,
         0x1716151413121110UL, 0x1F1E1D1C1B1A1918UL
-    };
+    ];
 
     private static readonly ulong[] _testKeys2 =
-    {
+    [
         1ul, 2ul,
         3ul, 4ul
-    };
+    ];
 
     private readonly ulong[] Expected64 =
-    {
+    [
         0x907A56DE22C26E53ul, 0x7EAB43AAC7CDDD78ul, 0xB8D0569AB0B53D62ul,
         0x5C6BEFAB8A463D80ul, 0xF205A46893007EDAul, 0x2B8A1668E4A94541ul,
         0xBD4CCC325BEFCA6Ful, 0x4D02AE1738F59482ul, 0xE1205108E55F3171ul,
@@ -42,7 +42,7 @@ public class HighwayHashTests
         0x9A97005024562A6Ful, 0x5DD41CF423E6EBEFul, 0xDF13609C0468E227ul,
         0x6E0DA4F64188155Aul, 0xB755BA4B50D7D4A1ul, 0x887A3484647479BDul,
         0xAB8EEBE9BF2139A0ul, 0x75542C5D4CD2A6FFul
-    };
+    ];
 
     [Fact]
     public void HighwayHash64Test()

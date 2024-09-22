@@ -10,7 +10,7 @@ public class Xx2HashTests
 
     //Source: https://github.com/Cyan4973/xxHash/blob/dev/cli/xsum_sanity_check.c#L99
     private static readonly (int len, uint seed, uint result)[] _testVectors32 =
-    {
+    [
         (0, 0, 0x02CC5D05U),
         (0, PRIME32, 0x36B78AE7U),
         (1, 0, 0xCF65B03EU),
@@ -19,10 +19,10 @@ public class Xx2HashTests
         (14, PRIME32, 0x6AF1D1FEU),
         (222, 0, 0x5BD11DBDU),
         (222, PRIME32, 0x58803C5FU)
-    };
+    ];
 
     private static readonly (int, uint, ulong)[] _testVectors64 =
-    {
+    [
         (0, 0, 0xEF46DB3751D8E999UL),
         (0, PRIME32, 0xAC75FDA2929B17EFUL),
         (1, 0, 0xE934A84ADB052768UL),
@@ -32,7 +32,7 @@ public class Xx2HashTests
         (14, PRIME32, 0xC3BD6BF63DEB6DF0UL),
         (222, 0, 0xB641AE8CB691C174UL),
         (222, PRIME32, 0x20CB8AB7AE10C14AUL)
-    };
+    ];
 
     public Xx2HashTests()
     {
