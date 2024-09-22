@@ -48,7 +48,7 @@ public static class Xx2Hash64Unsafe
             ulong k1 = Round(0, Read64(data));
             data += 8;
             h64 ^= k1;
-            h64 = RotateLeft(h64, 27) * PRIME64_1 + PRIME64_4;
+            h64 = (RotateLeft(h64, 27) * PRIME64_1) + PRIME64_4;
             length -= 8;
         }
 
@@ -56,7 +56,7 @@ public static class Xx2Hash64Unsafe
         {
             h64 ^= Read32(data) * PRIME64_1;
             data += 4;
-            h64 = RotateLeft(h64, 23) * PRIME64_2 + PRIME64_3;
+            h64 = (RotateLeft(h64, 23) * PRIME64_2) + PRIME64_3;
             length -= 4;
         }
 
@@ -91,7 +91,7 @@ public static class Xx2Hash64Unsafe
     {
         val = Round(0, val);
         acc ^= val;
-        acc = acc * PRIME64_1 + PRIME64_4;
+        acc = (acc * PRIME64_1) + PRIME64_4;
         return acc;
     }
 }

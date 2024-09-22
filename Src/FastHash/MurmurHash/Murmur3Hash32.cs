@@ -13,7 +13,7 @@ public static class Murmur3Hash32
         input *= C2_32;
 
         input = RotateLeft(input, 13);
-        input = input * 5 + 0xe6546b64;
+        input = (input * 5) + 0xe6546b64;
         input ^= 4;
         return Murmur_32(input);
     }
@@ -37,7 +37,7 @@ public static class Murmur3Hash32
 
             h1 ^= k1;
             h1 = RotateLeft(h1, 13);
-            h1 = h1 * 5 + 0xe6546b64;
+            h1 = (h1 * 5) + 0xe6546b64;
         }
 
         uint rem = length & 3;

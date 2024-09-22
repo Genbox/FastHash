@@ -9,7 +9,7 @@ using static Genbox.FastHash.WyHash.WyHashConstants;
 
 namespace Genbox.FastHash.WyHash;
 
-public class Wy3Hash64
+public static class Wy3Hash64
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)

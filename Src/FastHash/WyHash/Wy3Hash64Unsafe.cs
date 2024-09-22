@@ -9,7 +9,7 @@ using static Genbox.FastHash.WyHash.WyHashConstants;
 
 namespace Genbox.FastHash.WyHash;
 
-public class Wy3Hash64Unsafe
+public static class Wy3Hash64Unsafe
 {
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed = 0)
     {

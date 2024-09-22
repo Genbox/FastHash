@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Order;
 using static Genbox.FastHash.MixFunctions;
 
@@ -8,7 +8,7 @@ namespace Genbox.FastHash.Benchmarks;
 public class MixerBenchmarks
 {
     private static readonly MixSpec[] _all =
-    {
+    [
         new MixSpec(nameof(Murmur_32), static (h, seed) => Murmur_32((uint)(h + seed))),
         new MixSpec(nameof(Murmur_32_Seed), static (h, seed) => Murmur_32_Seed((uint)h, (uint)seed)),
         new MixSpec(nameof(Murmur_32_SeedMix), static (h, seed) => Murmur_32_SeedMix((uint)h, (uint)seed)),
@@ -40,7 +40,7 @@ public class MixerBenchmarks
         new MixSpec(nameof(Nasam_64_Seed), Nasam_64_Seed),
         new MixSpec(nameof(Nasam_64_SeedMix), Nasam_64_SeedMix),
         new MixSpec(nameof(City_64_Seed), City_64_Seed)
-    };
+    ];
 
     [Benchmark]
     [ArgumentsSource(nameof(GetFunctions))]
@@ -51,17 +51,11 @@ public class MixerBenchmarks
 
     public static IEnumerable<object[]> GetFunctions() => _all.Select(x => new object[] { x });
 
-    public readonly struct MixSpec
+    [SuppressMessage("Design", "CA1034:Nested types should not be visible")]
+    public readonly struct MixSpec(string name, Func<ulong, ulong, ulong> function)
     {
-        private readonly string _name;
-        public readonly Func<ulong, ulong, ulong> Function;
+        public readonly Func<ulong, ulong, ulong> Function = function;
 
-        public MixSpec(string name, Func<ulong, ulong, ulong> function)
-        {
-            _name = name;
-            Function = function;
-        }
-
-        public override string ToString() => _name;
+        public override string ToString() => name;
     }
 }

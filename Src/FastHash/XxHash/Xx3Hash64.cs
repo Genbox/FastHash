@@ -179,7 +179,7 @@ public static class Xx3Hash64
         acc = XXH3_avalanche(acc);
 
         for (i = 8; i < nbRounds; i++)
-            acc += XXH3_mix16B(input, 16 * i, secret, 16 * (i - 8) + MIDSIZE_STARTOFFSET, seed);
+            acc += XXH3_mix16B(input, 16 * i, secret, (16 * (i - 8)) + MIDSIZE_STARTOFFSET, seed);
 
         /* last bytes */
         acc += XXH3_mix16B(input, len - 16, secret, SECRET_SIZE_MIN - MIDSIZE_LASTOFFSET, seed);

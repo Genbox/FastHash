@@ -52,11 +52,11 @@ public static class Mult
             uint bh = (uint)(b >> 32);
 
             ulong mull = (ulong)al * bl;
-            ulong t = (ulong)ah * bl + (mull >> 32);
-            ulong tl = (ulong)al * bh + (uint)t;
+            ulong t = ((ulong)ah * bl) + (mull >> 32);
+            ulong tl = ((ulong)al * bh) + (uint)t;
 
             ulong low = (tl << 32) | (uint)mull;
-            ulong high = (ulong)ah * bh + (t >> 32) + (tl >> 32);
+            ulong high = ((ulong)ah * bh) + (t >> 32) + (tl >> 32);
             return (low, high);
         }
     }

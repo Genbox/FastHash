@@ -1,4 +1,5 @@
-﻿using static Genbox.FastHash.MixFunctions;
+﻿using System.Diagnostics.CodeAnalysis;
+using static Genbox.FastHash.MixFunctions;
 
 namespace Genbox.FastHash.Tests;
 
@@ -64,17 +65,11 @@ public class MixerTests
 
     public static IEnumerable<object[]> GetFunctions() => _all.Select(x => new object[] { x });
 
-    public readonly struct MixSpec
+    [SuppressMessage("Design", "CA1034:Nested types should not be visible")]
+    public readonly struct MixSpec(string name, Func<ulong, ulong, ulong> function)
     {
-        private readonly string _name;
-        public readonly Func<ulong, ulong, ulong> Function;
+        public readonly Func<ulong, ulong, ulong> Function = function;
 
-        public MixSpec(string name, Func<ulong, ulong, ulong> function)
-        {
-            _name = name;
-            Function = function;
-        }
-
-        public override string ToString() => _name;
+        public override string ToString() => name;
     }
 }

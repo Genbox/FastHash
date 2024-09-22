@@ -215,7 +215,6 @@ public static class MeowHash128Unsafe
         --laneCount;
         if (laneCount == 0) goto MixDown;
         MEOW_MIX(ref xmm0, ref xmm4, ref xmm6, ref xmm1, ref xmm2, rax + 0xc0);
-        --laneCount;
 
         // NOTE(casey): Mix the eight lanes down to one 128-bit hash
 

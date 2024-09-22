@@ -1,5 +1,8 @@
-﻿namespace Genbox.FastHash.HighwayHash;
+﻿using System.Runtime.InteropServices;
 
+namespace Genbox.FastHash.HighwayHash;
+
+[StructLayout(LayoutKind.Auto)]
 internal struct HighwayHashState
 {
     internal ulong mul0_0;

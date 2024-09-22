@@ -42,7 +42,7 @@ internal static class XxHashUnsafeShared
         ulong result64 = start;
 
         for (int i = 0; i < 4; i++)
-            result64 += XXH3_mix2Accs(acc + 2 * i, secret + 16 * i);
+            result64 += XXH3_mix2Accs(acc + (2 * i), secret + (16 * i));
 
         return XXH3_avalanche(result64);
     }
@@ -59,15 +59,15 @@ internal static class XxHashUnsafeShared
 
         for (int n = 0; n < nb_blocks; n++)
         {
-            XXH3_accumulate(acc, input + n * block_len, secret, nbStripesPerBlock, f_acc512);
+            XXH3_accumulate(acc, input + (n * block_len), secret, nbStripesPerBlock, f_acc512);
             f_scramble(acc, secret + secretSize - STRIPE_LEN);
         }
 
         /* last partial block */
         //  XXH_ASSERT(len > XXH_STRIPE_LEN);
-        int nbStripes = (len - 1 - block_len * nb_blocks) / STRIPE_LEN;
+        int nbStripes = (len - 1 - (block_len * nb_blocks)) / STRIPE_LEN;
         // XXH_ASSERT(nbStripes <= (secretSize / XXH_SECRET_CONSUME_RATE));
-        XXH3_accumulate(acc, input + nb_blocks * block_len, secret, nbStripes, f_acc512);
+        XXH3_accumulate(acc, input + (nb_blocks * block_len), secret, nbStripes, f_acc512);
 
         byte* p = input + len - STRIPE_LEN;
         f_acc512(acc, p, secret + secretSize - STRIPE_LEN - SECRET_LASTACC_START);
@@ -78,8 +78,8 @@ internal static class XxHashUnsafeShared
     {
         for (int n = 0; n < nbStripes; n++)
         {
-            byte* inp = input + n * STRIPE_LEN;
-            f_acc512(acc, inp, secret + n * SECRET_CONSUME_RATE);
+            byte* inp = input + (n * STRIPE_LEN);
+            f_acc512(acc, inp, secret + (n * SECRET_CONSUME_RATE));
         }
     }
 
@@ -185,8 +185,8 @@ internal static class XxHashUnsafeShared
         byte* xinput = input;
         byte* xsecret = secret;
 
-        ulong data_val = Read64(xinput + lane * 8);
-        ulong data_key = data_val ^ Read64(xsecret + lane * 8);
+        ulong data_val = Read64(xinput + (lane * 8));
+        ulong data_key = data_val ^ Read64(xsecret + (lane * 8));
         xacc[lane ^ 1] += data_val;
         xacc[lane] += XXH_mult32to64(data_key & 0xFFFFFFFF, data_key >> 32);
     }
@@ -292,7 +292,7 @@ internal static class XxHashUnsafeShared
         ulong* xacc = acc;
         byte* xsecret = secret;
 
-        ulong key64 = Read64(xsecret + lane * 8);
+        ulong key64 = Read64(xsecret + (lane * 8));
         ulong acc64 = xacc[lane];
         acc64 = XXH_xorshift64(acc64, 47);
         acc64 ^= key64;
@@ -387,10 +387,10 @@ internal static class XxHashUnsafeShared
 
             for (int i = 0; i < nbRounds; i++)
             {
-                ulong lo = Read64(kSecretPtr + 16 * i) + seed;
-                ulong hi = Read64(kSecretPtr + 16 * i + 8) - seed;
-                Write64(customSecret + 16 * i, lo);
-                Write64(customSecret + 16 * i + 8, hi);
+                ulong lo = Read64(kSecretPtr + (16 * i)) + seed;
+                ulong hi = Read64(kSecretPtr + (16 * i) + 8) - seed;
+                Write64(customSecret + (16 * i), lo);
+                Write64(customSecret + (16 * i) + 8, hi);
             }
         }
     }

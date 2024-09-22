@@ -105,7 +105,7 @@ public static class Xx3Hash128Unsafe
 #endif
         UInt128 h128;
         h128.Low = acc.Low + acc.High;
-        h128.High = acc.Low * XxHashConstants.PRIME64_1 + acc.High * XxHashConstants.PRIME64_4 + ((ulong)len - seed) * XxHashConstants.PRIME64_2;
+        h128.High = (acc.Low * XxHashConstants.PRIME64_1) + (acc.High * XxHashConstants.PRIME64_4) + (((ulong)len - seed) * XxHashConstants.PRIME64_2);
         h128.Low = XXH3_avalanche(h128.Low);
         h128.High = 0 - XXH3_avalanche(h128.High);
         return h128;
@@ -217,13 +217,13 @@ public static class Xx3Hash128Unsafe
         acc.High = 0;
 
         for (i = 0; i < 4; i++)
-            acc = XXH128_mix32B(acc, input + 32 * i, input + 32 * i + 16, secret + 32 * i, seed);
+            acc = XXH128_mix32B(acc, input + (32 * i), input + (32 * i) + 16, secret + (32 * i), seed);
 
         acc.Low = XXH3_avalanche(acc.Low);
         acc.High = XXH3_avalanche(acc.High);
 
         for (i = 4; i < nbRounds; i++)
-            acc = XXH128_mix32B(acc, input + 32 * i, input + 32 * i + 16, secret + XxHashConstants.MIDSIZE_STARTOFFSET + 32 * (i - 4), seed);
+            acc = XXH128_mix32B(acc, input + (32 * i), input + (32 * i) + 16, secret + XxHashConstants.MIDSIZE_STARTOFFSET + (32 * (i - 4)), seed);
 
         /* last bytes */
         acc = XXH128_mix32B(acc,
@@ -234,7 +234,7 @@ public static class Xx3Hash128Unsafe
 
         UInt128 h128;
         h128.Low = acc.Low + acc.High;
-        h128.High = acc.Low * XxHashConstants.PRIME64_1 + acc.High * XxHashConstants.PRIME64_4 + ((ulong)len - seed) * XxHashConstants.PRIME64_2;
+        h128.High = (acc.Low * XxHashConstants.PRIME64_1) + (acc.High * XxHashConstants.PRIME64_4) + (((ulong)len - seed) * XxHashConstants.PRIME64_2);
         h128.Low = XXH3_avalanche(h128.Low);
         h128.High = 0 - XXH3_avalanche(h128.High);
         return h128;

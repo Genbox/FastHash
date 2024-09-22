@@ -31,7 +31,7 @@ public static class CityHash128
         if (len <= 16)
         {
             a = ShiftMix(a * K1) * K1;
-            c = b * K1 + HashLen0to16(s, len);
+            c = (b * K1) + HashLen0to16(s, len);
             d = ShiftMix(a + (len >= 8 ? Read64(s) : c));
         }
         else
@@ -69,9 +69,9 @@ public static class CityHash128
         ulong x = seed.Low;
         ulong y = seed.High;
         ulong z = len * K1;
-        v.Low = RotateRight(y ^ K1, 49) * K1 + Read64(s);
-        v.High = RotateRight(v.Low, 42) * K1 + Read64(s, 8);
-        w.Low = RotateRight(y + z, 35) * K1 + x;
+        v.Low = (RotateRight(y ^ K1, 49) * K1) + Read64(s);
+        v.High = (RotateRight(v.Low, 42) * K1) + Read64(s, 8);
+        w.Low = (RotateRight(y + z, 35) * K1) + x;
         w.High = RotateRight(x + Read64(s, 88), 53) * K1;
 
         // This is the same inner loop as CityHash64(), manually unrolled.
@@ -99,17 +99,17 @@ public static class CityHash128
             len -= 128;
         } while (len >= 128);
         x += RotateRight(v.Low + z, 49) * K0;
-        y = y * K0 + RotateRight(w.High, 37);
-        z = z * K0 + RotateRight(w.Low, 27);
+        y = (y * K0) + RotateRight(w.High, 37);
+        z = (z * K0) + RotateRight(w.Low, 27);
         w.Low *= 9;
         v.Low *= K0;
         // If 0 < len < 128, hash up to 4 chunks of 32 bytes each from the end of s.
         for (uint tail_done = 0; tail_done < len;)
         {
             tail_done += 32;
-            y = RotateRight(x + y, 42) * K0 + v.High;
+            y = (RotateRight(x + y, 42) * K0) + v.High;
             w.Low += Read64(s, offset + len - tail_done + 16);
-            x = x * K0 + w.Low;
+            x = (x * K0) + w.Low;
             z += w.High + Read64(s, offset + len - tail_done);
             w.High += v.Low;
             v = WeakHashLen32WithSeeds(s, offset + len - tail_done, v.Low + z, v.High);

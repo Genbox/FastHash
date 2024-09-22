@@ -18,8 +18,8 @@ public static class Murmur3Hash128Unsafe
 
         for (int i = 0; i < nblocks; i++)
         {
-            k1 = blocks[i * 2 + 0];
-            k2 = blocks[i * 2 + 1];
+            k1 = blocks[(i * 2) + 0];
+            k2 = blocks[(i * 2) + 1];
 
             k1 *= C1_64;
             k1 = RotateLeft(k1, 31);
@@ -28,7 +28,7 @@ public static class Murmur3Hash128Unsafe
 
             h1 = RotateLeft(h1, 27);
             h1 += h2;
-            h1 = h1 * 5 + 0x52dce729;
+            h1 = (h1 * 5) + 0x52dce729;
 
             k2 *= C2_64;
             k2 = RotateLeft(k2, 33);
@@ -37,10 +37,10 @@ public static class Murmur3Hash128Unsafe
 
             h2 = RotateLeft(h2, 31);
             h2 += h1;
-            h2 = h2 * 5 + 0x38495ab5;
+            h2 = (h2 * 5) + 0x38495ab5;
         }
 
-        byte* tail = data + nblocks * 16;
+        byte* tail = data + (nblocks * 16);
 
         k1 = 0;
         k2 = 0;

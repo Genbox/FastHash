@@ -124,7 +124,7 @@ public static class GxHashShared
             hashVector = Compress(hashVector, blockHash);
         }
 
-        int remainingBlocksCount = len / VECTOR_SIZE - unrollableBlocksCount;
+        int remainingBlocksCount = (len / VECTOR_SIZE) - unrollableBlocksCount;
 
         ref Vector128<byte> end = ref Unsafe.Add(ref start, remainingBlocksCount);
 

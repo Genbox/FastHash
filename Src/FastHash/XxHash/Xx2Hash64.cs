@@ -14,7 +14,7 @@ public static class Xx2Hash64
         acc *= PRIME64_1;
 
         ulong h64 = (PRIME64_5 + 8) ^ acc;
-        h64 = RotateLeft(h64, 27) * PRIME64_1 + PRIME64_4;
+        h64 = (RotateLeft(h64, 27) * PRIME64_1) + PRIME64_4;
         h64 ^= h64 >> 33;
         h64 *= PRIME64_2;
         h64 ^= h64 >> 29;
@@ -66,7 +66,7 @@ public static class Xx2Hash64
             ulong k1 = Round(0, Read64(data, offset));
             offset += 8;
             h64 ^= k1;
-            h64 = RotateLeft(h64, 27) * PRIME64_1 + PRIME64_4;
+            h64 = (RotateLeft(h64, 27) * PRIME64_1) + PRIME64_4;
             len -= 8;
         }
 
@@ -74,7 +74,7 @@ public static class Xx2Hash64
         {
             h64 ^= Read32(data, offset) * PRIME64_1;
             offset += 4;
-            h64 = RotateLeft(h64, 23) * PRIME64_2 + PRIME64_3;
+            h64 = (RotateLeft(h64, 23) * PRIME64_2) + PRIME64_3;
             len -= 4;
         }
 
@@ -102,7 +102,7 @@ public static class Xx2Hash64
     {
         val = Round(0, val);
         acc ^= val;
-        acc = acc * PRIME64_1 + PRIME64_4;
+        acc = (acc * PRIME64_1) + PRIME64_4;
         return acc;
     }
 }

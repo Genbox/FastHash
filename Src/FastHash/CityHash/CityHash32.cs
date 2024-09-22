@@ -12,13 +12,13 @@ public static class CityHash32
         uint b = (uint)(sbyte)(input & 0xFF);
         uint c = 9 ^ b;
 
-        b = b * C1 + (uint)(sbyte)((input >> 8) & 0xFF);
+        b = (b * C1) + (uint)(sbyte)((input >> 8) & 0xFF);
         c ^= b;
 
-        b = b * C1 + (uint)(sbyte)((input >> 16) & 0xFF);
+        b = (b * C1) + (uint)(sbyte)((input >> 16) & 0xFF);
         c ^= b;
 
-        b = b * C1 + (uint)(sbyte)((input >> 24) & 0xFF);
+        b = (b * C1) + (uint)(sbyte)((input >> 24) & 0xFF);
         c ^= b;
         return Murmur_32(Mur(b, Mur(4, c)));
     }
@@ -39,19 +39,19 @@ public static class CityHash32
         uint a4 = RotateRight(Read32(data, len - 20) * C1, 17) * C2;
         h ^= a0;
         h = RotateRight(h, 19);
-        h = h * 5 + 0xe6546b64;
+        h = (h * 5) + 0xe6546b64;
         h ^= a2;
         h = RotateRight(h, 19);
-        h = h * 5 + 0xe6546b64;
+        h = (h * 5) + 0xe6546b64;
         g ^= a1;
         g = RotateRight(g, 19);
-        g = g * 5 + 0xe6546b64;
+        g = (g * 5) + 0xe6546b64;
         g ^= a3;
         g = RotateRight(g, 19);
-        g = g * 5 + 0xe6546b64;
+        g = (g * 5) + 0xe6546b64;
         f += a4;
         f = RotateRight(f, 19);
-        f = f * 5 + 0xe6546b64;
+        f = (f * 5) + 0xe6546b64;
         uint iters = (len - 1) / 20;
         uint offset = 0;
         do
@@ -63,16 +63,16 @@ public static class CityHash32
             a4 = Read32(data, offset + 16);
             h ^= a0;
             h = RotateRight(h, 18);
-            h = h * 5 + 0xe6546b64;
+            h = (h * 5) + 0xe6546b64;
             f += a1;
             f = RotateRight(f, 19);
             f = f * C1;
             g += a2;
             g = RotateRight(g, 18);
-            g = g * 5 + 0xe6546b64;
+            g = (g * 5) + 0xe6546b64;
             h ^= a3 + a1;
             h = RotateRight(h, 19);
-            h = h * 5 + 0xe6546b64;
+            h = (h * 5) + 0xe6546b64;
             g ^= a4;
             g = ByteSwap(g) * 5;
             h += a4 * 5;
@@ -86,10 +86,10 @@ public static class CityHash32
         f = RotateRight(f, 11) * C1;
         f = RotateRight(f, 17) * C1;
         h = RotateRight(h + g, 19);
-        h = h * 5 + 0xe6546b64;
+        h = (h * 5) + 0xe6546b64;
         h = RotateRight(h, 17) * C1;
         h = RotateRight(h + f, 19);
-        h = h * 5 + 0xe6546b64;
+        h = (h * 5) + 0xe6546b64;
         h = RotateRight(h, 17) * C1;
         return h;
     }
@@ -102,7 +102,7 @@ public static class CityHash32
         for (int i = 0; i < len; i++)
         {
             uint v = (uint)(sbyte)s[i];
-            b = b * C1 + v;
+            b = (b * C1) + v;
             c ^= b;
         }
         return Murmur_32(Mur(b, Mur(len, c)));

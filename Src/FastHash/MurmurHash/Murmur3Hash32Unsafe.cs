@@ -10,7 +10,7 @@ public static class Murmur3Hash32Unsafe
         uint h1 = seed;
         uint k1;
 
-        uint* blocks = (uint*)(data + nblocks * 4);
+        uint* blocks = (uint*)(data + (nblocks * 4));
 
         for (int i = -nblocks; i != 0; i++)
         {
@@ -22,10 +22,10 @@ public static class Murmur3Hash32Unsafe
 
             h1 ^= k1;
             h1 = RotateLeft(h1, 13);
-            h1 = h1 * 5 + 0xe6546b64;
+            h1 = (h1 * 5) + 0xe6546b64;
         }
 
-        byte* tail = data + nblocks * 4;
+        byte* tail = data + (nblocks * 4);
         k1 = 0;
 
         switch (length & 3)

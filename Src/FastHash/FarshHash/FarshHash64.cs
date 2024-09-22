@@ -116,7 +116,7 @@ public static class FarshHash64
         h += h >> 31;
         h *= PRIME64_1;
         sum ^= h;
-        sum = (sum + (sum >> 27)) * PRIME64_1 + PRIME64_4;
+        sum = ((sum + (sum >> 27)) * PRIME64_1) + PRIME64_4;
         return sum;
     }
 

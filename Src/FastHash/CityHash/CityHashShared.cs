@@ -9,16 +9,16 @@ internal static class CityHashShared
     {
         if (len >= 8)
         {
-            ulong mul = K2 + len * 2;
+            ulong mul = K2 + (len * 2);
             ulong a = Read64(s) + K2;
             ulong b = Read64(s, len - 8);
-            ulong c = RotateRight(b, 37) * mul + a;
+            ulong c = (RotateRight(b, 37) * mul) + a;
             ulong d = (RotateRight(a, 25) + b) * mul;
             return City_128_Seed(c, d, mul);
         }
         if (len >= 4)
         {
-            ulong mul = K2 + len * 2;
+            ulong mul = K2 + (len * 2);
             ulong a = Read32(s);
             return City_128_Seed(len + (a << 3), Read32(s, len - 4), mul);
         }
@@ -45,7 +45,7 @@ internal static class CityHashShared
         a *= C2;
         h ^= a;
         h = RotateRight(h, 19);
-        return h * 5 + 0xe6546b64;
+        return (h * 5) + 0xe6546b64;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

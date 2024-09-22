@@ -68,7 +68,7 @@ public static class Polymur2Hash64
                 return 0;
 
             ulong v = buf[offset + 0];
-            v |= (ulong)buf[offset + len / 2] << 8 * (len / 2);
+            v |= (ulong)buf[offset + (len / 2)] << 8 * (len / 2);
             v |= (ulong)buf[offset + len - 1] << 8 * (len - 1);
             return v;
         }
@@ -188,7 +188,7 @@ public static class Polymur2Hash64
             do
             {
                 for (int i = 0; i < 7; ++i)
-                    m[i] = polymur_load_le_u64(buf, bufPtr + 7 * i) & 0x00ffffffffffffffUL;
+                    m[i] = polymur_load_le_u64(buf, bufPtr + (7 * i)) & 0x00ffffffffffffffUL;
 
                 UInt128 t0 = polymur_mul128(p.k + m[0], k6 + m[1]);
                 UInt128 t1 = polymur_mul128(p.k2 + m[2], k5 + m[3]);
@@ -208,7 +208,7 @@ public static class Polymur2Hash64
         if (len >= 8)
         {
             m[0] = polymur_load_le_u64(buf, bufPtr) & 0x00ffffffffffffffUL;
-            m[1] = polymur_load_le_u64(buf, bufPtr + (len - 7) / 2) & 0x00ffffffffffffffUL;
+            m[1] = polymur_load_le_u64(buf, bufPtr + ((len - 7) / 2)) & 0x00ffffffffffffffUL;
             m[2] = polymur_load_le_u64(buf, bufPtr + len - 8) >> 8;
             UInt128 t0 = polymur_mul128(p.k2 + m[0], p.k7 + m[1]);
             UInt128 t1 = polymur_mul128(p.k + m[2], k3 + (uint)len);

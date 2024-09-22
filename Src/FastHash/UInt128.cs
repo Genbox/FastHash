@@ -3,18 +3,10 @@
 namespace Genbox.FastHash;
 
 [StructLayout(LayoutKind.Sequential)]
-public struct UInt128
+public struct UInt128(ulong low, ulong high)
 {
-    public static readonly UInt128 Zero;
-
-    public UInt128(ulong low, ulong high)
-    {
-        Low = low;
-        High = high;
-    }
-
-    public ulong Low;
-    public ulong High;
+    public ulong Low = low;
+    public ulong High = high;
 
     public override string ToString()
     {

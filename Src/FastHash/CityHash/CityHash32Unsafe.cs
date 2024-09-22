@@ -22,19 +22,19 @@ public static class CityHash32Unsafe
         uint a4 = RotateRight(Read32(data + len - 20) * C1, 17) * C2;
         h ^= a0;
         h = RotateRight(h, 19);
-        h = h * 5 + 0xe6546b64;
+        h = (h * 5) + 0xe6546b64;
         h ^= a2;
         h = RotateRight(h, 19);
-        h = h * 5 + 0xe6546b64;
+        h = (h * 5) + 0xe6546b64;
         g ^= a1;
         g = RotateRight(g, 19);
-        g = g * 5 + 0xe6546b64;
+        g = (g * 5) + 0xe6546b64;
         g ^= a3;
         g = RotateRight(g, 19);
-        g = g * 5 + 0xe6546b64;
+        g = (g * 5) + 0xe6546b64;
         f += a4;
         f = RotateRight(f, 19);
-        f = f * 5 + 0xe6546b64;
+        f = (f * 5) + 0xe6546b64;
         uint iters = (len - 1) / 20;
         do
         {
@@ -45,16 +45,16 @@ public static class CityHash32Unsafe
             a4 = Read32(data + 16);
             h ^= a0;
             h = RotateRight(h, 18);
-            h = h * 5 + 0xe6546b64;
+            h = (h * 5) + 0xe6546b64;
             f += a1;
             f = RotateRight(f, 19);
             f = f * C1;
             g += a2;
             g = RotateRight(g, 18);
-            g = g * 5 + 0xe6546b64;
+            g = (g * 5) + 0xe6546b64;
             h ^= a3 + a1;
             h = RotateRight(h, 19);
-            h = h * 5 + 0xe6546b64;
+            h = (h * 5) + 0xe6546b64;
             g ^= a4;
             g = ByteSwap(g) * 5;
             h += a4 * 5;
@@ -68,10 +68,10 @@ public static class CityHash32Unsafe
         f = RotateRight(f, 11) * C1;
         f = RotateRight(f, 17) * C1;
         h = RotateRight(h + g, 19);
-        h = h * 5 + 0xe6546b64;
+        h = (h * 5) + 0xe6546b64;
         h = RotateRight(h, 17) * C1;
         h = RotateRight(h + f, 19);
-        h = h * 5 + 0xe6546b64;
+        h = (h * 5) + 0xe6546b64;
         h = RotateRight(h, 17) * C1;
         return h;
     }
@@ -84,7 +84,7 @@ public static class CityHash32Unsafe
         for (int i = 0; i < len; i++)
         {
             uint v = (uint)(sbyte)*(s + i);
-            b = b * C1 + v;
+            b = (b * C1) + v;
             c ^= b;
         }
         return Murmur_32(Mur(b, Mur(len, c)));

@@ -60,7 +60,7 @@ internal static class XxHashShared
 
         /* last partial block */
         //  XXH_ASSERT(len > XXH_STRIPE_LEN);
-        int nbStripes = (len - 1 - block_len * nb_blocks) / STRIPE_LEN;
+        int nbStripes = (len - 1 - (block_len * nb_blocks)) / STRIPE_LEN;
         // XXH_ASSERT(nbStripes <= (secretSize / XXH_SECRET_CONSUME_RATE));
         XXH3_accumulate(acc, input.Slice(nb_blocks * block_len), secret, nbStripes, f_acc512);
 
@@ -74,7 +74,7 @@ internal static class XxHashShared
         ulong result64 = start;
 
         for (int i = 0; i < 4; i++)
-            result64 += XXH3_mix2Accs(acc, 2 * i, secret, secretOffset + 16 * i);
+            result64 += XXH3_mix2Accs(acc, 2 * i, secret, secretOffset + (16 * i));
 
         return XXH3_avalanche(result64);
     }
@@ -144,9 +144,9 @@ internal static class XxHashShared
         for (int i = 0; i < nbRounds; i++)
         {
             ulong lo = Read64(kSecret, 16 * i) + seed;
-            ulong hi = Read64(kSecret, 16 * i + 8) - seed;
+            ulong hi = Read64(kSecret, (16 * i) + 8) - seed;
             Write64(customSecret, 16 * i, lo);
-            Write64(customSecret, 16 * i + 8, hi);
+            Write64(customSecret, (16 * i) + 8, hi);
         }
     }
 

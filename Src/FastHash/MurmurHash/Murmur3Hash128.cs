@@ -17,8 +17,8 @@ public static class Murmur3Hash128
 
         for (uint i = 0; i < nBlocks; i++)
         {
-            k1 = Read64(data, i * 2 + 0);
-            k2 = Read64(data, i * 2 + 8);
+            k1 = Read64(data, (i * 2) + 0);
+            k2 = Read64(data, (i * 2) + 8);
 
             k1 *= C1_64;
             k1 = RotateLeft(k1, 31);
@@ -27,7 +27,7 @@ public static class Murmur3Hash128
 
             h1 = RotateLeft(h1, 27);
             h1 += h2;
-            h1 = h1 * 5 + 0x52dce729;
+            h1 = (h1 * 5) + 0x52dce729;
 
             k2 *= C2_64;
             k2 = RotateLeft(k2, 33);
@@ -36,7 +36,7 @@ public static class Murmur3Hash128
 
             h2 = RotateLeft(h2, 31);
             h2 += h1;
-            h2 = h2 * 5 + 0x38495ab5;
+            h2 = (h2 * 5) + 0x38495ab5;
         }
 
         uint rem = length & 15;
