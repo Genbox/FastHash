@@ -8,8 +8,5 @@ public struct UInt128(ulong low, ulong high)
     public ulong Low = low;
     public ulong High = high;
 
-    public override string ToString()
-    {
-        return Low + "," + High;
-    }
+    public override string ToString() => Low + "," + High;
 }

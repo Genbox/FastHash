@@ -10,7 +10,7 @@ public class GeneralTests
     public void CheckAllHaveCorrectName()
     {
         foreach (Type type in GetAllTypesOf<HashAlgorithm>())
-            Assert.True(type.Name.Contains("32") || type.Name.Contains("64") || type.Name.Contains("128"));
+            Assert.True(type.Name.Contains("32", StringComparison.Ordinal) || type.Name.Contains("64", StringComparison.Ordinal) || type.Name.Contains("128", StringComparison.Ordinal));
     }
 
     private IEnumerable<Type> GetAllTypesOf<T>()
