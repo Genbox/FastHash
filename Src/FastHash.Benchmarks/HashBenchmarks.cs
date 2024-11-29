@@ -112,6 +112,10 @@ public class HashBenchmarks : IDisposable
     public uint MarvinHash32Test() => MarvinHash32.ComputeHash(_testData);
 
     [Benchmark]
+    [BenchmarkCategory("MarvinHash64")]
+    public ulong MarvinHash64Test() => MarvinHash64.ComputeHash(_testData);
+
+    [Benchmark]
     [BenchmarkCategory("Murmur3Hash32")]
     public uint Murmur3Hash32Test() => Murmur3Hash32.ComputeHash(_testData);
 
