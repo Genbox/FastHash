@@ -42,7 +42,7 @@ public static class CityHash64
         // loop we keep 56 bytes of state: v, w, x, y, and z.
         ulong x = Read64(s, len - 40);
         ulong y = Read64(s, len - 16) + Read64(s, len - 56);
-        ulong z = City_64_Seed(Read64(s, len - 48) + len, Read64(s, len - 24));
+        ulong z = HashLen16(Read64(s, len - 48) + len, Read64(s, len - 24));
         UInt128 v = WeakHashLen32WithSeeds(s, len - 64, len, z);
         UInt128 w = WeakHashLen32WithSeeds(s, len - 32, y + K1, x);
         x = (x * K1) + Read64(s);
@@ -63,10 +63,10 @@ public static class CityHash64
             offset += 64;
             len -= 64;
         } while (len != 0);
-        return City_64_Seed(City_64_Seed(v.Low, w.Low) + (ShiftMix(y) * K1) + z, City_64_Seed(v.High, w.High) + x);
+        return HashLen16(HashLen16(v.Low, w.Low) + (ShiftMix(y) * K1) + z, HashLen16(v.High, w.High) + x);
     }
 
-    private static ulong CityHash64WithSeeds(ReadOnlySpan<byte> s, ulong seed0, ulong seed1) => City_64_Seed(CityHash64Internal(s) - seed0, seed1);
+    private static ulong CityHash64WithSeeds(ReadOnlySpan<byte> s, ulong seed0, ulong seed1) => HashLen16(CityHash64Internal(s) - seed0, seed1);
 
     // This probably works well for 16-byte strings as well, but it may be overkill in that case.
     private static ulong HashLen17to32(ReadOnlySpan<byte> s, uint len)
@@ -76,7 +76,7 @@ public static class CityHash64
         ulong b = Read64(s, 8);
         ulong c = Read64(s, len - 8) * mul;
         ulong d = Read64(s, len - 16) * K2;
-        return City_128_Seed(RotateRight(a + b, 43) + RotateRight(c, 30) + d, a + RotateRight(b + K2, 18) + c, mul);
+        return HashLen16(RotateRight(a + b, 43) + RotateRight(c, 30) + d, a + RotateRight(b + K2, 18) + c, mul);
     }
 
     // Return an 8-byte hash for 33 to 64 bytes.

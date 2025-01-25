@@ -36,13 +36,13 @@ public static class FarmHash64Unsafe
             ulong b = Read64(data + length - 8);
             ulong c = (RotateRight(b, 37) * mul) + a;
             ulong d = (RotateRight(a, 25) + b) * mul;
-            return City_128_Seed(c, d, mul);
+            return HashLen16(c, d, mul);
         }
         if (length >= 4)
         {
             ulong mul = K2 + (length * 2);
             ulong a = Read32(data);
-            return City_128_Seed(length + (a << 3), Read32(data + length - 4), mul);
+            return HashLen16(length + (a << 3), Read32(data + length - 4), mul);
         }
         if (length > 0)
         {
@@ -63,7 +63,7 @@ public static class FarmHash64Unsafe
         ulong b = Read64(data + 8);
         ulong c = Read64(data + length - 8) * mul;
         ulong d = Read64(data + length - 16) * K2;
-        return City_128_Seed(RotateRight(a + b, 43) + RotateRight(c, 30) + d, a + RotateRight(b + K2, 18) + c, mul);
+        return HashLen16(RotateRight(a + b, 43) + RotateRight(c, 30) + d, a + RotateRight(b + K2, 18) + c, mul);
     }
 
     private static unsafe ulong HashLen33to64(byte* data, uint length)
@@ -127,7 +127,7 @@ public static class FarmHash64Unsafe
     private static unsafe ulong Hash64WithSeeds(byte* s, uint len, ulong seed0, ulong seed1)
     {
         if (len <= 64)
-            return City_128_Seed(Hash64(s, len) - seed0, seed1, 0x9ddfea08eb382d69UL); //PORT NOTE: This used to refer to Hash128to64, which was the same as HashLen16, just with hardcoded mul
+            return HashLen16(Hash64(s, len) - seed0, seed1, 0x9ddfea08eb382d69UL); //PORT NOTE: This used to refer to Hash128to64, which was the same as HashLen16, just with hardcoded mul
 
         // For strings over 64 bytes we loop.  Internal state consists of
         // 64 bytes: u, v, w, x, y, and z.
@@ -209,7 +209,7 @@ public static class FarmHash64Unsafe
         z = RotateRight(z + w.Low, 33) * mul;
         v = WeakHashLen32WithSeeds(s, index + 0, v.High * mul, x + w.Low);
         w = WeakHashLen32WithSeeds(s, index + 32, z + w.High, y + Read64(s + index + 16));
-        return H(City_128_Seed(v.Low + x, w.Low ^ y, mul) + z - u, H(v.High + y, w.High + z, K2, 30) ^ x, K2, 31);
+        return H(HashLen16(v.Low + x, w.Low ^ y, mul) + z - u, H(v.High + y, w.High + z, K2, 30) ^ x, K2, 31);
     }
 
     private static unsafe ulong Hash64(byte* s, uint len)
@@ -266,6 +266,6 @@ public static class FarmHash64Unsafe
         v = WeakHashLen32WithSeeds(s, index + 0, v.High * mul, x + w.Low);
         w = WeakHashLen32WithSeeds(s, index + 32, z + w.High, y + Read64(s + index + 16));
         Swap(ref z, ref x);
-        return City_128_Seed(City_128_Seed(v.Low, w.Low, mul) + (ShiftMix(y) * K0) + z, City_128_Seed(v.High, w.High, mul) + x, mul);
+        return HashLen16(HashLen16(v.Low, w.Low, mul) + (ShiftMix(y) * K0) + z, HashLen16(v.High, w.High, mul) + x, mul);
     }
 }

@@ -7,55 +7,74 @@ namespace Genbox.FastHash.Benchmarks;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class MixerBenchmarks
 {
-    private static readonly MixSpec[] _all =
-    [
-        new MixSpec(nameof(Murmur_32), static (h, seed) => Murmur_32((uint)(h + seed))),
-        new MixSpec(nameof(Murmur_32_Seed), static (h, seed) => Murmur_32_Seed((uint)h, (uint)seed)),
-        new MixSpec(nameof(Murmur_32_SeedMix), static (h, seed) => Murmur_32_SeedMix((uint)h, (uint)seed)),
-        new MixSpec(nameof(Murmur_64), static (h, seed) => Murmur_64(h + seed)),
-        new MixSpec(nameof(Murmur_64_Seed), Murmur_64_Seed),
-        new MixSpec(nameof(Murmur_64_SeedMix), Murmur_64_SeedMix),
-        new MixSpec(nameof(Mx3_64), static (h, seed) => Mx3_64(h + seed)),
-        new MixSpec(nameof(Mx3_64_Seed), Mx3_64_Seed),
-        new MixSpec(nameof(Mx3_64_SeedMix), Mx3_64_SeedMix),
-        new MixSpec(nameof(Xmx_64), static (h, seed) => Xmx_64(h + seed)),
-        new MixSpec(nameof(Xmx_64_Seed), Xmx_64_Seed),
-        new MixSpec(nameof(Xmx_64_SeedMix), Xmx_64_SeedMix),
-        new MixSpec(nameof(MoreMur_64), static (h, seed) => MoreMur_64(h + seed)),
-        new MixSpec(nameof(MoreMur_64_Seed), MoreMur_64_Seed),
-        new MixSpec(nameof(MoreMur_64_SeedMix), MoreMur_64_SeedMix),
-        new MixSpec(nameof(Murmur14_64), static (h, seed) => Murmur14_64(h + seed)),
-        new MixSpec(nameof(Murmur14_64_Seed), Murmur14_64_Seed),
-        new MixSpec(nameof(Murmur14_64_SeedMix), Murmur14_64_SeedMix),
-        new MixSpec(nameof(XXH2_32), static (h, seed) => XXH2_32((uint)(h + seed))),
-        new MixSpec(nameof(XXH2_32_Seed), static (h, seed) => XXH2_32_Seed((uint)h, (uint)seed)),
-        new MixSpec(nameof(XXH2_32_SeedMix), static (h, seed) => XXH2_32_SeedMix((uint)h, (uint)seed)),
-        new MixSpec(nameof(XXH2_64), static (h, seed) => XXH2_64(h + seed)),
-        new MixSpec(nameof(XXH2_64_Seed), XXH2_64_Seed),
-        new MixSpec(nameof(XXH2_64_SeedMix), XXH2_64_SeedMix),
-        new MixSpec(nameof(FastHash_64), static (h, seed) => FastHash_64(h + seed)),
-        new MixSpec(nameof(FastHash_64_Seed), FastHash_64_Seed),
-        new MixSpec(nameof(FastHash_64_SeedMix), FastHash_64_SeedMix),
-        new MixSpec(nameof(Nasam_64), static (h, seed) => Nasam_64(h + seed)),
-        new MixSpec(nameof(Nasam_64_Seed), Nasam_64_Seed),
-        new MixSpec(nameof(Nasam_64_SeedMix), Nasam_64_SeedMix),
-        new MixSpec(nameof(City_64_Seed), City_64_Seed)
-    ];
+    [Benchmark]
+    [ArgumentsSource(nameof(GetMix64))]
+    public ulong Mix64(MixSpec64 spec) => spec.Function(42);
 
     [Benchmark]
-    [ArgumentsSource(nameof(GetFunctions))]
-    public ulong MixerBenchmark(MixSpec func)
+    [ArgumentsSource(nameof(GetMix32))]
+    public ulong Mix32(MixSpec32 spec) => spec.Function(42);
+
+    public static IEnumerable<object[]> GetMix64()
     {
-        return func.Function(42, 42);
+        yield return [new MixSpec64(nameof(Murmur_64), Murmur_64)];
+        yield return [new MixSpec64(nameof(I7_mrm_64), I7_mrm_64)];
+        yield return [new MixSpec64(nameof(I8_mxm_64), I8_mxm_64)];
+        yield return [new MixSpec64(nameof(I9_xmx_64), I9_xmx_64)];
+        yield return [new MixSpec64(nameof(I11_mxma_64), I11_mxma_64)];
+        yield return [new MixSpec64(nameof(I11_mxmx_64), I11_mxmx_64)];
+        yield return [new MixSpec64(nameof(I12_xmrx_64), I12_xmrx_64)];
+        yield return [new MixSpec64(nameof(I13_mxmxm_64), I13_mxmxm_64)];
+        yield return [new MixSpec64(nameof(I14_mxrmx_64), I14_mxrmx_64)];
+        yield return [new MixSpec64(nameof(I15_mxmxmx_64), I15_mxmxmx_64)];
+        yield return [new MixSpec64(nameof(Mx2_64), Mx2_64)];
+        yield return [new MixSpec64(nameof(Mx3_64), Mx3_64)];
+        yield return [new MixSpec64(nameof(Rrmxmx), Rrmxmx)];
+        yield return [new MixSpec64(nameof(MoreMur_64), MoreMur_64)];
+        yield return [new MixSpec64(nameof(Nasam_64), Nasam_64)];
+        yield return [new MixSpec64(nameof(Mix01), Mix01)];
+        yield return [new MixSpec64(nameof(Mix02), Mix02)];
+        yield return [new MixSpec64(nameof(Mix03), Mix03)];
+        yield return [new MixSpec64(nameof(Mix04), Mix04)];
+        yield return [new MixSpec64(nameof(Mix05), Mix05)];
+        yield return [new MixSpec64(nameof(Mix06), Mix06)];
+        yield return [new MixSpec64(nameof(Mix07), Mix07)];
+        yield return [new MixSpec64(nameof(Mix08), Mix08)];
+        yield return [new MixSpec64(nameof(Mix09), Mix09)];
+        yield return [new MixSpec64(nameof(Mix10), Mix10)];
+        yield return [new MixSpec64(nameof(Mix11), Mix11)];
+        yield return [new MixSpec64(nameof(Mix12), Mix12)];
+        yield return [new MixSpec64(nameof(Mix13), Mix13)];
+        yield return [new MixSpec64(nameof(Mix14), Mix14)];
+        yield return [new MixSpec64(nameof(FastHash_64), FastHash_64)];
+        yield return [new MixSpec64(nameof(Lea_64), Lea_64)];
+        yield return [new MixSpec64(nameof(Degski_64), Degski_64)];
+        yield return [new MixSpec64(nameof(XXH2_64), XXH2_64)];
+        yield return [new MixSpec64(nameof(XXH3_64), XXH3_64)];
+        yield return [new MixSpec64(nameof(Ettinger_64), Ettinger_64)];
+        yield return [new MixSpec64(nameof(CityMix_64), CityMix_64)];
+        yield return [new MixSpec64(nameof(Umash_64), Umash_64)];
     }
 
-    public static IEnumerable<object[]> GetFunctions() => _all.Select(x => new object[] { x });
+    public static IEnumerable<object[]> GetMix32()
+    {
+        yield return [new MixSpec32(nameof(Murmur_32), static h => Murmur_32(h))];
+        yield return [new MixSpec32(nameof(Degski_32), static h => Degski_32(h))];
+        yield return [new MixSpec32(nameof(Fp64_32), static h => Fp64_32(h))];
+        yield return [new MixSpec32(nameof(XXH2_32), static h => XXH2_32(h))];
+        yield return [new MixSpec32(nameof(LowBias32), static h => LowBias32(h))];
+        yield return [new MixSpec32(nameof(Triple32), static h => Triple32(h))];
+    }
 
     [SuppressMessage("Design", "CA1034:Nested types should not be visible")]
-    public readonly struct MixSpec(string name, Func<ulong, ulong, ulong> function)
+    public readonly record struct MixSpec64(string Name, Func<ulong, ulong> Function)
     {
-        public readonly Func<ulong, ulong, ulong> Function = function;
+        public override string ToString() => Name;
+    }
 
-        public override string ToString() => name;
+    [SuppressMessage("Design", "CA1034:Nested types should not be visible")]
+    public readonly record struct MixSpec32(string Name, Func<uint, uint> Function)
+    {
+        public override string ToString() => Name;
     }
 }

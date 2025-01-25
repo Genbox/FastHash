@@ -14,13 +14,13 @@ internal static class CityHashShared
             ulong b = Read64(s, len - 8);
             ulong c = (RotateRight(b, 37) * mul) + a;
             ulong d = (RotateRight(a, 25) + b) * mul;
-            return City_128_Seed(c, d, mul);
+            return HashLen16(c, d, mul);
         }
         if (len >= 4)
         {
             ulong mul = K2 + (len * 2);
             ulong a = Read32(s);
-            return City_128_Seed(len + (a << 3), Read32(s, len - 4), mul);
+            return HashLen16(len + (a << 3), Read32(s, len - 4), mul);
         }
         if (len > 0)
         {
@@ -79,5 +79,21 @@ internal static class CityHashShared
     {
         Swap(ref a, ref b);
         Swap(ref a, ref c);
+    }
+
+    internal static ulong HashLen16(ulong h, ulong seed)
+    {
+        return HashLen16(h, seed, 0x9ddfea08eb382d69UL);
+    }
+
+    internal static ulong HashLen16(ulong h1, ulong h2, ulong seed)
+    {
+        // Murmur-inspired hashing.
+        ulong a = (h1 ^ h2) * seed;
+        a ^= a >> 47;
+        ulong b = (h2 ^ a) * seed;
+        b ^= b >> 47;
+        b *= seed;
+        return b;
     }
 }

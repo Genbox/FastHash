@@ -14,13 +14,13 @@ internal static class CityHashUnsafeShared
             ulong b = Read64(s + len - 8);
             ulong c = (RotateRight(b, 37) * mul) + a;
             ulong d = (RotateRight(a, 25) + b) * mul;
-            return City_128_Seed(c, d, mul);
+            return HashLen16(c, d, mul);
         }
         if (len >= 4)
         {
             ulong mul = K2 + (len * 2);
             ulong a = Read32(s);
-            return City_128_Seed(len + (a << 3), Read32(s + len - 4), mul);
+            return HashLen16(len + (a << 3), Read32(s + len - 4), mul);
         }
         if (len > 0)
         {

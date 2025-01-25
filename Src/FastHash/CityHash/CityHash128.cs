@@ -36,8 +36,8 @@ public static class CityHash128
         }
         else
         {
-            c = City_64_Seed(Read64(s, len - 8) + K1, a);
-            d = City_64_Seed(b + len, c + Read64(s, len - 16));
+            c = HashLen16(Read64(s, len - 8) + K1, a);
+            d = HashLen16(b + len, c + Read64(s, len - 16));
             a += d;
             // len > 16 here, so do...while is safe
             uint offset = 0;
@@ -53,9 +53,9 @@ public static class CityHash128
                 len -= 16;
             } while (len > 16);
         }
-        a = City_64_Seed(a, c);
-        b = City_64_Seed(d, b);
-        return new UInt128(a ^ b, City_64_Seed(b, a));
+        a = HashLen16(a, c);
+        b = HashLen16(d, b);
+        return new UInt128(a ^ b, HashLen16(b, a));
     }
 
     private static UInt128 CityHash128WithSeed(ReadOnlySpan<byte> s, uint len, UInt128 seed)
@@ -118,8 +118,8 @@ public static class CityHash128
         // At this point our 56 bytes of state should contain more than
         // enough information for a strong 128-bit hash.  We use two
         // different 56-byte-to-8-byte hashes to get a 16-byte final result.
-        x = City_64_Seed(x, v.Low);
-        y = City_64_Seed(y + z, w.Low);
-        return new UInt128(City_64_Seed(x + v.High, w.High) + y, City_64_Seed(x + w.High, y + v.High));
+        x = HashLen16(x, v.Low);
+        y = HashLen16(y + z, w.Low);
+        return new UInt128(HashLen16(x + v.High, w.High) + y, HashLen16(x + w.High, y + v.High));
     }
 }
