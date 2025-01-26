@@ -412,9 +412,9 @@ public static class MixFunctions
     public static uint DE_xmxmx_Degski_32(uint h)
     {
         h ^= h >> 16;
-        h *= 0x45D9F3BU;
+        h *= 0x45D9F3B;
         h ^= h >> 16;
-        h *= 0x45D9F3BU;
+        h *= 0x45D9F3B;
         h ^= h >> 16;
         return h;
     }
@@ -438,7 +438,7 @@ public static class MixFunctions
         h ^= h >> 15;
         h = (h | 1u) ^ (h * h);
         h ^= h >> 17;
-        h *= 0x9E3779B9u;
+        h *= 0x9E3779B9;
         h ^= h >> 13;
         return h;
     }
@@ -448,9 +448,9 @@ public static class MixFunctions
     public static uint CW_xmxmx_LowBias_32(uint h)
     {
         h ^= h >> 16;
-        h *= 0x7feb352d;
+        h *= 0x7FEB352D;
         h ^= h >> 15;
-        h *= 0x846ca68b;
+        h *= 0x846CA68B;
         h ^= h >> 16;
         return h;
     }
@@ -460,11 +460,11 @@ public static class MixFunctions
     public static uint CW_xmxmxmx_Triple_32(uint h)
     {
         h ^= h >> 17;
-        h *= 0xed5ad4bb;
+        h *= 0xED5AD4BB;
         h ^= h >> 11;
-        h *= 0xac4c1b51;
+        h *= 0xAC4C1B51;
         h ^= h >> 15;
-        h *= 0x31848bab;
+        h *= 0x31848BAB;
         h ^= h >> 14;
         return h;
     }
@@ -501,9 +501,9 @@ public static class MixFunctions
     public static uint YC_xmxmx_XXH2_32(uint h)
     {
         h ^= h >> 15;
-        h *= 0x85EBCA77U;
+        h *= 0x85EBCA77;
         h ^= h >> 13;
-        h *= 0xC2B2AE3DU;
+        h *= 0xC2B2AE3D;
         h ^= h >> 16;
         return h;
     }
