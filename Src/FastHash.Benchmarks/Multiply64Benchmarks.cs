@@ -1,4 +1,3 @@
-using BenchmarkDotNet.Attributes;
 using Genbox.FastHash.TestShared;
 
 namespace Genbox.FastHash.Benchmarks;

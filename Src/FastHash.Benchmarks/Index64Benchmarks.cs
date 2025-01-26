@@ -1,5 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Order;
+﻿using BenchmarkDotNet.Order;
 using Genbox.FastHash.Benchmarks.Code;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;

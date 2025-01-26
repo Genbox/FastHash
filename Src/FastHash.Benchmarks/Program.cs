@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Analysers;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Validators;
 
@@ -31,7 +32,8 @@ public class Program
                                          DeferredExecutionValidator.FailOnError,
                                          ParamsAllValuesValidator.FailOnError,
                                          ParamsValidator.FailOnError)
-                                     .WithOption(ConfigOptions.DisableLogFile, true);
+                                     .WithOption(ConfigOptions.DisableLogFile, true)
+                                     .WithSummaryStyle(SummaryStyle.Default.WithMaxParameterColumnWidth(50));
 
         BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, config);
     }

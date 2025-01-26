@@ -6,24 +6,35 @@ namespace Genbox.FastHash.Tests;
 
 public class GeneralTests
 {
-    [Fact]
-    public void CheckAllHaveCorrectName()
+    [Theory, MemberData(nameof(GetAllTypesOf))]
+    public void CheckAllHaveCorrectName(Type type)
     {
-        foreach (Type type in GetAllTypesOf<HashAlgorithm>())
-            Assert.True(type.Name.Contains("32", StringComparison.Ordinal) || type.Name.Contains("64", StringComparison.Ordinal) || type.Name.Contains("128", StringComparison.Ordinal));
+        Assert.True(type.Name.EndsWith("32", StringComparison.Ordinal) ||
+                    type.Name.EndsWith("32Unsafe", StringComparison.Ordinal) ||
+                    type.Name.EndsWith("64", StringComparison.Ordinal) ||
+                    type.Name.EndsWith("64Unsafe", StringComparison.Ordinal) ||
+                    type.Name.EndsWith("128", StringComparison.Ordinal) ||
+                    type.Name.EndsWith("128Unsafe", StringComparison.Ordinal));
     }
 
-    private IEnumerable<Type> GetAllTypesOf<T>()
+    public static TheoryData<Type> GetAllTypesOf()
     {
+        TheoryData<Type> data = new TheoryData<Type>();
+
         Assembly assembly = typeof(Djb2Hash32).GetTypeInfo().Assembly;
 
         foreach (Type type in assembly.GetTypes())
         {
-            if (type.GetInterfaces().Any(x => x == typeof(T)))
-                yield return type;
+            if (type.Name.Contains("Shared", StringComparison.Ordinal) || type.Name.Contains("Constants", StringComparison.Ordinal))
+                continue;
 
-            if (type.GetTypeInfo().BaseType == typeof(T))
-                yield return type;
+            if (type.Name == "MixFunctions")
+                continue;
+
+            if (type.IsPublic && type.IsAbstract && type.IsSealed)
+                data.Add(type);
         }
+
+        return data;
     }
 }

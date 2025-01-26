@@ -1,13 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using BenchmarkDotNet.Order;
+﻿using BenchmarkDotNet.Order;
+using Genbox.FastHash.TestShared;
 using static Genbox.FastHash.MixFunctions;
 
 namespace Genbox.FastHash.Benchmarks;
 
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-[SuppressMessage("Maintainability", "CA1515:Consider making public types internal")]
-[SuppressMessage("Design", "CA1034:Nested types should not be visible")]
 public class MixerBenchmarks
 {
     [Benchmark]
@@ -70,15 +67,5 @@ public class MixerBenchmarks
         yield return [new MixSpec32(YC_xmxmx_XXH2_32)];
         yield return [new MixSpec32(CW_xmxmx_LowBias_32)];
         yield return [new MixSpec32(CW_xmxmxmx_Triple_32)];
-    }
-
-    public record MixSpec64(Func<ulong, ulong> Func, [CallerArgumentExpression(nameof(Func))]string Name = "")
-    {
-        public override string ToString() => Name;
-    }
-
-    public record MixSpec32(Func<uint, uint> Func, [CallerArgumentExpression(nameof(Func))]string Name = "")
-    {
-        public override string ToString() => Name;
     }
 }
