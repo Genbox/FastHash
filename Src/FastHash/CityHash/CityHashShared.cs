@@ -81,12 +81,7 @@ internal static class CityHashShared
         Swap(ref a, ref c);
     }
 
-    internal static ulong HashLen16(ulong h, ulong seed)
-    {
-        return HashLen16(h, seed, 0x9ddfea08eb382d69UL);
-    }
-
-    internal static ulong HashLen16(ulong h1, ulong h2, ulong seed)
+    internal static ulong HashLen16(ulong h1, ulong h2, ulong seed = 0x9ddfea08eb382d69UL)
     {
         // Murmur-inspired hashing.
         ulong a = (h1 ^ h2) * seed;

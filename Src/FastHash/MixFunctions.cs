@@ -6,6 +6,8 @@ public static class MixFunctions
 {
     #region Murmur - Austin Appleby
 
+    //Source: https://github.com/aappleby/smhasher/tree/master
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint Murmur_32(uint h)
     {
@@ -33,6 +35,8 @@ public static class MixFunctions
     #region Murmur variant - Jon Maiga
 
     //https://jonkagstrom.com/bit-mixer-construction/index.html
+    //https://jonkagstrom.com/mx3/mx3_rev2.html
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong I7_mrm_64(ulong h)
     {
@@ -43,7 +47,6 @@ public static class MixFunctions
         return h;
     }
 
-    //https://jonkagstrom.com/bit-mixer-construction/index.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong I8_mxm_64(ulong h)
     {
@@ -54,7 +57,6 @@ public static class MixFunctions
         return h;
     }
 
-    //https://jonkagstrom.com/bit-mixer-construction/index.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong I9_xmx_64(ulong h)
     {
@@ -65,7 +67,6 @@ public static class MixFunctions
         return h;
     }
 
-    //https://jonkagstrom.com/bit-mixer-construction/index.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong I11_mxma_64(ulong h)
     {
@@ -77,7 +78,6 @@ public static class MixFunctions
         return h;
     }
 
-    //https://jonkagstrom.com/bit-mixer-construction/index.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong I11_mxmx_64(ulong h)
     {
@@ -89,7 +89,6 @@ public static class MixFunctions
         return h;
     }
 
-    //https://jonkagstrom.com/bit-mixer-construction/index.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong I12_xmrx_64(ulong h)
     {
@@ -100,7 +99,6 @@ public static class MixFunctions
         return h;
     }
 
-    //https://jonkagstrom.com/bit-mixer-construction/index.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong I13_mxmxm_64(ulong h)
     {
@@ -113,7 +111,6 @@ public static class MixFunctions
         return h;
     }
 
-    //https://jonkagstrom.com/bit-mixer-construction/index.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong I14_mxrmx_64(ulong h)
     {
@@ -125,7 +122,6 @@ public static class MixFunctions
         return h;
     }
 
-    //https://jonkagstrom.com/bit-mixer-construction/index.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong I15_mxmxmx_64(ulong x)
     {
@@ -138,7 +134,6 @@ public static class MixFunctions
         return x;
     }
 
-    //https://jonkagstrom.com/mx3/mx3_rev2.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong Mx2_64(ulong h)
     {
@@ -150,7 +145,6 @@ public static class MixFunctions
         return h;
     }
 
-    // http://jonkagstrom.com/mx3/mx3_rev2.html
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong Mx3_64(ulong h)
     {
@@ -424,51 +418,9 @@ public static class MixFunctions
         return h;
     }
 
-    #endregion
-
-    #region Xxhash
-
-    // https://github.com/Cyan4973/xxHash/tree/dev
+    // https://github.com/skeeto/hash-prospector/issues/19
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint XXH2_32(uint h)
-    {
-        h ^= h >> 15;
-        h *= 0x85EBCA77U;
-        h ^= h >> 13;
-        h *= 0xC2B2AE3DU;
-        h ^= h >> 16;
-        return h;
-    }
-
-    // https://github.com/Cyan4973/xxHash/tree/dev
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong XXH2_64(ulong h)
-    {
-        h ^= h >> 33;
-        h *= 0xC2B2AE3D27D4EB4F;
-        h ^= h >> 29;
-        h *= 0x165667B19E3779F9;
-        h ^= h >> 32;
-        return h;
-    }
-
-    // https://github.com/Cyan4973/xxHash/tree/dev
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong XXH3_64(ulong h)
-    {
-        h ^= h >> 37;
-        h *= 0x165667919E3779F9;
-        h ^= h >> 32;
-        return h;
-    }
-
-    #endregion
-
-    #region Others
-
-    // TheIronBorn
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint LowBias32(uint h)
+    public static uint LowBias_32(uint h)
     {
         h ^= h >> 16;
         h *= 0x7feb352d;
@@ -480,7 +432,7 @@ public static class MixFunctions
 
     // https://github.com/skeeto/hash-prospector/tree/master
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint Triple32(uint h)
+    public static uint Triple_32(uint h)
     {
         h ^= h >> 17;
         h *= 0xed5ad4bb;
@@ -492,18 +444,7 @@ public static class MixFunctions
         return h;
     }
 
-    // Tommy Ettinger
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong Ettinger_64(ulong h)
-    {
-        h ^= 0xDB4F0B9175AE2165;
-        h *= 0x4823A80B2006E21B;
-        h ^= RotateLeft(h, 52) ^ RotateLeft(h, 21) ^ 0x9E3779B97F4A7C15;
-        h *= 0x81383173;
-        h ^= h >> 28;
-        return h;
-    }
-
+    // https://github.com/google/cityhash
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong CityMix_64(ulong h)
     {
@@ -515,6 +456,90 @@ public static class MixFunctions
         return b;
     }
 
+    // https://github.com/tommyettinger/smhasher-with-junk/blob/master/smhasher3/hashes/ax.cpp#L97
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong AxMix_64(ulong h)
+    {
+        h ^= RotateLeft(h, 23) ^ RotateLeft(h, 43);
+        h *= 0xBEA225F9EB34556D;
+        h ^= RotateLeft(h, 11) ^ RotateLeft(h, 50);
+        return h;
+    }
+
+    #endregion
+
+    #region Xxhash
+
+    // https://github.com/Cyan4973/xxHash/tree/dev
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint XXH2_32(uint h)
+    {
+        h ^= h >> 15;
+        h *= 0x85EBCA77U;
+        h ^= h >> 13;
+        h *= 0xC2B2AE3DU;
+        h ^= h >> 16;
+        return h;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong XXH2_64(ulong h)
+    {
+        h ^= h >> 33;
+        h *= 0xC2B2AE3D27D4EB4F;
+        h ^= h >> 29;
+        h *= 0x165667B19E3779F9;
+        h ^= h >> 32;
+        return h;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong XXH3_64(ulong h)
+    {
+        h ^= h >> 37;
+        h *= 0x165667919E3779F9;
+        h ^= h >> 32;
+        return h;
+    }
+
+    #endregion
+
+    #region WyHash
+
+#if NET8_0_OR_GREATER
+
+    //https://github.com/wangyi-fudan/wyhash
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong Wymix_64(ulong h)
+    {
+        h += 0x60BEE2BEE120FC15;
+
+        ulong hi = Math.BigMul(h, 0xA3B195354A39B70D, out ulong lo);
+        return hi ^ lo;
+    }
+
+    //https://github.com/wangyi-fudan/wyhash
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong Wymix2_64(ulong h)
+    {
+        h += 0x60BEE2BEE120FC15;
+
+        ulong hi1 = Math.BigMul(h, 0xA3B195354A39B70D, out ulong lo1);
+        ulong m1 = hi1 ^ lo1;
+
+        ulong hi2 = Math.BigMul(m1, 0x1B03738712FAD5C9, out ulong lo2);
+        return hi2 ^ lo2;
+    }
+
+#endif
+
+    #endregion
+
+    #region Others
+
+    // https://github.com/backtrace-labs/umash/tree/master
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong Umash_64(ulong h)
     {

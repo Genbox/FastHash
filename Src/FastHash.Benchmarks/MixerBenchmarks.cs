@@ -51,19 +51,21 @@ public class MixerBenchmarks
         yield return [new MixSpec64(nameof(Degski_64), Degski_64)];
         yield return [new MixSpec64(nameof(XXH2_64), XXH2_64)];
         yield return [new MixSpec64(nameof(XXH3_64), XXH3_64)];
-        yield return [new MixSpec64(nameof(Ettinger_64), Ettinger_64)];
         yield return [new MixSpec64(nameof(CityMix_64), CityMix_64)];
         yield return [new MixSpec64(nameof(Umash_64), Umash_64)];
+        yield return [new MixSpec64(nameof(Wymix_64), Wymix_64)];
+        yield return [new MixSpec64(nameof(Wymix2_64), Wymix2_64)];
+        yield return [new MixSpec64(nameof(AxMix_64), AxMix_64)];
     }
 
     public static IEnumerable<object[]> GetMix32()
     {
-        yield return [new MixSpec32(nameof(Murmur_32), static h => Murmur_32(h))];
-        yield return [new MixSpec32(nameof(Degski_32), static h => Degski_32(h))];
-        yield return [new MixSpec32(nameof(Fp64_32), static h => Fp64_32(h))];
-        yield return [new MixSpec32(nameof(XXH2_32), static h => XXH2_32(h))];
-        yield return [new MixSpec32(nameof(LowBias32), static h => LowBias32(h))];
-        yield return [new MixSpec32(nameof(Triple32), static h => Triple32(h))];
+        yield return [new MixSpec32(nameof(Murmur_32), Murmur_32)];
+        yield return [new MixSpec32(nameof(Degski_32), Degski_32)];
+        yield return [new MixSpec32(nameof(Fp64_32), Fp64_32)];
+        yield return [new MixSpec32(nameof(XXH2_32), XXH2_32)];
+        yield return [new MixSpec32(nameof(LowBias_32), LowBias_32)];
+        yield return [new MixSpec32(nameof(Triple_32), Triple_32)];
     }
 
     [SuppressMessage("Design", "CA1034:Nested types should not be visible")]

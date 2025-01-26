@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using static Genbox.FastHash.MixFunctions;
 
 namespace Genbox.FastHash.Tests;
@@ -7,14 +7,14 @@ public class MixerTests
 {
     [Theory]
     [MemberData(nameof(GetFunctions))]
-    public void RandomDistributionTest(MixSpec func)
+    public void RandomDistributionTest(MixSpec spec)
     {
         int[] buckets = new int[100];
         uint iterations = 1_000_000;
 
         for (ulong i = 0; i < iterations; i++)
         {
-            ulong index = func.Function(i) % (ulong)buckets.Length;
+            ulong index = spec.Func(i) % (ulong)buckets.Length;
             buckets[index]++;
         }
 
@@ -23,9 +23,7 @@ public class MixerTests
 
         //There should be 1% items in each bucket. We test if there are 4% of 1% deviation
         for (int i = 0; i < buckets.Length; i++)
-        {
             Assert.True(Math.Abs(onePercent - buckets[i]) < fraction);
-        }
     }
 
     public static IEnumerable<object[]> GetFunctions()

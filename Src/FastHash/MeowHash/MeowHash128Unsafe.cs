@@ -250,7 +250,6 @@ public static class MeowHash128Unsafe
         return xmm0;
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void MEOW_MIX_REG(ref Vector128<byte> r1, ref Vector128<byte> r2, ref Vector128<byte> r3, ref Vector128<byte> r4, ref Vector128<byte> r5, Vector128<byte> i1, Vector128<byte> i2, Vector128<byte> i3, Vector128<byte> i4)
     {
@@ -286,20 +285,28 @@ public static class MeowHash128Unsafe
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void prefetcht0(void* addr) => Sse.Prefetch0(addr);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void movdqu(out Vector128<byte> A, byte* B) => A = Sse2.LoadVector128(B);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void movq(out Vector128<byte> A, ulong B) => A = Vector128.Create(B, 0ul).AsByte();
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void aesdec(ref Vector128<byte> A, Vector128<byte> B) => A = Aes.Decrypt(A, B);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void pshufb(ref Vector128<byte> A, Vector128<byte> B) => A = Ssse3.Shuffle(A, B);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void pxor(ref Vector128<byte> A, Vector128<byte> B) => A = Sse2.Xor(A, B);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void paddq(ref Vector128<byte> A, Vector128<byte> B) => A = Sse2.Add(A.AsUInt64(), B.AsUInt64()).AsByte();
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void pand(ref Vector128<byte> A, Vector128<byte> B) => A = Sse2.Add(A, B);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void palignr(ref Vector128<byte> A, Vector128<byte> B, byte i) => A = Ssse3.AlignRight(A, B, i);
 
