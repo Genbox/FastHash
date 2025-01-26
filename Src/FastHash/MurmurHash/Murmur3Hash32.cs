@@ -15,7 +15,7 @@ public static class Murmur3Hash32
         input = RotateLeft(input, 13);
         input = (input * 5) + 0xe6546b64;
         input ^= 4;
-        return Murmur_32(input);
+        return AA_xmxmx_Murmur_32(input);
     }
 
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
@@ -64,6 +64,6 @@ public static class Murmur3Hash32
         h1 ^= k1;
 
         h1 ^= length;
-        return Murmur_32(h1);
+        return AA_xmxmx_Murmur_32(h1);
     }
 }

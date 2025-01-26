@@ -106,7 +106,7 @@ public static class FarmHash32Unsafe
             b = (b * C1) + v;
             c ^= b;
         }
-        return Murmur_32(Mur(b, Mur(len, c)));
+        return AA_xmxmx_Murmur_32(Mur(b, Mur(len, c)));
     }
 
     private static unsafe uint Hash32Len5to12(byte* s, uint len, uint seed)
@@ -115,7 +115,7 @@ public static class FarmHash32Unsafe
         a += Read32(s);
         b += Read32(s + len - 4);
         c += Read32(s + ((len >> 1) & 4));
-        return Murmur_32(seed ^ Mur(c, Mur(b, Mur(a, d))));
+        return AA_xmxmx_Murmur_32(seed ^ Mur(c, Mur(b, Mur(a, d))));
     }
 
     private static unsafe uint Hash32Len13to24(byte* s, uint len, uint seed)
@@ -133,6 +133,6 @@ public static class FarmHash32Unsafe
         h = Mur(e, h) + a;
         a = RotateRight(a + f, 12) + d;
         h = Mur(b ^ seed, h) + a;
-        return Murmur_32(h);
+        return AA_xmxmx_Murmur_32(h);
     }
 }

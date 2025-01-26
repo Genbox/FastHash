@@ -105,7 +105,7 @@ public static class Polymur2Hash64
     private static ulong polymur_extrared611(ulong x) => (x & POLYMUR_P611) + (x >> 61);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong polymur_mix(ulong x) => Mx2_64(x);
+    private static ulong polymur_mix(ulong x) => JM_xmxmx_Mx2_64(x);
 
     private static void polymur_init_params(ref PolymurHashParams p, ulong k_seed, ulong s_seed)
     {

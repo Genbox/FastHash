@@ -71,7 +71,7 @@ public static class Xx3Hash64Unsafe
         if (len > 0)
             return XXH3_len_1to3_64b(input, len, secret, seed);
 
-        return XXH2_64(seed ^ Read64(secret + 56) ^ Read64(secret + 64));
+        return YC_xmxmx_XXH2_64(seed ^ Read64(secret + 56) ^ Read64(secret + 64));
     }
 
     private static unsafe ulong XXH3_len_9to16_64b(byte* input, int len, byte* secret, ulong seed)
@@ -128,7 +128,7 @@ public static class Xx3Hash64Unsafe
         uint combined = ((uint)c1 << 16) | ((uint)c2 << 24) | ((uint)c3 << 0) | ((uint)len << 8);
         ulong bitflip = (Read32(secret) ^ Read32(secret + 4)) + seed;
         ulong keyed = combined ^ bitflip;
-        return XXH2_64(keyed);
+        return YC_xmxmx_XXH2_64(keyed);
     }
 
     private static unsafe ulong XXH3_len_17to128_64b(byte* input, int len, byte* secret, ulong seed)

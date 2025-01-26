@@ -113,8 +113,8 @@ public static class Murmur3Hash128Unsafe
         h1 += h2;
         h2 += h1;
 
-        h1 = Murmur_64(h1);
-        h2 = Murmur_64(h2);
+        h1 = AA_xmxmx_Murmur_64(h1);
+        h2 = AA_xmxmx_Murmur_64(h2);
 
         h1 += h2;
         h2 += h1;

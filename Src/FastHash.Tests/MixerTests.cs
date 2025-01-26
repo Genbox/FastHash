@@ -1,8 +1,11 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.MixFunctions;
 
 namespace Genbox.FastHash.Tests;
 
+[SuppressMessage("Design", "CA1034:Nested types should not be visible")]
+[SuppressMessage("Maintainability", "CA1515:Consider making public types internal")]
 public class MixerTests
 {
     [Theory]
@@ -28,16 +31,15 @@ public class MixerTests
 
     public static IEnumerable<object[]> GetFunctions()
     {
-        yield return [new MixSpec(nameof(Murmur_64), Murmur_64)];
-        yield return [new MixSpec(nameof(Mx3_64), Mx3_64)];
-        yield return [new MixSpec(nameof(MoreMur_64), MoreMur_64)];
-        yield return [new MixSpec(nameof(XXH2_64), XXH2_64)];
-        yield return [new MixSpec(nameof(FastHash_64), FastHash_64)];
-        yield return [new MixSpec(nameof(Nasam_64), Nasam_64)];
+        yield return [new MixSpec(AA_xmxmx_Murmur_64)];
+        yield return [new MixSpec(JM_xmxmxmx_Mx3_64)];
+        yield return [new MixSpec(PE_xmxmx_Moremur_64)];
+        yield return [new MixSpec(YC_xmxmx_XXH2_64)];
+        yield return [new MixSpec(EZ_xmx_FastHash_64)];
+        yield return [new MixSpec(PE_rrxrrxmxxmxx_Nasam_64)];
     }
 
-    [SuppressMessage("Design", "CA1034:Nested types should not be visible")]
-    public readonly record struct MixSpec(string Name, Func<ulong, ulong> Function)
+    public record MixSpec(Func<ulong, ulong> Func, [CallerArgumentExpression(nameof(Func))]string Name = "")
     {
         public override string ToString() => Name;
     }

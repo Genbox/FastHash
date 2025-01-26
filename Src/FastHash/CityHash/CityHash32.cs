@@ -20,7 +20,7 @@ public static class CityHash32
 
         b = (b * C1) + (uint)(sbyte)((input >> 24) & 0xFF);
         c ^= b;
-        return Murmur_32(Mur(b, Mur(4, c)));
+        return AA_xmxmx_Murmur_32(Mur(b, Mur(4, c)));
     }
 
     public static uint ComputeHash(ReadOnlySpan<byte> data)
@@ -105,7 +105,7 @@ public static class CityHash32
             b = (b * C1) + v;
             c ^= b;
         }
-        return Murmur_32(Mur(b, Mur(len, c)));
+        return AA_xmxmx_Murmur_32(Mur(b, Mur(len, c)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -115,7 +115,7 @@ public static class CityHash32
         a += Read32(s);
         b += Read32(s, len - 4);
         c += Read32(s, (len >> 1) & 4);
-        return Murmur_32(Mur(c, Mur(b, Mur(a, d))));
+        return AA_xmxmx_Murmur_32(Mur(c, Mur(b, Mur(a, d))));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -129,6 +129,6 @@ public static class CityHash32
         uint f = Read32(s, len - 4);
         uint h = len;
 
-        return Murmur_32(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
+        return AA_xmxmx_Murmur_32(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
     }
 }

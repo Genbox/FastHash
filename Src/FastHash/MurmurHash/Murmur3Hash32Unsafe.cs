@@ -49,7 +49,7 @@ public static class Murmur3Hash32Unsafe
         uint len = (uint)length;
 
         h1 ^= len;
-        h1 = Murmur_32(h1);
+        h1 = AA_xmxmx_Murmur_32(h1);
 
         return h1;
     }

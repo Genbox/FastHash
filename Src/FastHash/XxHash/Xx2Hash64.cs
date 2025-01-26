@@ -85,7 +85,7 @@ public static class Xx2Hash64
             len--;
         }
 
-        return XXH2_64(h64);
+        return YC_xmxmx_XXH2_64(h64);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

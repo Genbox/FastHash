@@ -70,7 +70,7 @@ public static class Xx2Hash32
             len--;
         }
 
-        return XXH2_32(h32);
+        return YC_xmxmx_XXH2_32(h32);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
