@@ -51,7 +51,7 @@ public static class MixFunctions
     public static ulong JM_mrm_Depth7_64(ulong h)
     {
         //x c2 mul 59 ror c2 mul
-        h *= 0xBF58476D1CE4E5B9;
+        h *= 0x94D049BB133111EB;
         h = RotateRight(h, 59);
         h *= 0x94D049BB133111EB;
         return h;
