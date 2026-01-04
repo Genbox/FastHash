@@ -81,98 +81,146 @@ Measured on 32 MB data. The unsafe versions are implemented using C# unsafe code
 **Note:** Speed is not everything. The quality of a hash is just as important, but much more difficult to measure. [See SMHasher](https://github.com/rurban/smhasher) for more
 details on hash quality.
 
-|           Hash method | MB/s    |
-|----------------------:|---------|
-|       Wy3Hash64Unsafe | 	15.909 |
-|             Wy3Hash64 | 	15.256 |
-|       Xx2Hash64Unsafe | 	13.374 |
-|      Xx3Hash128Unsafe | 	12.582 |
-|     CityHash128Unsafe | 	12.558 |
-|             Xx2Hash64 | 	12.438 |
-|      CityHash64Unsafe | 	12.424 |
-|       Xx3Hash64Unsafe | 	12.418 |
-|           CityHash128 | 	10.630 |
-|            CityHash64 | 	9.047  |
-|       Xx2Hash32Unsafe | 	8.128  |
-|            FarmHash64 | 	8.089  |
-|      FarmHash64Unsafe | 	7.987  |
-|        Murmur3Hash128 | 	7.982  |
-|  Murmur3Hash128Unsafe | 	7.356  |
-|             Xx2Hash32 | 	7.287  |
-|      FarmHash32Unsafe | 	7.233  |
-|     FarshHash64Unsafe | 	7.186  |
-|            FarmHash32 | 	6.621  |
-|      CityHash32Unsafe | 	6.433  |
-|            CityHash32 | 	5.712  |
-|         Murmur3Hash32 | 	3.796  |
-|   Murmur3Hash32Unsafe | 	3.760  |
-|           FarshHash64 | 	3.474  |
-|       SuperFastHash32 | 	3.304  |
-| SuperFastHash32Unsafe | 	3.259  |
-|          MarvinHash32 | 	3.135  |
-|       SipHash64Unsafe | 	2.581  |
-|             SipHash64 | 	2.576  |
-|            Djb2Hash32 | 	1.451  |
-|            Djb2Hash64 | 	1.448  |
-|      Djb2Hash64Unsafe | 	1.447  |
-|      Djb2Hash32Unsafe | 	1.444  |
-|           Fnv1aHash32 | 	1.092  |
-|     Fnv1aHash32Unsafe | 	1.092  |
-|     Fnv1aHash64Unsafe | 	1.092  |
-|           Fnv1aHash64 | 	1.079  |
+| Method                |        Mean |     Error |    StdDev |   MiB/s |
+|-----------------------|------------:|----------:|----------:|--------:|
+| GxHash128             |    266.9 ns |   0.25 ns |   0.15 ns | 117,083 |
+| GxHash32              |    268.9 ns |   0.13 ns |   0.07 ns | 116,235 |
+| GxHash64              |    268.9 ns |   0.16 ns |   0.09 ns | 116,222 |
+| Gx2Hash32             |    273.3 ns |   2.00 ns |   1.32 ns | 114,346 |
+| Gx2Hash128            |    273.8 ns |   2.78 ns |   1.84 ns | 114,123 |
+| Gx2Hash64             |    274.4 ns |   5.37 ns |   3.88 ns | 113,885 |
+| MeowHash128Unsafe     |    530.1 ns |   0.37 ns |   0.19 ns |  58,953 |
+| MeowHash64Unsafe      |    531.5 ns |   2.39 ns |   1.58 ns |  58,799 |
+| FoldHashQuality64     |    785.1 ns |   0.95 ns |   0.50 ns |  39,805 |
+| FoldHash64            |    787.6 ns |   3.62 ns |   2.39 ns |  39,680 |
+| Wy3Hash64Unsafe       |    888.4 ns |   2.24 ns |   1.48 ns |  35,176 |
+| AesniHash64           |    956.9 ns |   9.70 ns |   6.41 ns |  32,656 |
+| AesniHash128          |    957.9 ns |  10.05 ns |   5.98 ns |  32,624 |
+| RapidHashMicro64      |  1,023.7 ns |   3.61 ns |   2.39 ns |  30,527 |
+| RapidHashNano64       |  1,027.4 ns |   2.32 ns |   1.22 ns |  30,415 |
+| RapidHash64           |  1,034.5 ns |  15.90 ns |   9.46 ns |  30,208 |
+| Wy3Hash64             |  1,113.5 ns |   7.36 ns |   4.38 ns |  28,065 |
+| FarmHash64Unsafe      |  1,264.9 ns |   2.77 ns |   1.65 ns |  24,706 |
+| FarmHash64            |  1,265.0 ns |   1.02 ns |   0.53 ns |  24,704 |
+| CityHash128           |  1,554.8 ns |   5.24 ns |   2.74 ns |  20,099 |
+| CityHash128Unsafe     |  1,560.2 ns |   8.06 ns |   5.33 ns |  20,029 |
+| CityHash64Unsafe      |  1,573.0 ns |   1.81 ns |   1.08 ns |  19,866 |
+| CityHash64            |  1,622.3 ns |  31.70 ns |  32.56 ns |  19,262 |
+| Xx2Hash64Unsafe       |  1,697.1 ns |  13.65 ns |   9.03 ns |  18,414 |
+| Xx2Hash64             |  1,718.7 ns |  33.71 ns |  26.32 ns |  18,182 |
+| FarshHash64Unsafe     |  2,370.7 ns |  23.88 ns |  15.79 ns |  13,182 |
+| FarshHash64           |  2,927.0 ns |  21.70 ns |  12.91 ns |  10,677 |
+| Xx2Hash32Unsafe       |  3,392.1 ns |  26.25 ns |  15.62 ns |   9,212 |
+| Xx2Hash32             |  3,395.9 ns |  29.93 ns |  19.80 ns |   9,202 |
+| Murmur3Hash128Unsafe  |  3,713.3 ns |   2.30 ns |   1.37 ns |   8,416 |
+| Murmur3Hash128        |  3,804.6 ns |  14.37 ns |   9.51 ns |   8,214 |
+| CityHash32Unsafe      |  3,917.9 ns |  10.12 ns |   6.02 ns |   7,976 |
+| FarmHash32            |  3,942.2 ns |  10.61 ns |   7.01 ns |   7,927 |
+| CityHash32            |  3,956.8 ns |  16.46 ns |   9.80 ns |   7,898 |
+| FarmHash32Unsafe      |  3,964.4 ns |  42.80 ns |  25.47 ns |   7,883 |
+| Xx3Hash64Unsafe       |  4,109.6 ns |  16.47 ns |   9.80 ns |   7,604 |
+| Xx3Hash128Unsafe      |  4,112.9 ns |  25.21 ns |  13.19 ns |   7,598 |
+| Polymur2Hash64        |  4,159.1 ns |   8.17 ns |   4.86 ns |   7,514 |
+| MarvinHash64          |  8,552.2 ns |  38.51 ns |  25.47 ns |   3,654 |
+| MarvinHash32          |  8,586.4 ns |  60.45 ns |  39.98 ns |   3,639 |
+| Murmur3Hash32Unsafe   |  8,808.0 ns |   8.33 ns |   4.96 ns |   3,548 |
+| Murmur3Hash32         |  8,822.5 ns |  15.04 ns |   7.87 ns |   3,542 |
+| SuperFastHash32Unsafe | 10,088.7 ns |  25.39 ns |  15.11 ns |   3,098 |
+| SuperFastHash32       | 10,092.9 ns |  27.41 ns |  18.13 ns |   3,096 |
+| SipHash64             | 10,201.6 ns |  41.62 ns |  21.77 ns |   3,063 |
+| SipHash64Unsafe       | 10,377.6 ns |   2.38 ns |   1.25 ns |   3,011 |
+| Djb2Hash32Unsafe      | 20,187.0 ns |   8.72 ns |   4.56 ns |   1,548 |
+| Djb2Hash64            | 20,187.2 ns |  19.96 ns |  13.20 ns |   1,548 |
+| Djb2Hash32            | 20,195.8 ns |  33.28 ns |  22.01 ns |   1,547 |
+| Djb2Hash64Unsafe      | 20,197.7 ns |  26.61 ns |  15.84 ns |   1,547 |
+| Fnv1aHash32           | 26,892.0 ns |  22.45 ns |  14.85 ns |   1,162 |
+| Fnv1aHash32Unsafe     | 26,893.7 ns |  20.96 ns |  10.96 ns |   1,162 |
+| Fnv1aHash64           | 26,918.9 ns |  55.92 ns |  33.27 ns |   1,161 |
+| Fnv1aHash64Unsafe     | 27,149.7 ns | 247.35 ns | 147.20 ns |   1,151 |
 
 #### Index functions
 
-| Method          |       Mean |     Error |    StdDev |
-|-----------------|-----------:|----------:|----------:|
-| Fnv1aHash32     |  0.4503 ns | 0.0227 ns | 0.0213 ns |
-| Xx2Hash32       |  0.5403 ns | 0.0155 ns | 0.0130 ns |
-| Djb2Hash32      |  0.6525 ns | 0.0311 ns | 0.0275 ns |
-| FarmHash64      |  0.6587 ns | 0.0354 ns | 0.0421 ns |
-| Murmur3Hash32   |  0.6738 ns | 0.0143 ns | 0.0126 ns |
-| Xx2Hash64       |  1.0247 ns | 0.0428 ns | 0.0379 ns |
-| SuperFastHash32 |  1.0324 ns | 0.0479 ns | 0.0448 ns |
-| MarvinHash32    |  1.1625 ns | 0.0214 ns | 0.0190 ns |
-| CityHash64      |  1.2441 ns | 0.0555 ns | 0.0639 ns |
-| Djb2Hash64      |  2.3256 ns | 0.0743 ns | 0.0966 ns |
-| CityHash32      |  2.9076 ns | 0.0770 ns | 0.0682 ns |
-| Fnv1aHash64     |  2.9311 ns | 0.0873 ns | 0.0934 ns |
-| FarmHash32      |  2.9699 ns | 0.0828 ns | 0.0775 ns |
-| Wy3Hash64       |  3.0273 ns | 0.0675 ns | 0.0632 ns |
-| SipHash64       | 10.4360 ns | 0.1979 ns | 0.1851 ns |
+| Method              |       Mean |     Error |    StdDev |
+|---------------------|-----------:|----------:|----------:|
+| Gx2Hash64           |  0.0796 ns | 0.0198 ns | 0.0175 ns |
+| Fnv1aHash32         |  0.1131 ns | 0.0102 ns | 0.0068 ns |
+| GxHash64            |  0.1132 ns | 0.0171 ns | 0.0113 ns |
+| Xx2Hash32           |  0.1249 ns | 0.0141 ns | 0.0093 ns |
+| FarmHash64          |  0.1299 ns | 0.0069 ns | 0.0041 ns |
+| FoldHash64          |  0.1302 ns | 0.0157 ns | 0.0104 ns |
+| GxHash32            |  0.1316 ns | 0.0205 ns | 0.0136 ns |
+| AesniHash64         |  0.1352 ns | 0.0083 ns | 0.0055 ns |
+| Murmur3Hash32       |  0.1373 ns | 0.0267 ns | 0.0209 ns |
+| Djb2Hash32          |  0.1886 ns | 0.0065 ns | 0.0034 ns |
+| Gx2Hash32           |  0.1997 ns | 0.0149 ns | 0.0078 ns |
+| CityHash64          |  0.3420 ns | 0.0210 ns | 0.0125 ns |
+| Wy3Hash64           |  0.3537 ns | 0.0048 ns | 0.0029 ns |
+| Xx3Hash64           |  0.3700 ns | 0.0167 ns | 0.0099 ns |
+| SuperFastHash32     |  0.3980 ns | 0.0073 ns | 0.0044 ns |
+| FoldHashQuality64   |  0.4183 ns | 0.0319 ns | 0.0231 ns |
+| RapidHashNano64     |  0.4331 ns | 0.0283 ns | 0.0221 ns |
+| RapidHashMicro64    |  0.4446 ns | 0.0278 ns | 0.0184 ns |
+| Xx2Hash64           |  0.4563 ns | 0.0137 ns | 0.0091 ns |
+| RapidHash64         |  0.4869 ns | 0.0556 ns | 0.0617 ns |
+| MarvinHash32        |  0.6195 ns | 0.0053 ns | 0.0032 ns |
+| FarshHash64         |  0.8928 ns | 0.0050 ns | 0.0033 ns |
+| Fnv1aHash64         |  1.2018 ns | 0.0386 ns | 0.0230 ns |
+| Djb2Hash64          |  1.3681 ns | 0.0443 ns | 0.0293 ns |
+| MarvinHash64        |  1.3807 ns | 0.0078 ns | 0.0047 ns |
+| FarmHash32          |  1.4742 ns | 0.0076 ns | 0.0040 ns |
+| CityHash32          |  1.5003 ns | 0.0066 ns | 0.0040 ns |
+| Polymur2Hash64      |  1.8500 ns | 0.0177 ns | 0.0093 ns |
+| SipHash64           |  7.0921 ns | 0.0919 ns | 0.0608 ns |
+| MeowHash64Unsafe    | 39.4472 ns | 0.7643 ns | 0.6382 ns |
+| HighwayHash64Unsafe | 81.4736 ns | 1.5304 ns | 1.4315 ns |
 
 #### Mixer functions
 
-| Method              |      Mean |     Error |    StdDev |
-|---------------------|----------:|----------:|----------:|
-| FastHash_64         | 0.8871 ns | 0.0281 ns | 0.0249 ns |
-| Murmur_32           | 0.8982 ns | 0.0343 ns | 0.0287 ns |
-| Xmx_64              | 0.9057 ns | 0.0379 ns | 0.0336 ns |
-| Murmur_32_Seed      | 0.9305 ns | 0.0229 ns | 0.0203 ns |
-| XXH2_32_Seed        | 0.9482 ns | 0.0317 ns | 0.0281 ns |
-| XXH2_32             | 0.9487 ns | 0.0470 ns | 0.0541 ns |
-| MoreMur_64          | 0.9561 ns | 0.0389 ns | 0.0364 ns |
-| Murmur_64           | 0.9569 ns | 0.0500 ns | 0.0614 ns |
-| Murmur_32_SeedMix   | 1.0322 ns | 0.0507 ns | 0.1144 ns |
-| XXH2_32_SeedMix     | 1.1050 ns | 0.0308 ns | 0.0273 ns |
-| Murmur14_64         | 1.1320 ns | 0.0175 ns | 0.0163 ns |
-| XXH2_64             | 1.1555 ns | 0.0212 ns | 0.0188 ns |
-| Mx3_64              | 1.3364 ns | 0.0320 ns | 0.0284 ns |
-| Xmx_64_Seed         | 1.3795 ns | 0.0468 ns | 0.0437 ns |
-| Nasam_64            | 1.3889 ns | 0.0233 ns | 0.0207 ns |
-| Murmur_64_Seed      | 1.4960 ns | 0.0507 ns | 0.0474 ns |
-| Murmur14_64_SeedMix | 1.5502 ns | 0.0337 ns | 0.0282 ns |
-| Xmx_64_SeedMix      | 1.5543 ns | 0.0249 ns | 0.0221 ns |
-| FastHash_64_SeedMix | 1.5654 ns | 0.0413 ns | 0.0345 ns |
-| XXH2_64_Seed        | 1.5730 ns | 0.0286 ns | 0.0254 ns |
-| Murmur14_64_Seed    | 1.5763 ns | 0.0356 ns | 0.0315 ns |
-| MoreMur_64_SeedMix  | 1.5887 ns | 0.0209 ns | 0.0174 ns |
-| MoreMur_64_Seed     | 1.5952 ns | 0.0563 ns | 0.0526 ns |
-| XXH2_64_SeedMix     | 1.6038 ns | 0.0280 ns | 0.0249 ns |
-| Nasam_64_SeedMix    | 1.6203 ns | 0.0610 ns | 0.0509 ns |
-| Nasam_64_Seed       | 1.6231 ns | 0.0477 ns | 0.0446 ns |
-| Murmur_64_SeedMix   | 1.6244 ns | 0.0273 ns | 0.0242 ns |
-| FastHash_64_Seed    | 1.6737 ns | 0.0615 ns | 0.0732 ns |
-| City_64_Seed        | 1.6955 ns | 0.0625 ns | 0.1218 ns |
-| Mx3_64_Seed         | 1.8109 ns | 0.0653 ns | 0.1092 ns |
-| Mx3_64_SeedMix      | 1.8354 ns | 0.0483 ns | 0.0537 ns |
+| Method | spec                             |     Mean |     Error |    StdDev |
+|--------|----------------------------------|---------:|----------:|----------:|
+| Mix64  | JM_xmrx_Depth12_64               | 1.136 ns | 0.0187 ns | 0.0111 ns |
+| Mix64  | DS_xmxmx_Mix01_64                | 1.159 ns | 0.0104 ns | 0.0062 ns |
+| Mix64  | YC_xmx_XXH3_64                   | 1.167 ns | 0.0177 ns | 0.0105 ns |
+| Mix64  | DS_xmxmx_Mix09_64                | 1.168 ns | 0.0115 ns | 0.0076 ns |
+| Mix64  | DS_xmxmx_Mix11_64                | 1.169 ns | 0.0023 ns | 0.0014 ns |
+| Mix64  | DS_xmxmx_Mix05_64                | 1.172 ns | 0.0252 ns | 0.0150 ns |
+| Mix64  | EZ_xmx_FastHash_64               | 1.172 ns | 0.0130 ns | 0.0086 ns |
+| Mix64  | JM_mxrmx_Depth14_64              | 1.179 ns | 0.0191 ns | 0.0126 ns |
+| Mix64  | JM_mrm_Depth7_64                 | 1.180 ns | 0.0151 ns | 0.0100 ns |
+| Mix64  | JM_xmx_Depth9_64                 | 1.183 ns | 0.0357 ns | 0.0236 ns |
+| Mix64  | JM_mxm_Depth8_64                 | 1.184 ns | 0.0136 ns | 0.0090 ns |
+| Mix64  | PE_xmxmx_Moremur_64              | 1.205 ns | 0.0335 ns | 0.0222 ns |
+| Mix64  | JM_xmxmx_Mx2_64                  | 1.351 ns | 0.0121 ns | 0.0072 ns |
+| Mix64  | JM_mxmx_Depth11_64               | 1.357 ns | 0.0105 ns | 0.0063 ns |
+| Mix64  | DL_xmxmx_Lea_64                  | 1.369 ns | 0.0059 ns | 0.0035 ns |
+| Mix64  | PE_rrxrrxmxxmxx_Nasam_64         | 1.372 ns | 0.0165 ns | 0.0109 ns |
+| Mix64  | DS_xmxmx_Mix12_64                | 1.375 ns | 0.0288 ns | 0.0190 ns |
+| Mix64  | JM_mxmxmx_Depth15_64             | 1.376 ns | 0.0347 ns | 0.0230 ns |
+| Mix64  | DE_xmxmx_Degski_64               | 1.378 ns | 0.0265 ns | 0.0175 ns |
+| Mix64  | TE_rlxrlmrlxrlx_AxMix_64         | 1.379 ns | 0.0106 ns | 0.0070 ns |
+| Mix64  | AA_xmxmx_Murmur_64               | 1.382 ns | 0.0280 ns | 0.0185 ns |
+| Mix64  | DS_xmxmx_Mix03_64                | 1.385 ns | 0.0203 ns | 0.0106 ns |
+| Mix64  | WF_amxmx_Wymix_64                | 1.386 ns | 0.0141 ns | 0.0093 ns |
+| Mix64  | DS_xmxmx_Mix08_64                | 1.387 ns | 0.0184 ns | 0.0121 ns |
+| Mix64  | WF_amx_Wymix_64                  | 1.389 ns | 0.0204 ns | 0.0135 ns |
+| Mix64  | DS_xmxmx_Mix10_64                | 1.389 ns | 0.0324 ns | 0.0234 ns |
+| Mix64  | DS_xmxmx_Mix02_64                | 1.390 ns | 0.0483 ns | 0.0377 ns |
+| Mix64  | PE_rrxrrxmxmx_rrmxmx_64          | 1.391 ns | 0.0219 ns | 0.0145 ns |
+| Mix64  | DS_xmxmx_Mix07_64                | 1.392 ns | 0.0329 ns | 0.0196 ns |
+| Mix64  | PK_rlxrlx_Umash_64               | 1.392 ns | 0.0194 ns | 0.0128 ns |
+| Mix64  | DS_xmxmx_Mix04_64                | 1.394 ns | 0.0207 ns | 0.0137 ns |
+| Mix64  | PE_rrxrrmrrxrrxmx_rrxmrrxmsx0_64 | 1.396 ns | 0.0445 ns | 0.0295 ns |
+| Mix64  | JM_mxma_Depth11_64               | 1.399 ns | 0.0296 ns | 0.0196 ns |
+| Mix64  | JM_mxmxm_Depth13_64              | 1.411 ns | 0.0425 ns | 0.0253 ns |
+| Mix64  | DS_xmxmx_Mix14_64                | 1.413 ns | 0.0507 ns | 0.0335 ns |
+| Mix64  | YC_xmxmx_XXH2_64                 | 1.415 ns | 0.0331 ns | 0.0219 ns |
+| Mix64  | DS_xmxmx_Mix06_64                | 1.425 ns | 0.0382 ns | 0.0227 ns |
+| Mix64  | DS_xmxmx_Mix13_64                | 1.454 ns | 0.0522 ns | 0.0580 ns |
+| Mix64  | JM_xmxmxmx_Mx3_64                | 1.569 ns | 0.0120 ns | 0.0063 ns |
+| Mix64  | GP_mxxmxxm_CityHash_64           | 1.591 ns | 0.0262 ns | 0.0174 ns |
+| Mix32  | CW_xmxmxmx_Triple_32             | 1.947 ns | 0.0484 ns | 0.0320 ns |
+| Mix32  | AA_xmxmx_Murmur_32               | 2.045 ns | 0.0407 ns | 0.0242 ns |
+| Mix32  | DE_xmxmx_Degski_32               | 2.203 ns | 0.0160 ns | 0.0095 ns |
+| Mix32  | YC_xmxmx_XXH2_32                 | 2.222 ns | 0.0138 ns | 0.0092 ns |
+| Mix32  | FP_xsxxmx_Fp64_32                | 2.234 ns | 0.0140 ns | 0.0093 ns |
+| Mix32  | CW_xmxmx_LowBias_32              | 2.255 ns | 0.0656 ns | 0.0702 ns |
