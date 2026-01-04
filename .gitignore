@@ -25,3 +25,7 @@
 
 # Benchmark.Net artifact folder
 *BenchmarkDotNet.Artifacts/
+
+# Verify
+*.received.*
+*.received/

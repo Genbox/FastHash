@@ -12,7 +12,7 @@ is_global = true
 # ERPXXX        ErrorProne    https://github.com/SergeyTeplyakov/ErrorProne.NET
 # ERPXXX        VS threading  https://github.com/microsoft/vs-threading/tree/main
 # AsyncFixerXX  AsyncFixer    https://github.com/semihokur/AsyncFixer
-# HLQXXX        Hyperlinq     https://github.com/NetFabric/NetFabric.Hyperlinq
+# RSXXXX        BannedAPI     https://github.com/dotnet/roslyn/blob/main/src/RoslynAnalyzers/Microsoft.CodeAnalysis.BannedApiAnalyzers/Microsoft.CodeAnalysis.BannedApiAnalyzers.md
 
 # Documented duplicates according to https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/comparison-with-other-analyzers.md
 dotnet_diagnostic.MA0010.severity = none # Duplicate of CA1018
@@ -136,9 +136,6 @@ dotnet_diagnostic.RCS1063.severity = none # ([deprecated] Use RCS1252 instead) U
 
 # Broken analyzer rules
 dotnet_diagnostic.GU0071.severity = none # Implicit casting done by the foreach
-dotnet_diagnostic.HLQ013.severity = none # Consider using 'foreach' loop instead of 'for' loop for iterating over System.ReadOnlySpan<ushort>
-dotnet_diagnostic.HLQ004.severity = none # The enumerator returns a reference to the item. Add 'ref readonly' to the item type
-dotnet_diagnostic.HLQ005.severity = none # Avoid the use of 'Single'. Use 'First' instead.
 dotnet_diagnostic.REFL040.severity = none # Prefer targetPropType. IsAssignableFrom. IsInstanceOfType(value)
 
 # Other disabled rules
@@ -180,7 +177,6 @@ dotnet_diagnostic.SS003.severity = none # DivideIntegerByInteger
 dotnet_diagnostic.CA1024.severity = none # Use properties where appropriate
 dotnet_diagnostic.MA0006.severity = none # Use String.Equals instead of equality operator
 dotnet_diagnostic.S1104.severity = none # Make this field 'private' and encapsulate it in a 'public' property
-dotnet_diagnostic.HLQ012.severity = none # Consider using CollectionsMarshal. AsSpan() instead of foreach with List<System. Action<Chronos. SDK. Web. Datatables. AjaxDatatables. DatatablesPartialRenderingService>>
 dotnet_diagnostic.S3011.severity = none # Make sure that this accessibility bypass is safe here
 dotnet_diagnostic.S3459.severity = none # Remove unassigned auto-property 'NullString', or set its value.
 dotnet_diagnostic.SS023.severity = none # An exception is thrown from the getter of property Length
@@ -197,7 +193,6 @@ dotnet_diagnostic.S1199.severity = none # Nested code blocks should not be used
 dotnet_diagnostic.GU0060.severity = none # Enum member value conflict
 dotnet_diagnostic.MA0016.severity = none # Prefer using collection abstraction instead of implementation
 dotnet_diagnostic.CA1040.severity = none # Avoid empty interfaces
-dotnet_diagnostic.HLQ003.severity = none # Consider returning 'IReadOnlyList`1' instead
 dotnet_diagnostic.CA5394.severity = none # Random is an insecure random number generator. Use cryptographically secure random number generators when randomness is required for security.
 dotnet_diagnostic.CA5351.severity = none # HashingStream uses a broken cryptographic algorithm MD5
 dotnet_diagnostic.S1066.severity = none # Merge this if statement with the enclosing one
@@ -225,6 +220,8 @@ dotnet_diagnostic.CA2234.severity = none # Modify 'ContentHelper. GetContentAsyn
 dotnet_diagnostic.MA0075.severity = none # Do not use implicit culture-sensitive ToString
 
 # Enforced rules
+dotnet_diagnostic.RS0030.severity = error # Do not use banned APIs
+dotnet_diagnostic.RS0031.severity = error # The list of banned symbols contains a duplicate
 dotnet_diagnostic.MA0103.severity = error # Use SequenceEqual instead of equality operator
 #dotnet_diagnostic.CA1032.severity = error # Implement standard exception constructors
 #dotnet_diagnostic.CA1810.severity = error # Initialize reference type static fields inline
@@ -319,7 +316,6 @@ dotnet_diagnostic.S2971.severity = error # Drop this useless call to 'ToList' or
 dotnet_diagnostic.S6608.severity = error # Indexing at 0 should be used instead of the "Enumerable" extension method "First"
 dotnet_diagnostic.S4487.severity = error # Remove this unread private field '_config' or refactor the code to use its value.
 dotnet_diagnostic.S1694.severity = error # Convert this 'abstract' class to an interface
-#dotnet_diagnostic.HLQ001.severity = error # 'Dictionary' has a value type enumerator. Assigning it to 'IDictionary' causes boxing of the enumerator.
 dotnet_diagnostic.S3218.severity = error # Rename this method to not shadow the outer class' member with the same name.
 dotnet_diagnostic.CA1033.severity = error # Make 'DatatablesResponse' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'Chronos. SDK. Web. Datatables. AjaxDatatables. Model. IDatatablesResponse. GetDataObjects' and is visible to derived classes
 dotnet_diagnostic.SS038.severity = error # HttpContext was stored in a field. Use IHttpContextAccessor instead
@@ -379,23 +375,8 @@ dotnet_diagnostic.CS1581.severity = error # Invalid return type in XML comment c
 dotnet_diagnostic.CS1580.severity = error # Invalid type for parameter 'parameter number' in XML comment cref attribute
 dotnet_diagnostic.CS8762.severity = error # Parameter must have a non-null value when exiting in some condition.
 
-# Temp Maybe
-# CA1508: Avoid dead conditional code
-
-# Temp enabled
-
-# Temp disable
-
-# Temp duplicate
-
-# Temp dont want
-
-# temp deprecated
-
 # temp broken
 dotnet_diagnostic.SS039.severity = none # EnumWithoutDefaultValue
 dotnet_diagnostic.GU0017.severity = none # Don't use discarded
 
-# temp review
 
-# temp suggestion
