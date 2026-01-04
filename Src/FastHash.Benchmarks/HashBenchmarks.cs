@@ -6,6 +6,7 @@ using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FarshHash;
+using Genbox.FastHash.FoldHash;
 using Genbox.FastHash.FnvHash;
 using Genbox.FastHash.GxHash;
 using Genbox.FastHash.MarvinHash;
@@ -74,6 +75,12 @@ public class HashBenchmarks : IDisposable
 
     [Benchmark, BenchmarkCategory("FarshHash64")]
     public ulong FarshHash64Test() => FarshHash64.ComputeHash(_testData);
+
+    [Benchmark, BenchmarkCategory("FoldHash64")]
+    public ulong FoldHash64Test() => FoldHash64.ComputeHash(_testData);
+
+    [Benchmark, BenchmarkCategory("FoldHash64Quality")]
+    public ulong FoldHash64QualityTest() => FoldHash64Quality.ComputeHash(_testData);
 
     [Benchmark, BenchmarkCategory("Fnv1aHash32")]
     public uint Fnv1aHash32Test() => Fnv1aHash32.ComputeHash(_testData);
