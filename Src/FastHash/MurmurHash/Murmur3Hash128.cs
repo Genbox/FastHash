@@ -1,6 +1,5 @@
-using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
-
 using System.Runtime.CompilerServices;
+using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
 
 namespace Genbox.FastHash.MurmurHash;
 

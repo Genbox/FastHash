@@ -52,7 +52,7 @@ public class RapidHashTests
             Span<byte> data = stackalloc byte[8];
             BinaryPrimitives.WriteUInt64LittleEndian(data, input);
 
-            Assert.Equal(RapidHash64.ComputeHash(data, 0), RapidHash64.ComputeIndex(input, 0));
+            Assert.Equal(RapidHash64.ComputeHash(data), RapidHash64.ComputeIndex(input, 0));
             Assert.Equal(RapidHash64.ComputeHash(data, 123), RapidHash64.ComputeIndex(input, 123));
         }
     }
@@ -71,7 +71,7 @@ public class RapidHashTests
 
         foreach (byte[] data in inputs)
         {
-            Assert.Equal(RapidHash64.ComputeHash(data, 0), RapidHashMicro64.ComputeHash(data, 0));
+            Assert.Equal(RapidHash64.ComputeHash(data), RapidHashMicro64.ComputeHash(data));
             Assert.Equal(RapidHash64.ComputeHash(data, 123), RapidHashMicro64.ComputeHash(data, 123));
         }
     }
@@ -89,7 +89,7 @@ public class RapidHashTests
 
         foreach (byte[] data in inputs)
         {
-            Assert.Equal(RapidHash64.ComputeHash(data, 0), RapidHashNano64.ComputeHash(data, 0));
+            Assert.Equal(RapidHash64.ComputeHash(data), RapidHashNano64.ComputeHash(data));
             Assert.Equal(RapidHash64.ComputeHash(data, 123), RapidHashNano64.ComputeHash(data, 123));
         }
     }
@@ -97,9 +97,9 @@ public class RapidHashTests
     [Fact]
     public void MicroAndNanoRespectSeedOnLongInput()
     {
-        ulong micro0 = RapidHashMicro64.ComputeHash(Zeros1000, 0);
+        ulong micro0 = RapidHashMicro64.ComputeHash(Zeros1000);
         ulong micro1 = RapidHashMicro64.ComputeHash(Zeros1000, 123);
-        ulong nano0 = RapidHashNano64.ComputeHash(Zeros1000, 0);
+        ulong nano0 = RapidHashNano64.ComputeHash(Zeros1000);
         ulong nano1 = RapidHashNano64.ComputeHash(Zeros1000, 123);
 
         Assert.NotEqual(micro0, micro1);

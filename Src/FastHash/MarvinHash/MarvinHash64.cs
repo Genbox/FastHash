@@ -59,7 +59,7 @@ public static class MarvinHash64
             // running in a 64-bit process.
 
             seed1 += Unsafe.ReadUnaligned<uint>(ref ptr);
-            uint nextUInt32 = Unsafe.ReadUnaligned<uint>(ref Unsafe.AddByteOffset(ref ptr, (IntPtr)4));
+            uint nextUInt32 = Unsafe.ReadUnaligned<uint>(ref Unsafe.AddByteOffset(ref ptr, 4));
 
             // One block round for each of the 32-bit integers we just read, 2x rounds total.
 
@@ -74,7 +74,7 @@ public static class MarvinHash64
             // Requires https://github.com/dotnet/runtime/issues/6794 to be addressed first
             // before we can realize the full benefits of this.
 
-            ptr = ref Unsafe.AddByteOffset(ref ptr, (IntPtr)8);
+            ptr = ref Unsafe.AddByteOffset(ref ptr, 8);
         } while (--loopCount > 0);
 
         // n.b. We've not been updating the original 'count' parameter, so its actual value is

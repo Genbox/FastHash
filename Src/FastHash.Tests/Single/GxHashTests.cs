@@ -8,9 +8,9 @@ public class GxHashTests
     [Fact]
     public void ValuesTest()
     {
-        Assert.Equal(456576800u, GxHash32.ComputeHash(Array.Empty<byte>().AsSpan(), 0));
-        Assert.Equal(978957914u, GxHash32.ComputeHash(new byte[1].AsSpan(), 0));
-        Assert.Equal(3325885698u, GxHash32.ComputeHash(new byte[1000].AsSpan(), 0));
+        Assert.Equal(456576800u, GxHash32.ComputeHash(Array.Empty<byte>().AsSpan()));
+        Assert.Equal(978957914u, GxHash32.ComputeHash(new byte[1].AsSpan()));
+        Assert.Equal(3325885698u, GxHash32.ComputeHash(new byte[1000].AsSpan()));
         Assert.Equal(1827274036u, GxHash32.ComputeHash(MemoryMarshal.AsBytes("hello world".AsSpan()), 123));
     }
 
@@ -79,11 +79,11 @@ public class GxHashTests
         byte[] bytes = new byte[255];
         rnd.NextBytes(bytes);
 
-        uint hash = GxHash32.ComputeHash(bytes, 0);
+        uint hash = GxHash32.ComputeHash(bytes);
 
         SwapBytes(bytes, swapPositionA, swapPositionB, swapSize);
 
-        uint hashAfterSwap = GxHash32.ComputeHash(bytes, 0);
+        uint hashAfterSwap = GxHash32.ComputeHash(bytes);
 
         Assert.NotEqual(hash, hashAfterSwap);
     }

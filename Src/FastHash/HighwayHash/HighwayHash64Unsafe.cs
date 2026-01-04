@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+
 namespace Genbox.FastHash.HighwayHash;
 
 public static class HighwayHash64Unsafe

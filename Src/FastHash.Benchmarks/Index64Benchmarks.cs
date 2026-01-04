@@ -1,16 +1,16 @@
 using BenchmarkDotNet.Order;
-using Genbox.FastHash.Benchmarks.Code;
 using Genbox.FastHash.AesniHash;
+using Genbox.FastHash.Benchmarks.Code;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FarshHash;
-using Genbox.FastHash.FoldHash;
 using Genbox.FastHash.FnvHash;
+using Genbox.FastHash.FoldHash;
 using Genbox.FastHash.GxHash;
 using Genbox.FastHash.HighwayHash;
-using Genbox.FastHash.MeowHash;
 using Genbox.FastHash.MarvinHash;
+using Genbox.FastHash.MeowHash;
 using Genbox.FastHash.PolymurHash;
 using Genbox.FastHash.RapidHash;
 using Genbox.FastHash.SipHash;
@@ -19,12 +19,11 @@ using Genbox.FastHash.XxHash;
 
 namespace Genbox.FastHash.Benchmarks;
 
-[MbPrSecColumn(8)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class Index64Benchmarks
 {
     private readonly ulong _value = 12808224424451380151UL;
-    private readonly Genbox.FastHash.UInt128 _gxSeed = new Genbox.FastHash.UInt128(0, 0);
+    private readonly UInt128 _gxSeed = new UInt128(0, 0);
 
     [Benchmark]
     public ulong AesniHash64Test() => AesniHash64.ComputeIndex(_value);

@@ -12,12 +12,11 @@ using Genbox.FastHash.XxHash;
 
 namespace Genbox.FastHash.Benchmarks;
 
-[MbPrSecColumn(4)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class Index32Benchmarks
 {
     private readonly uint _value = 12808241;
-    private readonly Genbox.FastHash.UInt128 _gxSeed = new Genbox.FastHash.UInt128(0, 0);
+    private readonly UInt128 _gxSeed = new UInt128(0, 0);
 
     [Benchmark]
     public uint CityHash32Test() => CityHash32.ComputeIndex(_value);

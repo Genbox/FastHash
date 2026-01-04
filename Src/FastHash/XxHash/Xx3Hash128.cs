@@ -1,6 +1,6 @@
+﻿using System.Runtime.CompilerServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 using static Genbox.FastHash.XxHash.XxHashShared;
-using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.XxHash;
 

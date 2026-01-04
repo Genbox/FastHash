@@ -56,7 +56,7 @@ public static class MeowHash128Unsafe
         }
     }
 
-    public static unsafe UInt128 ComputeIndex(ulong input)
+    public static UInt128 ComputeIndex(ulong input)
     {
         Vector128<byte> res = ComputeIndexVector(input);
         return Unsafe.As<Vector128<byte>, UInt128>(ref res);

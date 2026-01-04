@@ -75,7 +75,7 @@ public class FoldHashTests
             Span<byte> data = stackalloc byte[8];
             BinaryPrimitives.WriteUInt64LittleEndian(data, input);
 
-            Assert.Equal(FoldHash64.ComputeHash(data, 0), FoldHash64.ComputeIndex(input, 0));
+            Assert.Equal(FoldHash64.ComputeHash(data), FoldHash64.ComputeIndex(input, 0));
             Assert.Equal(FoldHash64.ComputeHash(data, 123), FoldHash64.ComputeIndex(input, 123));
         }
     }
@@ -97,7 +97,7 @@ public class FoldHashTests
             Span<byte> data = stackalloc byte[8];
             BinaryPrimitives.WriteUInt64LittleEndian(data, input);
 
-            Assert.Equal(FoldHashQuality64.ComputeHash(data, 0), FoldHashQuality64.ComputeIndex(input, 0));
+            Assert.Equal(FoldHashQuality64.ComputeHash(data), FoldHashQuality64.ComputeIndex(input, 0));
             Assert.Equal(FoldHashQuality64.ComputeHash(data, 123), FoldHashQuality64.ComputeIndex(input, 123));
         }
     }

@@ -11,11 +11,6 @@ public static class FoldHashQuality64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed) => ComputeIndexCore(input, seed, DefaultSharedSeed);
 
-    public static ulong ComputeIndex(ulong input, ulong seed = 0, ulong[]? sharedSeed = null)
-    {
-        return ComputeIndexCore(input, seed, sharedSeed ?? DefaultSharedSeed);
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong ComputeIndexCore(ulong input, ulong seed, ulong[] sharedSeed)
     {

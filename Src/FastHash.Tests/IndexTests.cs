@@ -107,9 +107,9 @@ public class IndexTests
 
         data.Add(new Tuple64(nameof(CityHash64), CityHash64.ComputeIndex, CityHash64.ComputeHash));
         data.Add(new Tuple64(nameof(Djb2Hash64), Djb2Hash64.ComputeIndex, Djb2Hash64.ComputeHash));
-        data.Add(new Tuple64(nameof(FarshHash64), static x => FarshHash64.ComputeIndex(x, 0), static x => FarshHash64.ComputeHash(x, 0)));
-        data.Add(new Tuple64(nameof(FoldHash64), static x => FoldHash64.ComputeIndex(x, 0), static x => FoldHash64.ComputeHash(x, 0)));
-        data.Add(new Tuple64(nameof(FoldHashQuality64), static x => FoldHashQuality64.ComputeIndex(x, 0), static x => FoldHashQuality64.ComputeHash(x, 0)));
+        data.Add(new Tuple64(nameof(FarshHash64), static x => FarshHash64.ComputeIndex(x), static x => FarshHash64.ComputeHash(x)));
+        data.Add(new Tuple64(nameof(FoldHash64), static x => FoldHash64.ComputeIndex(x, 0), static x => FoldHash64.ComputeHash(x)));
+        data.Add(new Tuple64(nameof(FoldHashQuality64), static x => FoldHashQuality64.ComputeIndex(x, 0), static x => FoldHashQuality64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(FarmHash64), FarmHash64.ComputeIndex, static x => FarmHash64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(Fnv1aHash64), Fnv1aHash64.ComputeIndex, Fnv1aHash64.ComputeHash));
         data.Add(new Tuple64(nameof(GxHash64), static x => GxHash64.ComputeIndex(x), static x => GxHash64.ComputeHash(x)));
@@ -131,10 +131,10 @@ public class IndexTests
                     return MeowHash64Unsafe.ComputeHash(ptr, x.Length);
             }
         }));
-        data.Add(new Tuple64(nameof(Polymur2Hash64), Polymur2Hash64.ComputeIndex, static x => Polymur2Hash64.ComputeHash(x, 0)));
-        data.Add(new Tuple64(nameof(RapidHash64), static x => RapidHash64.ComputeIndex(x, 0), static x => RapidHash64.ComputeHash(x, 0)));
-        data.Add(new Tuple64(nameof(RapidHashMicro64), static x => RapidHashMicro64.ComputeIndex(x, 0), static x => RapidHashMicro64.ComputeHash(x, 0)));
-        data.Add(new Tuple64(nameof(RapidHashNano64), static x => RapidHashNano64.ComputeIndex(x, 0), static x => RapidHashNano64.ComputeHash(x, 0)));
+        data.Add(new Tuple64(nameof(Polymur2Hash64), Polymur2Hash64.ComputeIndex, static x => Polymur2Hash64.ComputeHash(x)));
+        data.Add(new Tuple64(nameof(RapidHash64), static x => RapidHash64.ComputeIndex(x, 0), static x => RapidHash64.ComputeHash(x)));
+        data.Add(new Tuple64(nameof(RapidHashMicro64), static x => RapidHashMicro64.ComputeIndex(x, 0), static x => RapidHashMicro64.ComputeHash(x)));
+        data.Add(new Tuple64(nameof(RapidHashNano64), static x => RapidHashNano64.ComputeIndex(x, 0), static x => RapidHashNano64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(SipHash64), static x => SipHash64.ComputeIndex(x), static x => SipHash64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(Wy3Hash64), Wy3Hash64.ComputeIndex, static x => Wy3Hash64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(Xx2Hash64), Xx2Hash64.ComputeIndex, static x => Xx2Hash64.ComputeHash(x)));
