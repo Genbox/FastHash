@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.RapidHash.RapidHashConstants;
 using static Genbox.FastHash.RapidHash.RapidHashShared;
 
@@ -5,9 +6,15 @@ namespace Genbox.FastHash.RapidHash;
 
 public static class RapidHash64
 {
-    public static ulong ComputeIndex(ulong input, ulong seed = 0, ulong[]? secret = null)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input) => ComputeIndexCore(input, 0, DefaultSecret);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, ulong seed) => ComputeIndexCore(input, seed, DefaultSecret);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong ComputeIndexCore(ulong input, ulong seed, ulong[] secret)
     {
-        secret ??= DefaultSecret;
         seed ^= RapidMix(seed ^ secret[2], secret[1]);
         seed ^= 8UL;
 

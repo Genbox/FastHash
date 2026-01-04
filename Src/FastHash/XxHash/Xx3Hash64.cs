@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 using static Genbox.FastHash.XxHash.XxHashShared;
 
@@ -5,6 +6,19 @@ namespace Genbox.FastHash.XxHash;
 
 public static class Xx3Hash64
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, ulong seed = 0)
+    {
+        seed ^= (ulong)ByteSwap((uint)seed) << 32;
+
+        uint input1 = (uint)input;
+        uint input2 = (uint)(input >> 32);
+        ulong bitflip = (Read64(kSecret, 8) ^ Read64(kSecret, 16)) - seed;
+        ulong input64 = input2 + ((ulong)input1 << 32);
+        ulong keyed = input64 ^ bitflip;
+        return XXH3_rrmxmx(keyed, 8);
+    }
+
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
     {
         int length = data.Length;

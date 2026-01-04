@@ -1,9 +1,38 @@
-﻿using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
+using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
+
+using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.MurmurHash;
 
 public static class Murmur3Hash128
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static UInt128 ComputeIndex(ulong input, uint seed = 0)
+    {
+        ulong h1 = seed;
+        ulong h2 = seed;
+        ulong k1 = input;
+
+        k1 *= C1_64;
+        k1 = RotateLeft(k1, 31);
+        k1 *= C2_64;
+        h1 ^= k1;
+
+        h1 ^= 8;
+        h2 ^= 8;
+
+        h1 += h2;
+        h2 += h1;
+
+        h1 = AA_xmxmx_Murmur_64(h1);
+        h2 = AA_xmxmx_Murmur_64(h2);
+
+        h1 += h2;
+        h2 += h1;
+
+        return new UInt128(h1, h2);
+    }
+
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
         uint length = (uint)data.Length;

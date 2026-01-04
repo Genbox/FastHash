@@ -1,7 +1,6 @@
 #if NET8_0_OR_GREATER
 using System.Globalization;
 using System.Runtime.Intrinsics.X86;
-using Genbox.FastHash;
 using Genbox.FastHash.MeowHash;
 
 namespace Genbox.FastHash.Tests.Single;

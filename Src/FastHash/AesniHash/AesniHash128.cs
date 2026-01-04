@@ -9,6 +9,13 @@ namespace Genbox.FastHash.AesniHash;
 
 public static class AesniHash128
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static UInt128 ComputeIndex(ulong input, uint seed = 0)
+    {
+        Vector128<byte> res = Hash128Len8(input, seed);
+        return Unsafe.As<Vector128<byte>, UInt128>(ref res);
+    }
+
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
         Vector128<byte> res = Hash128(data, seed);
@@ -129,6 +136,23 @@ public static class AesniHash128
             b = Ssse3.Shuffle(Sse2.Xor(x2, b), s);
             b = Ssse3.Shuffle(Aes.Decrypt(b, m), s);
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static Vector128<byte> Hash128Len8(ulong input, uint seed = 0)
+    {
+        Vector128<byte> a = Vector128.Create(seed).AsByte();
+        Vector128<byte> b = Vector128.Create(8u).AsByte();
+
+        Vector128<byte> m = Vector128.Create(0x89abcdef, 0x01234567, 0xffff0000, 0xdeadbeef).AsByte();
+        Vector128<byte> s = Vector128.Create((byte)12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3);
+
+        Vector128<byte> x2 = Vector128.Create(input, 0UL).AsByte();
+        a = Aes.Encrypt(x2, a);
+        a = Aes.Encrypt(a, m);
+        b = Ssse3.Shuffle(Sse2.Xor(x2, b), s);
+        b = Ssse3.Shuffle(Aes.Decrypt(b, m), s);
+        return Aes.Encrypt(a, b);
     }
 }
 #endif

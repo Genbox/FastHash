@@ -1,10 +1,34 @@
-﻿using static Genbox.FastHash.XxHash.XxHashConstants;
+using static Genbox.FastHash.XxHash.XxHashConstants;
 using static Genbox.FastHash.XxHash.XxHashShared;
+using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.XxHash;
 
 public static class Xx3Hash128
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static UInt128 ComputeIndex(ulong input, ulong seed = 0)
+    {
+        seed ^= (ulong)ByteSwap((uint)seed) << 32;
+
+        uint inputLo = (uint)input;
+        uint inputHi = (uint)(input >> 32);
+        ulong input64 = inputLo + ((ulong)inputHi << 32);
+        ulong bitflip = (Read64(kSecret, 16) ^ Read64(kSecret, 24)) + seed;
+        ulong keyed = input64 ^ bitflip;
+
+        UInt128 m128 = XXH_mult64to128(keyed, PRIME64_1 + 32UL);
+
+        m128.High += m128.Low << 1;
+        m128.Low ^= m128.High >> 3;
+
+        m128.Low = XXH_xorshift64(m128.Low, 35);
+        m128.Low *= 0x9FB21C651E98DF25UL;
+        m128.Low = XXH_xorshift64(m128.Low, 28);
+        m128.High = XXH3_avalanche(m128.High);
+        return m128;
+    }
+
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
     {
         return XXH3_128bits_internal(data, data.Length, seed, kSecret, SECRET_DEFAULT_SIZE, XXH3_hashLong_128b_withSeed);

@@ -1,10 +1,26 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Genbox.FastHash.MarvinHash;
 
 public static class MarvinHash64
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, uint seed1 = 0xb79308cd, uint seed2 = 0xced93cd5)
+    {
+        uint low = (uint)input;
+        uint high = (uint)(input >> 32);
+
+        seed1 += low;
+        Block(ref seed1, ref seed2);
+        seed1 += high;
+        Block(ref seed1, ref seed2);
+        seed1 += 0x80u;
+        Block(ref seed1, ref seed2);
+        Block(ref seed1, ref seed2);
+        return ((ulong)seed1 << 32) | seed2;
+    }
+
     public static ulong ComputeHash(ReadOnlySpan<byte> data, uint seed1 = 0xb79308cd, uint seed2 = 0xced93cd5)
     {
         ComputeHash(ref MemoryMarshal.GetReference(data), (uint)data.Length, ref seed1, ref seed2);

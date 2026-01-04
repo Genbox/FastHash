@@ -1,9 +1,38 @@
-﻿using System.Runtime.CompilerServices;
-
+using System.Runtime.CompilerServices;
 namespace Genbox.FastHash.HighwayHash;
 
 public static class HighwayHash64Unsafe
 {
+    public static unsafe ulong ComputeIndex(ulong input)
+    {
+        ulong value = input;
+        byte* ptr = (byte*)&value;
+        HighwayHashState state = new HighwayHashState();
+        HighwayHashReset(HighwayHashConstants.DefaultKeys, ref state);
+        HighwayHashUpdateRemainder(ptr, 8, ref state);
+        return HighwayHashFinalize64(state);
+    }
+
+    public static unsafe ulong ComputeIndex(ulong input, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
+    {
+        ulong value = input;
+        byte* ptr = (byte*)&value;
+        HighwayHashState state = new HighwayHashState();
+        HighwayHashReset(seed1, seed2, seed3, seed4, ref state);
+        HighwayHashUpdateRemainder(ptr, 8, ref state);
+        return HighwayHashFinalize64(state);
+    }
+
+    public static unsafe ulong ComputeIndex(ulong input, ulong[] keys)
+    {
+        ulong value = input;
+        byte* ptr = (byte*)&value;
+        HighwayHashState state = new HighwayHashState();
+        HighwayHashReset(keys, ref state);
+        HighwayHashUpdateRemainder(ptr, 8, ref state);
+        return HighwayHashFinalize64(state);
+    }
+
     public static unsafe ulong ComputeHash(byte* data, int size, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
     {
         uint len = (uint)size;
@@ -53,10 +82,42 @@ public static class HighwayHash64Unsafe
         state.v1_3 = state.mul1_3 ^ ((key[3] >> 32) | (key[3] << 32));
     }
 
+    private static void HighwayHashReset(ulong key0, ulong key1, ulong key2, ulong key3, ref HighwayHashState state)
+    {
+        state.mul0_0 = 0xdbe6d5d5fe4cce2ful;
+        state.mul0_1 = 0xa4093822299f31d0ul;
+        state.mul0_2 = 0x13198a2e03707344ul;
+        state.mul0_3 = 0x243f6a8885a308d3ul;
+        state.mul1_0 = 0x3bd39e10cb0ef593ul;
+        state.mul1_1 = 0xc0acf169b5f18a8cul;
+        state.mul1_2 = 0xbe5466cf34e90c6cul;
+        state.mul1_3 = 0x452821e638d01377ul;
+        state.v0_0 = state.mul0_0 ^ key0;
+        state.v0_1 = state.mul0_1 ^ key1;
+        state.v0_2 = state.mul0_2 ^ key2;
+        state.v0_3 = state.mul0_3 ^ key3;
+        state.v1_0 = state.mul1_0 ^ ((key0 >> 32) | (key0 << 32));
+        state.v1_1 = state.mul1_1 ^ ((key1 >> 32) | (key1 << 32));
+        state.v1_2 = state.mul1_2 ^ ((key2 >> 32) | (key2 << 32));
+        state.v1_3 = state.mul1_3 ^ ((key3 >> 32) | (key3 << 32));
+    }
+
     private static unsafe void ProcessAll(byte* data, uint size, ulong[] key, ref HighwayHashState state)
     {
         uint i;
         HighwayHashReset(key, ref state);
+
+        for (i = 0; i + 32 <= size; i += 32)
+            HighwayHashUpdatePacket(data + i, ref state);
+
+        if ((size & 31) != 0)
+            HighwayHashUpdateRemainder(data + i, size & 31, ref state);
+    }
+
+    private static unsafe void ProcessAll(byte* data, uint size, ulong key0, ulong key1, ulong key2, ulong key3, ref HighwayHashState state)
+    {
+        uint i;
+        HighwayHashReset(key0, key1, key2, key3, ref state);
 
         for (i = 0; i + 32 <= size; i += 32)
             HighwayHashUpdatePacket(data + i, ref state);

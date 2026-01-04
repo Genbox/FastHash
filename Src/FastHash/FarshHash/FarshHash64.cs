@@ -5,6 +5,17 @@ namespace Genbox.FastHash.FarshHash;
 
 public static class FarshHash64
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, ulong seed = 0)
+    {
+        ulong sum = seed;
+        uint val1 = (uint)input;
+        uint val2 = (uint)(input >> 32);
+        ulong h = (val1 + FARSH_KEYS[0]) * (ulong)(val2 + FARSH_KEYS[1]);
+        sum = farsh_combine(sum, h);
+        return farsh_final(sum) ^ FARSH_KEYS[0];
+    }
+
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
     {
         ulong sum = seed;

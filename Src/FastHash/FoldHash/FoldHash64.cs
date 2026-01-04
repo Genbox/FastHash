@@ -1,13 +1,19 @@
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.FoldHash.FoldHashConstants;
 
 namespace Genbox.FastHash.FoldHash;
 
 public static class FoldHash64
 {
-    public static ulong ComputeIndex(ulong input, ulong seed = 0, ulong[]? sharedSeed = null)
-    {
-        sharedSeed ??= DefaultSharedSeed;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input) => ComputeIndexCore(input, 0, DefaultSharedSeed);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, ulong seed) => ComputeIndexCore(input, seed, DefaultSharedSeed);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong ComputeIndexCore(ulong input, ulong seed, ulong[] sharedSeed)
+    {
         ulong perHasherSeed = seed ^ ARBITRARY3;
         ulong accumulator = FoldHashShared.RotateRight(perHasherSeed, 8);
 

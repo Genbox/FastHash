@@ -23,7 +23,7 @@ public static class MeowHash128Unsafe
     ];
 
     // NOTE(casey): The default seed is now a "nothing-up-our-sleeves" number for good measure.  You may verify that it is just an encoding of Pi.
-    public static readonly byte[] _defaultSeed =
+    private static readonly byte[] _defaultSeed =
     [
         0x32, 0x43, 0xF6, 0xA8, 0x88, 0x5A, 0x30, 0x8D,
         0x31, 0x31, 0x98, 0xA2, 0xE0, 0x37, 0x07, 0x34,
@@ -54,6 +54,80 @@ public static class MeowHash128Unsafe
             Vector128<byte> res = MeowHash(seedPtr, len, data);
             return Unsafe.As<Vector128<byte>, UInt128>(ref res);
         }
+    }
+
+    public static unsafe UInt128 ComputeIndex(ulong input)
+    {
+        Vector128<byte> res = ComputeIndexVector(input);
+        return Unsafe.As<Vector128<byte>, UInt128>(ref res);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static unsafe Vector128<byte> ComputeIndexVector(ulong input)
+    {
+        fixed (byte* seedPtr = _defaultSeed)
+        {
+            return MeowHashLen8(seedPtr, input);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static unsafe Vector128<byte> MeowHashLen8(byte* seed128Init, ulong input)
+    {
+        Vector128<byte> xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
+        Vector128<byte> xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
+
+        byte* rcx = seed128Init;
+
+        movdqu(out xmm0, rcx + 0x00);
+        movdqu(out xmm1, rcx + 0x10);
+        movdqu(out xmm2, rcx + 0x20);
+        movdqu(out xmm3, rcx + 0x30);
+        movdqu(out xmm4, rcx + 0x40);
+        movdqu(out xmm5, rcx + 0x50);
+        movdqu(out xmm6, rcx + 0x60);
+        movdqu(out xmm7, rcx + 0x70);
+
+        xmm9 = Vector128.Create(input, 0UL).AsByte();
+        xmm11 = Vector128<byte>.Zero;
+
+        xmm8 = xmm9;
+        xmm10 = xmm9;
+        palignr(ref xmm8, xmm11, 15);
+        palignr(ref xmm10, xmm11, 1);
+
+        xmm12 = Vector128<byte>.Zero;
+        xmm13 = Vector128<byte>.Zero;
+        xmm14 = Vector128<byte>.Zero;
+        movq(out xmm15, 8UL);
+        palignr(ref xmm12, xmm15, 15);
+        palignr(ref xmm14, xmm15, 1);
+
+        MEOW_MIX_REG(ref xmm0, ref xmm4, ref xmm6, ref xmm1, ref xmm2, xmm8, xmm9, xmm10, xmm11);
+        MEOW_MIX_REG(ref xmm1, ref xmm5, ref xmm7, ref xmm2, ref xmm3, xmm12, xmm13, xmm14, xmm15);
+
+        MEOW_SHUFFLE(ref xmm0, ref xmm1, xmm2, ref xmm4, ref xmm5, xmm6);
+        MEOW_SHUFFLE(ref xmm1, ref xmm2, xmm3, ref xmm5, ref xmm6, xmm7);
+        MEOW_SHUFFLE(ref xmm2, ref xmm3, xmm4, ref xmm6, ref xmm7, xmm0);
+        MEOW_SHUFFLE(ref xmm3, ref xmm4, xmm5, ref xmm7, ref xmm0, xmm1);
+        MEOW_SHUFFLE(ref xmm4, ref xmm5, xmm6, ref xmm0, ref xmm1, xmm2);
+        MEOW_SHUFFLE(ref xmm5, ref xmm6, xmm7, ref xmm1, ref xmm2, xmm3);
+        MEOW_SHUFFLE(ref xmm6, ref xmm7, xmm0, ref xmm2, ref xmm3, xmm4);
+        MEOW_SHUFFLE(ref xmm7, ref xmm0, xmm1, ref xmm3, ref xmm4, xmm5);
+        MEOW_SHUFFLE(ref xmm0, ref xmm1, xmm2, ref xmm4, ref xmm5, xmm6);
+        MEOW_SHUFFLE(ref xmm1, ref xmm2, xmm3, ref xmm5, ref xmm6, xmm7);
+        MEOW_SHUFFLE(ref xmm2, ref xmm3, xmm4, ref xmm6, ref xmm7, xmm0);
+        MEOW_SHUFFLE(ref xmm3, ref xmm4, xmm5, ref xmm7, ref xmm0, xmm1);
+
+        paddq(ref xmm0, xmm2);
+        paddq(ref xmm1, xmm3);
+        paddq(ref xmm4, xmm6);
+        paddq(ref xmm5, xmm7);
+        pxor(ref xmm0, xmm1);
+        pxor(ref xmm4, xmm5);
+        paddq(ref xmm0, xmm4);
+
+        return xmm0;
     }
 
     [SuppressMessage("Major Code Smell", "S907:\"goto\" statement should not be used")]

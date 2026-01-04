@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 
@@ -5,6 +6,28 @@ namespace Genbox.FastHash.CityHash;
 
 public static class CityHash128
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static UInt128 ComputeIndex(ulong input)
+    {
+        const uint len = 8;
+        ulong a = K0;
+        ulong b = K1;
+
+        a = ShiftMix(a * K1) * K1;
+
+        ulong mul = K2 + (len * 2);
+        ulong a0 = input + K2;
+        ulong b0 = input;
+        ulong c0 = (RotateRight(b0, 37) * mul) + a0;
+        ulong d0 = (RotateRight(a0, 25) + b0) * mul;
+        ulong c = (b * K1) + HashLen16(c0, d0, mul);
+
+        ulong d = ShiftMix(a + input);
+        a = HashLen16(a, c);
+        b = HashLen16(d, b);
+        return new UInt128(a ^ b, HashLen16(b, a));
+    }
+
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data)
     {
         uint len = (uint)data.Length;
