@@ -1,4 +1,4 @@
-﻿#if NET8_0_OR_GREATER
+#if NET8_0_OR_GREATER
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -305,7 +305,7 @@ public static class MeowHash128Unsafe
     private static void paddq(ref Vector128<byte> A, Vector128<byte> B) => A = Sse2.Add(A.AsUInt64(), B.AsUInt64()).AsByte();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void pand(ref Vector128<byte> A, Vector128<byte> B) => A = Sse2.Add(A, B);
+    private static void pand(ref Vector128<byte> A, Vector128<byte> B) => A = Sse2.And(A, B);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void palignr(ref Vector128<byte> A, Vector128<byte> B, byte i) => A = Ssse3.AlignRight(A, B, i);
