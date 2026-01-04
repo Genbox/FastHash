@@ -1,4 +1,4 @@
-﻿#if NET8_0_OR_GREATER
+#if NET8_0_OR_GREATER
 using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -88,13 +88,13 @@ public static class AesniHash128
                 x |= data[msg + 8];
                 goto case 8;
             case 8:
-                Mix(Vector128.Create(BinaryPrimitives.ReadUInt64LittleEndian(data), x).AsByte());
+                Mix(Vector128.Create(BinaryPrimitives.ReadUInt64LittleEndian(data[msg..]), x).AsByte());
                 break;
             case 7:
-                x |= (ulong)data[msg + 4] << 48;
+                x |= (ulong)data[msg + 6] << 48;
                 goto case 6;
             case 6:
-                x |= (ulong)data[msg + 4] << 40;
+                x |= (ulong)data[msg + 5] << 40;
                 goto case 5;
             case 5:
                 x |= (ulong)data[msg + 4] << 32;
