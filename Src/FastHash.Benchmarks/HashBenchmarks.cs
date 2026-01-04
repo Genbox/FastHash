@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Order;
 using Genbox.FastHash.AesniHash;
 using Genbox.FastHash.Benchmarks.Code;
 using Genbox.FastHash.CityHash;
@@ -21,7 +22,8 @@ using Genbox.FastHash.XxHash;
 
 namespace Genbox.FastHash.Benchmarks;
 
-[MbPrSecColumn, CategoriesColumn, GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
+[MbPrSecColumn, GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByParams)]
+[Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class HashBenchmarks : IDisposable
 {
     private unsafe byte* _ptr;
