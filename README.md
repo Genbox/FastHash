@@ -9,7 +9,6 @@
 * Most of the hashes are verified with test vectors from the original author
 * High-performance zero-allocation implementations
 * Index variants of each hash function that give the same output as if using the hash function, but takes in a 32bit/64bit integer.
-*
 
 ### Hashes
 
