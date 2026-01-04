@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Security.Cryptography;
 using Genbox.FastHash.DjbHash;
 
 namespace Genbox.FastHash.Tests;

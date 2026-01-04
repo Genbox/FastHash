@@ -79,8 +79,8 @@ public class HashBenchmarks : IDisposable
     [Benchmark, BenchmarkCategory("FoldHash64")]
     public ulong FoldHash64Test() => FoldHash64.ComputeHash(_testData);
 
-    [Benchmark, BenchmarkCategory("FoldHash64Quality")]
-    public ulong FoldHash64QualityTest() => FoldHash64Quality.ComputeHash(_testData);
+    [Benchmark, BenchmarkCategory("FoldHashQuality64")]
+    public ulong FoldHashQuality64Test() => FoldHashQuality64.ComputeHash(_testData);
 
     [Benchmark, BenchmarkCategory("Fnv1aHash32")]
     public uint Fnv1aHash32Test() => Fnv1aHash32.ComputeHash(_testData);

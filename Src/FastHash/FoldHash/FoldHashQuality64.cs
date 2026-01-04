@@ -2,8 +2,21 @@ using static Genbox.FastHash.FoldHash.FoldHashConstants;
 
 namespace Genbox.FastHash.FoldHash;
 
-public static class FoldHash64Quality
+public static class FoldHashQuality64
 {
+    public static ulong ComputeIndex(ulong input, ulong seed = 0, ulong[]? sharedSeed = null)
+    {
+        sharedSeed ??= DefaultSharedSeed;
+
+        ulong perHasherSeed = FoldHashShared.FoldedMultiply(seed, ARBITRARY4) ^ ARBITRARY3;
+        ulong accumulator = FoldHashShared.RotateRight(perHasherSeed, 8);
+
+        ulong s0 = accumulator ^ input;
+        ulong s1 = sharedSeed[1] ^ input;
+        ulong hash = FoldHashShared.FoldedMultiply(s0, s1);
+        return FoldHashShared.FoldedMultiply(hash, ARBITRARY0);
+    }
+
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0, ulong[]? sharedSeed = null)
     {
         sharedSeed ??= DefaultSharedSeed;

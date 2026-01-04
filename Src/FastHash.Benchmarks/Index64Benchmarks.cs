@@ -1,8 +1,9 @@
-﻿using BenchmarkDotNet.Order;
+using BenchmarkDotNet.Order;
 using Genbox.FastHash.Benchmarks.Code;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
+using Genbox.FastHash.FoldHash;
 using Genbox.FastHash.FnvHash;
 using Genbox.FastHash.PolymurHash;
 using Genbox.FastHash.SipHash;
@@ -25,6 +26,12 @@ public class Index64Benchmarks
 
     [Benchmark]
     public ulong FarmHash64Test() => FarmHash64.ComputeIndex(_value);
+
+    [Benchmark]
+    public ulong FoldHash64Test() => FoldHash64.ComputeIndex(_value);
+
+    [Benchmark]
+    public ulong FoldHashQuality64Test() => FoldHashQuality64.ComputeIndex(_value);
 
     [Benchmark]
     public ulong Fnv1aHash64Test() => Fnv1aHash64.ComputeIndex(_value);

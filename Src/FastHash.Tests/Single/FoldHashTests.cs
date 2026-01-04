@@ -1,4 +1,4 @@
-using System.Text;
+using System.Buffers.Binary;
 using Genbox.FastHash.FoldHash;
 
 namespace Genbox.FastHash.Tests.Single;
@@ -55,6 +55,50 @@ public class FoldHashTests
     public void QualityVectorsTest()
     {
         foreach (Vector vector in QualityVectors)
-            Assert.Equal(vector.Expected, FoldHash64Quality.ComputeHash(vector.Data, vector.Seed));
+            Assert.Equal(vector.Expected, FoldHashQuality64.ComputeHash(vector.Data, vector.Seed));
+    }
+
+    [Fact]
+    public void FastComputeIndexMatchesByteHash()
+    {
+        ulong[] inputs =
+        [
+            0UL,
+            1UL,
+            0x0123456789abcdefUL,
+            12808224424451380151UL,
+            ulong.MaxValue
+        ];
+
+        foreach (ulong input in inputs)
+        {
+            Span<byte> data = stackalloc byte[8];
+            BinaryPrimitives.WriteUInt64LittleEndian(data, input);
+
+            Assert.Equal(FoldHash64.ComputeHash(data, 0), FoldHash64.ComputeIndex(input, 0));
+            Assert.Equal(FoldHash64.ComputeHash(data, 123), FoldHash64.ComputeIndex(input, 123));
+        }
+    }
+
+    [Fact]
+    public void QualityComputeIndexMatchesByteHash()
+    {
+        ulong[] inputs =
+        [
+            0UL,
+            1UL,
+            0x0123456789abcdefUL,
+            12808224424451380151UL,
+            ulong.MaxValue
+        ];
+
+        foreach (ulong input in inputs)
+        {
+            Span<byte> data = stackalloc byte[8];
+            BinaryPrimitives.WriteUInt64LittleEndian(data, input);
+
+            Assert.Equal(FoldHashQuality64.ComputeHash(data, 0), FoldHashQuality64.ComputeIndex(input, 0));
+            Assert.Equal(FoldHashQuality64.ComputeHash(data, 123), FoldHashQuality64.ComputeIndex(input, 123));
+        }
     }
 }
