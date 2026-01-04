@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 
@@ -10,13 +10,11 @@ public static class CityHash64
     public static ulong ComputeIndex(ulong input)
     {
         const ulong mul = K2 + 16;
-        ulong d = (RotateRight(input + K2, 25) + input) * mul;
-        ulong a = (((RotateRight(input, 37) * mul) + input + K2) ^ d) * mul;
-        a ^= a >> 47;
-        ulong b = (d ^ a) * mul;
-        b ^= b >> 47;
-        b *= mul;
-        return b;
+        ulong a = input + K2;
+        ulong b = input;
+        ulong c = (RotateRight(b, 37) * mul) + a;
+        ulong d = (RotateRight(a, 25) + b) * mul;
+        return HashLen16(c, d, mul);
     }
 
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => CityHash64Internal(data);

@@ -1,4 +1,4 @@
-﻿/*
+/*
     PolymurHash version 2.0
 
     Copyright (c) 2023 Orson Peters
@@ -43,9 +43,15 @@ public static class Polymur2Hash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
     {
-        ulong lo = unchecked((uint)input);
-        ulong hi = input >> 32;
-        return lo | (hi << 32);
+        const int len = 8;
+        ulong m0 = input & 0x00ffffffffffffffUL;
+        ulong m1 = m0;
+        ulong m2 = input >> 8;
+        ulong k3 = polymur_red611(polymur_mul128(_params.k, _params.k2));
+        UInt128 t0 = polymur_mul128(_params.k2 + m0, _params.k7 + m1);
+        UInt128 t1 = polymur_mul128(_params.k + m2, k3 + len);
+        ulong h = polymur_red611(polymur_add128(t0, t1));
+        return polymur_mix(h) + _params.s;
     }
 
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)

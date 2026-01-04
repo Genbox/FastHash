@@ -1,11 +1,14 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FnvHash;
+using Genbox.FastHash.FoldHash;
 using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MurmurHash;
+using Genbox.FastHash.PolymurHash;
+using Genbox.FastHash.RapidHash;
 using Genbox.FastHash.SipHash;
 using Genbox.FastHash.SuperFastHash;
 using Genbox.FastHash.WyHash;
@@ -69,8 +72,12 @@ public class IndexTests
     [
         new Tuple64(nameof(CityHash64), CityHash64.ComputeIndex, CityHash64.ComputeHash),
         new Tuple64(nameof(Djb2Hash64), Djb2Hash64.ComputeIndex, Djb2Hash64.ComputeHash),
+        new Tuple64(nameof(FoldHash64), static x => FoldHash64.ComputeIndex(x, 0), static x => FoldHash64.ComputeHash(x, 0)),
+        new Tuple64(nameof(FoldHashQuality64), static x => FoldHashQuality64.ComputeIndex(x, 0), static x => FoldHashQuality64.ComputeHash(x, 0)),
         new Tuple64(nameof(FarmHash64), FarmHash64.ComputeIndex, static x => FarmHash64.ComputeHash(x)),
         new Tuple64(nameof(Fnv1aHash64), Fnv1aHash64.ComputeIndex, Fnv1aHash64.ComputeHash),
+        new Tuple64(nameof(Polymur2Hash64), Polymur2Hash64.ComputeIndex, static x => Polymur2Hash64.ComputeHash(x, 0)),
+        new Tuple64(nameof(RapidHash64), static x => RapidHash64.ComputeIndex(x, 0), static x => RapidHash64.ComputeHash(x, 0)),
         new Tuple64(nameof(SipHash64), static x => SipHash64.ComputeIndex(x), static x => SipHash64.ComputeHash(x)),
         new Tuple64(nameof(Wy3Hash64), Wy3Hash64.ComputeIndex, static x => Wy3Hash64.ComputeHash(x)),
         new Tuple64(nameof(Xx2Hash64), Xx2Hash64.ComputeIndex, static x => Xx2Hash64.ComputeHash(x))

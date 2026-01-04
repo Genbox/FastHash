@@ -157,7 +157,7 @@ public static class MarvinHash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void Block(ref uint rp0, ref uint rp1)
+    internal static void Block(ref uint rp0, ref uint rp1)
     {
         rp1 ^= rp0;
         rp0 = RotateLeft(rp0, 20);
