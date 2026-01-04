@@ -16,8 +16,8 @@ public class Program
                                      {
                                          LaunchCount = 1,
                                          WarmupCount = 3,
-                                         MinIterationCount = 3,
-                                         MaxIterationCount = 10
+                                         MinIterationCount = 10,
+                                         MaxIterationCount = 20
                                      }, Job.InProcess))
                                      .AddAnalyser(EnvironmentAnalyser.Default,
                                          MinIterationTimeAnalyser.Default,
