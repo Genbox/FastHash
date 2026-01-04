@@ -8,7 +8,7 @@ using X86Aes = System.Runtime.Intrinsics.X86.Aes;
 
 namespace Genbox.FastHash.GxHash;
 
-internal static class GxHashV2Shared
+internal static class Gx2HashShared
 {
     private const int VECTOR_SIZE = 16;
     private const int UNROLL_FACTOR = 8;

@@ -93,20 +93,20 @@ public class HashBenchmarks : IDisposable
     [Benchmark, BenchmarkCategory("GxHash32")]
     public uint GxHash32Test() => GxHash32.ComputeHash(_testData);
 
-    [Benchmark, BenchmarkCategory("GxHash32V2")]
-    public uint GxHash32V2Test() => GxHash32V2.ComputeHash(_testData, new UInt128(0, 0));
+    [Benchmark, BenchmarkCategory("Gx2Hash32")]
+    public uint Gx2Hash32Test() => Gx2Hash32.ComputeHash(_testData, new Genbox.FastHash.UInt128(0, 0));
 
     [Benchmark, BenchmarkCategory("GxHash64")]
     public ulong GxHash64Test() => GxHash64.ComputeHash(_testData);
 
-    [Benchmark, BenchmarkCategory("GxHash64V2")]
-    public ulong GxHash64V2Test() => GxHash64V2.ComputeHash(_testData, new UInt128(0, 0));
+    [Benchmark, BenchmarkCategory("Gx2Hash64")]
+    public ulong Gx2Hash64Test() => Gx2Hash64.ComputeHash(_testData, new Genbox.FastHash.UInt128(0, 0));
 
     [Benchmark, BenchmarkCategory("GxHash128")]
     public UInt128 GxHash128Test() => GxHash128.ComputeHash(_testData);
 
-    [Benchmark, BenchmarkCategory("GxHash128V2")]
-    public UInt128 GxHash128V2Test() => GxHash128V2.ComputeHash(_testData, new UInt128(0, 0));
+    [Benchmark, BenchmarkCategory("Gx2Hash128")]
+    public Genbox.FastHash.UInt128 Gx2Hash128Test() => Gx2Hash128.ComputeHash(_testData, new Genbox.FastHash.UInt128(0, 0));
 
     [Benchmark, BenchmarkCategory("MarvinHash32")]
     public uint MarvinHash32Test() => MarvinHash32.ComputeHash(_testData);
