@@ -17,15 +17,20 @@ These hash functions are included in the library.
 
 | Name                                                                                                                                                    | Version | Authors                                                         |   License    |
 |---------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|-----------------------------------------------------------------|:------------:|
+| [AesniHash](https://github.com/synopse/mORMot2)                                                                                                         |    -    | Arnaud Bouchez                                                  | MPL/GPL/LGPL |
 | [CityHash](https://github.com/google/cityhash)                                                                                                          |   1.1   | Geoff Pike, Jyrki Alakuijala                                    |     MIT      |
 | [DJBHash](http://www.cse.yorku.ca/~oz/hash.html)                                                                                                        |    -    | Daniel J. Bernstein                                             |     None     |
 | [FarmHash](https://github.com/google/farmhash)                                                                                                          |   1.1   | Geoff Pike                                                      |     MIT      |
 | [FarshHash](https://github.com/Bulat-Ziganshin/FARSH)                                                                                                   |    -    | Bulat Ziganshin                                                 |     MIT      |
 | [FNVHash](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function)                                                                   |    -    | Glenn Fowler, Landon Curt Noll, Kiem-Phong Vo                   |     None     |
 | [FoldHash](https://github.com/orlp/foldhash)                                                                                                            |  0.2.0  | Orson Peters                                                    |     Zlib     |
+| [GxHash](https://github.com/ogxd/gxhash)                                                                                                                |    1    | Orso G.                                                         |     MIT      |
+| [Gx2Hash](https://github.com/ogxd/gxhash)                                                                                                               |    2    | Orso G.                                                         |     MIT      |
 | [HighwayHash](https://github.com/google/highwayhash)                                                                                                    |    -    | Jyrki Alakuijala, Bill Cox, Jan Wassenberg                      |  Apache 2.0  |
 | [MarvinHash](https://github.com/dotnet/runtime/blob/4017327955f1d8ddc43980eb1848c52fbb131dfc/src/libraries/System.Private.CoreLib/src/System/Marvin.cs) |    -    | Niels Ferguson, Reid Borsuk, Jeffrey Cooperstein, Matthew Ellis |     MIT      |
+| [MeowHash](https://github.com/cmuratori/meow_hash)                                                                                                      |    -    | Molly Rocket, Inc.                                              |     Zlib     |
 | [MurmurHash](https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp)                                                                      |   3.0   | Austin Appleby                                                  |     None     |
+| [PolymurHash](https://github.com/orlp/polymur-hash)                                                                                                     |   2.0   | Orson Peters                                                    |     Zlib     |
 | [RapidHash](https://github.com/Nicoshev/rapidhash)                                                                                                      |    3    | Nicolas De Carli                                                |     MIT      |
 | [SipHash](https://github.com/veorq/SipHash)                                                                                                             |   1.0   | Jean-Philippe Aumasson, Daniel J. Bernstein                     |   CC0 1.0    |
 | [SuperFastHash](http://www.azillionmonkeys.com/qed/hash.html)                                                                                           |    -    | Paul Hsieh                                                      |   LGPL 2.1   |
@@ -38,15 +43,21 @@ The table below gives an overview of the implementations.
 
 | Name          | Managed | Unsafe | 32bit | 64bit | 128bit | Index | Seeded | Secret | Verified |
 |---------------|:-------:|:------:|:-----:|:-----:|:------:|:-----:|:------:|:------:|:--------:|
+| AesniHash     |    x    |        |       |   x   |   x    |       |   x    |        |          |
 | CityHash      |    x    |   x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
 | DJBHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |          |
 | FarmHash      |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    -     |
 | FarshHash     |    x    |   x    |       |   x   |        |       |   x    |        |    x     |
 | FNVHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |          |
-| FoldHash      |    x    |        |       |   x   |        |       |   x    |   x    |          |
+| FoldHash      |    x    |        |       |   x   |        |   x   |   x    |   x    |          |
+| GxHash        |    x    |        |   x   |   x   |   x    |       |   x    |        |          |
+| Gx2Hash       |    x    |        |   x   |   x   |   x    |       |   x    |        |          |
 | HighwayHash   |         |   x    |       |   x   |        |       |   x    |        |    x     |
 | MarvinHash    |    x    |        |   x   |       |        |   x   |   x    |        |          |
+| MeowHash      |         |   x    |       |   x   |   x    |       |        |        |          |
 | MurmurHash    |    x    |   x    |   x   |       |   x    |   x   |   x    |        |    -     |
+| PolymurHash   |    x    |        |       |   x   |        |   x   |   x    |        |          |
+| RapidHash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
 | SipHash       |    x    |   x    |       |   x   |        |       |   x    |        |    x     |
 | SuperFastHash |    x    |   x    |       |       |        |   x   |        |        |          |
 | WyHash        |    x    |   x    |       |   x   |        |   x   |        |        |    x     |
@@ -56,7 +67,7 @@ The table below gives an overview of the implementations.
 * **Managed:** The there is a fully managed implementation in C#.
 * **Unsafe:** There is an unmanaged implementation that uses pointers etc. These are usually faster.
 * **Bits:** 32bit means there is a 32bit optimized implementation that returns an uint. 64bit means optimized for 64bit platforms.
-* **Index:**  It has an _index_ version, which½ can hash a 32/64bit integer directly. Usually used for [Hash Table](https://en.wikipedia.org/wiki/Hash_table) mapping.
+* **Index:**  It has an _index_ version, which can hash a 32/64bit integer directly. Usually used for [Hash Table](https://en.wikipedia.org/wiki/Hash_table) mapping.
 * **Seeded:** It takes an input seed which can help prevent denial-of-service due to hash collisions.
 * **Secret:** It supports a user-provided secret. Much like seeded version it protects against DoS attacks, but with stronger security guarantees.
 * **Verified:** The original author has provided test vectors and they have been tested against the implementation. A '-' means test vectors
