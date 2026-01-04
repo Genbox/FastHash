@@ -6,6 +6,7 @@ using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FoldHash;
 using Genbox.FastHash.FnvHash;
 using Genbox.FastHash.PolymurHash;
+using Genbox.FastHash.RapidHash;
 using Genbox.FastHash.SipHash;
 using Genbox.FastHash.WyHash;
 using Genbox.FastHash.XxHash;
@@ -38,6 +39,9 @@ public class Index64Benchmarks
 
     [Benchmark]
     public ulong Polymur2Hash64Test() => Polymur2Hash64.ComputeIndex(_value);
+
+    [Benchmark]
+    public ulong RapidHash64Test() => RapidHash64.ComputeIndex(_value);
 
     [Benchmark]
     public ulong SipHash64Test() => SipHash64.ComputeIndex(_value);

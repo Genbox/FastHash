@@ -1,4 +1,4 @@
-using System.Text;
+using System.Buffers.Binary;
 using Genbox.FastHash.RapidHash;
 
 namespace Genbox.FastHash.Tests.Single;
@@ -33,6 +33,28 @@ public class RapidHashTests
     {
         foreach (Vector vector in Vectors)
             Assert.Equal(vector.Expected, RapidHash64.ComputeHash(vector.Data, vector.Seed));
+    }
+
+    [Fact]
+    public void ComputeIndexMatchesByteHash()
+    {
+        ulong[] inputs =
+        [
+            0UL,
+            1UL,
+            0x0123456789abcdefUL,
+            12808224424451380151UL,
+            ulong.MaxValue
+        ];
+
+        foreach (ulong input in inputs)
+        {
+            Span<byte> data = stackalloc byte[8];
+            BinaryPrimitives.WriteUInt64LittleEndian(data, input);
+
+            Assert.Equal(RapidHash64.ComputeHash(data, 0), RapidHash64.ComputeIndex(input, 0));
+            Assert.Equal(RapidHash64.ComputeHash(data, 123), RapidHash64.ComputeIndex(input, 123));
+        }
     }
 
     [Fact]

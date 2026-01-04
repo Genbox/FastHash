@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using static Genbox.FastHash.Misc.Utilities;
 
 namespace Genbox.FastHash.RapidHash;
 
