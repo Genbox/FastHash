@@ -10,6 +10,7 @@ using Genbox.FastHash.SipHash;
 using Genbox.FastHash.SuperFastHash;
 using Genbox.FastHash.WyHash;
 using Genbox.FastHash.XxHash;
+using Xunit.Sdk;
 
 namespace Genbox.FastHash.Tests;
 
@@ -52,8 +53,8 @@ public class IndexTests
         }
     }
 
-    public static TheoryData<Tuple32> Create32() => new TheoryData<Tuple32>
-    {
+    public static TheoryData<Tuple32> Create32() =>
+    [
         new Tuple32(nameof(CityHash32), CityHash32.ComputeIndex, CityHash32.ComputeHash),
         new Tuple32(nameof(Djb2Hash32), Djb2Hash32.ComputeIndex, Djb2Hash32.ComputeHash),
         new Tuple32(nameof(FarmHash32), FarmHash32.ComputeIndex, FarmHash32.ComputeHash),
@@ -61,19 +62,19 @@ public class IndexTests
         new Tuple32(nameof(MarvinHash32), MarvinHash32.ComputeIndex, static x => MarvinHash32.ComputeHash(x)),
         new Tuple32(nameof(Murmur3Hash32), Murmur3Hash32.ComputeIndex, static x => Murmur3Hash32.ComputeHash(x)),
         new Tuple32(nameof(SuperFastHash32), SuperFastHash32.ComputeIndex, SuperFastHash32.ComputeHash),
-        new Tuple32(nameof(Xx2Hash32), Xx2Hash32.ComputeIndex, static x => Xx2Hash32.ComputeHash(x)),
-    };
+        new Tuple32(nameof(Xx2Hash32), Xx2Hash32.ComputeIndex, static x => Xx2Hash32.ComputeHash(x))
+    ];
 
-    public static TheoryData<Tuple64> Create64() => new TheoryData<Tuple64>
-    {
+    public static TheoryData<Tuple64> Create64() =>
+    [
         new Tuple64(nameof(CityHash64), CityHash64.ComputeIndex, CityHash64.ComputeHash),
         new Tuple64(nameof(Djb2Hash64), Djb2Hash64.ComputeIndex, Djb2Hash64.ComputeHash),
         new Tuple64(nameof(FarmHash64), FarmHash64.ComputeIndex, static x => FarmHash64.ComputeHash(x)),
         new Tuple64(nameof(Fnv1aHash64), Fnv1aHash64.ComputeIndex, Fnv1aHash64.ComputeHash),
         new Tuple64(nameof(SipHash64), static x => SipHash64.ComputeIndex(x), static x => SipHash64.ComputeHash(x)),
         new Tuple64(nameof(Wy3Hash64), Wy3Hash64.ComputeIndex, static x => Wy3Hash64.ComputeHash(x)),
-        new Tuple64(nameof(Xx2Hash64), Xx2Hash64.ComputeIndex, static x => Xx2Hash64.ComputeHash(x)),
-    };
+        new Tuple64(nameof(Xx2Hash64), Xx2Hash64.ComputeIndex, static x => Xx2Hash64.ComputeHash(x))
+    ];
 
     public record struct Tuple32(string Name, Func<uint, uint> Index, Func<ReadOnlySpan<byte>, uint> Hash) : IXunitSerializable
     {
