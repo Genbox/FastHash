@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 using static Genbox.FastHash.XxHash.XxHashShared;
 
@@ -7,16 +7,31 @@ namespace Genbox.FastHash.XxHash;
 public static class Xx3Hash128
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static UInt128 ComputeIndex(ulong input, ulong seed = 0)
+    public static UInt128 ComputeIndex(ulong input)
+    {
+        uint inputLo = (uint)input;
+        uint inputHi = (uint)(input >> 32);
+        ulong input64 = inputLo + ((ulong)inputHi << 32);
+        ulong keyed = input64 ^ SECRET_16_24_XOR;
+        return ComputeIndexFinal(keyed);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static UInt128 ComputeIndex(ulong input, ulong seed)
     {
         seed ^= (ulong)ByteSwap((uint)seed) << 32;
 
         uint inputLo = (uint)input;
         uint inputHi = (uint)(input >> 32);
         ulong input64 = inputLo + ((ulong)inputHi << 32);
-        ulong bitflip = (Read64(kSecret, 16) ^ Read64(kSecret, 24)) + seed;
+        ulong bitflip = SECRET_16_24_XOR + seed;
         ulong keyed = input64 ^ bitflip;
+        return ComputeIndexFinal(keyed);
+    }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static UInt128 ComputeIndexFinal(ulong keyed)
+    {
         UInt128 m128 = XXH_mult64to128(keyed, PRIME64_1 + 32UL);
 
         m128.High += m128.Low << 1;
@@ -31,7 +46,19 @@ public static class Xx3Hash128
 
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
     {
-        return XXH3_128bits_internal(data, data.Length, seed, kSecret, SECRET_DEFAULT_SIZE, XXH3_hashLong_128b_withSeed);
+        int length = data.Length;
+#if NET8_0_OR_GREATER
+        if (length > MIDSIZE_MAX)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = data)
+                    return Xx3Hash128Unsafe.ComputeHash(ptr, length, seed);
+            }
+        }
+#endif
+
+        return XXH3_128bits_internal(data, length, seed, kSecret, SECRET_DEFAULT_SIZE, XXH3_hashLong_128b_withSeed);
     }
 
     private static UInt128 XXH3_hashLong_128b_withSeed(ReadOnlySpan<byte> input, int len, ulong seed64, ReadOnlySpan<byte> secret, int secretLen) => XXH3_hashLong_128b_withSeed_internal(input, len, seed64, secret, secretLen, XXH3_accumulate_512_scalar, XXH3_scrambleAcc_scalar, XXH3_initCustomSecret_scalar);
@@ -88,8 +115,8 @@ public static class Xx3Hash128
             UInt128 h128;
             ulong bitflipl = Read64(secret, 64) ^ Read64(secret, 72);
             ulong bitfliph = Read64(secret, 80) ^ Read64(secret, 88);
-            h128.Low = YC_xmxmx_XXH2_64(seed ^ bitflipl);
-            h128.High = YC_xmxmx_XXH2_64(seed ^ bitfliph);
+            h128.Low = YC_xmxmx_XXH_64(seed ^ bitflipl);
+            h128.High = YC_xmxmx_XXH_64(seed ^ bitfliph);
             return h128;
         }
     }
@@ -147,12 +174,12 @@ public static class Xx3Hash128
         input_hi ^= bitfliph;
 
         /*
-        * Add the high 32 bits of input_hi to the high 32 bits of m128, then
-        * add the long product of the low 32 bits of input_hi and XXH_PRIME32_2 to
-        * the high 64 bits of m128.
-        *
-        * The best approach to this operation is different on 32-bit and 64-bit.
-        */
+         * Add the high 32 bits of input_hi to the high 32 bits of m128, then
+         * add the long product of the low 32 bits of input_hi and XXH_PRIME32_2 to
+         * the high 64 bits of m128.
+         *
+         * The best approach to this operation is different on 32-bit and 64-bit.
+         */
 #if ARCH32
         m128.High += (input_hi & 0xFFFFFFFF00000000ULL) + xxHashShared.XXH_mult32to64((uint)input_hi, XXH_PRIME32_2);
 #else
@@ -194,8 +221,8 @@ public static class Xx3Hash128
         ulong keyed_lo = combinedl ^ bitflipl;
         ulong keyed_hi = combinedh ^ bitfliph;
         UInt128 h128;
-        h128.Low = YC_xmxmx_XXH2_64(keyed_lo);
-        h128.High = YC_xmxmx_XXH2_64(keyed_hi);
+        h128.Low = YC_xmxmx_XXH_64(keyed_lo);
+        h128.High = YC_xmxmx_XXH_64(keyed_hi);
         return h128;
     }
 

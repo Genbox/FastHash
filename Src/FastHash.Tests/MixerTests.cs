@@ -1,4 +1,4 @@
-﻿using Genbox.FastHash.TestShared;
+using Genbox.FastHash.TestShared;
 using static Genbox.FastHash.MixFunctions;
 
 namespace Genbox.FastHash.Tests;
@@ -31,7 +31,7 @@ public class MixerTests
         new MixSpec64(AA_xmxmx_Murmur_64),
         new MixSpec64(JM_xmxmxmx_Mx3_64),
         new MixSpec64(PE_xmxmx_Moremur_64),
-        new MixSpec64(YC_xmxmx_XXH2_64),
+        new MixSpec64(YC_xmxmx_XXH_64),
         new MixSpec64(EZ_xmx_FastHash_64),
         new MixSpec64(PE_rrxrrxmxxmxx_Nasam_64),
     };

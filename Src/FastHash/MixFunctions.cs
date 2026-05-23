@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash;
 
@@ -498,7 +498,7 @@ public static class MixFunctions
     // https://github.com/Cyan4973/xxHash/tree/dev
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint YC_xmxmx_XXH2_32(uint h)
+    public static uint YC_xmxmx_XXH_32(uint h)
     {
         h ^= h >> 15;
         h *= 0x85EBCA77;
@@ -509,7 +509,7 @@ public static class MixFunctions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong YC_xmxmx_XXH2_64(ulong h)
+    public static ulong YC_xmxmx_XXH_64(ulong h)
     {
         h ^= h >> 33;
         h *= 0xC2B2AE3D27D4EB4F;

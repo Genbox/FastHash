@@ -49,5 +49,5 @@ public class Index32Benchmarks
     public uint SuperFastHash32Test() => SuperFastHash32.ComputeIndex(_value);
 
     [Benchmark]
-    public uint Xx2Hash32Test() => Xx2Hash32.ComputeIndex(_value);
+    public uint XxHash32Test() => XxHash32.ComputeIndex(_value);
 }

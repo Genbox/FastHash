@@ -1,12 +1,11 @@
-﻿using Genbox.FastHash.XxHash;
+using Genbox.FastHash.XxHash;
 
 namespace Genbox.FastHash.Tests.Single;
 
-public class Xx2HashTests
+public class XxHashTests
 {
     private const uint PRIME32 = 2654435761U;
     private const ulong PRIME64 = 11400714785074694797UL;
-    private readonly byte[] _sanityBuffer;
 
     //Source: https://github.com/Cyan4973/xxHash/blob/dev/cli/xsum_sanity_check.c#L99
     private static readonly (int len, uint seed, uint result)[] _testVectors32 =
@@ -33,8 +32,9 @@ public class Xx2HashTests
         (222, 0, 0xB641AE8CB691C174UL),
         (222, PRIME32, 0x20CB8AB7AE10C14AUL)
     ];
+    private readonly byte[] _sanityBuffer;
 
-    public Xx2HashTests()
+    public XxHashTests()
     {
         _sanityBuffer = new byte[2367];
 
@@ -47,39 +47,39 @@ public class Xx2HashTests
     }
 
     [Fact]
-    public unsafe void Xx2Hash32TestVectors()
+    public unsafe void XxHash32TestVectors()
     {
         for (int i = 0; i < _testVectors32.Length; i++)
         {
             (int len, uint seed, uint result) = _testVectors32[i];
-            Assert.Equal(result, Xx2Hash32.ComputeHash(_sanityBuffer[..len], seed));
+            Assert.Equal(result, XxHash32.ComputeHash(_sanityBuffer[..len], seed));
 
             fixed (byte* ptr = _sanityBuffer[..len])
-                Assert.Equal(result, Xx2Hash32Unsafe.ComputeHash(ptr, len, seed));
+                Assert.Equal(result, XxHash32Unsafe.ComputeHash(ptr, len, seed));
         }
     }
 
     [Fact]
-    public unsafe void Xx2Hash64TestVectors()
+    public unsafe void XxHash64TestVectors()
     {
-        for (int i = 0; i < _testVectors64.Length / 3; i++)
+        for (int i = 0; i < _testVectors64.Length; i++)
         {
             (int len, uint seed, ulong result) = _testVectors64[i];
-            Assert.Equal(Xx2Hash64.ComputeHash(_sanityBuffer[..len], seed), result);
+            Assert.Equal(XxHash64.ComputeHash(_sanityBuffer[..len], seed), result);
 
             fixed (byte* ptr = _sanityBuffer[..len])
-                Assert.Equal(Xx2Hash64Unsafe.ComputeHash(ptr, len, seed), result);
+                Assert.Equal(XxHash64Unsafe.ComputeHash(ptr, len, seed), result);
         }
     }
 
     [Fact]
-    public void Xx2HashIndexTest()
+    public void XxHashIndexTest()
     {
         ulong val = 1ul;
         for (int i = 1; i <= 64; i++)
         {
-            ulong h1 = Xx2Hash64.ComputeHash(BitConverter.GetBytes(val));
-            ulong h2 = Xx2Hash64.ComputeIndex(val);
+            ulong h1 = XxHash64.ComputeHash(BitConverter.GetBytes(val));
+            ulong h2 = XxHash64.ComputeIndex(val);
             Assert.Equal(h1, h2);
 
             val <<= 1;

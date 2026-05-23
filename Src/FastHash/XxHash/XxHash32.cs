@@ -1,9 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 
 namespace Genbox.FastHash.XxHash;
 
-public static class Xx2Hash32
+public static class XxHash32
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ComputeIndex(uint input)
@@ -70,7 +70,7 @@ public static class Xx2Hash32
             len--;
         }
 
-        return YC_xmxmx_XXH2_32(h32);
+        return YC_xmxmx_XXH_32(h32);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

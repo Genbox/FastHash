@@ -39,7 +39,7 @@ public class HashTests
         yield return [nameof(MarvinHash32), () => MarvinHash32.ComputeHash(_data, 0x2A, 0x2B), new byte[] { 0xAD, 0x28, 0xBF, 0x22 }];
         yield return [nameof(Murmur3Hash32), () => Murmur3Hash32.ComputeHash(_data), new byte[] { 0xF6, 0x08, 0x79, 0x87 }];
         yield return [nameof(SuperFastHash32), () => SuperFastHash32.ComputeHash(_data), new byte[] { 0x5E, 0xE8, 0x41, 0xB2 }];
-        yield return [nameof(Xx2Hash32), () => Xx2Hash32.ComputeHash(_data), new byte[] { 0x2B, 0xC6, 0xC7, 0x94 }];
+        yield return [nameof(XxHash32), () => XxHash32.ComputeHash(_data), new byte[] { 0x2B, 0xC6, 0xC7, 0x94 }];
     }
 
     public static IEnumerable<object[]> CreateAlgorithms64()
@@ -53,7 +53,8 @@ public class HashTests
         yield return [nameof(SipHash64), () => SipHash64.ComputeHash(_data), new byte[] { 0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97 }];
         yield return [nameof(T1ha2Hash64), () => T1ha2Hash64.ComputeHash(_data), new byte[] { 0xC6, 0x87, 0xF0, 0xA7, 0x0E, 0x1B, 0x29, 0xD7 }];
         yield return [nameof(Wy3Hash64), () => Wy3Hash64.ComputeHash(_data), new byte[] { 0x3F, 0xA2, 0x72, 0x2A, 0x57, 0x74, 0x52, 0xC2 }];
-        yield return [nameof(Xx2Hash64), () => Xx2Hash64.ComputeHash(_data), new byte[] { 0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE }];
+        yield return [nameof(Wy4Hash64), () => Wy4Hash64.ComputeHash(_data), new byte[] { 0xC5, 0x96, 0x5C, 0x8B, 0x33, 0x7D, 0x3F, 0x56 }];
+        yield return [nameof(XxHash64), () => XxHash64.ComputeHash(_data), new byte[] { 0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE }];
         yield return [nameof(Xx3Hash64), () => Xx3Hash64.ComputeHash(_data), new byte[] { 0xBF, 0x39, 0xFF, 0xB1, 0xB7, 0xF4, 0x3B, 0xC3 }];
     }
 
@@ -76,7 +77,7 @@ public class HashTests
             [nameof(Fnv1aHash32Unsafe), () => Fnv1aHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 }],
             [nameof(Murmur3Hash32Unsafe), () => Murmur3Hash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x08, 0x79, 0x87 }],
             [nameof(SuperFastHash32Unsafe), () => SuperFastHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x5E, 0xE8, 0x41, 0xB2 }],
-            [nameof(Xx2Hash32Unsafe), () => Xx2Hash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x2B, 0xC6, 0xC7, 0x94 }]
+            [nameof(XxHash32Unsafe), () => XxHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x2B, 0xC6, 0xC7, 0x94 }]
         ];
     }
 
@@ -91,7 +92,8 @@ public class HashTests
             [nameof(MeowHash64Unsafe), () => MeowHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xCE, 0xF5, 0xCC, 0xAB, 0xBD, 0xC1, 0x2E, 0x9E }],
             [nameof(SipHash64Unsafe), () => SipHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97 }],
             [nameof(Wy3Hash64Unsafe), () => Wy3Hash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x3F, 0xA2, 0x72, 0x2A, 0x57, 0x74, 0x52, 0xC2 }],
-            [nameof(Xx2Hash64Unsafe), () => Xx2Hash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE }],
+            [nameof(Wy4Hash64Unsafe), () => Wy4Hash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xC5, 0x96, 0x5C, 0x8B, 0x33, 0x7D, 0x3F, 0x56 }],
+            [nameof(XxHash64Unsafe), () => XxHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE }],
             [nameof(Xx3Hash64Unsafe), () => Xx3Hash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xBF, 0x39, 0xFF, 0xB1, 0xB7, 0xF4, 0x3B, 0xC3 }]
         ];
     }

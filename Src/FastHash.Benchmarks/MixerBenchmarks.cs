@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Order;
+using BenchmarkDotNet.Order;
 using Genbox.FastHash.TestShared;
 using static Genbox.FastHash.MixFunctions;
 
@@ -50,7 +50,7 @@ public class MixerBenchmarks
         yield return [new MixSpec64(EZ_xmx_FastHash_64)];
         yield return [new MixSpec64(DL_xmxmx_Lea_64)];
         yield return [new MixSpec64(DE_xmxmx_Degski_64)];
-        yield return [new MixSpec64(YC_xmxmx_XXH2_64)];
+        yield return [new MixSpec64(YC_xmxmx_XXH_64)];
         yield return [new MixSpec64(YC_xmx_XXH3_64)];
         yield return [new MixSpec64(GP_mxxmxxm_CityHash_64)];
         yield return [new MixSpec64(PK_rlxrlx_Umash_64)];
@@ -64,7 +64,7 @@ public class MixerBenchmarks
         yield return [new MixSpec32(AA_xmxmx_Murmur_32)];
         yield return [new MixSpec32(DE_xmxmx_Degski_32)];
         yield return [new MixSpec32(FP_xsxxmx_Fp64_32)];
-        yield return [new MixSpec32(YC_xmxmx_XXH2_32)];
+        yield return [new MixSpec32(YC_xmxmx_XXH_32)];
         yield return [new MixSpec32(CW_xmxmx_LowBias_32)];
         yield return [new MixSpec32(CW_xmxmxmx_Triple_32)];
     }

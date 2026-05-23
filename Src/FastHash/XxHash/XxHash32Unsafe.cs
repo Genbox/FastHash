@@ -1,9 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 
 namespace Genbox.FastHash.XxHash;
 
-public static class Xx2Hash32Unsafe
+public static class XxHash32Unsafe
 {
     public static unsafe uint ComputeHash(byte* data, int length, uint seed = 0)
     {

@@ -1,11 +1,11 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 
 namespace Genbox.FastHash.XxHash;
 
-public static class Xx2Hash64Unsafe
+public static class XxHash64Unsafe
 {
-    public static unsafe ulong ComputeHash(byte* data, int length, uint seed = 0)
+    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed = 0)
     {
         ulong h64;
 

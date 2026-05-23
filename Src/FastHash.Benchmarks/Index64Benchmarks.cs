@@ -91,6 +91,8 @@ public class Index64Benchmarks
 
     [Benchmark]
     public ulong Xx2Hash64Test() => Xx2Hash64.ComputeIndex(_value);
+    [Benchmark]
+    public ulong XxHash64Test() => XxHash64.ComputeIndex(_value);
 
     [Benchmark]
     public ulong Xx3Hash64Test() => Xx3Hash64.ComputeIndex(_value);

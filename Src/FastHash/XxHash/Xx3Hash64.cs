@@ -7,13 +7,23 @@ namespace Genbox.FastHash.XxHash;
 public static class Xx3Hash64
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input, ulong seed = 0)
+    public static ulong ComputeIndex(ulong input)
+    {
+        uint input1 = (uint)input;
+        uint input2 = (uint)(input >> 32);
+        ulong input64 = input2 + ((ulong)input1 << 32);
+        ulong keyed = input64 ^ SECRET_08_16_XOR;
+        return XXH3_rrmxmx(keyed, 8);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, ulong seed)
     {
         seed ^= (ulong)ByteSwap((uint)seed) << 32;
 
         uint input1 = (uint)input;
         uint input2 = (uint)(input >> 32);
-        ulong bitflip = (Read64(kSecret, 8) ^ Read64(kSecret, 16)) - seed;
+        ulong bitflip = SECRET_08_16_XOR - seed;
         ulong input64 = input2 + ((ulong)input1 << 32);
         ulong keyed = input64 ^ bitflip;
         return XXH3_rrmxmx(keyed, 8);
@@ -22,6 +32,17 @@ public static class Xx3Hash64
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
     {
         int length = data.Length;
+#if NET8_0_OR_GREATER
+        if (length > MIDSIZE_MAX)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = data)
+                    return Xx3Hash64Unsafe.ComputeHash(ptr, length, seed);
+            }
+        }
+#endif
+
         return XXH3_64bits_internal(data, length, seed, kSecret, SECRET_DEFAULT_SIZE, XXH3_hashLong_64b_withSeed);
     }
 
@@ -35,14 +56,11 @@ public static class Xx3Hash64
         return XXH3_hashLong_64b_internal(input, len, secret, SECRET_DEFAULT_SIZE, f_acc512, f_scramble);
     }
 
-    private static ulong XXH3_hashLong_64b_withSeed(ReadOnlySpan<byte> input, int len, ulong seed, ReadOnlySpan<byte> secret, int secretLen)
-    {
-        return XXH3_hashLong_64b_withSeed_internal(input, len, seed, XXH3_accumulate_512_scalar, XXH3_scrambleAcc_scalar, XXH3_initCustomSecret_scalar);
-    }
+    private static ulong XXH3_hashLong_64b_withSeed(ReadOnlySpan<byte> input, int len, ulong seed, ReadOnlySpan<byte> secret, int secretLen) => XXH3_hashLong_64b_withSeed_internal(input, len, seed, XXH3_accumulate_512_scalar, XXH3_scrambleAcc_scalar, XXH3_initCustomSecret_scalar);
 
     private static ulong XXH3_hashLong_64b_internal(ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize, XXH3_f_accumulate_512 f_acc512, XXH3_f_scrambleAcc f_scramble)
     {
-        Span<ulong> acc = stackalloc ulong[ACC_NB * 8];
+        Span<ulong> acc = stackalloc ulong[ACC_NB];
         acc[0] = INIT_ACC[0];
         acc[1] = INIT_ACC[1];
         acc[2] = INIT_ACC[2];
@@ -82,7 +100,7 @@ public static class Xx3Hash64
         if (len > 0)
             return XXH3_len_1to3_64b(input, len, secret, seed);
 
-        return YC_xmxmx_XXH2_64(seed ^ Read64(secret, 56) ^ Read64(secret, 64));
+        return YC_xmxmx_XXH_64(seed ^ Read64(secret, 56) ^ Read64(secret, 64));
     }
 
     private static ulong XXH3_len_9to16_64b(ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, ulong seed)
@@ -139,7 +157,7 @@ public static class Xx3Hash64
         uint combined = ((uint)c1 << 16) | ((uint)c2 << 24) | ((uint)c3 << 0) | ((uint)len << 8);
         ulong bitflip = (Read32(secret) ^ Read32(secret, 4)) + seed;
         ulong keyed = combined ^ bitflip;
-        return YC_xmxmx_XXH2_64(keyed);
+        return YC_xmxmx_XXH_64(keyed);
     }
 
     private static ulong XXH3_len_17to128_64b(ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, ulong seed)

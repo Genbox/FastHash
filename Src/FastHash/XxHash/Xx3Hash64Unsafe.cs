@@ -12,38 +12,33 @@ public static class Xx3Hash64Unsafe
             return XXH3_64bits_internal(data, length, seed, secretPtr, SECRET_DEFAULT_SIZE, XXH3_hashLong_64b_withSeed);
     }
 
-    private static unsafe ulong XXH3_hashLong_64b_withSeed_internal(byte* input, int len, ulong seed, XXH3_f_accumulate_512_unsafe f_acc512, XXH3_f_scrambleAcc_unsafe f_scramble, XXH3_f_initCustomSecret_unsafe f_initSec)
+    private static unsafe ulong XXH3_hashLong_64b_withSeed_internal(byte* input, int len, ulong seed, byte* secret, int secretLen)
     {
         if (seed == 0)
-        {
-            fixed (byte* secretPtr = kSecret)
-                return XXH3_hashLong_64b_internal(input, len, secretPtr, SECRET_DEFAULT_SIZE, f_acc512, f_scramble);
-        }
+            return XXH3_hashLong_64b_internal(input, len, secret, secretLen);
 
-        byte* secret = stackalloc byte[SECRET_DEFAULT_SIZE];
-        f_initSec(secret, seed);
-        return XXH3_hashLong_64b_internal(input, len, secret, SECRET_DEFAULT_SIZE, f_acc512, f_scramble);
+        byte* customSecret = stackalloc byte[SECRET_DEFAULT_SIZE];
+        XXH3_initCustomSecret(customSecret, seed);
+        return XXH3_hashLong_64b_internal(input, len, customSecret, SECRET_DEFAULT_SIZE);
     }
 
-    private static unsafe ulong XXH3_hashLong_64b_withSeed(byte* input, int len, ulong seed, byte* secret, int secretLen) => XXH3_hashLong_64b_withSeed_internal(input, len, seed, XXH3_accumulate_512, XXH3_scrambleAcc, XXH3_initCustomSecret);
+    private static unsafe ulong XXH3_hashLong_64b_withSeed(byte* input, int len, ulong seed, byte* secret, int secretLen) => XXH3_hashLong_64b_withSeed_internal(input, len, seed, secret, secretLen);
 
-    private static unsafe ulong XXH3_hashLong_64b_internal(byte* input, int len, byte* secret, int secretSize, XXH3_f_accumulate_512_unsafe f_acc512, XXH3_f_scrambleAcc_unsafe f_scramble)
+    private static unsafe ulong XXH3_hashLong_64b_internal(byte* input, int len, byte* secret, int secretSize)
     {
-        fixed (ulong* orgAcc = &INIT_ACC[0])
-        {
-            ulong* accPtr = stackalloc ulong[ACC_NB * 8];
-            accPtr[0] = orgAcc[0];
-            accPtr[1] = orgAcc[1];
-            accPtr[2] = orgAcc[2];
-            accPtr[3] = orgAcc[3];
-            accPtr[4] = orgAcc[4];
-            accPtr[5] = orgAcc[5];
-            accPtr[6] = orgAcc[6];
-            accPtr[7] = orgAcc[7];
+        byte* accBytes = stackalloc byte[ACC_SIZE + 64];
+        ulong* accPtr = (ulong*)(((ulong)accBytes + 63UL) & ~63UL);
+        accPtr[0] = INIT_ACC[0];
+        accPtr[1] = INIT_ACC[1];
+        accPtr[2] = INIT_ACC[2];
+        accPtr[3] = INIT_ACC[3];
+        accPtr[4] = INIT_ACC[4];
+        accPtr[5] = INIT_ACC[5];
+        accPtr[6] = INIT_ACC[6];
+        accPtr[7] = INIT_ACC[7];
 
-            XXH3_hashLong_internal_loop(accPtr, input, len, secret, secretSize, f_acc512, f_scramble);
-            return XXH3_mergeAccs(accPtr, secret + SECRET_MERGEACCS_START, (ulong)len * PRIME64_1);
-        }
+        XXH3_hashLong_internal_loop(accPtr, input, len, secret, secretSize);
+        return XXH3_mergeAccs(accPtr, secret + SECRET_MERGEACCS_START, (ulong)len * PRIME64_1);
     }
 
     private static unsafe ulong XXH3_64bits_internal(byte* input, int len, ulong seed64, byte* secret, int secretLen, XXH3_hashLong64_f_unsafe f_hashLong)
@@ -71,7 +66,7 @@ public static class Xx3Hash64Unsafe
         if (len > 0)
             return XXH3_len_1to3_64b(input, len, secret, seed);
 
-        return YC_xmxmx_XXH2_64(seed ^ Read64(secret + 56) ^ Read64(secret + 64));
+        return YC_xmxmx_XXH_64(seed ^ Read64(secret + 56) ^ Read64(secret + 64));
     }
 
     private static unsafe ulong XXH3_len_9to16_64b(byte* input, int len, byte* secret, ulong seed)
@@ -83,7 +78,7 @@ public static class Xx3Hash64Unsafe
         ulong bitflip1 = (Read64(secret + 24) ^ Read64(secret + 32)) + seed;
         ulong bitflip2 = (Read64(secret + 40) ^ Read64(secret + 48)) - seed;
         ulong input_lo = Read64(input) ^ bitflip1;
-        ulong input_hi = Read64(input + len - 8) ^ bitflip2;
+        ulong input_hi = Read64((input + len) - 8) ^ bitflip2;
         ulong acc = (ulong)len
                     + ByteSwap(input_lo) + input_hi
                     + XXH3_mul128_fold64(input_lo, input_hi);
@@ -99,7 +94,7 @@ public static class Xx3Hash64Unsafe
         seed ^= (ulong)ByteSwap((uint)seed) << 32;
 
         uint input1 = Read32(input);
-        uint input2 = Read32(input + len - 4);
+        uint input2 = Read32((input + len) - 4);
         ulong bitflip = (Read64(secret + 8) ^ Read64(secret + 16)) - seed;
         ulong input64 = input2 + ((ulong)input1 << 32);
         ulong keyed = input64 ^ bitflip;
@@ -128,7 +123,7 @@ public static class Xx3Hash64Unsafe
         uint combined = ((uint)c1 << 16) | ((uint)c2 << 24) | ((uint)c3 << 0) | ((uint)len << 8);
         ulong bitflip = (Read32(secret) ^ Read32(secret + 4)) + seed;
         ulong keyed = combined ^ bitflip;
-        return YC_xmxmx_XXH2_64(keyed);
+        return YC_xmxmx_XXH_64(keyed);
     }
 
     private static unsafe ulong XXH3_len_17to128_64b(byte* input, int len, byte* secret, ulong seed)
@@ -153,17 +148,17 @@ public static class Xx3Hash64Unsafe
                 if (len > 96)
                 {
                     acc += XXH3_mix16B(input + 48, secret + 96, seed);
-                    acc += XXH3_mix16B(input + len - 64, secret + 112, seed);
+                    acc += XXH3_mix16B((input + len) - 64, secret + 112, seed);
                 }
                 acc += XXH3_mix16B(input + 32, secret + 64, seed);
-                acc += XXH3_mix16B(input + len - 48, secret + 80, seed);
+                acc += XXH3_mix16B((input + len) - 48, secret + 80, seed);
             }
             acc += XXH3_mix16B(input + 16, secret + 32, seed);
-            acc += XXH3_mix16B(input + len - 32, secret + 48, seed);
+            acc += XXH3_mix16B((input + len) - 32, secret + 48, seed);
         }
 
         acc += XXH3_mix16B(input + 0, secret + 0, seed);
-        acc += XXH3_mix16B(input + len - 16, secret + 16, seed);
+        acc += XXH3_mix16B((input + len) - 16, secret + 16, seed);
 #endif
         return XXH3_avalanche(acc);
     }
@@ -185,7 +180,7 @@ public static class Xx3Hash64Unsafe
             acc += XXH3_mix16B(input + (16 * i), secret + (16 * (i - 8)) + MIDSIZE_STARTOFFSET, seed);
 
         /* last bytes */
-        acc += XXH3_mix16B(input + len - 16, secret + SECRET_SIZE_MIN - MIDSIZE_LASTOFFSET, seed);
+        acc += XXH3_mix16B((input + len) - 16, (secret + SECRET_SIZE_MIN) - MIDSIZE_LASTOFFSET, seed);
         return XXH3_avalanche(acc);
     }
 }

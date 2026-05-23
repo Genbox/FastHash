@@ -1,4 +1,4 @@
-﻿using Genbox.FastHash.XxHash;
+using Genbox.FastHash.XxHash;
 
 namespace Genbox.FastHash.Tests.Single;
 
@@ -6,7 +6,6 @@ public class Xx3HashTests
 {
     private const uint PRIME32 = 2654435761U;
     private const ulong PRIME64 = 11400714785074694797UL;
-    private readonly byte[] _sanityBuffer;
 
     //https://github.com/Cyan4973/xxHash/blob/dev/cli/xsum_sanity_check.c#L131
     private static readonly (int, ulong, ulong)[] _testVectors64 =
@@ -34,6 +33,8 @@ public class Xx3HashTests
         (512, PRIME64, 0x3CE457DE14C27708UL), /* one block, finishing at stripe boundary */
         (2048, 0, 0xDD59E2C3A5F038E0UL), /* 2 blocks, finishing at block boundary */
         (2048, PRIME64, 0x66F81670669ABABCUL), /* 2 blocks, finishing at block boundary */
+        (2099, 0, 0xC6B9D9B3FC9AC765UL), /* 2 blocks + 1 partial block, detects off-by-one scrambling */
+        (2099, PRIME64, 0x184F316843663974UL), /* 2 blocks + 1 partial block, detects off-by-one scrambling */
         (2240, 0, 0x6E73A90539CF2948UL), /* 3 blocks, finishing at stripe boundary */
         (2240, PRIME64, 0x757BA8487D1B5247UL), /* 3 blocks, finishing at stripe boundary */
         (2367, 0, 0xCB37AEB9E5D361EDUL), /* 3 blocks, last stripe is overlapping */
@@ -70,6 +71,7 @@ public class Xx3HashTests
         (2367, 0, new UInt128(0xCB37AEB9E5D361EDUL, 0xE89C0F6FF369B427UL)), /* 3 blocks, last stripe is overlapping */
         (2367, PRIME32, new UInt128(0x6F5360AE69C2F406UL, 0xD23AAE4B76C31ECBUL)) /* 3 blocks, last stripe is overlapping */
     ];
+    private readonly byte[] _sanityBuffer;
 
     public Xx3HashTests()
     {

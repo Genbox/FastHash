@@ -148,11 +148,17 @@ public class HashBenchmarks : IDisposable
     [Benchmark, BenchmarkCategory("SuperFastHash32")]
     public uint SuperFastHash32Test() => SuperFastHash32.ComputeHash(_testData);
 
-    [Benchmark, BenchmarkCategory("Xx2Hash32")]
-    public uint Xx2Hash32Test() => Xx2Hash32.ComputeHash(_testData);
+    [Benchmark, BenchmarkCategory("XxHash32")]
+    public uint XxHash32Test() => XxHash32.ComputeHash(_testData);
 
-    [Benchmark, BenchmarkCategory("Xx2Hash64")]
-    public ulong Xx2Hash64Test() => Xx2Hash64.ComputeHash(_testData);
+    [Benchmark, BenchmarkCategory("XxHash64")]
+    public ulong XxHash64Test() => XxHash64.ComputeHash(_testData);
+
+    [Benchmark, BenchmarkCategory("Xx3Hash64")]
+    public ulong Xx3Hash64Test() => Xx3Hash64.ComputeHash(_testData);
+
+    [Benchmark, BenchmarkCategory("Xx3Hash128")]
+    public UInt128 Xx3Hash128Test() => Xx3Hash128.ComputeHash(_testData);
 
     [Benchmark, BenchmarkCategory("Wy3Hash64")]
     public ulong Wy3Hash64Test() => Wy3Hash64.ComputeHash(_testData);
@@ -211,11 +217,11 @@ public class HashBenchmarks : IDisposable
     [Benchmark, BenchmarkCategory("SuperFastHash32")]
     public unsafe uint SuperFastHash32UnsafeTest() => SuperFastHash32Unsafe.ComputeHash(_ptr, _testData.Length);
 
-    [Benchmark, BenchmarkCategory("Xx2Hash32")]
-    public unsafe uint Xx2Hash32UnsafeTest() => Xx2Hash32Unsafe.ComputeHash(_ptr, _testData.Length);
+    [Benchmark, BenchmarkCategory("XxHash32")]
+    public unsafe uint XxHash32UnsafeTest() => XxHash32Unsafe.ComputeHash(_ptr, _testData.Length);
 
-    [Benchmark, BenchmarkCategory("Xx2Hash64")]
-    public unsafe ulong Xx2Hash64UnsafeTest() => Xx2Hash64Unsafe.ComputeHash(_ptr, _testData.Length);
+    [Benchmark, BenchmarkCategory("XxHash64")]
+    public unsafe ulong XxHash64UnsafeTest() => XxHash64Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark, BenchmarkCategory("Xx3Hash64")]
     public unsafe ulong Xx3Hash64UnsafeTest() => Xx3Hash64Unsafe.ComputeHash(_ptr, _testData.Length);

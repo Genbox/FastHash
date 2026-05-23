@@ -94,7 +94,7 @@ public class IndexTests
         data.Add(new Tuple32(nameof(MarvinHash32), MarvinHash32.ComputeIndex, static x => MarvinHash32.ComputeHash(x)));
         data.Add(new Tuple32(nameof(Murmur3Hash32), Murmur3Hash32.ComputeIndex, static x => Murmur3Hash32.ComputeHash(x)));
         data.Add(new Tuple32(nameof(SuperFastHash32), SuperFastHash32.ComputeIndex, SuperFastHash32.ComputeHash));
-        data.Add(new Tuple32(nameof(Xx2Hash32), Xx2Hash32.ComputeIndex, static x => Xx2Hash32.ComputeHash(x)));
+        data.Add(new Tuple32(nameof(XxHash32), XxHash32.ComputeIndex, static x => XxHash32.ComputeHash(x)));
 
         return data;
     }
@@ -139,7 +139,8 @@ public class IndexTests
         data.Add(new Tuple64(nameof(RapidHashNano64), static x => RapidHashNano64.ComputeIndex(x, 0), static x => RapidHashNano64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(SipHash64), static x => SipHash64.ComputeIndex(x), static x => SipHash64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(Wy3Hash64), Wy3Hash64.ComputeIndex, static x => Wy3Hash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(Xx2Hash64), Xx2Hash64.ComputeIndex, static x => Xx2Hash64.ComputeHash(x)));
+        data.Add(new Tuple64(nameof(Wy4Hash64), static x => Wy4Hash64.ComputeIndex(x), static x => Wy4Hash64.ComputeHash(x)));
+        data.Add(new Tuple64(nameof(XxHash64), XxHash64.ComputeIndex, static x => XxHash64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(Xx3Hash64), static x => Xx3Hash64.ComputeIndex(x), static x => Xx3Hash64.ComputeHash(x)));
 
         return data;

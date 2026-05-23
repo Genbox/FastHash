@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastHash.XxHash;
+namespace Genbox.FastHash.XxHash;
 
 internal static class XxHashConstants
 {
@@ -19,6 +19,9 @@ internal static class XxHashConstants
 
     internal const byte MM_SHUFFLE_0_3_0_1 = 0b0011_0001;
     internal const byte MM_SHUFFLE_1_0_3_2 = 0b0100_1110;
+
+    internal const ulong SECRET_08_16_XOR = 0xc73ab174c5ecd5a2UL;
+    internal const ulong SECRET_16_24_XOR = 0xc4f023344dc994acUL;
 
     internal const uint PRIME32_1 = 2654435761U;
     internal const uint PRIME32_2 = 2246822519U;
