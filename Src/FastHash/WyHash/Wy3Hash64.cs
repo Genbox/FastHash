@@ -72,8 +72,8 @@ public static class Wy3Hash64
                 i -= 16;
                 offset += 16;
             }
-            a = Read64(data, (uint)(offset + i - 16));
-            b = Read64(data, (uint)(offset + i - 8));
+            a = Read64(data, (uint)((offset + i) - 16));
+            b = Read64(data, (uint)((offset + i) - 8));
         }
         return _wymix(secret[1] ^ (uint)len, _wymix(a ^ secret[1], b ^ seed));
     }

@@ -1,4 +1,4 @@
-﻿//#define WYHASH_CONDOM
+//#define WYHASH_CONDOM
 
 //WYHASH_CONDOM protections produce different results:
 //1: normal valid behavior
@@ -60,8 +60,8 @@ public static class Wy3Hash64Unsafe
                     i -= 16;
                     data += 16;
                 }
-                a = Read64(data + i - 16);
-                b = Read64(data + i - 8);
+                a = Read64((data + i) - 16);
+                b = Read64((data + i) - 8);
             }
             return _wymix(secret[1] ^ len, _wymix(a ^ secret[1], b ^ seed));
         }

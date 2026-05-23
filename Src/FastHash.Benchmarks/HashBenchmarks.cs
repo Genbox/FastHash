@@ -169,6 +169,9 @@ public class HashBenchmarks : IDisposable
     [Benchmark, BenchmarkCategory("Wy3Hash64")]
     public ulong Wy3Hash64Test() => Wy3Hash64.ComputeHash(_testData);
 
+    [Benchmark, BenchmarkCategory("Wy4Hash64")]
+    public ulong Wy4Hash64Test() => Wy4Hash64.ComputeHash(_testData);
+
     [Benchmark, BenchmarkCategory("CityHash32")]
     public unsafe uint CityHash32UnsafeTest() => CityHash32Unsafe.ComputeHash(_ptr, _testData.Length);
 
@@ -247,4 +250,7 @@ public class HashBenchmarks : IDisposable
 
     [Benchmark, BenchmarkCategory("Wy3Hash64")]
     public unsafe ulong Wy3Hash64UnsafeTest() => Wy3Hash64Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark, BenchmarkCategory("Wy4Hash64")]
+    public unsafe ulong Wy4Hash64UnsafeTest() => Wy4Hash64Unsafe.ComputeHash(_ptr, _testData.Length);
 }

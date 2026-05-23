@@ -90,7 +90,8 @@ public class Index64Benchmarks
     public ulong Wy3Hash64Test() => Wy3Hash64.ComputeIndex(_value);
 
     [Benchmark]
-    public ulong Xx2Hash64Test() => Xx2Hash64.ComputeIndex(_value);
+    public ulong Wy4Hash64Test() => Wy4Hash64.ComputeIndex(_value);
+
     [Benchmark]
     public ulong XxHash64Test() => XxHash64.ComputeIndex(_value);
 
