@@ -6,25 +6,24 @@ namespace Genbox.FastHash.FoldHash;
 public static class FoldHash64
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input) => ComputeIndexCore(input, 0, DefaultSharedSeed);
+    public static ulong ComputeIndex(ulong input) => FoldHashShared.FoldedMultiply(0x89082efa98ec4e6cUL ^ input, ARBITRARY7 ^ input);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input, ulong seed) => ComputeIndexCore(input, seed, DefaultSharedSeed);
+    public static ulong ComputeIndex(ulong input, ulong seed) => ComputeIndexCore(input, seed);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong ComputeIndexCore(ulong input, ulong seed, ulong[] sharedSeed)
+    private static ulong ComputeIndexCore(ulong input, ulong seed)
     {
-        ulong perHasherSeed = seed ^ ARBITRARY3;
-        ulong accumulator = FoldHashShared.RotateRight(perHasherSeed, 8);
-
+        ulong accumulator = FoldHashShared.RotateRight(seed ^ ARBITRARY3, sizeof(ulong));
         ulong s0 = accumulator ^ input;
-        ulong s1 = sharedSeed[1] ^ input;
+        ulong s1 = ARBITRARY7 ^ input;
         return FoldHashShared.FoldedMultiply(s0, s1);
     }
 
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0, ulong[]? sharedSeed = null)
     {
         sharedSeed ??= DefaultSharedSeed;
+        FoldHashShared.ValidateSharedSeed(sharedSeed, nameof(sharedSeed));
 
         ulong perHasherSeed = seed ^ ARBITRARY3;
         ulong accumulator = FoldHashShared.RotateRight(perHasherSeed, data.Length);
