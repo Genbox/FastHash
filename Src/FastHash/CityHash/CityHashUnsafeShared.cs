@@ -1,4 +1,4 @@
-﻿using static Genbox.FastHash.CityHash.CityHashConstants;
+using static Genbox.FastHash.CityHash.CityHashConstants;
 using static Genbox.FastHash.CityHash.CityHashShared;
 
 namespace Genbox.FastHash.CityHash;
@@ -11,7 +11,7 @@ internal static class CityHashUnsafeShared
         {
             ulong mul = K2 + (len * 2);
             ulong a = Read64(s) + K2;
-            ulong b = Read64(s + len - 8);
+            ulong b = Read64((s + len) - 8);
             ulong c = (RotateRight(b, 37) * mul) + a;
             ulong d = (RotateRight(a, 25) + b) * mul;
             return HashLen16(c, d, mul);
@@ -20,7 +20,7 @@ internal static class CityHashUnsafeShared
         {
             ulong mul = K2 + (len * 2);
             ulong a = Read32(s);
-            return HashLen16(len + (a << 3), Read32(s + len - 4), mul);
+            return HashLen16(len + (a << 3), Read32((s + len) - 4), mul);
         }
         if (len > 0)
         {
@@ -35,13 +35,10 @@ internal static class CityHashUnsafeShared
     }
 
     // Return a 16-byte hash for s[0] ... s[31], a, and b.  Quick and dirty.
-    internal static unsafe UInt128 WeakHashLen32WithSeeds(byte* s, ulong a, ulong b)
-    {
-        return CityHashShared.WeakHashLen32WithSeeds(Read64(s),
-            Read64(s + 8),
-            Read64(s + 16),
-            Read64(s + 24),
-            a,
-            b);
-    }
+    internal static unsafe UInt128 WeakHashLen32WithSeeds(byte* s, ulong a, ulong b) => CityHashShared.WeakHashLen32WithSeeds(Read64(s),
+        Read64(s + 8),
+        Read64(s + 16),
+        Read64(s + 24),
+        a,
+        b);
 }

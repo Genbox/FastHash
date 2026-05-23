@@ -1,4 +1,4 @@
-﻿using static Genbox.FastHash.CityHash.CityHashShared;
+using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.CityHash.CityHashUnsafeShared;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 
@@ -40,8 +40,8 @@ public static class CityHash128Unsafe
         }
         else
         {
-            c = HashLen16(Read64(s + len - 8) + K1, a);
-            d = HashLen16(b + len, c + Read64(s + len - 16));
+            c = HashLen16(Read64((s + len) - 8) + K1, a);
+            d = HashLen16(b + len, c + Read64((s + len) - 16));
             a += d;
             // len > 16 here, so do...while is safe
             do
@@ -110,11 +110,11 @@ public static class CityHash128Unsafe
         {
             tail_done += 32;
             y = (RotateRight(x + y, 42) * K0) + v.High;
-            w.Low += Read64(s + len - tail_done + 16);
+            w.Low += Read64(((s + len) - tail_done) + 16);
             x = (x * K0) + w.Low;
-            z += w.High + Read64(s + len - tail_done);
+            z += w.High + Read64((s + len) - tail_done);
             w.High += v.Low;
-            v = WeakHashLen32WithSeeds(s + len - tail_done, v.Low + z, v.High);
+            v = WeakHashLen32WithSeeds((s + len) - tail_done, v.Low + z, v.High);
             v.Low *= K0;
         }
         // At this point our 56 bytes of state should contain more than

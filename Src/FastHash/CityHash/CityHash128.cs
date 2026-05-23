@@ -43,6 +43,9 @@ public static class CityHash128
 
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data, UInt128 seed) => CityHash128WithSeed(data, (uint)data.Length, seed);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ulong Hash128To64(UInt128 value) => HashLen16(value.Low, value.High);
+
     // A subroutine for CityHash128().  Returns a decent 128-bit hash for strings
     // of any length representable in signed long.  Based on City and Murmur.
     private static UInt128 CityMurmur(ReadOnlySpan<byte> s, uint len, UInt128 seed)
@@ -131,11 +134,11 @@ public static class CityHash128
         {
             tail_done += 32;
             y = (RotateRight(x + y, 42) * K0) + v.High;
-            w.Low += Read64(s, offset + len - tail_done + 16);
+            w.Low += Read64(s, ((offset + len) - tail_done) + 16);
             x = (x * K0) + w.Low;
-            z += w.High + Read64(s, offset + len - tail_done);
+            z += w.High + Read64(s, (offset + len) - tail_done);
             w.High += v.Low;
-            v = WeakHashLen32WithSeeds(s, offset + len - tail_done, v.Low + z, v.High);
+            v = WeakHashLen32WithSeeds(s, (offset + len) - tail_done, v.Low + z, v.High);
             v.Low *= K0;
         }
         // At this point our 56 bytes of state should contain more than

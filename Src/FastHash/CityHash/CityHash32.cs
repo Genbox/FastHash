@@ -23,15 +23,17 @@ public static class CityHash32
         return AA_xmxmx_Murmur_32(Mur(b, Mur(4, c)));
     }
 
-    public static uint ComputeHash(ReadOnlySpan<byte> data)
+    public static uint ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         uint len = (uint)data.Length;
 
         if (len <= 24)
-            return len <= 12 ? len <= 4 ? Hash32Len0to4(data, len) : Hash32Len5to12(data, len) : Hash32Len13to24(data, len);
+            return len <= 12 ? len <= 4 ? Hash32Len0to4(data, len, seed) : Hash32Len5to12(data, len, seed) : Hash32Len13to24(data, len, seed);
 
         // len > 24
-        uint h = len, g = C1 * h, f = g;
+        uint h = len + seed, g = C1 * h, f = g;
         uint a0 = RotateRight(Read32(data, len - 4) * C1, 17) * C2;
         uint a1 = RotateRight(Read32(data, len - 8) * C1, 17) * C2;
         uint a2 = RotateRight(Read32(data, len - 16) * C1, 17) * C2;
@@ -108,10 +110,32 @@ public static class CityHash32
         return AA_xmxmx_Murmur_32(Mur(b, Mur(len, c)));
     }
 
+    private static uint Hash32Len0to4(ReadOnlySpan<byte> s, uint len, uint seed)
+    {
+        uint b = seed;
+        uint c = 9;
+        for (int i = 0; i < len; i++)
+        {
+            uint v = (uint)(sbyte)s[i];
+            b = (b * C1) + v;
+            c ^= b;
+        }
+        return AA_xmxmx_Murmur_32(Mur(b, Mur(len, c)));
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static uint Hash32Len5to12(ReadOnlySpan<byte> s, uint len)
     {
         uint a = len, b = a * 5, c = 9, d = b;
+        a += Read32(s);
+        b += Read32(s, len - 4);
+        c += Read32(s, (len >> 1) & 4);
+        return AA_xmxmx_Murmur_32(Mur(c, Mur(b, Mur(a, d))));
+    }
+
+    private static uint Hash32Len5to12(ReadOnlySpan<byte> s, uint len, uint seed)
+    {
+        uint a = len + seed, b = a * 5, c = 9, d = b;
         a += Read32(s);
         b += Read32(s, len - 4);
         c += Read32(s, (len >> 1) & 4);
@@ -128,6 +152,19 @@ public static class CityHash32
         uint e = Read32(s);
         uint f = Read32(s, len - 4);
         uint h = len;
+
+        return AA_xmxmx_Murmur_32(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
+    }
+
+    private static uint Hash32Len13to24(ReadOnlySpan<byte> s, uint len, uint seed)
+    {
+        uint a = Read32(s, (len >> 1) - 4);
+        uint b = Read32(s, 4);
+        uint c = Read32(s, len - 8);
+        uint d = Read32(s, len >> 1);
+        uint e = Read32(s);
+        uint f = Read32(s, len - 4);
+        uint h = len + seed;
 
         return AA_xmxmx_Murmur_32(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
     }

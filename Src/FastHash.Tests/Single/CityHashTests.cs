@@ -1,4 +1,4 @@
-﻿using Genbox.FastHash.CityHash;
+using Genbox.FastHash.CityHash;
 
 namespace Genbox.FastHash.Tests.Single;
 
@@ -326,7 +326,7 @@ public class CityHashTests
                 a += b;
                 b += a;
                 a = (a ^ (a >> 41)) * CityHashConstants.K0;
-                b = (b ^ (b >> 41)) * CityHashConstants.K0 + (ulong)i;
+                b = ((b ^ (b >> 41)) * CityHashConstants.K0) + (ulong)i;
                 byte u = (byte)(b >> 37);
                 _data[i] = u;
             }
@@ -341,7 +341,7 @@ public class CityHashTests
             int i = 0;
             for (; i < TestSize - 1; i++)
             {
-                Assert.Equal(_testData[i][15], CityHash32Unsafe.ComputeHash(data + i * i, i));
+                Assert.Equal(_testData[i][15], CityHash32Unsafe.ComputeHash(data + (i * i), i));
                 Assert.Equal(_testData[i][15], CityHash32.ComputeHash(_data.AsSpan(i * i, i)));
             }
 
@@ -358,9 +358,9 @@ public class CityHashTests
             int i = 0;
             for (; i < TestSize - 1; i++)
             {
-                Assert.Equal(_testData[i][0], CityHash64Unsafe.ComputeHash(data + i * i, i));
-                Assert.Equal(_testData[i][1], CityHash64Unsafe.ComputeHash(data + i * i, i, Seed0));
-                Assert.Equal(_testData[i][2], CityHash64Unsafe.ComputeHash(data + i * i, i, Seed0, Seed1));
+                Assert.Equal(_testData[i][0], CityHash64Unsafe.ComputeHash(data + (i * i), i));
+                Assert.Equal(_testData[i][1], CityHash64Unsafe.ComputeHash(data + (i * i), i, Seed0));
+                Assert.Equal(_testData[i][2], CityHash64Unsafe.ComputeHash(data + (i * i), i, Seed0, Seed1));
 
                 Assert.Equal(_testData[i][0], CityHash64.ComputeHash(_data.AsSpan(i * i, i)));
                 Assert.Equal(_testData[i][1], CityHash64.ComputeHash(_data.AsSpan(i * i, i), Seed0));
@@ -389,11 +389,11 @@ public class CityHashTests
 
             for (; i < TestSize - 1; i++)
             {
-                u = CityHash128Unsafe.ComputeHash(data + i * i, i);
+                u = CityHash128Unsafe.ComputeHash(data + (i * i), i);
                 val = new UInt128(_testData[i][3], _testData[i][4]);
                 Assert.Equal(val, u);
 
-                v = CityHash128Unsafe.ComputeHash(data + i * i, i, Seed128);
+                v = CityHash128Unsafe.ComputeHash(data + (i * i), i, Seed128);
                 val = new UInt128(_testData[i][5], _testData[i][6]);
                 Assert.Equal(val, v);
 
@@ -421,6 +421,97 @@ public class CityHashTests
             v = CityHash128.ComputeHash(_data, Seed128);
             val = new UInt128(_testData[i][5], _testData[i][6]);
             Assert.Equal(val, v);
+        }
+    }
+
+    [Fact]
+    public unsafe void CityHashCrc128Test()
+    {
+        if (!CityHashCrc128.IsSupported)
+            return;
+
+        fixed (byte* data = _data)
+        {
+            int i = 0;
+            UInt128 u;
+            UInt128 v;
+            UInt128 val;
+
+            for (; i < TestSize - 1; i++)
+            {
+                u = CityHashCrc128Unsafe.ComputeHash(data + (i * i), i);
+                val = new UInt128(_testData[i][7], _testData[i][8]);
+                Assert.Equal(val, u);
+
+                v = CityHashCrc128Unsafe.ComputeHash(data + (i * i), i, Seed128);
+                val = new UInt128(_testData[i][9], _testData[i][10]);
+                Assert.Equal(val, v);
+
+                u = CityHashCrc128.ComputeHash(_data.AsSpan(i * i, i));
+                val = new UInt128(_testData[i][7], _testData[i][8]);
+                Assert.Equal(val, u);
+
+                v = CityHashCrc128.ComputeHash(_data.AsSpan(i * i, i), Seed128);
+                val = new UInt128(_testData[i][9], _testData[i][10]);
+                Assert.Equal(val, v);
+            }
+
+            u = CityHashCrc128Unsafe.ComputeHash(data, DataSize);
+            val = new UInt128(_testData[i][7], _testData[i][8]);
+            Assert.Equal(val, u);
+
+            v = CityHashCrc128Unsafe.ComputeHash(data, DataSize, Seed128);
+            val = new UInt128(_testData[i][9], _testData[i][10]);
+            Assert.Equal(val, v);
+
+            u = CityHashCrc128.ComputeHash(_data);
+            val = new UInt128(_testData[i][7], _testData[i][8]);
+            Assert.Equal(val, u);
+
+            v = CityHashCrc128.ComputeHash(_data, Seed128);
+            val = new UInt128(_testData[i][9], _testData[i][10]);
+            Assert.Equal(val, v);
+        }
+    }
+
+    [Fact]
+    public unsafe void CityHashCrc256Test()
+    {
+        if (!CityHashCrc256.IsSupported)
+            return;
+
+        fixed (byte* data = _data)
+        {
+            int i = 0;
+            ulong* unsafeResult = stackalloc ulong[4];
+            Span<ulong> result = stackalloc ulong[4];
+
+            for (; i < TestSize - 1; i++)
+            {
+                CityHashCrc256Unsafe.ComputeHash(data + (i * i), i, unsafeResult);
+                AssertCrc256Unsafe(i, unsafeResult);
+
+                CityHashCrc256.ComputeHash(_data.AsSpan(i * i, i), result);
+                AssertCrc256(i, result);
+            }
+
+            CityHashCrc256Unsafe.ComputeHash(data, DataSize, unsafeResult);
+            AssertCrc256Unsafe(i, unsafeResult);
+
+            CityHashCrc256.ComputeHash(_data, result);
+            AssertCrc256(i, result);
+        }
+
+        void AssertCrc256Unsafe(int index, ulong* result)
+        {
+            for (int j = 0; j < 4; j++)
+                Assert.Equal(_testData[index][11 + j], result[j]);
+        }
+
+        void AssertCrc256(int index, ReadOnlySpan<ulong> result)
+        {
+            for (int j = 0; j < 4; j++)
+                Assert.Equal(_testData[index][11 + j], result[j]);
         }
     }
 }

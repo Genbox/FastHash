@@ -6,20 +6,22 @@ namespace Genbox.FastHash.CityHash;
 
 public static class CityHash32Unsafe
 {
-    public static unsafe uint ComputeHash(byte* data, int length)
+    public static unsafe uint ComputeHash(byte* data, int length) => ComputeHash(data, length, 0);
+
+    public static unsafe uint ComputeHash(byte* data, int length, uint seed)
     {
         uint len = (uint)length;
 
         if (len <= 24)
-            return len <= 12 ? len <= 4 ? Hash32Len0to4(data, len) : Hash32Len5to12(data, len) : Hash32Len13to24(data, len);
+            return len <= 12 ? len <= 4 ? Hash32Len0to4(data, len, seed) : Hash32Len5to12(data, len, seed) : Hash32Len13to24(data, len, seed);
 
         // len > 24
-        uint h = len, g = C1 * h, f = g;
-        uint a0 = RotateRight(Read32(data + len - 4) * C1, 17) * C2;
-        uint a1 = RotateRight(Read32(data + len - 8) * C1, 17) * C2;
-        uint a2 = RotateRight(Read32(data + len - 16) * C1, 17) * C2;
-        uint a3 = RotateRight(Read32(data + len - 12) * C1, 17) * C2;
-        uint a4 = RotateRight(Read32(data + len - 20) * C1, 17) * C2;
+        uint h = len + seed, g = C1 * h, f = g;
+        uint a0 = RotateRight(Read32((data + len) - 4) * C1, 17) * C2;
+        uint a1 = RotateRight(Read32((data + len) - 8) * C1, 17) * C2;
+        uint a2 = RotateRight(Read32((data + len) - 16) * C1, 17) * C2;
+        uint a3 = RotateRight(Read32((data + len) - 12) * C1, 17) * C2;
+        uint a4 = RotateRight(Read32((data + len) - 20) * C1, 17) * C2;
         h ^= a0;
         h = RotateRight(h, 19);
         h = (h * 5) + 0xe6546b64;
@@ -90,12 +92,34 @@ public static class CityHash32Unsafe
         return AA_xmxmx_Murmur_32(Mur(b, Mur(len, c)));
     }
 
+    private static unsafe uint Hash32Len0to4(byte* s, uint len, uint seed)
+    {
+        uint b = seed;
+        uint c = 9;
+        for (int i = 0; i < len; i++)
+        {
+            uint v = (uint)(sbyte)*(s + i);
+            b = (b * C1) + v;
+            c ^= b;
+        }
+        return AA_xmxmx_Murmur_32(Mur(b, Mur(len, c)));
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static unsafe uint Hash32Len5to12(byte* s, uint len)
     {
         uint a = len, b = len * 5, c = 9, d = b;
         a += Read32(s);
-        b += Read32(s + len - 4);
+        b += Read32((s + len) - 4);
+        c += Read32(s + ((len >> 1) & 4));
+        return AA_xmxmx_Murmur_32(Mur(c, Mur(b, Mur(a, d))));
+    }
+
+    private static unsafe uint Hash32Len5to12(byte* s, uint len, uint seed)
+    {
+        uint a = len + seed, b = a * 5, c = 9, d = b;
+        a += Read32(s);
+        b += Read32((s + len) - 4);
         c += Read32(s + ((len >> 1) & 4));
         return AA_xmxmx_Murmur_32(Mur(c, Mur(b, Mur(a, d))));
     }
@@ -103,13 +127,26 @@ public static class CityHash32Unsafe
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static unsafe uint Hash32Len13to24(byte* s, uint len)
     {
-        uint a = Read32(s - 4 + (len >> 1));
+        uint a = Read32((s - 4) + (len >> 1));
         uint b = Read32(s + 4);
-        uint c = Read32(s + len - 8);
+        uint c = Read32((s + len) - 8);
         uint d = Read32(s + (len >> 1));
         uint e = Read32(s);
-        uint f = Read32(s + len - 4);
+        uint f = Read32((s + len) - 4);
         uint h = len;
+
+        return AA_xmxmx_Murmur_32(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
+    }
+
+    private static unsafe uint Hash32Len13to24(byte* s, uint len, uint seed)
+    {
+        uint a = Read32((s - 4) + (len >> 1));
+        uint b = Read32(s + 4);
+        uint c = Read32((s + len) - 8);
+        uint d = Read32(s + (len >> 1));
+        uint e = Read32(s);
+        uint f = Read32((s + len) - 4);
+        uint h = len + seed;
 
         return AA_xmxmx_Murmur_32(Mur(f, Mur(e, Mur(d, Mur(c, Mur(b, Mur(a, h)))))));
     }
