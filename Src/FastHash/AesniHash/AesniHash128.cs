@@ -1,7 +1,7 @@
 #if NET8_0_OR_GREATER
-using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
@@ -9,15 +9,23 @@ namespace Genbox.FastHash.AesniHash;
 
 public static class AesniHash128
 {
+    public static bool IsSupported => Aes.IsSupported && Sse2.IsSupported && Ssse3.IsSupported;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UInt128 ComputeIndex(ulong input, uint seed = 0)
     {
+        if (!IsSupported)
+            throw new PlatformNotSupportedException("AesniHash requires AES, SSE2, and SSSE3 intrinsics.");
+
         Vector128<byte> res = Hash128Len8(input, seed);
         return Unsafe.As<Vector128<byte>, UInt128>(ref res);
     }
 
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
     {
+        if (!IsSupported)
+            throw new PlatformNotSupportedException("AesniHash requires AES, SSE2, and SSSE3 intrinsics.");
+
         Vector128<byte> res = Hash128(data, seed);
         return Unsafe.As<Vector128<byte>, UInt128>(ref res);
     }
@@ -34,6 +42,7 @@ public static class AesniHash128
         Vector128<byte> s = Vector128.Create((byte)12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3);
 
         int msg = 0;
+        ref byte ptr = ref MemoryMarshal.GetReference(data);
 
         if (len > 80)
         {
@@ -44,10 +53,10 @@ public static class AesniHash128
 
             do
             {
-                a = Sse2.Xor(a, Vector128.Create(data[msg..]));
-                b = Sse2.Xor(b, Vector128.Create(data[(msg + 16)..]));
-                c = Sse2.Xor(c, Vector128.Create(data[(msg + 32)..]));
-                d = Sse2.Xor(d, Vector128.Create(data[(msg + 48)..]));
+                a = Sse2.Xor(a, Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, msg)));
+                b = Sse2.Xor(b, Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, msg + 16)));
+                c = Sse2.Xor(c, Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, msg + 32)));
+                d = Sse2.Xor(d, Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, msg + 48)));
                 a = Ssse3.Shuffle(Aes.Encrypt(a, m), s);
                 b = Ssse3.Shuffle(Aes.Decrypt(b, m), s);
                 c = Ssse3.Shuffle(Aes.Encrypt(c, m), s);
@@ -64,7 +73,7 @@ public static class AesniHash128
 
         while (len >= 16)
         {
-            Mix(Vector128.Create(data[msg..]));
+            Mix(Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, msg)));
             msg += 16;
             len -= 16;
         }
@@ -82,8 +91,8 @@ public static class AesniHash128
                 x |= (ulong)data[msg + 12] << 32;
                 goto case 12;
             case 12:
-                x |= BinaryPrimitives.ReadUInt32LittleEndian(data[(msg + 8)..]);
-                Mix(Vector128.Create(BinaryPrimitives.ReadUInt64LittleEndian(data[msg..]), x).AsByte());
+                x |= Read32(data, msg + 8);
+                Mix(Vector128.Create(Read64(data, msg), x).AsByte());
                 break;
             case 11:
                 x |= (uint)data[msg + 10] << 16;
@@ -95,7 +104,7 @@ public static class AesniHash128
                 x |= data[msg + 8];
                 goto case 8;
             case 8:
-                Mix(Vector128.Create(BinaryPrimitives.ReadUInt64LittleEndian(data[msg..]), x).AsByte());
+                Mix(Vector128.Create(Read64(data, msg), x).AsByte());
                 break;
             case 7:
                 x |= (ulong)data[msg + 6] << 48;
@@ -107,7 +116,7 @@ public static class AesniHash128
                 x |= (ulong)data[msg + 4] << 32;
                 goto case 4;
             case 4:
-                x |= BinaryPrimitives.ReadUInt32LittleEndian(data[msg..]);
+                x |= Read32(data, msg);
                 Mix(Vector128.Create(x, 0).AsByte());
                 break;
             case 3:
