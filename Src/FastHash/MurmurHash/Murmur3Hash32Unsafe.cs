@@ -1,4 +1,4 @@
-﻿using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
+using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
 
 namespace Genbox.FastHash.MurmurHash;
 
@@ -10,11 +10,9 @@ public static class Murmur3Hash32Unsafe
         uint h1 = seed;
         uint k1;
 
-        uint* blocks = (uint*)(data + (nblocks * 4));
-
-        for (int i = -nblocks; i != 0; i++)
+        for (int i = 0; i < nblocks; i++)
         {
-            k1 = blocks[i];
+            k1 = Read32(data + (i * 4));
 
             k1 *= C1_32;
             k1 = RotateLeft(k1, 15);

@@ -1,4 +1,4 @@
-﻿using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
+using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
 
 namespace Genbox.FastHash.MurmurHash;
 
@@ -14,12 +14,10 @@ public static class Murmur3Hash128Unsafe
         ulong k1;
         ulong k2;
 
-        ulong* blocks = (ulong*)data;
-
         for (int i = 0; i < nblocks; i++)
         {
-            k1 = blocks[(i * 2) + 0];
-            k2 = blocks[(i * 2) + 1];
+            k1 = Read64(data + (i * 16));
+            k2 = Read64(data + (i * 16) + 8);
 
             k1 *= C1_64;
             k1 = RotateLeft(k1, 31);
