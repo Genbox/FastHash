@@ -9,6 +9,10 @@ namespace Genbox.FastHash.MeowHash;
 
 public static class MeowHash128Unsafe
 {
+    private const int MEOW_PREFETCH_LIMIT = 0x3ff;
+    private const int MEOW_PREFETCH = 4096;
+    private const int MEOW_PAGESIZE = 4096;
+
     private static readonly byte[] _shiftAdjust = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
     private static readonly byte[] _maskLen =
     [
@@ -42,13 +46,13 @@ public static class MeowHash128Unsafe
         0x70, 0x80, 0x1F, 0x2E, 0x28, 0x58, 0xEF, 0xC1,
         0x66, 0x36, 0x92, 0x0D, 0x87, 0x15, 0x74, 0xE6
     ];
-
-    private const int MEOW_PREFETCH_LIMIT = 0x3ff;
-    private const int MEOW_PREFETCH = 4096;
-    private const int MEOW_PAGESIZE = 4096;
+    public static bool IsSupported => Aes.IsSupported && Sse.IsSupported && Sse2.IsSupported && Ssse3.IsSupported;
 
     public static unsafe UInt128 ComputeHash(byte* data, int len)
     {
+        if (!IsSupported)
+            throw new PlatformNotSupportedException("MeowHash requires AES, SSE, SSE2, and SSSE3 intrinsics.");
+
         fixed (byte* seedPtr = _defaultSeed)
         {
             Vector128<byte> res = MeowHash(seedPtr, len, data);
@@ -58,48 +62,40 @@ public static class MeowHash128Unsafe
 
     public static UInt128 ComputeIndex(ulong input)
     {
+        if (!IsSupported)
+            throw new PlatformNotSupportedException("MeowHash requires AES, SSE, SSE2, and SSSE3 intrinsics.");
+
         Vector128<byte> res = ComputeIndexVector(input);
         return Unsafe.As<Vector128<byte>, UInt128>(ref res);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe Vector128<byte> ComputeIndexVector(ulong input)
-    {
-        fixed (byte* seedPtr = _defaultSeed)
-        {
-            return MeowHashLen8(seedPtr, input);
-        }
-    }
+    internal static Vector128<byte> ComputeIndexVector(ulong input) => MeowHashLen8(input);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe Vector128<byte> MeowHashLen8(byte* seed128Init, ulong input)
+    private static Vector128<byte> MeowHashLen8(ulong input)
     {
-        Vector128<byte> xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
-        Vector128<byte> xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
+        Vector128<byte> xmm0 = Vector128.Create(0x8d305a88a8f64332UL, 0x340737e0a2983131UL).AsByte();
+        Vector128<byte> xmm1 = Vector128.Create(0x1df399228293404aUL, 0xc8e6c48ea9ef8200UL).AsByte();
+        Vector128<byte> xmm2 = Vector128.Create(0x37018d631e825294UL, 0xc6904ef36c46e57bUL).AsByte();
+        Vector128<byte> xmm3 = Vector128.Create(0x0dc5977c9bc20accUL, 0x9170545b5b4df8d3UL).AsByte();
+        Vector128<byte> xmm4 = Vector128.Create(0xb19f97985d6d2179UL, 0x5afb8d69ba1013bdUL).AsByte();
+        Vector128<byte> xmm5 = Vector128.Create(0xfbad01bd2dd7ffc2UL, 0xe967a2d6fe1a8e7bUL).AsByte();
+        Vector128<byte> xmm6 = Vector128.Create(0xf9c7125f04c9a76bUL, 0xcf16397b94194a92UL).AsByte();
+        Vector128<byte> xmm7 = Vector128.Create(0xc1ef58282e1f8070UL, 0xe67415870d923666UL).AsByte();
 
-        byte* rcx = seed128Init;
+        Vector128<byte> xmm9 = Vector128.Create(input, 0UL).AsByte();
+        Vector128<byte> xmm11 = Vector128<byte>.Zero;
 
-        movdqu(out xmm0, rcx + 0x00);
-        movdqu(out xmm1, rcx + 0x10);
-        movdqu(out xmm2, rcx + 0x20);
-        movdqu(out xmm3, rcx + 0x30);
-        movdqu(out xmm4, rcx + 0x40);
-        movdqu(out xmm5, rcx + 0x50);
-        movdqu(out xmm6, rcx + 0x60);
-        movdqu(out xmm7, rcx + 0x70);
-
-        xmm9 = Vector128.Create(input, 0UL).AsByte();
-        xmm11 = Vector128<byte>.Zero;
-
-        xmm8 = xmm9;
-        xmm10 = xmm9;
+        Vector128<byte> xmm8 = xmm9;
+        Vector128<byte> xmm10 = xmm9;
         palignr(ref xmm8, xmm11, 15);
         palignr(ref xmm10, xmm11, 1);
 
-        xmm12 = Vector128<byte>.Zero;
-        xmm13 = Vector128<byte>.Zero;
-        xmm14 = Vector128<byte>.Zero;
-        movq(out xmm15, 8UL);
+        Vector128<byte> xmm12 = Vector128<byte>.Zero;
+        Vector128<byte> xmm13 = Vector128<byte>.Zero;
+        Vector128<byte> xmm14 = Vector128<byte>.Zero;
+        movq(out Vector128<byte> xmm15, 8UL);
         palignr(ref xmm12, xmm15, 15);
         palignr(ref xmm14, xmm15, 1);
 
@@ -134,7 +130,7 @@ public static class MeowHash128Unsafe
     public static unsafe Vector128<byte> MeowHash(byte* seed128Init, int len, byte* sourceInit)
     {
         Vector128<byte> xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7; // NOTE(casey): xmm0-xmm7 are the hash accumulation lanes
-        Vector128<byte> xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15; // NOTE(casey): xmm8-xmm15 hold values to be appended (residual, length)
+        Vector128<byte> xmm8, xmm10, xmm15; // NOTE(casey): xmm8-xmm15 hold values to be appended (residual, length)
 
         byte* rax = sourceInit;
         byte* rcx = seed128Init;
@@ -198,14 +194,12 @@ public static class MeowHash128Unsafe
         MEOW_DUMP_STATE("PostBlocks", xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7);
 
         // NOTE(casey): Load any less-than-32-byte residual
-        xmm9 = Vector128<byte>.Zero;
-        xmm11 = Vector128<byte>.Zero;
-
+        Vector128<byte> xmm9 = Vector128<byte>.Zero;
+        Vector128<byte> xmm11 = Vector128<byte>.Zero;
         // TODO(casey): I need to put more thought into how the end-of-buffer stuff is actually working out here,
         // because I _think_ it may be possible to remove the first branch (on Len8) and let the mask zero out the
         // result, but it would take a little thought to make sure it couldn't read off the end of the buffer due
         // to the & 0xf on the align computation.
-
         // NOTE(casey): First, we have to load the part that is _not_ 16-byte aligned
         byte* last = sourceInit + (len & ~0xf);
         uint len8 = (uint)(len & 0xf);
@@ -213,18 +207,14 @@ public static class MeowHash128Unsafe
         {
             // NOTE(casey): Load the mask early
             fixed (byte* meowMaskLen = _maskLen)
-            {
                 xmm8 = Sse2.LoadVector128(&meowMaskLen[0x10 - len8]);
-            }
 
-            byte* lastOk = (byte*)(((ulong)(sourceInit + len - 1) | (MEOW_PAGESIZE - 1)) - 16);
+            byte* lastOk = (byte*)(((ulong)((sourceInit + len) - 1) | (MEOW_PAGESIZE - 1)) - 16);
 
             int align = last > lastOk ? (int)(ulong)last & 0xf : 0;
 
             fixed (byte* meowShiftAdjust = _shiftAdjust)
-            {
                 movdqu(out xmm10, &meowShiftAdjust[align]);
-            }
 
             movdqu(out xmm9, last - align);
             pshufb(ref xmm9, xmm10);
@@ -249,9 +239,9 @@ public static class MeowHash128Unsafe
         // NOTE(casey): We have room for a 128-bit nonce and a 64-bit none here, but
         // the decision was made to leave them zero'd so as not to confuse people
         // about hwo to use them or what security implications they had.
-        xmm12 = Vector128<byte>.Zero;
-        xmm13 = Vector128<byte>.Zero;
-        xmm14 = Vector128<byte>.Zero;
+        Vector128<byte> xmm12 = Vector128<byte>.Zero;
+        Vector128<byte> xmm13 = Vector128<byte>.Zero;
+        Vector128<byte> xmm14 = Vector128<byte>.Zero;
         movq(out xmm15, (ulong)len);
         palignr(ref xmm12, xmm15, 15);
         palignr(ref xmm14, xmm15, 1);
@@ -400,17 +390,9 @@ public static class MeowHash128Unsafe
     }
 
     [Conditional("MEOW_DEBUG")]
-    private static void MEOW_DUMP_STATE(string title, Vector128<byte> xmm0)
-    {
-        Console.Write(title + ": ");
-        PrintVector(xmm0);
-        Console.WriteLine();
-    }
-
-    [Conditional("MEOW_DEBUG")]
     private static void PrintVector(Vector128<byte> vector)
     {
-        var values = vector.AsUInt64();
+        Vector128<ulong> values = vector.AsUInt64();
 
         for (int i = 0; i < 2; i++)
             Console.Write(values[i] + " ");
