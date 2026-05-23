@@ -1,4 +1,4 @@
-﻿using Genbox.FastHash.DjbHash;
+using Genbox.FastHash.DjbHash;
 
 namespace Genbox.FastHash.Tests.Single;
 

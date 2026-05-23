@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastHash.Benchmarks.Code;
+namespace Genbox.FastHash.Benchmarks.Code;
 
 public static class BenchmarkHelper
 {

@@ -1,4 +1,4 @@
-﻿using Genbox.FastHash.SipHash;
+using Genbox.FastHash.SipHash;
 
 namespace Genbox.FastHash.Tests.Single;
 

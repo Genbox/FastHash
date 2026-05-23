@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastHash.DjbHash;
+namespace Genbox.FastHash.DjbHash;
 
 internal static class DjbHashConstants
 {

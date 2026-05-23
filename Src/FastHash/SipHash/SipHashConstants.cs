@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastHash.SipHash;
+namespace Genbox.FastHash.SipHash;
 
 public static class SipHashConstants
 {

@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastHash.Examples;
+namespace Genbox.FastHash.Examples;
 
 public static class Program
 {

@@ -1,4 +1,4 @@
-﻿using Genbox.FastHash.HighwayHash;
+using Genbox.FastHash.HighwayHash;
 
 namespace Genbox.FastHash.Tests.Single;
 

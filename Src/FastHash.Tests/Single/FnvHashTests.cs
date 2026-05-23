@@ -1,4 +1,4 @@
-﻿using Genbox.FastHash.FnvHash;
+using Genbox.FastHash.FnvHash;
 
 namespace Genbox.FastHash.Tests.Single;
 

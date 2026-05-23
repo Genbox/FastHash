@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using Genbox.FastHash.CityHash;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.FarmHash.FarmHashConstants;

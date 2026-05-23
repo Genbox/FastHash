@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastHash.FarmHash;
+namespace Genbox.FastHash.FarmHash;
 
 internal static class FarmHashConstants
 {

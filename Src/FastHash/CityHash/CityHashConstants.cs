@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastHash.CityHash;
+namespace Genbox.FastHash.CityHash;
 
 internal static class CityHashConstants
 {

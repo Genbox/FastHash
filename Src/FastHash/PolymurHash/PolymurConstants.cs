@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastHash.PolymurHash;
+namespace Genbox.FastHash.PolymurHash;
 
 internal static class PolymurConstants
 {

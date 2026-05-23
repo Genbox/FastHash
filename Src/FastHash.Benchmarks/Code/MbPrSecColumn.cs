@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Mathematics;
 using BenchmarkDotNet.Reports;
