@@ -1,4 +1,4 @@
-﻿// ReSharper disable StringLiteralTypo
+// ReSharper disable StringLiteralTypo
 // ReSharper disable IdentifierTypo
 using System.Text;
 using Genbox.FastHash.PolymurHash;
@@ -7,7 +7,35 @@ namespace Genbox.FastHash.Tests.Single;
 
 public class PolymurHashTests
 {
-    private string[] POLYMUR_TEST_STRINGS =
+    private readonly ulong[] POLYMUR_REFERENCE_VALUES =
+    [
+        0x1a6ef9f9d6c576fbUL, 0xd16d059771c65e13UL, 0x5ee4e0c09f562f87UL, 0x535b5311db007b0bUL,
+        0xd17124f14bd16b5dUL, 0xe84c87105c5b5cadUL, 0xb16ce684b89df9c0UL, 0x656525cace200667UL,
+        0x92b460794885d16dUL, 0xe6cc0fd9725b46b9UL, 0xc875ade1929bc93dUL, 0x68a2686ced37268aUL,
+        0x1d1809fd7e7e14efUL, 0x699b8f31fc40c137UL, 0xd10dca2605654d2dUL, 0xd6bc75cb729f18d7UL,
+        0xfe0c617e7cb1bffeUL, 0xf5f14c731c1b9a22UL, 0x7a0382228d248631UL, 0x6c3a5f49d8a48bc0UL,
+        0x3606ebe637bb4ebcUL, 0xeb4854d75431ad1dUL, 0xfa8ff1a34793ebb0UL, 0x7e46ad8e2338cc38UL,
+        0xf8ff088ada3154b4UL, 0x706669bf0925914fUL, 0x70fc5fbcd3485aceUL, 0x96fd279baed2f2abUL,
+        0x6403a64c68d7bf68UL, 0x3f8f532e1df472e5UL, 0xbfc49c083515596fUL, 0xd678a4b338fbf03bUL,
+        0x127142a2f38b70a1UL, 0x8a1a56fbb85b71f6UL, 0x961d22b14e6f1932UL, 0xa166b0326c942c30UL,
+        0x0f3d837dddb86ae2UL, 0x0f8164504b4ea8b1UL, 0xe4f6475d5a739af4UL, 0xbf535ad625c0d51fUL,
+        0x47f10a5a13be50adUL, 0x3dc5ce9c148969b3UL, 0x8dc071fb4df8e144UL, 0x9d0a83586cbed3b8UL,
+        0xc4379e22f2809b99UL, 0x42010c7dd7657650UL, 0xcc31a6fbcdab8be8UL, 0x7bad06c38400138aUL,
+        0x0178b41584eb483dUL, 0x78afc38d52514efcUL, 0x65a57c4e59288dc7UL, 0x86e7cc3e273e4e47UL,
+        0xeb99661fb41a6bd2UL, 0xea0979aa6cd70febUL, 0xa64a347c0b8e007bUL, 0x3692969270fe8fa4UL,
+        0x17640c6052e26555UL, 0xdf9e0fd276291357UL, 0x64cca6ebf4580720UL, 0xf82b33f6399c3f49UL,
+        0xbe3ccb7526561379UL, 0x8c796fce8509c043UL, 0x9849fded8c92ce51UL, 0xa0e744d838dbc4efUL,
+        0x8e4602d33a961a65UL, 0xda381d6727886a7eUL, 0xa503a344fc066833UL, 0xbf8ff5bc36d5dc7bUL,
+        0x795ae9ed95bca7e9UL, 0x19c80807dc900762UL, 0xea7d27083e6ca641UL, 0xeba7e4a637fe4fb5UL,
+        0x34ac9bde50ce9087UL, 0xe290dd0393f2586aUL, 0xbd7074e9843d9dcaUL, 0x66c17140a05887e6UL,
+        0x4ad7b3e525e37f94UL, 0xde0d009c18880dd6UL, 0x1516bbb1caca46d3UL, 0xe9c907ec28f89499UL,
+        0xd677b655085e1e14UL, 0xac5f949b08f29553UL, 0xd353b06cb49b5503UL, 0x9c25eb30ffa8cc78UL,
+        0x6cf18c91658e0285UL, 0x99264d2b2cc86a77UL, 0x8b438cd1bb8fb65dUL, 0xdfd56cf20b217732UL,
+        0x71f4e35bf761bacfUL, 0x87d7c01f2b11659cUL, 0x95de608c3ad2653cUL, 0x51b50e6996b8de93UL,
+        0xd21e837b2121e8c9UL, 0x73d07c7cb3fa0ba7UL, 0x8113fab03cab6df3UL, 0x57cdddea972cc490UL,
+        0xc3df94778f1eec30UL, 0x7509771e4127701eUL, 0x28240c74c56f8f7cUL, 0x194fa4f68aab8e27UL
+    ];
+    private readonly string[] POLYMUR_TEST_STRINGS =
     [
         "",
         "i",
@@ -111,42 +139,13 @@ public class PolymurHashTests
         "oo70ed77jci4bgodhnyf37axrx4f8gf8qs94f4l9xi9h0jkdl2ozoi2p7q7qu1945l21dzj6rhvqearzrmblfo3ljjldj0m9fue"
     ];
 
-    private ulong[] POLYMUR_REFERENCE_VALUES =
-    [
-        0x1a6ef9f9d6c576fbUL, 0xd16d059771c65e13UL, 0x5ee4e0c09f562f87UL, 0x535b5311db007b0bUL,
-        0xd17124f14bd16b5dUL, 0xe84c87105c5b5cadUL, 0xb16ce684b89df9c0UL, 0x656525cace200667UL,
-        0x92b460794885d16dUL, 0xe6cc0fd9725b46b9UL, 0xc875ade1929bc93dUL, 0x68a2686ced37268aUL,
-        0x1d1809fd7e7e14efUL, 0x699b8f31fc40c137UL, 0xd10dca2605654d2dUL, 0xd6bc75cb729f18d7UL,
-        0xfe0c617e7cb1bffeUL, 0xf5f14c731c1b9a22UL, 0x7a0382228d248631UL, 0x6c3a5f49d8a48bc0UL,
-        0x3606ebe637bb4ebcUL, 0xeb4854d75431ad1dUL, 0xfa8ff1a34793ebb0UL, 0x7e46ad8e2338cc38UL,
-        0xf8ff088ada3154b4UL, 0x706669bf0925914fUL, 0x70fc5fbcd3485aceUL, 0x96fd279baed2f2abUL,
-        0x6403a64c68d7bf68UL, 0x3f8f532e1df472e5UL, 0xbfc49c083515596fUL, 0xd678a4b338fbf03bUL,
-        0x127142a2f38b70a1UL, 0x8a1a56fbb85b71f6UL, 0x961d22b14e6f1932UL, 0xa166b0326c942c30UL,
-        0x0f3d837dddb86ae2UL, 0x0f8164504b4ea8b1UL, 0xe4f6475d5a739af4UL, 0xbf535ad625c0d51fUL,
-        0x47f10a5a13be50adUL, 0x3dc5ce9c148969b3UL, 0x8dc071fb4df8e144UL, 0x9d0a83586cbed3b8UL,
-        0xc4379e22f2809b99UL, 0x42010c7dd7657650UL, 0xcc31a6fbcdab8be8UL, 0x7bad06c38400138aUL,
-        0x0178b41584eb483dUL, 0x78afc38d52514efcUL, 0x65a57c4e59288dc7UL, 0x86e7cc3e273e4e47UL,
-        0xeb99661fb41a6bd2UL, 0xea0979aa6cd70febUL, 0xa64a347c0b8e007bUL, 0x3692969270fe8fa4UL,
-        0x17640c6052e26555UL, 0xdf9e0fd276291357UL, 0x64cca6ebf4580720UL, 0xf82b33f6399c3f49UL,
-        0xbe3ccb7526561379UL, 0x8c796fce8509c043UL, 0x9849fded8c92ce51UL, 0xa0e744d838dbc4efUL,
-        0x8e4602d33a961a65UL, 0xda381d6727886a7eUL, 0xa503a344fc066833UL, 0xbf8ff5bc36d5dc7bUL,
-        0x795ae9ed95bca7e9UL, 0x19c80807dc900762UL, 0xea7d27083e6ca641UL, 0xeba7e4a637fe4fb5UL,
-        0x34ac9bde50ce9087UL, 0xe290dd0393f2586aUL, 0xbd7074e9843d9dcaUL, 0x66c17140a05887e6UL,
-        0x4ad7b3e525e37f94UL, 0xde0d009c18880dd6UL, 0x1516bbb1caca46d3UL, 0xe9c907ec28f89499UL,
-        0xd677b655085e1e14UL, 0xac5f949b08f29553UL, 0xd353b06cb49b5503UL, 0x9c25eb30ffa8cc78UL,
-        0x6cf18c91658e0285UL, 0x99264d2b2cc86a77UL, 0x8b438cd1bb8fb65dUL, 0xdfd56cf20b217732UL,
-        0x71f4e35bf761bacfUL, 0x87d7c01f2b11659cUL, 0x95de608c3ad2653cUL, 0x51b50e6996b8de93UL,
-        0xd21e837b2121e8c9UL, 0x73d07c7cb3fa0ba7UL, 0x8113fab03cab6df3UL, 0x57cdddea972cc490UL,
-        0xc3df94778f1eec30UL, 0x7509771e4127701eUL, 0x28240c74c56f8f7cUL, 0x194fa4f68aab8e27UL
-    ];
-
     [Fact]
     public void TestVectors()
     {
         for (int i = 0; i < POLYMUR_TEST_STRINGS.Length; i++)
         {
             string s = POLYMUR_TEST_STRINGS[i];
-            ulong h = Polymur2Hash64.ComputeHash(Encoding.ASCII.GetBytes(s), 0xabcdef0123456789UL);
+            ulong h = Polymur2Hash64.ComputeHash(Encoding.ASCII.GetBytes(s), 0xfedbca9876543210UL, 0xabcdef0123456789UL);
             ulong expected = POLYMUR_REFERENCE_VALUES[i];
 
             if (expected != h)

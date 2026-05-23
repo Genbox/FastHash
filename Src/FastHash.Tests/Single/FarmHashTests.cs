@@ -6,6 +6,17 @@ public class FarmHashTests
 {
     private const int DataSize = 1 << 20;
     private const int TestSize = 300;
+
+    private static readonly (int Offset, int Length, uint SeedsHigh, uint SeedsLow, uint SeedHigh, uint SeedLow, uint HashHigh, uint HashLow)[] _expected64 =
+    [
+        (0, 0, 1140953930u, 861465670u, 3277735313u, 2681724312u, 2598464059u, 797982799u),
+        (4096, 64, 2657392572u, 4279236653u, 1688445808u, 701920051u, 956734128u, 581695350u),
+        (4225, 65, 1873358321u, 2152785640u, 883382081u, 1005815394u, 1651193125u, 3326135446u),
+        (9216, 96, 2673730227u, 737767009u, 642310823u, 3914002299u, 1055817409u, 3847827123u),
+        (9409, 97, 1334387085u, 4069797497u, 4280783219u, 2914011058u, 4243643405u, 2849988118u),
+        (65536, 256, 3036596491u, 2282550094u, 2366462727u, 2748286642u, 2144472852u, 1390394371u),
+        (66049, 257, 1257385924u, 2205425874u, 2119055686u, 46865323u, 1702434637u, 1766260771u)
+    ];
     private readonly byte[] _data = new byte[DataSize];
 
     //There are more than the needed test vectors, but they are here to keep backwards compat.
@@ -48,7 +59,7 @@ public class FarmHashTests
                 a += b;
                 b += a;
                 a = (a ^ (a >> 41)) * FarmHashConstants.K0;
-                b = (b ^ (b >> 41)) * FarmHashConstants.K0 + (ulong)i;
+                b = ((b ^ (b >> 41)) * FarmHashConstants.K0) + (ulong)i;
                 byte u = (byte)(b >> 37);
                 _data[i] = u;
             }
@@ -61,21 +72,30 @@ public class FarmHashTests
         {
             uint h = (uint)(salt & 0xffffffff);
             h *= FarmHashConstants.C1;
-            h ^= (h >> 17);
+            h ^= h >> 17;
             h *= FarmHashConstants.C1;
-            h ^= (h >> 17);
+            h ^= h >> 17;
             h *= FarmHashConstants.C1;
-            h ^= (h >> 17);
+            h ^= h >> 17;
             h += (uint)(offset & 0xffffffff);
             h *= FarmHashConstants.C1;
-            h ^= (h >> 17);
+            h ^= h >> 17;
             h *= FarmHashConstants.C1;
-            h ^= (h >> 17);
+            h ^= h >> 17;
             h *= FarmHashConstants.C1;
-            h ^= (h >> 17);
+            h ^= h >> 17;
             return h;
         }
     }
+
+    private UInt128 CreateExpected128(int index)
+    {
+        ulong low = ToUInt64(_expected32[index], _expected32[index + 1]);
+        ulong high = ToUInt64(_expected32[index + 2], _expected32[index + 3]);
+        return new UInt128(low, high);
+    }
+
+    private static ulong ToUInt64(uint high, uint low) => ((ulong)high << 32) | low;
 
     [Fact]
     public unsafe void FarmHash32Test()
@@ -95,6 +115,49 @@ public class FarmHashTests
                 Assert.Equal(_expected32[index], FarmHash32.ComputeHash(_data.AsSpan(offset, len), seed));
                 Assert.Equal(_expected32[index + 1], FarmHash32Unsafe.ComputeHash(data + offset, len));
                 Assert.Equal(_expected32[index + 1], FarmHash32.ComputeHash(_data.AsSpan(offset, len)));
+            }
+        }
+    }
+
+    [Fact]
+    public unsafe void FarmHash64Test()
+    {
+        fixed (byte* data = _data)
+        {
+            foreach ((int offset, int len, uint seedsHigh, uint seedsLow, uint seedHigh, uint seedLow, uint hashHigh, uint hashLow) in _expected64)
+            {
+                ulong seed0 = CreateSeed(offset, 0);
+                ulong seed1 = CreateSeed(offset, 1);
+                ulong seed = CreateSeed(offset, -1);
+                ReadOnlySpan<byte> span = _data.AsSpan(offset, len);
+
+                Assert.Equal(ToUInt64(seedsHigh, seedsLow), FarmHash64Unsafe.ComputeHash(data + offset, len, seed0, seed1));
+                Assert.Equal(ToUInt64(seedsHigh, seedsLow), FarmHash64.ComputeHash(span, seed0, seed1));
+                Assert.Equal(ToUInt64(seedHigh, seedLow), FarmHash64Unsafe.ComputeHash(data + offset, len, seed));
+                Assert.Equal(ToUInt64(seedHigh, seedLow), FarmHash64.ComputeHash(span, seed));
+                Assert.Equal(ToUInt64(hashHigh, hashLow), FarmHash64Unsafe.ComputeHash(data + offset, len));
+                Assert.Equal(ToUInt64(hashHigh, hashLow), FarmHash64.ComputeHash(span));
+            }
+        }
+    }
+
+    [Fact]
+    public unsafe void FarmHash128Test()
+    {
+        fixed (byte* data = _data)
+        {
+            int i = 0;
+            for (; i < TestSize - 1; i++)
+            {
+                int offset = i * i;
+                int len = i;
+                int index = i * 10;
+                UInt128 seed = new UInt128(CreateSeed(offset, 0), CreateSeed(offset, 1));
+
+                Assert.Equal(CreateExpected128(index + 2), FarmHash128Unsafe.ComputeHash(data + offset, len));
+                Assert.Equal(CreateExpected128(index + 2), FarmHash128.ComputeHash(_data.AsSpan(offset, len)));
+                Assert.Equal(CreateExpected128(index + 6), FarmHash128Unsafe.ComputeHash(data + offset, len, seed));
+                Assert.Equal(CreateExpected128(index + 6), FarmHash128.ComputeHash(_data.AsSpan(offset, len), seed));
             }
         }
     }

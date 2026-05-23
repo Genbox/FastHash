@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Genbox.FastHash.DjbHash;
 
 namespace Genbox.FastHash.Tests;
@@ -13,7 +13,9 @@ public class GeneralTests
                     type.Name.EndsWith("64", StringComparison.Ordinal) ||
                     type.Name.EndsWith("64Unsafe", StringComparison.Ordinal) ||
                     type.Name.EndsWith("128", StringComparison.Ordinal) ||
-                    type.Name.EndsWith("128Unsafe", StringComparison.Ordinal));
+                    type.Name.EndsWith("128Unsafe", StringComparison.Ordinal) ||
+                    type.Name.EndsWith("256", StringComparison.Ordinal) ||
+                    type.Name.EndsWith("256Unsafe", StringComparison.Ordinal));
     }
 
     public static TheoryData<Type> GetAllTypesOf()

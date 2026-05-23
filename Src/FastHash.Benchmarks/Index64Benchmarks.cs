@@ -1,6 +1,5 @@
 using BenchmarkDotNet.Order;
 using Genbox.FastHash.AesniHash;
-using Genbox.FastHash.Benchmarks.Code;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
@@ -23,8 +22,7 @@ namespace Genbox.FastHash.Benchmarks;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class Index64Benchmarks
 {
-    private readonly ulong _value = 12808224424451380151UL;
-    private readonly UInt128 _gxSeed = new UInt128(0, 0);
+    private readonly ulong _value = 1337; // Keep readonly and non-static. Otherwise, compiler will inline and skew results.
 
     [Benchmark]
     public ulong AesniHash64Test() => AesniHash64.ComputeIndex(_value);
@@ -54,10 +52,7 @@ public class Index64Benchmarks
     public ulong Fnv1aHash64Test() => Fnv1aHash64.ComputeIndex(_value);
 
     [Benchmark]
-    public ulong GxHash64Test() => GxHash64.ComputeIndex(_value);
-
-    [Benchmark]
-    public ulong Gx2Hash64Test() => Gx2Hash64.ComputeIndex(_value, _gxSeed);
+    public ulong Gx2Hash64Test() => Gx2Hash64.ComputeIndex(_value);
 
     [Benchmark]
     public ulong HighwayHash64UnsafeTest() => HighwayHash64Unsafe.ComputeIndex(_value);

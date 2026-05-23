@@ -33,6 +33,6 @@ public class MixerTests
         new MixSpec64(PE_xmxmx_Moremur_64),
         new MixSpec64(YC_xmxmx_XXH_64),
         new MixSpec64(EZ_xmx_FastHash_64),
-        new MixSpec64(PE_rrxrrxmxxmxx_Nasam_64),
+        new MixSpec64(PE_rrxrrxmxxmxx_Nasam_64)
     };
 }

@@ -1,4 +1,3 @@
-using System.Buffers.Binary;
 using Genbox.FastHash.FoldHash;
 
 namespace Genbox.FastHash.Tests.Single;
@@ -9,8 +8,6 @@ public class FoldHashTests
     private static readonly byte[] Hello = "hello"u8.ToArray();
     private static readonly byte[] HelloWorld = "hello world"u8.ToArray();
     private static readonly byte[] Zeros1000 = new byte[1000];
-
-    private readonly record struct Vector(byte[] Data, ulong Seed, ulong Expected);
 
     private static readonly Vector[] FastVectors =
     [
@@ -25,7 +22,7 @@ public class FoldHashTests
         new Vector(Hello, 123, 0x2617e75e24d0373bUL),
         new Vector(HelloWorld, 123, 0xf0682e03604cf4f9UL),
         new Vector(QuickFox, 123, 0x1a8aa0e976f31668UL),
-        new Vector(Zeros1000, 123, 0xf59c4a9a160d63deUL),
+        new Vector(Zeros1000, 123, 0xf59c4a9a160d63deUL)
     ];
 
     private static readonly Vector[] QualityVectors =
@@ -41,7 +38,21 @@ public class FoldHashTests
         new Vector(Hello, 123, 0x7a407c76671b9e93UL),
         new Vector(HelloWorld, 123, 0xbb42d001dbbb69d1UL),
         new Vector(QuickFox, 123, 0x98d4cd66a31b2837UL),
-        new Vector(Zeros1000, 123, 0x7f93a67e18528e30UL),
+        new Vector(Zeros1000, 123, 0x7f93a67e18528e30UL)
+    ];
+
+    private static readonly IndexVector[] IndexVectors =
+    [
+        new IndexVector(0UL, 0, 0xAD05CD10D0315F5DUL, 0xB7D74184AC59C943UL),
+        new IndexVector(1UL, 0, 0x678267DBB38A1AB7UL, 0x86FC857CC78FD78EUL),
+        new IndexVector(0x0123456789abcdefUL, 0, 0x393666F2108FE4FEUL, 0x9597582280314373UL),
+        new IndexVector(12808224424451380151UL, 0, 0x361781E54EC25CC8UL, 0x6897C0253374EC78UL),
+        new IndexVector(ulong.MaxValue, 0, 0x0EE1CE90DFAA1E5DUL, 0xEEC2462AF43D95F7UL),
+        new IndexVector(0UL, 123, 0xC2084AE858EB7C17UL, 0x3073861F9AD95497UL),
+        new IndexVector(1UL, 123, 0x778FE0233B5039FDUL, 0xAA3072DE46B93FD8UL),
+        new IndexVector(0x0123456789abcdefUL, 123, 0xFBE66D6A3310FE81UL, 0xE363F9E9B247A26FUL),
+        new IndexVector(12808224424451380151UL, 123, 0x2C0B0B73F271A6ADUL, 0x6D1A897F6D4C975AUL),
+        new IndexVector(ulong.MaxValue, 123, 0x251242C846CC7B18UL, 0x67F7EA980D0B63B8UL)
     ];
 
     [Fact]
@@ -59,46 +70,28 @@ public class FoldHashTests
     }
 
     [Fact]
-    public void FastComputeIndexMatchesByteHash()
+    public void FastComputeIndexVectors()
     {
-        ulong[] inputs =
-        [
-            0UL,
-            1UL,
-            0x0123456789abcdefUL,
-            12808224424451380151UL,
-            ulong.MaxValue
-        ];
-
-        foreach (ulong input in inputs)
-        {
-            Span<byte> data = stackalloc byte[8];
-            BinaryPrimitives.WriteUInt64LittleEndian(data, input);
-
-            Assert.Equal(FoldHash64.ComputeHash(data), FoldHash64.ComputeIndex(input, 0));
-            Assert.Equal(FoldHash64.ComputeHash(data, 123), FoldHash64.ComputeIndex(input, 123));
-        }
+        foreach (IndexVector vector in IndexVectors)
+            Assert.Equal(vector.FastExpected, FoldHash64.ComputeIndex(vector.Input, vector.Seed));
     }
 
     [Fact]
-    public void QualityComputeIndexMatchesByteHash()
+    public void QualityComputeIndexVectors()
     {
-        ulong[] inputs =
-        [
-            0UL,
-            1UL,
-            0x0123456789abcdefUL,
-            12808224424451380151UL,
-            ulong.MaxValue
-        ];
-
-        foreach (ulong input in inputs)
-        {
-            Span<byte> data = stackalloc byte[8];
-            BinaryPrimitives.WriteUInt64LittleEndian(data, input);
-
-            Assert.Equal(FoldHashQuality64.ComputeHash(data), FoldHashQuality64.ComputeIndex(input, 0));
-            Assert.Equal(FoldHashQuality64.ComputeHash(data, 123), FoldHashQuality64.ComputeIndex(input, 123));
-        }
+        foreach (IndexVector vector in IndexVectors)
+            Assert.Equal(vector.QualityExpected, FoldHashQuality64.ComputeIndex(vector.Input, vector.Seed));
     }
+
+    [Fact]
+    public void CustomSharedSeedMustContainSixValues()
+    {
+        ulong[] sharedSeed = new ulong[5];
+
+        Assert.Throws<ArgumentException>(() => FoldHash64.ComputeHash(Hello, sharedSeed: sharedSeed));
+        Assert.Throws<ArgumentException>(() => FoldHashQuality64.ComputeHash(Hello, sharedSeed: sharedSeed));
+    }
+
+    private readonly record struct Vector(byte[] Data, ulong Seed, ulong Expected);
+    private readonly record struct IndexVector(ulong Input, ulong Seed, ulong FastExpected, ulong QualityExpected);
 }

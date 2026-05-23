@@ -7,8 +7,6 @@ namespace Genbox.FastHash.Tests.Single;
 
 public class MeowHashTests
 {
-    private readonly record struct Vector(string Name, byte[] Data, string Expected);
-
     private static readonly byte[] MessageDigest = "message digest"u8.ToArray();
     private static readonly byte[] Sequence256 = CreateSequence256();
 
@@ -59,5 +57,7 @@ public class MeowHashTests
 
         return data;
     }
+
+    private readonly record struct Vector(string Name, byte[] Data, string Expected);
 }
 #endif

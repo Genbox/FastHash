@@ -1,6 +1,5 @@
 using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Intrinsics.X86;
 using Genbox.FastHash.AesniHash;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
@@ -32,9 +31,16 @@ public class IndexTests
     {
         byte[] valueBytes = new byte[4];
 
-        for (int i = 0; i <= 32; i++)
+        uint[] values = [0u, uint.MaxValue, 0x5555_5555u, 0xAAAA_AAAAu, 0x0123_4567u, 0xFEDC_BA98u];
+
+        foreach (uint value in values)
+            AssertIndex(value);
+
+        for (int i = 0; i < 32; i++)
+            AssertIndex(1u << i);
+
+        void AssertIndex(uint value)
         {
-            uint value = 1u << i;
             uint h1 = c.Index(value);
 
             BinaryPrimitives.WriteUInt32LittleEndian(valueBytes, value);
@@ -50,9 +56,16 @@ public class IndexTests
     {
         byte[] valueBytes = new byte[8];
 
-        for (int i = 0; i <= 64; i++)
+        ulong[] values = [0UL, ulong.MaxValue, 0x5555_5555_5555_5555UL, 0xAAAA_AAAA_AAAA_AAAAUL, 0x0123_4567_89AB_CDEFUL, 0xFEDC_BA98_7654_3210UL];
+
+        foreach (ulong value in values)
+            AssertIndex(value);
+
+        for (int i = 0; i < 64; i++)
+            AssertIndex(1UL << i);
+
+        void AssertIndex(ulong value)
         {
-            ulong value = 1ul << i;
             ulong h1 = c.Index(value);
 
             BinaryPrimitives.WriteUInt64LittleEndian(valueBytes, value);
@@ -68,9 +81,16 @@ public class IndexTests
     {
         byte[] valueBytes = new byte[8];
 
-        for (int i = 0; i <= 64; i++)
+        ulong[] values = [0UL, ulong.MaxValue, 0x5555_5555_5555_5555UL, 0xAAAA_AAAA_AAAA_AAAAUL, 0x0123_4567_89AB_CDEFUL, 0xFEDC_BA98_7654_3210UL];
+
+        foreach (ulong value in values)
+            AssertIndex(value);
+
+        for (int i = 0; i < 64; i++)
+            AssertIndex(1UL << i);
+
+        void AssertIndex(ulong value)
         {
-            ulong value = 1ul << i;
             UInt128 h1 = c.Index(value);
 
             BinaryPrimitives.WriteUInt64LittleEndian(valueBytes, value);
@@ -82,15 +102,14 @@ public class IndexTests
 
     public static TheoryData<Tuple32> Create32()
     {
-        TheoryData<Tuple32> data = new();
+        TheoryData<Tuple32> data = new TheoryData<Tuple32>();
 
         data.Add(new Tuple32(nameof(CityHash32), CityHash32.ComputeIndex, CityHash32.ComputeHash));
         data.Add(new Tuple32(nameof(Djb2AltHash32), Djb2AltHash32.ComputeIndex, Djb2AltHash32.ComputeHash));
         data.Add(new Tuple32(nameof(Djb2Hash32), Djb2Hash32.ComputeIndex, Djb2Hash32.ComputeHash));
         data.Add(new Tuple32(nameof(FarmHash32), FarmHash32.ComputeIndex, FarmHash32.ComputeHash));
         data.Add(new Tuple32(nameof(Fnv1aHash32), Fnv1aHash32.ComputeIndex, Fnv1aHash32.ComputeHash));
-        data.Add(new Tuple32(nameof(GxHash32), static x => GxHash32.ComputeIndex(x), static x => GxHash32.ComputeHash(x)));
-        data.Add(new Tuple32(nameof(Gx2Hash32), static x => Gx2Hash32.ComputeIndex(x, new UInt128(0, 0)), static x => Gx2Hash32.ComputeHash(x, new UInt128(0, 0))));
+        data.Add(new Tuple32(nameof(Gx2Hash32), static x => Gx2Hash32.ComputeIndex(x), static x => Gx2Hash32.ComputeHash(x)));
         data.Add(new Tuple32(nameof(MarvinHash32), MarvinHash32.ComputeIndex, static x => MarvinHash32.ComputeHash(x)));
         data.Add(new Tuple32(nameof(Murmur3Hash32), Murmur3Hash32.ComputeIndex, static x => Murmur3Hash32.ComputeHash(x)));
         data.Add(new Tuple32(nameof(SuperFastHash32), SuperFastHash32.ComputeIndex, SuperFastHash32.ComputeHash));
@@ -101,11 +120,9 @@ public class IndexTests
 
     public static TheoryData<Tuple64> Create64()
     {
-        TheoryData<Tuple64> data = new();
+        TheoryData<Tuple64> data = new TheoryData<Tuple64>();
 
-        if (Aes.IsSupported)
-            data.Add(new Tuple64(nameof(AesniHash64), static x => AesniHash64.ComputeIndex(x), static x => AesniHash64.ComputeHash(x)));
-
+        data.Add(new Tuple64(nameof(AesniHash64), static x => AesniHash64.ComputeIndex(x), static x => AesniHash64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(CityHash64), CityHash64.ComputeIndex, CityHash64.ComputeHash));
         data.Add(new Tuple64(nameof(Djb2AltHash64), Djb2AltHash64.ComputeIndex, Djb2AltHash64.ComputeHash));
         data.Add(new Tuple64(nameof(Djb2Hash64), Djb2Hash64.ComputeIndex, Djb2Hash64.ComputeHash));
@@ -114,8 +131,7 @@ public class IndexTests
         data.Add(new Tuple64(nameof(FoldHashQuality64), static x => FoldHashQuality64.ComputeIndex(x, 0), static x => FoldHashQuality64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(FarmHash64), FarmHash64.ComputeIndex, static x => FarmHash64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(Fnv1aHash64), Fnv1aHash64.ComputeIndex, Fnv1aHash64.ComputeHash));
-        data.Add(new Tuple64(nameof(GxHash64), static x => GxHash64.ComputeIndex(x), static x => GxHash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(Gx2Hash64), static x => Gx2Hash64.ComputeIndex(x, new UInt128(0, 0)), static x => Gx2Hash64.ComputeHash(x, new UInt128(0, 0))));
+        data.Add(new Tuple64(nameof(Gx2Hash64), static x => Gx2Hash64.ComputeIndex(x), static x => Gx2Hash64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(HighwayHash64Unsafe), HighwayHash64Unsafe.ComputeIndex, static x =>
         {
             unsafe
@@ -148,14 +164,12 @@ public class IndexTests
 
     public static TheoryData<Tuple128> Create128()
     {
-        TheoryData<Tuple128> data = new();
+        TheoryData<Tuple128> data = new TheoryData<Tuple128>();
 
-        if (Aes.IsSupported)
-            data.Add(new Tuple128(nameof(AesniHash128), static x => AesniHash128.ComputeIndex(x), static x => AesniHash128.ComputeHash(x)));
-
+        data.Add(new Tuple128(nameof(AesniHash128), static x => AesniHash128.ComputeIndex(x), static x => AesniHash128.ComputeHash(x)));
         data.Add(new Tuple128(nameof(CityHash128), static x => CityHash128.ComputeIndex(x), CityHash128.ComputeHash));
-        data.Add(new Tuple128(nameof(GxHash128), static x => GxHash128.ComputeIndex(x), static x => GxHash128.ComputeHash(x)));
-        data.Add(new Tuple128(nameof(Gx2Hash128), static x => Gx2Hash128.ComputeIndex(x, new UInt128(0, 0)), static x => Gx2Hash128.ComputeHash(x, new UInt128(0, 0))));
+        data.Add(new Tuple128(nameof(FarmHash128), static x => FarmHash128.ComputeIndex(x), FarmHash128.ComputeHash));
+        data.Add(new Tuple128(nameof(Gx2Hash128), static x => Gx2Hash128.ComputeIndex(x), static x => Gx2Hash128.ComputeHash(x)));
         data.Add(new Tuple128(nameof(MeowHash128Unsafe), MeowHash128Unsafe.ComputeIndex, static x =>
         {
             unsafe

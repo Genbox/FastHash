@@ -14,28 +14,27 @@
 
 These hash functions are included in the library.
 
-| Name                                                                                                                                                    | Version | Authors                                                         |   License    |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|-----------------------------------------------------------------|:------------:|
-| [AesniHash](https://github.com/synopse/mORMot2)                                                                                                         |    -    | Arnaud Bouchez                                                  | MPL/GPL/LGPL |
-| [CityHash](https://github.com/google/cityhash)                                                                                                          |   1.1   | Geoff Pike, Jyrki Alakuijala                                    |     MIT      |
-| [DJBHash](http://www.cse.yorku.ca/~oz/hash.html)                                                                                                        |    -    | Daniel J. Bernstein                                             |     None     |
-| [FarmHash](https://github.com/google/farmhash)                                                                                                          |   1.1   | Geoff Pike                                                      |     MIT      |
-| [FarshHash](https://github.com/Bulat-Ziganshin/FARSH)                                                                                                   |    -    | Bulat Ziganshin                                                 |     MIT      |
-| [FNVHash](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function)                                                                   |    -    | Glenn Fowler, Landon Curt Noll, Kiem-Phong Vo                   |     None     |
-| [FoldHash](https://github.com/orlp/foldhash)                                                                                                            |  0.2.0  | Orson Peters                                                    |     Zlib     |
-| [GxHash](https://github.com/ogxd/gxhash)                                                                                                                |    1    | Orso G.                                                         |     MIT      |
-| [Gx2Hash](https://github.com/ogxd/gxhash)                                                                                                               |    2    | Orso G.                                                         |     MIT      |
-| [HighwayHash](https://github.com/google/highwayhash)                                                                                                    |    -    | Jyrki Alakuijala, Bill Cox, Jan Wassenberg                      |  Apache 2.0  |
-| [MarvinHash](https://github.com/dotnet/runtime/blob/4017327955f1d8ddc43980eb1848c52fbb131dfc/src/libraries/System.Private.CoreLib/src/System/Marvin.cs) |    -    | Niels Ferguson, Reid Borsuk, Jeffrey Cooperstein, Matthew Ellis |     MIT      |
-| [MeowHash](https://github.com/cmuratori/meow_hash)                                                                                                      |    -    | Molly Rocket, Inc.                                              |     Zlib     |
-| [MurmurHash](https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp)                                                                      |   3.0   | Austin Appleby                                                  |     None     |
-| [PolymurHash](https://github.com/orlp/polymur-hash)                                                                                                     |   2.0   | Orson Peters                                                    |     Zlib     |
-| [RapidHash](https://github.com/Nicoshev/rapidhash)                                                                                                      |    3    | Nicolas De Carli                                                |     MIT      |
-| [SipHash](https://github.com/veorq/SipHash)                                                                                                             |   1.0   | Jean-Philippe Aumasson, Daniel J. Bernstein                     |   CC0 1.0    |
-| [SuperFastHash](http://www.azillionmonkeys.com/qed/hash.html)                                                                                           |    -    | Paul Hsieh                                                      |   LGPL 2.1   |
-| [T1haHash](https://github.com/erthink/t1ha)                                                                                                             |  2.1.1  | Positive Technologies, Leonid Yuriev                            |     Zlib     |
-| [WyHash](https://github.com/wangyi-fudan/wyhash)                                                                                                        | final 3 | Wang Yi                                                         |     None     |
-| [xxHash](https://github.com/Cyan4973/xxHash)                                                                                                            |  0.8.1  | Yann Collet                                                     | BSD 2-Clause |
+| Name                                                                                                                                                    |   Version    | Authors                                                         |   License    |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------|:------------:|-----------------------------------------------------------------|:------------:|
+| [AesniHash](https://github.com/synopse/mORMot2)                                                                                                         |      -       | Arnaud Bouchez                                                  | MPL/GPL/LGPL |
+| [CityHash](https://github.com/google/cityhash)                                                                                                          |    1.1.1     | Geoff Pike, Jyrki Alakuijala                                    |     MIT      |
+| [DJBHash](http://www.cse.yorku.ca/~oz/hash.html)                                                                                                        |      -       | Daniel J. Bernstein                                             |     None     |
+| [FarmHash](https://github.com/google/farmhash)                                                                                                          |    1.1.0     | Geoff Pike                                                      |     MIT      |
+| [FarshHash](https://github.com/Bulat-Ziganshin/FARSH)                                                                                                   |    0.2.0     | Bulat Ziganshin                                                 |     MIT      |
+| [FNVHash](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function)                                                                   |      -       | Glenn Fowler, Landon Curt Noll, Kiem-Phong Vo                   |   CC0 1.0    |
+| [FoldHash](https://github.com/orlp/foldhash)                                                                                                            |    0.2.0     | Orson Peters                                                    |     Zlib     |
+| [Gx2Hash](https://github.com/ogxd/gxhash)                                                                                                               |    3.5.0     | Orso G.                                                         |     MIT      |
+| [HighwayHash](https://github.com/google/highwayhash)                                                                                                    |      -       | Jyrki Alakuijala, Bill Cox, Jan Wassenberg                      |  Apache 2.0  |
+| [MarvinHash](https://github.com/dotnet/runtime/blob/4017327955f1d8ddc43980eb1848c52fbb131dfc/src/libraries/System.Private.CoreLib/src/System/Marvin.cs) |      -       | Niels Ferguson, Reid Borsuk, Jeffrey Cooperstein, Matthew Ellis |     MIT      |
+| [MeowHash](https://github.com/cmuratori/meow_hash)                                                                                                      |    0.5.0     | Molly Rocket, Inc.                                              |     Zlib     |
+| [MurmurHash](https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp)                                                                      |    3.0.0     | Austin Appleby                                                  | Public domain |
+| [PolymurHash](https://github.com/orlp/polymur-hash)                                                                                                     |    2.0.0     | Orson Peters                                                    |     Zlib     |
+| [RapidHash](https://github.com/Nicoshev/rapidhash)                                                                                                      |    3.0.0     | Nicolas De Carli                                                |     MIT      |
+| [SipHash](https://github.com/veorq/SipHash)                                                                                                             |    1.0.0     | Jean-Philippe Aumasson, Daniel J. Bernstein                     | CC0/MIT/Apache-2.0+LLVM |
+| [SuperFastHash](http://www.azillionmonkeys.com/qed/hash.html)                                                                                           |      -       | Paul Hsieh                                                      | BSD 3-Clause |
+| [T1haHash](https://github.com/erthink/t1ha)                                                                                                             |    2.1.1     | Positive Technologies, Leonid Yuriev                            |     Zlib     |
+| [WyHash](https://github.com/wangyi-fudan/wyhash)                                                                                                        | 3.0.0, 4.3.0 | Wang Yi                                                         |  Unlicense   |
+| [xxHash](https://github.com/Cyan4973/xxHash)                                                                                                            |    0.8.3     | Yann Collet                                                     | BSD 2-Clause |
 
 ### Implementation status
 
@@ -46,23 +45,22 @@ The table below gives an overview of the implementations.
 | AesniHash     |    x    |        |       |   x   |   x    |   x   |   x    |        |          |
 | CityHash      |    x    |   x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
 | DJBHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |          |
-| FarmHash      |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    -     |
+| FarmHash      |    x    |   x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
 | FarshHash     |    x    |   x    |       |   x   |        |   x   |   x    |        |    x     |
 | FNVHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |          |
 | FoldHash      |    x    |        |       |   x   |        |   x   |   x    |   x    |          |
-| GxHash        |    x    |        |   x   |   x   |   x    |   x   |   x    |        |          |
 | Gx2Hash       |    x    |        |   x   |   x   |   x    |   x   |   x    |        |          |
 | HighwayHash   |         |   x    |       |   x   |        |   x   |   x    |        |    x     |
-| MarvinHash    |    x    |        |   x   |       |        |   x   |   x    |        |          |
+| MarvinHash    |    x    |        |   x   |   x   |        |   x   |   x    |        |          |
 | MeowHash      |         |   x    |       |   x   |   x    |   x   |        |        |          |
 | MurmurHash    |    x    |   x    |   x   |       |   x    |   x   |   x    |        |    -     |
 | PolymurHash   |    x    |        |       |   x   |        |   x   |   x    |        |          |
 | RapidHash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
 | SipHash       |    x    |   x    |       |   x   |        |   x   |   x    |        |    x     |
-| SuperFastHash |    x    |   x    |       |       |        |   x   |        |        |          |
+| SuperFastHash |    x    |   x    |   x   |       |        |   x   |   x    |        |          |
 | T1ha2Hash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
-| WyHash        |    x    |   x    |       |   x   |        |   x   |        |        |    x     |
-| xxHash2       |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    x     |
+| WyHash        |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
+| xxHash        |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    x     |
 | xxHash3       |    x    |   x    |       |   x   |   x    |   x   |   x    |        |    x     |
 
 * **Managed:** The there is a fully managed implementation in C#.
@@ -85,9 +83,6 @@ details on hash quality.
 
 | Method                |        Mean |     Error |    StdDev |   MiB/s |
 |-----------------------|------------:|----------:|----------:|--------:|
-| GxHash128             |    266.9 ns |   0.25 ns |   0.15 ns | 117,083 |
-| GxHash32              |    268.9 ns |   0.13 ns |   0.07 ns | 116,235 |
-| GxHash64              |    268.9 ns |   0.16 ns |   0.09 ns | 116,222 |
 | Gx2Hash32             |    273.3 ns |   2.00 ns |   1.32 ns | 114,346 |
 | Gx2Hash128            |    273.8 ns |   2.78 ns |   1.84 ns | 114,123 |
 | Gx2Hash64             |    274.4 ns |   5.37 ns |   3.88 ns | 113,885 |
@@ -98,9 +93,9 @@ details on hash quality.
 | Wy3Hash64Unsafe       |    888.4 ns |   2.24 ns |   1.48 ns |  35,176 |
 | AesniHash64           |    956.9 ns |   9.70 ns |   6.41 ns |  32,656 |
 | AesniHash128          |    957.9 ns |  10.05 ns |   5.98 ns |  32,624 |
-| RapidHashMicro64      |  1,023.7 ns |   3.61 ns |   2.39 ns |  30,527 |
-| RapidHashNano64       |  1,027.4 ns |   2.32 ns |   1.22 ns |  30,415 |
-| RapidHash64           |  1,034.5 ns |  15.90 ns |   9.46 ns |  30,208 |
+| Rapid3HashMicro64     |  1,023.7 ns |   3.61 ns |   2.39 ns |  30,527 |
+| Rapid3HashNano64      |  1,027.4 ns |   2.32 ns |   1.22 ns |  30,415 |
+| Rapid3Hash64          |  1,034.5 ns |  15.90 ns |   9.46 ns |  30,208 |
 | Wy3Hash64             |  1,113.5 ns |   7.36 ns |   4.38 ns |  28,065 |
 | FarmHash64Unsafe      |  1,264.9 ns |   2.77 ns |   1.65 ns |  24,706 |
 | FarmHash64            |  1,265.0 ns |   1.02 ns |   0.53 ns |  24,704 |
@@ -108,12 +103,12 @@ details on hash quality.
 | CityHash128Unsafe     |  1,560.2 ns |   8.06 ns |   5.33 ns |  20,029 |
 | CityHash64Unsafe      |  1,573.0 ns |   1.81 ns |   1.08 ns |  19,866 |
 | CityHash64            |  1,622.3 ns |  31.70 ns |  32.56 ns |  19,262 |
-| Xx2Hash64Unsafe       |  1,697.1 ns |  13.65 ns |   9.03 ns |  18,414 |
-| Xx2Hash64             |  1,718.7 ns |  33.71 ns |  26.32 ns |  18,182 |
+| XxHash64Unsafe        |  1,697.1 ns |  13.65 ns |   9.03 ns |  18,414 |
+| XxHash64              |  1,718.7 ns |  33.71 ns |  26.32 ns |  18,182 |
 | FarshHash64Unsafe     |  2,370.7 ns |  23.88 ns |  15.79 ns |  13,182 |
 | FarshHash64           |  2,927.0 ns |  21.70 ns |  12.91 ns |  10,677 |
-| Xx2Hash32Unsafe       |  3,392.1 ns |  26.25 ns |  15.62 ns |   9,212 |
-| Xx2Hash32             |  3,395.9 ns |  29.93 ns |  19.80 ns |   9,202 |
+| XxHash32Unsafe        |  3,392.1 ns |  26.25 ns |  15.62 ns |   9,212 |
+| XxHash32              |  3,395.9 ns |  29.93 ns |  19.80 ns |   9,202 |
 | Murmur3Hash128Unsafe  |  3,713.3 ns |   2.30 ns |   1.37 ns |   8,416 |
 | Murmur3Hash128        |  3,804.6 ns |  14.37 ns |   9.51 ns |   8,214 |
 | CityHash32Unsafe      |  3,917.9 ns |  10.12 ns |   6.02 ns |   7,976 |
@@ -146,11 +141,9 @@ details on hash quality.
 |---------------------|-----------:|----------:|----------:|
 | Gx2Hash64           |  0.0796 ns | 0.0198 ns | 0.0175 ns |
 | Fnv1aHash32         |  0.1131 ns | 0.0102 ns | 0.0068 ns |
-| GxHash64            |  0.1132 ns | 0.0171 ns | 0.0113 ns |
-| Xx2Hash32           |  0.1249 ns | 0.0141 ns | 0.0093 ns |
+| XxHash32            |  0.1249 ns | 0.0141 ns | 0.0093 ns |
 | FarmHash64          |  0.1299 ns | 0.0069 ns | 0.0041 ns |
 | FoldHash64          |  0.1302 ns | 0.0157 ns | 0.0104 ns |
-| GxHash32            |  0.1316 ns | 0.0205 ns | 0.0136 ns |
 | AesniHash64         |  0.1352 ns | 0.0083 ns | 0.0055 ns |
 | Murmur3Hash32       |  0.1373 ns | 0.0267 ns | 0.0209 ns |
 | Djb2Hash32          |  0.1886 ns | 0.0065 ns | 0.0034 ns |
@@ -160,10 +153,10 @@ details on hash quality.
 | Xx3Hash64           |  0.3700 ns | 0.0167 ns | 0.0099 ns |
 | SuperFastHash32     |  0.3980 ns | 0.0073 ns | 0.0044 ns |
 | FoldHashQuality64   |  0.4183 ns | 0.0319 ns | 0.0231 ns |
-| RapidHashNano64     |  0.4331 ns | 0.0283 ns | 0.0221 ns |
-| RapidHashMicro64    |  0.4446 ns | 0.0278 ns | 0.0184 ns |
-| Xx2Hash64           |  0.4563 ns | 0.0137 ns | 0.0091 ns |
-| RapidHash64         |  0.4869 ns | 0.0556 ns | 0.0617 ns |
+| Rapid3HashNano64    |  0.4331 ns | 0.0283 ns | 0.0221 ns |
+| Rapid3HashMicro64   |  0.4446 ns | 0.0278 ns | 0.0184 ns |
+| XxHash64            |  0.4563 ns | 0.0137 ns | 0.0091 ns |
+| Rapid3Hash64        |  0.4869 ns | 0.0556 ns | 0.0617 ns |
 | MarvinHash32        |  0.6195 ns | 0.0053 ns | 0.0032 ns |
 | FarshHash64         |  0.8928 ns | 0.0050 ns | 0.0033 ns |
 | Fnv1aHash64         |  1.2018 ns | 0.0386 ns | 0.0230 ns |
@@ -215,7 +208,7 @@ details on hash quality.
 | Mix64  | JM_mxma_Depth11_64               | 1.399 ns | 0.0296 ns | 0.0196 ns |
 | Mix64  | JM_mxmxm_Depth13_64              | 1.411 ns | 0.0425 ns | 0.0253 ns |
 | Mix64  | DS_xmxmx_Mix14_64                | 1.413 ns | 0.0507 ns | 0.0335 ns |
-| Mix64  | YC_xmxmx_XXH2_64                 | 1.415 ns | 0.0331 ns | 0.0219 ns |
+| Mix64  | YC_xmxmx_XXH_64                  | 1.415 ns | 0.0331 ns | 0.0219 ns |
 | Mix64  | DS_xmxmx_Mix06_64                | 1.425 ns | 0.0382 ns | 0.0227 ns |
 | Mix64  | DS_xmxmx_Mix13_64                | 1.454 ns | 0.0522 ns | 0.0580 ns |
 | Mix64  | JM_xmxmxmx_Mx3_64                | 1.569 ns | 0.0120 ns | 0.0063 ns |
@@ -223,6 +216,6 @@ details on hash quality.
 | Mix32  | CW_xmxmxmx_Triple_32             | 1.947 ns | 0.0484 ns | 0.0320 ns |
 | Mix32  | AA_xmxmx_Murmur_32               | 2.045 ns | 0.0407 ns | 0.0242 ns |
 | Mix32  | DE_xmxmx_Degski_32               | 2.203 ns | 0.0160 ns | 0.0095 ns |
-| Mix32  | YC_xmxmx_XXH2_32                 | 2.222 ns | 0.0138 ns | 0.0092 ns |
+| Mix32  | YC_xmxmx_XXH_32                  | 2.222 ns | 0.0138 ns | 0.0092 ns |
 | Mix32  | FP_xsxxmx_Fp64_32                | 2.234 ns | 0.0140 ns | 0.0093 ns |
 | Mix32  | CW_xmxmx_LowBias_32              | 2.255 ns | 0.0656 ns | 0.0702 ns |

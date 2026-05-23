@@ -1,12 +1,12 @@
-﻿using Genbox.FastHash.TestShared;
+using Genbox.FastHash.TestShared;
 
 namespace Genbox.FastHash.Tests;
 
 public class MultTests
 {
+    private readonly (ulong, ulong) _result = (917449618181796, 0);
     private readonly ulong _valA = 10280214UL;
     private readonly ulong _valB = 89244214UL;
-    private readonly (ulong, ulong) _result = (917449618181796, 0);
 
     [Fact]
     public void MathBigMul() => Assert.Equal(_result, Mult.MathBigMul(_valA, _valB));

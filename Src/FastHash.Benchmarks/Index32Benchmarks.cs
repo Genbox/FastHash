@@ -1,5 +1,4 @@
 using BenchmarkDotNet.Order;
-using Genbox.FastHash.Benchmarks.Code;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
@@ -15,8 +14,7 @@ namespace Genbox.FastHash.Benchmarks;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class Index32Benchmarks
 {
-    private readonly uint _value = 12808241;
-    private readonly UInt128 _gxSeed = new UInt128(0, 0);
+    private readonly uint _value = 1337; // Keep readonly and non-static. Otherwise, compiler will inline and skew results.
 
     [Benchmark]
     public uint CityHash32Test() => CityHash32.ComputeIndex(_value);
@@ -34,10 +32,7 @@ public class Index32Benchmarks
     public uint Fnv1aHash32Test() => Fnv1aHash32.ComputeIndex(_value);
 
     [Benchmark]
-    public uint GxHash32Test() => GxHash32.ComputeIndex(_value);
-
-    [Benchmark]
-    public uint Gx2Hash32Test() => Gx2Hash32.ComputeIndex(_value, _gxSeed);
+    public uint Gx2Hash32Test() => Gx2Hash32.ComputeIndex(_value);
 
     [Benchmark]
     public uint MarvinHash32Test() => MarvinHash32.ComputeIndex(_value);

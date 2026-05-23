@@ -10,6 +10,7 @@ using Genbox.FastHash.FarshHash;
 using Genbox.FastHash.FnvHash;
 using Genbox.FastHash.FoldHash;
 using Genbox.FastHash.GxHash;
+using Genbox.FastHash.HighwayHash;
 using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MeowHash;
 using Genbox.FastHash.MurmurHash;
@@ -27,10 +28,11 @@ namespace Genbox.FastHash.Benchmarks;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class HashBenchmarks : IDisposable
 {
+    private readonly ulong[] _crcResult = new ulong[4];
     private unsafe byte* _ptr;
     private byte[] _testData = null!;
 
-    [Params(4, 8, 32, 128, 1024)]
+    [Params(32 * 1024 * 1024)]
     public int Size { get; set; }
 
     public unsafe void Dispose()
@@ -88,6 +90,9 @@ public class HashBenchmarks : IDisposable
     [Benchmark, BenchmarkCategory("FarmHash64")]
     public ulong FarmHash64Test() => FarmHash64.ComputeHash(_testData);
 
+    [Benchmark, BenchmarkCategory("FarmHash128")]
+    public UInt128 FarmHash128Test() => FarmHash128.ComputeHash(_testData);
+
     [Benchmark, BenchmarkCategory("FarshHash64")]
     public ulong FarshHash64Test() => FarshHash64.ComputeHash(_testData);
 
@@ -103,23 +108,15 @@ public class HashBenchmarks : IDisposable
     [Benchmark, BenchmarkCategory("Fnv1aHash64")]
     public ulong Fnv1aHash64Test() => Fnv1aHash64.ComputeHash(_testData);
 
-    [Benchmark, BenchmarkCategory("GxHash32")]
-    public uint GxHash32Test() => GxHash32.ComputeHash(_testData);
-
     [Benchmark, BenchmarkCategory("Gx2Hash32")]
-    public uint Gx2Hash32Test() => Gx2Hash32.ComputeHash(_testData, new UInt128(0, 0));
-
-    [Benchmark, BenchmarkCategory("GxHash64")]
-    public ulong GxHash64Test() => GxHash64.ComputeHash(_testData);
+    public uint Gx2Hash32Test() => Gx2Hash32.ComputeHash(_testData, 0);
 
     [Benchmark, BenchmarkCategory("Gx2Hash64")]
-    public ulong Gx2Hash64Test() => Gx2Hash64.ComputeHash(_testData, new UInt128(0, 0));
-
-    [Benchmark, BenchmarkCategory("GxHash128")]
-    public UInt128 GxHash128Test() => GxHash128.ComputeHash(_testData);
+    public ulong Gx2Hash64Test() => Gx2Hash64.ComputeHash(_testData, 0);
 
     [Benchmark, BenchmarkCategory("Gx2Hash128")]
-    public UInt128 Gx2Hash128Test() => Gx2Hash128.ComputeHash(_testData, new UInt128(0, 0));
+    public UInt128 Gx2Hash128Test() => Gx2Hash128.ComputeHash(_testData, 0);
+
     [Benchmark, BenchmarkCategory("HighwayHash64")]
     public unsafe ulong HighwayHash64UnsafeTest() => HighwayHash64Unsafe.ComputeHash(_ptr, _testData.Length);
 
@@ -210,6 +207,9 @@ public class HashBenchmarks : IDisposable
 
     [Benchmark, BenchmarkCategory("FarmHash64")]
     public unsafe ulong FarmHash64UnsafeTest() => FarmHash64Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark, BenchmarkCategory("FarmHash128")]
+    public unsafe UInt128 FarmHash128UnsafeTest() => FarmHash128Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark, BenchmarkCategory("FarshHash64")]
     public unsafe ulong FarshHash64UnsafeTest() => FarshHash64Unsafe.ComputeHash(_ptr, _testData.Length);
