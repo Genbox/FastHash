@@ -1,4 +1,4 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -6,76 +6,64 @@ namespace Genbox.FastHash.Misc;
 
 internal static class Utilities
 {
-    #region Unsafe read/write
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe uint Read8(byte* ptr) => *ptr;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe ushort Read16(byte* ptr) => *(ushort*)ptr;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe uint Read32(byte* ptr) => *(uint*)ptr;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe ulong Read64(byte* ptr) => *(ulong*)ptr;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void Write64(byte* ptr, ulong value) => *(ulong*)ptr = value;
-
-    #endregion
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ushort Read16(ReadOnlySpan<byte> data, int offset)
     {
         ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref ptr, offset));
+        return BinaryPrimitives.ReadUInt16LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, offset), sizeof(ushort)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static uint Read32(ReadOnlySpan<byte> data)
     {
         ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return Unsafe.ReadUnaligned<uint>(ref ptr);
+        return BinaryPrimitives.ReadUInt32LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref ptr, sizeof(uint)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static uint Read32(ReadOnlySpan<byte> data, uint offset)
     {
         ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref ptr, (IntPtr)offset));
+        return BinaryPrimitives.ReadUInt32LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, (IntPtr)offset), sizeof(uint)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static uint Read32(ReadOnlySpan<byte> data, int offset)
     {
         ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref ptr, offset));
+        return BinaryPrimitives.ReadUInt32LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, offset), sizeof(uint)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong Read64(ReadOnlySpan<byte> data)
     {
         ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return Unsafe.ReadUnaligned<ulong>(ref ptr);
+        return BinaryPrimitives.ReadUInt64LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref ptr, sizeof(ulong)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong Read64(ReadOnlySpan<byte> data, uint offset)
     {
         ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref ptr, (IntPtr)offset));
+        return BinaryPrimitives.ReadUInt64LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, (IntPtr)offset), sizeof(ulong)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong Read64(ReadOnlySpan<byte> data, int offset)
     {
         ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref ptr, offset));
+        return BinaryPrimitives.ReadUInt64LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, offset), sizeof(ulong)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void Write64(Span<byte> data, int offset, ulong value) => Unsafe.WriteUnaligned(ref data[offset], value);
+    internal static void Write64(Span<byte> data, int offset, ulong value)
+    {
+        if (!BitConverter.IsLittleEndian)
+            value = BinaryPrimitives.ReverseEndianness(value);
+
+        ref byte ptr = ref MemoryMarshal.GetReference(data);
+        Unsafe.WriteUnaligned(ref Unsafe.Add(ref ptr, offset), value);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Swap<T>(ref T a, ref T b) => (a, b) = (b, a);
@@ -124,4 +112,41 @@ internal static class Utilities
         }
 #endif
     }
+
+    #region Unsafe read/write
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static unsafe uint Read8(byte* ptr) => *ptr;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static unsafe ushort Read16(byte* ptr)
+    {
+        ushort value = Unsafe.ReadUnaligned<ushort>(ptr);
+        return BitConverter.IsLittleEndian ? value : BinaryPrimitives.ReverseEndianness(value);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static unsafe uint Read32(byte* ptr)
+    {
+        uint value = Unsafe.ReadUnaligned<uint>(ptr);
+        return BitConverter.IsLittleEndian ? value : BinaryPrimitives.ReverseEndianness(value);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static unsafe ulong Read64(byte* ptr)
+    {
+        ulong value = Unsafe.ReadUnaligned<ulong>(ptr);
+        return BitConverter.IsLittleEndian ? value : BinaryPrimitives.ReverseEndianness(value);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static unsafe void Write64(byte* ptr, ulong value)
+    {
+        if (!BitConverter.IsLittleEndian)
+            value = BinaryPrimitives.ReverseEndianness(value);
+
+        Unsafe.WriteUnaligned(ptr, value);
+    }
+
+    #endregion
 }

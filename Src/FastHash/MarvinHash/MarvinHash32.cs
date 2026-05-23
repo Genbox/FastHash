@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Genbox.FastHash.MarvinHash;
@@ -6,14 +6,17 @@ namespace Genbox.FastHash.MarvinHash;
 public static class MarvinHash32
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint ComputeIndex(uint input)
+    public static uint ComputeIndex(uint input) => ComputeIndex(input, 0xb79308cd, 0xced93cd5);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeIndex(uint input, uint seed1, uint seed2)
     {
-        uint seed1 = 0xb79308cd;
-        uint seed2 = 0xced93cd5;
+        if (!BitConverter.IsLittleEndian)
+            input = ByteSwap(input);
 
         seed1 += input;
         MarvinHash64.Block(ref seed1, ref seed2);
-        seed1 += 0x80;
+        seed1 += BitConverter.IsLittleEndian ? 0x80u : 0x8000_0000u;
         MarvinHash64.Block(ref seed1, ref seed2);
         MarvinHash64.Block(ref seed1, ref seed2);
         return seed1 ^ seed2;

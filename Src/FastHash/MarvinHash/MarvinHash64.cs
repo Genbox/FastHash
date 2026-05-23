@@ -11,11 +11,17 @@ public static class MarvinHash64
         uint low = (uint)input;
         uint high = (uint)(input >> 32);
 
+        if (!BitConverter.IsLittleEndian)
+        {
+            low = ByteSwap(low);
+            high = ByteSwap(high);
+        }
+
         seed1 += low;
         Block(ref seed1, ref seed2);
         seed1 += high;
         Block(ref seed1, ref seed2);
-        seed1 += 0x80u;
+        seed1 += BitConverter.IsLittleEndian ? 0x80u : 0x8000_0000u;
         Block(ref seed1, ref seed2);
         Block(ref seed1, ref seed2);
         return ((ulong)seed1 << 32) | seed2;
@@ -118,9 +124,18 @@ public static class MarvinHash64
         // count mod 4 = 3 -> [ ## ## ## ## | AA BB CC    ] -> 0xCCBB_AA##             -> 0x80CC_BBAA
 
         count = ~count << 3;
-        partialResult >>= 8; // make some room for the 0x80 byte
-        partialResult |= 0x8000_0000u; // put the 0x80 byte at the beginning
-        partialResult >>= (int)count & 0x1F; // shift out all previously consumed bytes
+        if (BitConverter.IsLittleEndian)
+        {
+            partialResult >>= 8; // make some room for the 0x80 byte
+            partialResult |= 0x8000_0000u; // put the 0x80 byte at the beginning
+            partialResult >>= (int)count & 0x1F; // shift out all previously consumed bytes
+        }
+        else
+        {
+            partialResult <<= 8; // make some room for the 0x80 byte
+            partialResult |= 0x80u; // put the 0x80 byte at the end
+            partialResult <<= (int)count & 0x1F; // shift out all previously consumed bytes
+        }
 
         DoFinalRoundsAndReturn:
 
@@ -139,7 +154,7 @@ public static class MarvinHash64
         // This means that we're going to be building up the final result right away and
         // will only ever run two rounds total of the block function. Let's initialize
         // the partial result to "no data".
-        partialResult = 0x80u;
+        partialResult = BitConverter.IsLittleEndian ? 0x80u : 0x8000_0000u;
 
         if ((count & 0b_0001) != 0)
         {
@@ -152,7 +167,14 @@ public static class MarvinHash64
             // [ AA BB CC    ]  -> 0x0000_80CC / 0xCC80_0000
 
             partialResult = Unsafe.AddByteOffset(ref ptr, (IntPtr)(count & 2));
-            partialResult |= 0x8000;
+
+            if (BitConverter.IsLittleEndian)
+                partialResult |= 0x8000;
+            else
+            {
+                partialResult <<= 24;
+                partialResult |= 0x800000u;
+            }
         }
 
         if ((count & 0b_0010) != 0)
@@ -164,8 +186,16 @@ public static class MarvinHash64
             //                  (little-endian / big-endian)
             // [ AA BB       ]  -> 0x0080_BBAA / 0xAABB_8000
             // [ AA BB CC    ]  -> 0x80CC_BBAA / 0xAABB_CC80 (carried over from above)
-            partialResult <<= 16;
-            partialResult |= Unsafe.ReadUnaligned<ushort>(ref ptr);
+            if (BitConverter.IsLittleEndian)
+            {
+                partialResult <<= 16;
+                partialResult |= Unsafe.ReadUnaligned<ushort>(ref ptr);
+            }
+            else
+            {
+                partialResult |= Unsafe.ReadUnaligned<ushort>(ref ptr);
+                partialResult = RotateLeft(partialResult, 16);
+            }
         }
 
         // Everything is consumed! Go perform the final rounds and return.
