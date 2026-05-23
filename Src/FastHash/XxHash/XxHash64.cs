@@ -22,7 +22,9 @@ public static class XxHash64
         return h64;
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         uint len = (uint)data.Length;
         ulong h64;

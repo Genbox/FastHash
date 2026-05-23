@@ -6,14 +6,19 @@ namespace Genbox.FastHash.WyHash;
 public static class Wy4Hash64
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input, ulong seed = 0)
+    public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, ulong seed)
     {
         ulong a = (uint)input ^ seed ^ Wyp0;
         ulong b = (uint)(input >> 32) ^ seed ^ Wyp1;
         return Wymum(Wymum(a, b), 8UL ^ Wyp4);
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         int length = data.Length;
         int i = length;

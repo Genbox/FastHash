@@ -15,15 +15,14 @@ public static class SuperFastHash32Unsafe
         if (data == null || length <= 0)
             return 0;
 
-        uint hash = seed, tmp;
+        uint hash = seed;
         int rem = length & 3;
         length >>= 2;
 
         for (; length > 0; length--)
         {
             hash += Read16(data);
-            tmp = (uint)((Read16(data + 2) << 11) ^ hash);
-            hash = (hash << 16) ^ tmp;
+            hash = (hash << 16) ^ (uint)((Read16(data + 2) << 11) ^ hash);
             data += 2 * sizeof(ushort);
             hash += hash >> 11;
         }

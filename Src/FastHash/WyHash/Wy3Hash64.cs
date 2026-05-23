@@ -21,7 +21,13 @@ public static class Wy3Hash64
         return _wymix(0xe7037ed1a0b428dbul ^ 8, low ^ high);
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0, ulong[]? secret = null)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong[]? secret) => ComputeHash(data, 0, secret);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed) => ComputeHash(data, seed, null);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed, ulong[]? secret)
     {
         secret ??= DefaultSecret;
 
@@ -87,8 +93,8 @@ public static class Wy3Hash64
         ulong high = BigMul(A, B, out ulong low);
 
 #if WYHASH_CONDOM
-            A ^= low;
-            B ^= high;
+        A ^= low;
+        B ^= high;
 #else
         A = low;
         B = high;

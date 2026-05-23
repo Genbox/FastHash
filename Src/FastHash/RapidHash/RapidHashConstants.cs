@@ -10,8 +10,6 @@ internal static class RapidHashConstants
     internal const ulong DefaultSecret5 = 0xe7037ed1a0b428dbUL;
     internal const ulong DefaultSecret6 = 0x90ed1765281c388cUL;
     internal const ulong DefaultSecret7 = 0xaaaaaaaaaaaaaaaaUL;
-    internal const ulong DefaultIndexSeed = 0x422765567d8fbfdeUL;
-
     internal static readonly ulong[] DefaultSecret =
     [
         DefaultSecret0,

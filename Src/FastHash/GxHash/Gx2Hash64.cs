@@ -6,10 +6,11 @@ namespace Genbox.FastHash.GxHash;
 
 public static class Gx2Hash64
 {
-    public static bool IsSupported => Gx2HashShared.IsSupported;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input, long seed = 0)
+    public static ulong ComputeIndex(ulong input, long seed)
     {
         Vector128<byte> inputVector = Vector128.Create(input, 0UL).AsByte();
         Vector128<byte> lenVector = Vector128.Add(inputVector, Vector128.Create((byte)sizeof(ulong)));
@@ -18,7 +19,10 @@ public static class Gx2Hash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, long seed = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, long seed)
     {
         Vector128<byte> hash = Gx2HashShared.Compute(data, seed);
         return Unsafe.As<Vector128<byte>, ulong>(ref hash);

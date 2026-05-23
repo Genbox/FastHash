@@ -20,7 +20,13 @@ public static class FoldHash64
         return FoldHashShared.FoldedMultiply(s0, s1);
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0, ulong[]? sharedSeed = null)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0, null);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed) => ComputeHash(data, seed, null);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong[]? sharedSeed) => ComputeHash(data, 0, sharedSeed);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed, ulong[]? sharedSeed)
     {
         sharedSeed ??= DefaultSharedSeed;
         FoldHashShared.ValidateSharedSeed(sharedSeed, nameof(sharedSeed));

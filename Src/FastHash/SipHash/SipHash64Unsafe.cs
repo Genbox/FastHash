@@ -5,7 +5,13 @@ namespace Genbox.FastHash.SipHash;
 
 public static class SipHash64Unsafe
 {
-    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1 = 0, ulong seed2 = 0, byte cRounds = 2, byte dRounds = 4)
+    public static unsafe ulong ComputeHash(byte* data, int length) => ComputeHash(data, length, 0, 0);
+
+    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1) => ComputeHash(data, length, seed1, 0);
+
+    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1, ulong seed2) => ComputeHash(data, length, seed1, seed2, 2, 4);
+
+    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1, ulong seed2, byte cRounds, byte dRounds)
     {
         ulong v0 = v0Init;
         ulong v1 = v1Init;

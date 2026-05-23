@@ -27,7 +27,7 @@ public class Index128Benchmarks
     public UInt128 Gx2Hash128Test() => Gx2Hash128.ComputeIndex(_value);
 
     [Benchmark]
-    public UInt128 MeowHash128UnsafeTest() => MeowHash128Unsafe.ComputeIndex(_value);
+    public UInt128 MeowHash128Test() => MeowHash128.ComputeIndex(_value);
 
     [Benchmark]
     public UInt128 Murmur3Hash128Test() => Murmur3Hash128.ComputeIndex(_value);

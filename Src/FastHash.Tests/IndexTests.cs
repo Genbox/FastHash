@@ -16,6 +16,7 @@ using Genbox.FastHash.PolymurHash;
 using Genbox.FastHash.RapidHash;
 using Genbox.FastHash.SipHash;
 using Genbox.FastHash.SuperFastHash;
+using Genbox.FastHash.T1haHash;
 using Genbox.FastHash.WyHash;
 using Genbox.FastHash.XxHash;
 using Xunit.Sdk;
@@ -100,89 +101,58 @@ public class IndexTests
         }
     }
 
-    public static TheoryData<Tuple32> Create32()
-    {
-        TheoryData<Tuple32> data = new TheoryData<Tuple32>();
+    public static TheoryData<Tuple32> Create32() =>
+    [
+        new Tuple32(nameof(CityHash32), CityHash32.ComputeIndex, CityHash32.ComputeHash),
+        new Tuple32(nameof(Djb2AltHash32), Djb2AltHash32.ComputeIndex, Djb2AltHash32.ComputeHash),
+        new Tuple32(nameof(Djb2Hash32), Djb2Hash32.ComputeIndex, Djb2Hash32.ComputeHash),
+        new Tuple32(nameof(FarmHash32), FarmHash32.ComputeIndex, FarmHash32.ComputeHash),
+        new Tuple32(nameof(Fnv1aHash32), Fnv1aHash32.ComputeIndex, Fnv1aHash32.ComputeHash),
+        new Tuple32(nameof(Gx2Hash32), Gx2Hash32.ComputeIndex, Gx2Hash32.ComputeHash),
+        new Tuple32(nameof(MarvinHash32), MarvinHash32.ComputeIndex, MarvinHash32.ComputeHash),
+        new Tuple32(nameof(Murmur3Hash32), Murmur3Hash32.ComputeIndex, Murmur3Hash32.ComputeHash),
+        new Tuple32(nameof(SuperFastHash32), SuperFastHash32.ComputeIndex, SuperFastHash32.ComputeHash),
+        new Tuple32(nameof(XxHash32), XxHash32.ComputeIndex, XxHash32.ComputeHash)
+    ];
 
-        data.Add(new Tuple32(nameof(CityHash32), CityHash32.ComputeIndex, CityHash32.ComputeHash));
-        data.Add(new Tuple32(nameof(Djb2AltHash32), Djb2AltHash32.ComputeIndex, Djb2AltHash32.ComputeHash));
-        data.Add(new Tuple32(nameof(Djb2Hash32), Djb2Hash32.ComputeIndex, Djb2Hash32.ComputeHash));
-        data.Add(new Tuple32(nameof(FarmHash32), FarmHash32.ComputeIndex, FarmHash32.ComputeHash));
-        data.Add(new Tuple32(nameof(Fnv1aHash32), Fnv1aHash32.ComputeIndex, Fnv1aHash32.ComputeHash));
-        data.Add(new Tuple32(nameof(Gx2Hash32), static x => Gx2Hash32.ComputeIndex(x), static x => Gx2Hash32.ComputeHash(x)));
-        data.Add(new Tuple32(nameof(MarvinHash32), MarvinHash32.ComputeIndex, static x => MarvinHash32.ComputeHash(x)));
-        data.Add(new Tuple32(nameof(Murmur3Hash32), Murmur3Hash32.ComputeIndex, static x => Murmur3Hash32.ComputeHash(x)));
-        data.Add(new Tuple32(nameof(SuperFastHash32), SuperFastHash32.ComputeIndex, SuperFastHash32.ComputeHash));
-        data.Add(new Tuple32(nameof(XxHash32), XxHash32.ComputeIndex, static x => XxHash32.ComputeHash(x)));
+    public static TheoryData<Tuple64> Create64() =>
+    [
+        new Tuple64(nameof(AesniHash64), AesniHash64.ComputeIndex, AesniHash64.ComputeHash),
+        new Tuple64(nameof(CityHash64), CityHash64.ComputeIndex, CityHash64.ComputeHash),
+        new Tuple64(nameof(Djb2AltHash64), Djb2AltHash64.ComputeIndex, Djb2AltHash64.ComputeHash),
+        new Tuple64(nameof(Djb2Hash64), Djb2Hash64.ComputeIndex, Djb2Hash64.ComputeHash),
+        new Tuple64(nameof(FarshHash64), FarshHash64.ComputeIndex, FarshHash64.ComputeHash),
+        new Tuple64(nameof(FoldHash64), FoldHash64.ComputeIndex, FoldHash64.ComputeHash),
+        new Tuple64(nameof(FoldHashQuality64), FoldHashQuality64.ComputeIndex, FoldHashQuality64.ComputeHash),
+        new Tuple64(nameof(FarmHash64), FarmHash64.ComputeIndex, FarmHash64.ComputeHash),
+        new Tuple64(nameof(Fnv1aHash64), Fnv1aHash64.ComputeIndex, Fnv1aHash64.ComputeHash),
+        new Tuple64(nameof(Gx2Hash64), Gx2Hash64.ComputeIndex, Gx2Hash64.ComputeHash),
+        new Tuple64(nameof(HighwayHash64), HighwayHash64.ComputeIndex, HighwayHash64.ComputeHash),
+        new Tuple64(nameof(MarvinHash64), MarvinHash64.ComputeIndex, MarvinHash64.ComputeHash),
+        new Tuple64(nameof(MeowHash64), MeowHash64.ComputeIndex, MeowHash64.ComputeHash),
+        new Tuple64(nameof(Polymur2Hash64), Polymur2Hash64.ComputeIndex, Polymur2Hash64.ComputeHash),
+        new Tuple64(nameof(Rapid3Hash64), Rapid3Hash64.ComputeIndex, Rapid3Hash64.ComputeHash),
+        new Tuple64(nameof(Rapid3HashMicro64), Rapid3HashMicro64.ComputeIndex, Rapid3HashMicro64.ComputeHash),
+        new Tuple64(nameof(Rapid3HashNano64), Rapid3HashNano64.ComputeIndex, Rapid3HashNano64.ComputeHash),
+        new Tuple64(nameof(SipHash64), SipHash64.ComputeIndex, SipHash64.ComputeHash),
+        new Tuple64(nameof(T1ha2Hash64), T1ha2Hash64.ComputeIndex, T1ha2Hash64.ComputeHash),
+        new Tuple64(nameof(Wy3Hash64), Wy3Hash64.ComputeIndex, Wy3Hash64.ComputeHash),
+        new Tuple64(nameof(Wy4Hash64), Wy4Hash64.ComputeIndex, Wy4Hash64.ComputeHash),
+        new Tuple64(nameof(XxHash64), XxHash64.ComputeIndex, XxHash64.ComputeHash),
+        new Tuple64(nameof(Xx3Hash64), Xx3Hash64.ComputeIndex, Xx3Hash64.ComputeHash)
+    ];
 
-        return data;
-    }
-
-    public static TheoryData<Tuple64> Create64()
-    {
-        TheoryData<Tuple64> data = new TheoryData<Tuple64>();
-
-        data.Add(new Tuple64(nameof(AesniHash64), static x => AesniHash64.ComputeIndex(x), static x => AesniHash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(CityHash64), CityHash64.ComputeIndex, CityHash64.ComputeHash));
-        data.Add(new Tuple64(nameof(Djb2AltHash64), Djb2AltHash64.ComputeIndex, Djb2AltHash64.ComputeHash));
-        data.Add(new Tuple64(nameof(Djb2Hash64), Djb2Hash64.ComputeIndex, Djb2Hash64.ComputeHash));
-        data.Add(new Tuple64(nameof(FarshHash64), static x => FarshHash64.ComputeIndex(x), static x => FarshHash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(FoldHash64), static x => FoldHash64.ComputeIndex(x, 0), static x => FoldHash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(FoldHashQuality64), static x => FoldHashQuality64.ComputeIndex(x, 0), static x => FoldHashQuality64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(FarmHash64), FarmHash64.ComputeIndex, static x => FarmHash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(Fnv1aHash64), Fnv1aHash64.ComputeIndex, Fnv1aHash64.ComputeHash));
-        data.Add(new Tuple64(nameof(Gx2Hash64), static x => Gx2Hash64.ComputeIndex(x), static x => Gx2Hash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(HighwayHash64Unsafe), HighwayHash64Unsafe.ComputeIndex, static x =>
-        {
-            unsafe
-            {
-                fixed (byte* ptr = x)
-                    return HighwayHash64Unsafe.ComputeHash(ptr, x.Length);
-            }
-        }));
-        data.Add(new Tuple64(nameof(MarvinHash64), static x => MarvinHash64.ComputeIndex(x), static x => MarvinHash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(MeowHash64Unsafe), MeowHash64Unsafe.ComputeIndex, static x =>
-        {
-            unsafe
-            {
-                fixed (byte* ptr = x)
-                    return MeowHash64Unsafe.ComputeHash(ptr, x.Length);
-            }
-        }));
-        data.Add(new Tuple64(nameof(Polymur2Hash64), Polymur2Hash64.ComputeIndex, static x => Polymur2Hash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(Rapid3Hash64), static x => Rapid3Hash64.ComputeIndex(x, 0), static x => Rapid3Hash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(Rapid3HashMicro64), static x => Rapid3HashMicro64.ComputeIndex(x, 0), static x => Rapid3HashMicro64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(Rapid3HashNano64), static x => Rapid3HashNano64.ComputeIndex(x, 0), static x => Rapid3HashNano64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(SipHash64), static x => SipHash64.ComputeIndex(x), static x => SipHash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(Wy3Hash64), Wy3Hash64.ComputeIndex, static x => Wy3Hash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(Wy4Hash64), static x => Wy4Hash64.ComputeIndex(x), static x => Wy4Hash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(XxHash64), XxHash64.ComputeIndex, static x => XxHash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(Xx3Hash64), static x => Xx3Hash64.ComputeIndex(x), static x => Xx3Hash64.ComputeHash(x)));
-
-        return data;
-    }
-
-    public static TheoryData<Tuple128> Create128()
-    {
-        TheoryData<Tuple128> data = new TheoryData<Tuple128>();
-
-        data.Add(new Tuple128(nameof(AesniHash128), static x => AesniHash128.ComputeIndex(x), static x => AesniHash128.ComputeHash(x)));
-        data.Add(new Tuple128(nameof(CityHash128), static x => CityHash128.ComputeIndex(x), CityHash128.ComputeHash));
-        data.Add(new Tuple128(nameof(FarmHash128), static x => FarmHash128.ComputeIndex(x), FarmHash128.ComputeHash));
-        data.Add(new Tuple128(nameof(Gx2Hash128), static x => Gx2Hash128.ComputeIndex(x), static x => Gx2Hash128.ComputeHash(x)));
-        data.Add(new Tuple128(nameof(MeowHash128Unsafe), MeowHash128Unsafe.ComputeIndex, static x =>
-        {
-            unsafe
-            {
-                fixed (byte* ptr = x)
-                    return MeowHash128Unsafe.ComputeHash(ptr, x.Length);
-            }
-        }));
-        data.Add(new Tuple128(nameof(Murmur3Hash128), static x => Murmur3Hash128.ComputeIndex(x), static x => Murmur3Hash128.ComputeHash(x)));
-        data.Add(new Tuple128(nameof(Xx3Hash128), static x => Xx3Hash128.ComputeIndex(x), static x => Xx3Hash128.ComputeHash(x)));
-
-        return data;
-    }
+    public static TheoryData<Tuple128> Create128() =>
+    [
+        new Tuple128(nameof(AesniHash128), AesniHash128.ComputeIndex, AesniHash128.ComputeHash),
+        new Tuple128(nameof(CityHash128), CityHash128.ComputeIndex, CityHash128.ComputeHash),
+        new Tuple128(nameof(CityHashCrc128), CityHashCrc128.ComputeIndex, CityHashCrc128.ComputeHash),
+        new Tuple128(nameof(FarmHash128), FarmHash128.ComputeIndex, FarmHash128.ComputeHash),
+        new Tuple128(nameof(Gx2Hash128), Gx2Hash128.ComputeIndex, Gx2Hash128.ComputeHash),
+        new Tuple128(nameof(MeowHash128), MeowHash128.ComputeIndex, MeowHash128.ComputeHash),
+        new Tuple128(nameof(Murmur3Hash128), Murmur3Hash128.ComputeIndex, Murmur3Hash128.ComputeHash),
+        new Tuple128(nameof(Xx3Hash128), Xx3Hash128.ComputeIndex, Xx3Hash128.ComputeHash)
+    ];
 
     public record struct Tuple32(string Name, Func<uint, uint> Index, Func<ReadOnlySpan<byte>, uint> Hash) : IXunitSerializable
     {

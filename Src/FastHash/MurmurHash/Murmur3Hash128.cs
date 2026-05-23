@@ -6,7 +6,10 @@ namespace Genbox.FastHash.MurmurHash;
 public static class Murmur3Hash128
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static UInt128 ComputeIndex(ulong input, uint seed = 0)
+    public static UInt128 ComputeIndex(ulong input) => ComputeIndex(input, 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static UInt128 ComputeIndex(ulong input, uint seed)
     {
         ulong h1 = seed;
         ulong h2 = seed;
@@ -32,7 +35,9 @@ public static class Murmur3Hash128
         return new UInt128(h1, h2);
     }
 
-    public static UInt128 ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
+    public static UInt128 ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static UInt128 ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         uint length = (uint)data.Length;
         uint nBlocks = length / 16;

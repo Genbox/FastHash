@@ -34,6 +34,10 @@ public class MeowHashTests
                 UInt128 hash = MeowHash128Unsafe.ComputeHash(ptr, vector.Data.Length);
                 Assert.Equal(ParseMeowHash(vector.Expected), hash);
             }
+
+            UInt128 managedHash = MeowHash128.ComputeHash(vector.Data);
+            Assert.Equal(ParseMeowHash(vector.Expected), managedHash);
+            Assert.Equal(managedHash.Low, MeowHash64.ComputeHash(vector.Data));
         }
     }
 

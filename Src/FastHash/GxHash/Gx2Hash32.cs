@@ -7,7 +7,10 @@ namespace Genbox.FastHash.GxHash;
 public static class Gx2Hash32
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint ComputeIndex(uint input, long seed = 0)
+    public static uint ComputeIndex(uint input) => ComputeIndex(input, 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeIndex(uint input, long seed)
     {
         Vector128<byte> inputVector = Vector128.Create(input, 0u, 0u, 0u).AsByte();
         Vector128<byte> lenVector = Vector128.Add(inputVector, Vector128.Create((byte)sizeof(uint)));
@@ -16,7 +19,10 @@ public static class Gx2Hash32
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint ComputeHash(ReadOnlySpan<byte> data, long seed = 0)
+    public static uint ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeHash(ReadOnlySpan<byte> data, long seed)
     {
         Vector128<byte> hash = Gx2HashShared.Compute(data, seed);
         return Unsafe.As<Vector128<byte>, uint>(ref hash);

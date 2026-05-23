@@ -67,5 +67,7 @@ public class HighwayHashTests
             ulong hash = HighwayHash64Unsafe.ComputeHash(ptr, size, key[0], key[1], key[2], key[3]);
             Assert.Equal(expected, hash);
         }
+
+        Assert.Equal(expected, HighwayHash64.ComputeHash(data.AsSpan(0, size), key[0], key[1], key[2], key[3]));
     }
 }

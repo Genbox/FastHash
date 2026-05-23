@@ -14,8 +14,6 @@ internal static class Gx2HashShared
     private const int VECTOR_SIZE = 16;
     private const int UNROLL_FACTOR = 8;
 
-    public static bool IsSupported => (ArmAes.IsSupported && AdvSimd.IsSupported) || X86Aes.IsSupported;
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Vector128<byte> Compute(ReadOnlySpan<byte> bytes, long seed = 0) => Finalize(AesEncrypt(Compress(bytes), CreateSeed(seed)));
 
@@ -160,7 +158,7 @@ internal static class Gx2HashShared
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe Vector128<byte> GetPartialVector(ref Vector128<byte> start, int remainingBytes)
     {
-        fixed (Vector128<byte>* pin = &start)
+        fixed (Vector128<byte>* _ = &start)
         {
             if (IsReadBeyondSafe(ref start))
                 return GetPartialVectorUnsafe(ref start, remainingBytes);

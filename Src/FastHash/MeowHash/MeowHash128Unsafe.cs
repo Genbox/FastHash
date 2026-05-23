@@ -60,17 +60,8 @@ public static class MeowHash128Unsafe
         }
     }
 
-    public static UInt128 ComputeIndex(ulong input)
-    {
-        if (!IsSupported)
-            throw new PlatformNotSupportedException("MeowHash requires AES, SSE, SSE2, and SSSE3 intrinsics.");
-
-        Vector128<byte> res = ComputeIndexVector(input);
-        return Unsafe.As<Vector128<byte>, UInt128>(ref res);
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Vector128<byte> ComputeIndexVector(ulong input) => MeowHashLen8(input);
+    internal static Vector128<byte> HashLen8(ulong input) => MeowHashLen8(input);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Vector128<byte> MeowHashLen8(ulong input)

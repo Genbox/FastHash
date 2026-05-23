@@ -70,7 +70,13 @@ public static class SipHash64
         return v0 ^ v1 ^ v2 ^ v3;
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1 = 0, ulong seed2 = 0, byte cRounds = 2, byte dRounds = 4)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0, 0);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1) => ComputeHash(data, seed1, 0);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2) => ComputeHash(data, seed1, seed2, 2, 4);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2, byte cRounds, byte dRounds)
     {
         int length = data.Length;
         ulong v0 = v0Init;

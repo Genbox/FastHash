@@ -6,7 +6,10 @@ namespace Genbox.FastHash.FarshHash;
 public static class FarshHash64
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input, ulong seed = 0)
+    public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, ulong seed)
     {
         uint val1 = (uint)input;
         uint val2 = (uint)(input >> 32);
@@ -19,7 +22,9 @@ public static class FarshHash64
         return low | ((ulong)high << 32);
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         ulong lowSum = seed;
         ulong highSum = seed;

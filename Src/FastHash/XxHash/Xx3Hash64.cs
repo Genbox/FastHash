@@ -29,7 +29,9 @@ public static class Xx3Hash64
         return XXH3_rrmxmx(keyed, 8);
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         int length = data.Length;
 #if NET8_0_OR_GREATER

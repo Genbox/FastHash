@@ -4,7 +4,9 @@ namespace Genbox.FastHash.MurmurHash;
 
 public static class Murmur3Hash128Unsafe
 {
-    public static unsafe UInt128 ComputeHash(byte* data, int length, uint seed = 0)
+    public static unsafe UInt128 ComputeHash(byte* data, int length) => ComputeHash(data, length, 0);
+
+    public static unsafe UInt128 ComputeHash(byte* data, int length, uint seed)
     {
         int nblocks = length / 16;
 

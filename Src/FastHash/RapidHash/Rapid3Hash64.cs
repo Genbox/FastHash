@@ -7,19 +7,13 @@ namespace Genbox.FastHash.RapidHash;
 public static class Rapid3Hash64
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input) => ComputeIndexCore(input, DefaultIndexSeed);
+    public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed)
     {
         seed ^= RapidMix(seed ^ DefaultSecret2, DefaultSecret1);
         seed ^= 8UL;
-        return ComputeIndexCore(input, seed);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong ComputeIndexCore(ulong input, ulong seed)
-    {
         ulong a = input ^ DefaultSecret1;
         ulong b = input ^ seed;
 
@@ -27,7 +21,13 @@ public static class Rapid3Hash64
         return RapidMix(low ^ DefaultSecret7, high ^ DefaultSecret1 ^ 8UL);
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0, ulong[]? secret = null)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong[]? secret) => ComputeHash(data, 0, secret);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed) => ComputeHash(data, seed, null);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed, ulong[]? secret)
     {
         secret ??= DefaultSecret;
         ulong secret0 = secret[0];

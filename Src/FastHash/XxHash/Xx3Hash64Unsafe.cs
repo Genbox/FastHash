@@ -6,7 +6,9 @@ namespace Genbox.FastHash.XxHash;
 
 public static class Xx3Hash64Unsafe
 {
-    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed = 0)
+    public static unsafe ulong ComputeHash(byte* data, int length) => ComputeHash(data, length, 0);
+
+    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed)
     {
         fixed (byte* secretPtr = kSecret)
             return XXH3_64bits_internal(data, length, seed, secretPtr, SECRET_DEFAULT_SIZE, XXH3_hashLong_64b_withSeed);

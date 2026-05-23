@@ -43,9 +43,6 @@ public static class CityHash128
 
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data, UInt128 seed) => CityHash128WithSeed(data, (uint)data.Length, seed);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong Hash128To64(UInt128 value) => HashLen16(value.Low, value.High);
-
     // A subroutine for CityHash128().  Returns a decent 128-bit hash for strings
     // of any length representable in signed long.  Based on City and Murmur.
     private static UInt128 CityMurmur(ReadOnlySpan<byte> s, uint len, UInt128 seed)

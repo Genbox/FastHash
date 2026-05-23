@@ -12,7 +12,10 @@ public static class AesniHash128
     public static bool IsSupported => Aes.IsSupported && Sse2.IsSupported && Ssse3.IsSupported;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static UInt128 ComputeIndex(ulong input, uint seed = 0)
+    public static UInt128 ComputeIndex(ulong input) => ComputeIndex(input, 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static UInt128 ComputeIndex(ulong input, uint seed)
     {
         if (!IsSupported)
             throw new PlatformNotSupportedException("AesniHash requires AES, SSE2, and SSSE3 intrinsics.");
@@ -21,7 +24,9 @@ public static class AesniHash128
         return Unsafe.As<Vector128<byte>, UInt128>(ref res);
     }
 
-    public static UInt128 ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
+    public static UInt128 ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static UInt128 ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         if (!IsSupported)
             throw new PlatformNotSupportedException("AesniHash requires AES, SSE2, and SSSE3 intrinsics.");

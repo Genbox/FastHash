@@ -7,7 +7,10 @@ namespace Genbox.FastHash.T1haHash;
 public static class T1ha2Hash64
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input, ulong seed = 0)
+    public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, ulong seed)
     {
         ulong a = seed;
         ulong b = sizeof(ulong);
@@ -15,7 +18,9 @@ public static class T1ha2Hash64
         return Final64(a, b);
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         int length = data.Length;
         int offset = 0;

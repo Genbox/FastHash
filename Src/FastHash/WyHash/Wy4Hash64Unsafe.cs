@@ -5,7 +5,9 @@ namespace Genbox.FastHash.WyHash;
 
 public static class Wy4Hash64Unsafe
 {
-    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed = 0)
+    public static unsafe ulong ComputeHash(byte* data, int length) => ComputeHash(data, length, 0);
+
+    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed)
     {
         int i = length;
 

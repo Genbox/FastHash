@@ -18,7 +18,9 @@ public static class Murmur3Hash32
         return AA_xmxmx_Murmur_32(input);
     }
 
-    public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
+    public static uint ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         uint length = (uint)data.Length;
         uint nBlocks = length / 4;

@@ -9,7 +9,10 @@ public static class AesniHash64
     public static bool IsSupported => AesniHash128.IsSupported;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input, uint seed = 0)
+    public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, uint seed)
     {
         if (!IsSupported)
             throw new PlatformNotSupportedException("AesniHash requires AES, SSE2, and SSSE3 intrinsics.");
@@ -18,7 +21,9 @@ public static class AesniHash64
         return Unsafe.As<Vector128<byte>, ulong>(ref res);
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         if (!IsSupported)
             throw new PlatformNotSupportedException("AesniHash requires AES, SSE2, and SSSE3 intrinsics.");

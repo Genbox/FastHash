@@ -55,13 +55,13 @@ public class Index64Benchmarks
     public ulong Gx2Hash64Test() => Gx2Hash64.ComputeIndex(_value);
 
     [Benchmark]
-    public ulong HighwayHash64UnsafeTest() => HighwayHash64Unsafe.ComputeIndex(_value);
+    public ulong HighwayHash64Test() => HighwayHash64.ComputeIndex(_value);
 
     [Benchmark]
     public ulong MarvinHash64Test() => MarvinHash64.ComputeIndex(_value);
 
     [Benchmark]
-    public ulong MeowHash64UnsafeTest() => MeowHash64Unsafe.ComputeIndex(_value);
+    public ulong MeowHash64Test() => MeowHash64.ComputeIndex(_value);
 
     [Benchmark]
     public ulong Polymur2Hash64Test() => Polymur2Hash64.ComputeIndex(_value);

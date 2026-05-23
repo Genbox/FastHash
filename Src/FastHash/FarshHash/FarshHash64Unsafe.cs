@@ -5,7 +5,9 @@ namespace Genbox.FastHash.FarshHash;
 
 public static class FarshHash64Unsafe
 {
-    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed = 0)
+    public static unsafe ulong ComputeHash(byte* data, int length) => ComputeHash(data, length, 0);
+
+    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed)
     {
         ulong lowSum = seed;
         ulong highSum = seed;
@@ -31,40 +33,6 @@ public static class FarshHash64Unsafe
         return low | ((ulong)high << 32);
     }
 
-    private static unsafe uint ComputeHash32(byte* data, int length, ulong seed, int keyOffset)
-    {
-        ulong sum = seed;
-
-        while (length >= STRIPE)
-        {
-            ulong h = farsh_full_block(data, keyOffset);
-            sum = farsh_combine(sum, h);
-            data += STRIPE;
-            length -= STRIPE;
-        }
-
-        if (length > 0)
-        {
-            ulong h = farsh_partial_block(data, length, keyOffset);
-            sum = farsh_combine(sum, h);
-        }
-
-        return farsh_final(sum) ^ FARSH_KEYS[keyOffset]; /* ensure that zeroes at the end of data will affect the hash value */
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe ulong farsh_full_block(byte* data, int keyOffset)
-    {
-        // STRIPE bytes of key material plus extra keys for hashes up to 1024 bits long
-        ulong sum = 0;
-        int i;
-
-        for (i = 0; i < STRIPE_ELEMENTS; i += 2)
-            sum += (Read32(data + (i * sizeof(uint))) + FARSH_KEYS[keyOffset + i]) * (ulong)(Read32(data + ((i + 1) * sizeof(uint))) + FARSH_KEYS[keyOffset + i + 1]);
-
-        return sum;
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void farsh_full_block(byte* data, out ulong lowSum, out ulong highSum)
     {
@@ -78,67 +46,6 @@ public static class FarshHash64Unsafe
             lowSum += (val1 + FARSH_KEYS[i]) * (ulong)(val2 + FARSH_KEYS[i + 1]);
             highSum += (val1 + FARSH_KEYS[i + 4]) * (ulong)(val2 + FARSH_KEYS[i + 5]);
         }
-    }
-
-    private static unsafe ulong farsh_partial_block(byte* data, int length, int keyOffset)
-    {
-        ulong sum = 0;
-        int elements = (length / sizeof(uint)) & ~1;
-        int i;
-
-        for (i = 0; i < elements; i += 2)
-        {
-            sum += (Read32(data + (i * sizeof(uint))) + FARSH_KEYS[keyOffset + i]) * (ulong)(Read32(data + ((i + 1) * sizeof(uint))) + FARSH_KEYS[keyOffset + i + 1]);
-            length -= 8;
-        }
-
-        data += elements * sizeof(uint);
-
-        uint v1;
-        uint v2;
-
-        byte* ptr = data;
-        i += keyOffset;
-
-        switch (length)
-        {
-            case 7:
-                v1 = Read32(ptr);
-                ptr += 4;
-                v2 = (uint)(ptr[0] | (ptr[1] << 8) | (ptr[2] << 16));
-                sum += (v1 + FARSH_KEYS[i]) * (ulong)(v2 + FARSH_KEYS[i + 1]);
-                break;
-            case 6:
-                v1 = Read32(ptr);
-                ptr += 4;
-                v2 = Read16(ptr);
-                sum += (v1 + FARSH_KEYS[i]) * (ulong)(v2 + FARSH_KEYS[i + 1]);
-                break;
-            case 5:
-                v1 = Read32(ptr);
-                ptr += 4;
-                v2 = *ptr;
-                sum += (v1 + FARSH_KEYS[i]) * (ulong)(v2 + FARSH_KEYS[i + 1]);
-                break;
-            case 4:
-                v1 = Read32(ptr);
-                sum += (v1 + FARSH_KEYS[i]) * (ulong)FARSH_KEYS[i + 1];
-                break;
-            case 3:
-                v1 = (uint)(ptr[0] | (ptr[1] << 8) | (ptr[2] << 16));
-                sum += (v1 + FARSH_KEYS[i]) * (ulong)FARSH_KEYS[i + 1];
-                break;
-            case 2:
-                v1 = Read16(ptr);
-                sum += (v1 + FARSH_KEYS[i]) * (ulong)FARSH_KEYS[i + 1];
-                break;
-            case 1:
-                v1 = *ptr;
-                sum += (v1 + FARSH_KEYS[i]) * (ulong)FARSH_KEYS[i + 1];
-                break;
-        }
-
-        return sum;
     }
 
     private static unsafe void farsh_partial_block(byte* data, int length, out ulong lowSum, out ulong highSum)

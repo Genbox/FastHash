@@ -21,7 +21,9 @@ public static class XxHash32
         return h32;
     }
 
-    public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed = 0)
+    public static uint ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         uint len = (uint)data.Length;
         uint h32;

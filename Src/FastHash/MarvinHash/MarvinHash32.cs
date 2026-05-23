@@ -22,7 +22,9 @@ public static class MarvinHash32
         return seed1 ^ seed2;
     }
 
-    public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed1 = 0xb79308cd, uint seed2 = 0xced93cd5)
+    public static uint ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0xb79308cd, 0xced93cd5);
+
+    public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed1, uint seed2)
     {
         MarvinHash64.ComputeHash(ref MemoryMarshal.GetReference(data), (uint)data.Length, ref seed1, ref seed2);
         return seed1 ^ seed2;

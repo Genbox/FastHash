@@ -44,7 +44,9 @@ public static class Xx3Hash128
         return m128;
     }
 
-    public static UInt128 ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
+    public static UInt128 ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+
+    public static UInt128 ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         int length = data.Length;
 #if NET8_0_OR_GREATER
