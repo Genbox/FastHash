@@ -33,6 +33,7 @@ These hash functions are included in the library.
 | [RapidHash](https://github.com/Nicoshev/rapidhash)                                                                                                      |    3    | Nicolas De Carli                                                |     MIT      |
 | [SipHash](https://github.com/veorq/SipHash)                                                                                                             |   1.0   | Jean-Philippe Aumasson, Daniel J. Bernstein                     |   CC0 1.0    |
 | [SuperFastHash](http://www.azillionmonkeys.com/qed/hash.html)                                                                                           |    -    | Paul Hsieh                                                      |   LGPL 2.1   |
+| [T1haHash](https://github.com/erthink/t1ha)                                                                                                             |  2.1.1  | Positive Technologies, Leonid Yuriev                            |     Zlib     |
 | [WyHash](https://github.com/wangyi-fudan/wyhash)                                                                                                        | final 3 | Wang Yi                                                         |     None     |
 | [xxHash](https://github.com/Cyan4973/xxHash)                                                                                                            |  0.8.1  | Yann Collet                                                     | BSD 2-Clause |
 
@@ -59,6 +60,7 @@ The table below gives an overview of the implementations.
 | RapidHash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
 | SipHash       |    x    |   x    |       |   x   |        |   x   |   x    |        |    x     |
 | SuperFastHash |    x    |   x    |       |       |        |   x   |        |        |          |
+| T1ha2Hash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
 | WyHash        |    x    |   x    |       |   x   |        |   x   |        |        |    x     |
 | xxHash2       |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    x     |
 | xxHash3       |    x    |   x    |       |   x   |   x    |   x   |   x    |        |    x     |

@@ -14,6 +14,7 @@ using Genbox.FastHash.MeowHash;
 using Genbox.FastHash.PolymurHash;
 using Genbox.FastHash.RapidHash;
 using Genbox.FastHash.SipHash;
+using Genbox.FastHash.T1haHash;
 using Genbox.FastHash.WyHash;
 using Genbox.FastHash.XxHash;
 
@@ -78,6 +79,9 @@ public class Index64Benchmarks
 
     [Benchmark]
     public ulong SipHash64Test() => SipHash64.ComputeIndex(_value);
+
+    [Benchmark]
+    public ulong T1ha2Hash64Test() => T1ha2Hash64.ComputeIndex(_value);
 
     [Benchmark]
     public ulong Wy3Hash64Test() => Wy3Hash64.ComputeIndex(_value);

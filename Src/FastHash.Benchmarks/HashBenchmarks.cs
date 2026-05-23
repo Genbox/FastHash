@@ -17,6 +17,7 @@ using Genbox.FastHash.PolymurHash;
 using Genbox.FastHash.RapidHash;
 using Genbox.FastHash.SipHash;
 using Genbox.FastHash.SuperFastHash;
+using Genbox.FastHash.T1haHash;
 using Genbox.FastHash.WyHash;
 using Genbox.FastHash.XxHash;
 
@@ -134,6 +135,9 @@ public class HashBenchmarks : IDisposable
 
     [Benchmark, BenchmarkCategory("SipHash64")]
     public ulong SipHash64Test() => SipHash64.ComputeHash(_testData);
+
+    [Benchmark, BenchmarkCategory("T1ha2Hash64")]
+    public ulong T1ha2Hash64Test() => T1ha2Hash64.ComputeHash(_testData);
 
     [Benchmark, BenchmarkCategory("SuperFastHash32")]
     public uint SuperFastHash32Test() => SuperFastHash32.ComputeHash(_testData);

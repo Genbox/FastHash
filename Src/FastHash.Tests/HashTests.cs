@@ -10,6 +10,7 @@ using Genbox.FastHash.MurmurHash;
 using Genbox.FastHash.PolymurHash;
 using Genbox.FastHash.SipHash;
 using Genbox.FastHash.SuperFastHash;
+using Genbox.FastHash.T1haHash;
 using Genbox.FastHash.WyHash;
 using Genbox.FastHash.XxHash;
 
@@ -47,6 +48,7 @@ public class HashTests
         yield return [nameof(FarmHash64), () => FarmHash64.ComputeHash(_data), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A }];
         yield return [nameof(Polymur2Hash64), () => Polymur2Hash64.ComputeHash(_data), new byte[] { 0x5B, 0x4B, 0xE3, 0xBC, 0xE2, 0x3, 0xB, 0xC5 }];
         yield return [nameof(SipHash64), () => SipHash64.ComputeHash(_data), new byte[] { 0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97 }];
+        yield return [nameof(T1ha2Hash64), () => T1ha2Hash64.ComputeHash(_data), new byte[] { 0xC6, 0x87, 0xF0, 0xA7, 0x0E, 0x1B, 0x29, 0xD7 }];
         yield return [nameof(Wy3Hash64), () => Wy3Hash64.ComputeHash(_data), new byte[] { 0x3F, 0xA2, 0x72, 0x2A, 0x57, 0x74, 0x52, 0xC2 }];
         yield return [nameof(Xx2Hash64), () => Xx2Hash64.ComputeHash(_data), new byte[] { 0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE }];
         yield return [nameof(Xx3Hash64), () => Xx3Hash64.ComputeHash(_data), new byte[] { 0xBF, 0x39, 0xFF, 0xB1, 0xB7, 0xF4, 0x3B, 0xC3 }];
