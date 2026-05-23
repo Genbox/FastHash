@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Genbox.FastHash.FarshHash;
 
 namespace Genbox.FastHash.Tests.Single;
@@ -21,6 +21,31 @@ public class FarshHashTests
         4072667798, 718212032, 566259928, 341319827, 2301546775, 716398136, 2714886944, 2981444815, 2651245584, 2499622960, 2480514121, 3504357064, 491498517, 2891576849, 1466653878, 250977637, 2675912942, 2292395818, 545468117, 1497944614, 4064936607, 2238939381, 3859884596, 206622799, 2423340087, 1767331461, 1658364243, 1921537158, 1468877597, 2982876740, 4275477844, 1257489720, 13881613, 3868224695, 4045061188, 683816928, 469374750, 715138878, 456090825, 1163941712, 3187507771, 3709505696, 3748827713, 2541050140, 3277851870, 2144386652, 1090747396, 1463203919, 4051901575, 70681627, 2430365853, 2031504509, 1212874559, 3565595947, 1155239988, 27863499, 3903822551, 4132051121, 1639606284, 1780279554, 4153252336, 2890907801, 2109767511, 688621514, 695226720, 1384598164, 472768959, 2028498871, 2110948227, 4230170546, 3680779622, 1583805861, 2399351381, 179180012, 2397190232, 1315000286, 622999090, 269862449, 1053906626, 2296129168, 978640757, 3297676189, 2520967188, 3287630521, 3543808570, 719562628, 3823777446, 2587781342, 3551413294, 2181897883, 1826381752, 1488985137, 3545270389, 909596135, 1926296075, 3423625428, 535919325, 922851763, 1160438712, 4166421939, 3278935467, 4291824142, 2542118633, 198257781, 3341192401, 2223899817, 594040515, 3549989617, 2581174195
     ];
 
+    private static readonly (int Length, ulong Hash)[] _vectors64 =
+    [
+        (1, 0x63B487964D39C82AUL),
+        (2, 0x3D3F45AF3E1B7638UL),
+        (3, 0x606E84E7EBB84FB8UL),
+        (4, 0x4C510427B6DD45F2UL),
+        (5, 0x315CF7D31F3CBA9BUL),
+        (7, 0x1C673CD67BB3FA4BUL),
+        (8, 0x3DBB24EA08DB1C99UL),
+        (15, 0x74B96B04A90901ABUL),
+        (16, 0xAFE5C980DE90483FUL),
+        (31, 0xD84F0E139512BE32UL),
+        (32, 0x0A73AF3E1810D3ADUL),
+        (63, 0x5CE1D8CDD4AAC17EUL),
+        (64, 0x9BB2C9DBAAF4A0B0UL),
+        (127, 0xC1DEE71E0282AF6AUL),
+        (128, 0x466BE322FF377064UL),
+        (255, 0xA17982F9D09A200BUL),
+        (256, 0xF6E0E4CD1C477700UL),
+        (511, 0xF4CD4161D5C510E0UL),
+        (512, 0xE1D8799B79AA2EF8UL),
+        (1024, 0xF9A7B0ADE1280CB2UL),
+        (2047, 0xE5AA093799D997B3UL)
+    ];
+
     [Fact]
     public void TestVectors()
     {
@@ -30,7 +55,21 @@ public class FarshHashTests
 
             ulong value = FarshHash64.ComputeHash(Encoding.ASCII.GetBytes(testData));
 
-            Assert.Equal(_vectors[i - 1], value);
+            Assert.Equal(_vectors[i - 1], unchecked((uint)value));
+        }
+    }
+
+    [Fact]
+    public unsafe void TestVectors64()
+    {
+        foreach ((int length, ulong expected) in _vectors64)
+        {
+            byte[] data = Encoding.ASCII.GetBytes(new string('a', length));
+
+            Assert.Equal(expected, FarshHash64.ComputeHash(data));
+
+            fixed (byte* ptr = data)
+                Assert.Equal(expected, FarshHash64Unsafe.ComputeHash(ptr, data.Length));
         }
     }
 
@@ -47,7 +86,7 @@ public class FarshHashTests
                 fixed (byte* ptr = data)
                 {
                     ulong value = FarshHash64Unsafe.ComputeHash(ptr, data.Length);
-                    Assert.Equal(_vectors[i - 1], value);
+                    Assert.Equal(_vectors[i - 1], unchecked((uint)value));
                 }
             }
         }
