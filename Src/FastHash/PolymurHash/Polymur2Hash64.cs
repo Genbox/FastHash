@@ -30,33 +30,47 @@ namespace Genbox.FastHash.PolymurHash;
 
 public static class Polymur2Hash64
 {
-    private static PolymurHashParams _params;
-
-    static Polymur2Hash64()
-    {
-        //Note: Due to the static API of FastHash, for perf reasons we have to pre-generate the polynomials based on a static seed here.
-        //We then use the "tweak" parameter below with the seed instead. This might not give the same security guarantees, but it is our only choice right now.
-        _params = new PolymurHashParams();
-        polymur_init_params_from_seed(ref _params, 0xfedbca9876543210UL);
-    }
+    private static readonly Parameters _params = CreateParams(0);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
+    {
+        Parameters p = _params;
+        return ComputeIndex(input, ref p);
+    }
+
+    public static ulong ComputeIndex(ulong input, ulong seed)
+    {
+        Parameters p = seed == 0 ? _params : CreateParams(seed);
+        return ComputeIndex(input, ref p);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong ComputeIndex(ulong input, ref Parameters p)
     {
         const int len = 8;
         ulong m0 = input & 0x00ffffffffffffffUL;
         ulong m1 = m0;
         ulong m2 = input >> 8;
-        ulong k3 = polymur_red611(polymur_mul128(_params.k, _params.k2));
-        UInt128 t0 = polymur_mul128(_params.k2 + m0, _params.k7 + m1);
-        UInt128 t1 = polymur_mul128(_params.k + m2, k3 + len);
+        UInt128 t0 = polymur_mul128(p.k2 + m0, p.k7 + m1);
+        UInt128 t1 = polymur_mul128(p.k + m2, p.k3 + len);
         ulong h = polymur_red611(polymur_add128(t0, t1));
-        return polymur_mix(h) + _params.s;
+        return polymur_mix(h) + p.s;
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0) => ComputeHash(data, seed, 0);
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed, ulong tweak)
     {
-        return polymur_hash(data, data.Length, ref _params, seed);
+        Parameters p = seed == 0 ? _params : CreateParams(seed);
+        return polymur_hash(data, data.Length, ref p, tweak);
+    }
+
+    private static Parameters CreateParams(ulong seed)
+    {
+        Parameters p = new Parameters();
+        polymur_init_params_from_seed(ref p, seed);
+        return p;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -74,14 +88,14 @@ public static class Polymur2Hash64
                 return 0;
 
             ulong v = buf[offset + 0];
-            v |= (ulong)buf[offset + (len / 2)] << 8 * (len / 2);
-            v |= (ulong)buf[offset + len - 1] << 8 * (len - 1);
+            v |= (ulong)buf[offset + (len / 2)] << (8 * (len / 2));
+            v |= (ulong)buf[(offset + len) - 1] << (8 * (len - 1));
             return v;
         }
 
         ulong lo = polymur_load_le_u32(buf, offset + 0);
-        ulong hi = polymur_load_le_u32(buf, offset + len - 4);
-        return lo | (hi << 8 * (len - 4));
+        ulong hi = polymur_load_le_u32(buf, (offset + len) - 4);
+        return lo | (hi << (8 * (len - 4)));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -101,11 +115,9 @@ public static class Polymur2Hash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong polymur_red611(UInt128 x)
-    {
+    private static ulong polymur_red611(UInt128 x) =>
         // return ((( ulong) x.lo) & POLYMUR_P611) + __shiftright128(x.lo, x.hi, 61);
-        return (x.Low & POLYMUR_P611) + ((x.Low >> 61) | (x.High << 3));
-    }
+        (x.Low & POLYMUR_P611) + ((x.Low >> 61) | (x.High << 3));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong polymur_extrared611(ulong x) => (x & POLYMUR_P611) + (x >> 61);
@@ -113,14 +125,14 @@ public static class Polymur2Hash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong polymur_mix(ulong x) => JM_xmxmx_Mx2_64(x);
 
-    private static void polymur_init_params(ref PolymurHashParams p, ulong k_seed, ulong s_seed)
+    private static void polymur_init_params(ref Parameters p, ulong k_seed, ulong s_seed)
     {
         p.s = s_seed ^ POLYMUR_ARBITRARY1; // People love to pass zero.
 
         // POLYMUR_POW37[i] = 37^(2^i) mod (2^61 - 1)
         // Could be replaced by a 512 byte LUT, costs ~400 byte overhead but 2x
         // faster seeding. However, seeding is rather rare, so I chose not to.
-        ulong[] POLYMUR_POW37 = new ulong[64];
+        Span<ulong> POLYMUR_POW37 = stackalloc ulong[64];
         POLYMUR_POW37[0] = 37;
         POLYMUR_POW37[32] = 559096694736811184UL;
         for (int i = 0; i < 31; ++i)
@@ -153,36 +165,37 @@ public static class Polymur2Hash64
             // ~46.875% success rate. Bound on k^7 needed for efficient reduction.
             p.k = polymur_extrared611(k);
             p.k2 = polymur_extrared611(polymur_red611(polymur_mul128(p.k, p.k)));
-            ulong k3 = polymur_red611(polymur_mul128(p.k, p.k2));
+            p.k3 = polymur_red611(polymur_mul128(p.k, p.k2));
             ulong k4 = polymur_red611(polymur_mul128(p.k2, p.k2));
-            p.k7 = polymur_extrared611(polymur_red611(polymur_mul128(k3, k4)));
+            p.k7 = polymur_extrared611(polymur_red611(polymur_mul128(p.k3, k4)));
 
             if (p.k7 < (1UL << 60) - (1UL << 56))
                 break;
 
             // Our key space is log2(totient(2^61 - 2) * (2^60-2^56)/2^61) ~= 57.4 bits.
         }
+
+        p.initialized = true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void polymur_init_params_from_seed(ref PolymurHashParams p, ulong seed)
+    private static void polymur_init_params_from_seed(ref Parameters p, ulong seed)
     {
         polymur_init_params(ref p, polymur_mix(seed + POLYMUR_ARBITRARY3), polymur_mix(seed + POLYMUR_ARBITRARY4));
     }
 
-    private static ulong polymur_hash_poly611(ReadOnlySpan<byte> buf, int len, ref PolymurHashParams p, ulong tweak)
+    private static ulong polymur_hash_poly611(ReadOnlySpan<byte> buf, int len, ref Parameters p, ulong tweak)
     {
-        Span<ulong> m = stackalloc ulong[7];
         ulong poly_acc = tweak;
         int bufPtr = 0;
 
         if (len <= 7)
         {
-            m[0] = polymur_load_le_u64_0_8(buf, len);
-            return poly_acc + polymur_red611(polymur_mul128(p.k + m[0], p.k2 + (uint)len));
+            ulong m0 = polymur_load_le_u64_0_8(buf, len);
+            return poly_acc + polymur_red611(polymur_mul128(p.k + m0, p.k2 + (uint)len));
         }
 
-        ulong k3 = polymur_red611(polymur_mul128(p.k, p.k2));
+        ulong k3 = p.k3;
         ulong k4 = polymur_red611(polymur_mul128(p.k2, p.k2));
         if (len >= 50)
         {
@@ -193,13 +206,18 @@ public static class Polymur2Hash64
             ulong h = 0;
             do
             {
-                for (int i = 0; i < 7; ++i)
-                    m[i] = polymur_load_le_u64(buf, bufPtr + (7 * i)) & 0x00ffffffffffffffUL;
+                ulong m0 = polymur_load_le_u64(buf, bufPtr) & 0x00ffffffffffffffUL;
+                ulong m1 = polymur_load_le_u64(buf, bufPtr + 7) & 0x00ffffffffffffffUL;
+                ulong m2 = polymur_load_le_u64(buf, bufPtr + 14) & 0x00ffffffffffffffUL;
+                ulong m3 = polymur_load_le_u64(buf, bufPtr + 21) & 0x00ffffffffffffffUL;
+                ulong m4 = polymur_load_le_u64(buf, bufPtr + 28) & 0x00ffffffffffffffUL;
+                ulong m5 = polymur_load_le_u64(buf, bufPtr + 35) & 0x00ffffffffffffffUL;
+                ulong m6 = polymur_load_le_u64(buf, bufPtr + 42) & 0x00ffffffffffffffUL;
 
-                UInt128 t0 = polymur_mul128(p.k + m[0], k6 + m[1]);
-                UInt128 t1 = polymur_mul128(p.k2 + m[2], k5 + m[3]);
-                UInt128 t2 = polymur_mul128(k3 + m[4], k4 + m[5]);
-                UInt128 t3 = polymur_mul128(h + m[6], p.k7);
+                UInt128 t0 = polymur_mul128(p.k + m0, k6 + m1);
+                UInt128 t1 = polymur_mul128(p.k2 + m2, k5 + m3);
+                UInt128 t2 = polymur_mul128(k3 + m4, k4 + m5);
+                UInt128 t3 = polymur_mul128(h + m6, p.k7);
                 UInt128 s = polymur_add128(polymur_add128(t0, t1), polymur_add128(t2, t3));
                 h = polymur_red611(s);
                 len -= 49;
@@ -213,43 +231,45 @@ public static class Polymur2Hash64
 
         if (len >= 8)
         {
-            m[0] = polymur_load_le_u64(buf, bufPtr) & 0x00ffffffffffffffUL;
-            m[1] = polymur_load_le_u64(buf, bufPtr + ((len - 7) / 2)) & 0x00ffffffffffffffUL;
-            m[2] = polymur_load_le_u64(buf, bufPtr + len - 8) >> 8;
-            UInt128 t0 = polymur_mul128(p.k2 + m[0], p.k7 + m[1]);
-            UInt128 t1 = polymur_mul128(p.k + m[2], k3 + (uint)len);
+            ulong m0 = polymur_load_le_u64(buf, bufPtr) & 0x00ffffffffffffffUL;
+            ulong m1 = polymur_load_le_u64(buf, bufPtr + ((len - 7) / 2)) & 0x00ffffffffffffffUL;
+            ulong m2 = polymur_load_le_u64(buf, (bufPtr + len) - 8) >> 8;
+            UInt128 t0 = polymur_mul128(p.k2 + m0, p.k7 + m1);
+            UInt128 t1 = polymur_mul128(p.k + m2, k3 + (uint)len);
 
             if (len <= 21)
                 return poly_acc + polymur_red611(polymur_add128(t0, t1));
 
-            m[3] = polymur_load_le_u64(buf, bufPtr + 7) & 0x00ffffffffffffffUL;
-            m[4] = polymur_load_le_u64(buf, bufPtr + 14) & 0x00ffffffffffffffUL;
-            m[5] = polymur_load_le_u64(buf, bufPtr + len - 21) & 0x00ffffffffffffffUL;
-            m[6] = polymur_load_le_u64(buf, bufPtr + len - 14) & 0x00ffffffffffffffUL;
+            ulong m3 = polymur_load_le_u64(buf, bufPtr + 7) & 0x00ffffffffffffffUL;
+            ulong m4 = polymur_load_le_u64(buf, bufPtr + 14) & 0x00ffffffffffffffUL;
+            ulong m5 = polymur_load_le_u64(buf, (bufPtr + len) - 21) & 0x00ffffffffffffffUL;
+            ulong m6 = polymur_load_le_u64(buf, (bufPtr + len) - 14) & 0x00ffffffffffffffUL;
             ulong t0r = polymur_red611(t0);
-            UInt128 t2 = polymur_mul128(p.k2 + m[3], p.k7 + m[4]);
-            UInt128 t3 = polymur_mul128(t0r + m[5], k4 + m[6]);
+            UInt128 t2 = polymur_mul128(p.k2 + m3, p.k7 + m4);
+            UInt128 t3 = polymur_mul128(t0r + m5, k4 + m6);
             UInt128 s = polymur_add128(polymur_add128(t1, t2), t3);
             return poly_acc + polymur_red611(s);
         }
 
-        m[0] = polymur_load_le_u64_0_8(buf, len, bufPtr);
-        return poly_acc + polymur_red611(polymur_mul128(p.k + m[0], p.k2 + (uint)len));
+        ulong m = polymur_load_le_u64_0_8(buf, len, bufPtr);
+        return poly_acc + polymur_red611(polymur_mul128(p.k + m, p.k2 + (uint)len));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong polymur_hash(ReadOnlySpan<byte> buf, int len, ref PolymurHashParams p, ulong tweak)
+    private static ulong polymur_hash(ReadOnlySpan<byte> buf, int len, ref Parameters p, ulong tweak)
     {
         ulong h = polymur_hash_poly611(buf, len, ref p, tweak);
         return polymur_mix(h) + p.s;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct PolymurHashParams
+    private struct Parameters
     {
-        public ulong k;
-        public ulong k2;
-        public ulong k7;
-        public ulong s;
+        internal ulong k;
+        internal ulong k2;
+        internal ulong k3;
+        internal ulong k7;
+        internal ulong s;
+        internal bool initialized;
     }
 }
