@@ -72,13 +72,13 @@ public class Index64Benchmarks
     public ulong Polymur2Hash64Test() => Polymur2Hash64.ComputeIndex(_value);
 
     [Benchmark]
-    public ulong RapidHash64Test() => RapidHash64.ComputeIndex(_value);
+    public ulong Rapid3Hash64Test() => Rapid3Hash64.ComputeIndex(_value);
 
     [Benchmark]
-    public ulong RapidHashMicro64Test() => RapidHashMicro64.ComputeIndex(_value);
+    public ulong Rapid3HashMicro64Test() => Rapid3HashMicro64.ComputeIndex(_value);
 
     [Benchmark]
-    public ulong RapidHashNano64Test() => RapidHashNano64.ComputeIndex(_value);
+    public ulong Rapid3HashNano64Test() => Rapid3HashNano64.ComputeIndex(_value);
 
     [Benchmark]
     public ulong SipHash64Test() => SipHash64.ComputeIndex(_value);

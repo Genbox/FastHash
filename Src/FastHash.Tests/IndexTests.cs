@@ -134,9 +134,9 @@ public class IndexTests
             }
         }));
         data.Add(new Tuple64(nameof(Polymur2Hash64), Polymur2Hash64.ComputeIndex, static x => Polymur2Hash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(RapidHash64), static x => RapidHash64.ComputeIndex(x, 0), static x => RapidHash64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(RapidHashMicro64), static x => RapidHashMicro64.ComputeIndex(x, 0), static x => RapidHashMicro64.ComputeHash(x)));
-        data.Add(new Tuple64(nameof(RapidHashNano64), static x => RapidHashNano64.ComputeIndex(x, 0), static x => RapidHashNano64.ComputeHash(x)));
+        data.Add(new Tuple64(nameof(Rapid3Hash64), static x => Rapid3Hash64.ComputeIndex(x, 0), static x => Rapid3Hash64.ComputeHash(x)));
+        data.Add(new Tuple64(nameof(Rapid3HashMicro64), static x => Rapid3HashMicro64.ComputeIndex(x, 0), static x => Rapid3HashMicro64.ComputeHash(x)));
+        data.Add(new Tuple64(nameof(Rapid3HashNano64), static x => Rapid3HashNano64.ComputeIndex(x, 0), static x => Rapid3HashNano64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(SipHash64), static x => SipHash64.ComputeIndex(x), static x => SipHash64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(Wy3Hash64), Wy3Hash64.ComputeIndex, static x => Wy3Hash64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(Wy4Hash64), static x => Wy4Hash64.ComputeIndex(x), static x => Wy4Hash64.ComputeHash(x)));

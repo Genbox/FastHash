@@ -130,14 +130,14 @@ public class HashBenchmarks : IDisposable
     [Benchmark, BenchmarkCategory("Polymur2Hash64")]
     public ulong Polymur2Hash64Test() => Polymur2Hash64.ComputeHash(_testData);
 
-    [Benchmark, BenchmarkCategory("RapidHash64")]
-    public ulong RapidHash64Test() => RapidHash64.ComputeHash(_testData);
+    [Benchmark, BenchmarkCategory("Rapid3Hash64")]
+    public ulong Rapid3Hash64Test() => Rapid3Hash64.ComputeHash(_testData);
 
-    [Benchmark, BenchmarkCategory("RapidHashMicro64")]
-    public ulong RapidHashMicro64Test() => RapidHashMicro64.ComputeHash(_testData);
+    [Benchmark, BenchmarkCategory("Rapid3HashMicro64")]
+    public ulong Rapid3HashMicro64Test() => Rapid3HashMicro64.ComputeHash(_testData);
 
-    [Benchmark, BenchmarkCategory("RapidHashNano64")]
-    public ulong RapidHashNano64Test() => RapidHashNano64.ComputeHash(_testData);
+    [Benchmark, BenchmarkCategory("Rapid3HashNano64")]
+    public ulong Rapid3HashNano64Test() => Rapid3HashNano64.ComputeHash(_testData);
 
     [Benchmark, BenchmarkCategory("SipHash64")]
     public ulong SipHash64Test() => SipHash64.ComputeHash(_testData);

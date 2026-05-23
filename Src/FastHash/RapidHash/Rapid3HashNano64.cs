@@ -4,31 +4,38 @@ using static Genbox.FastHash.RapidHash.RapidHashShared;
 
 namespace Genbox.FastHash.RapidHash;
 
-public static class RapidHashNano64
+public static class Rapid3HashNano64
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input) => ComputeIndexCore(input, 0, DefaultSecret);
+    public static ulong ComputeIndex(ulong input) => ComputeIndexCore(input, DefaultIndexSeed);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input, ulong seed) => ComputeIndexCore(input, seed, DefaultSecret);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong ComputeIndexCore(ulong input, ulong seed, ulong[] secret)
+    public static ulong ComputeIndex(ulong input, ulong seed)
     {
-        seed ^= RapidMix(seed ^ secret[2], secret[1]);
+        seed ^= RapidMix(seed ^ DefaultSecret2, DefaultSecret1);
         seed ^= 8UL;
+        return ComputeIndexCore(input, seed);
+    }
 
-        ulong a = input ^ secret[1];
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong ComputeIndexCore(ulong input, ulong seed)
+    {
+        ulong a = input ^ DefaultSecret1;
         ulong b = input ^ seed;
 
-        RapidMum(ref a, ref b);
-        return RapidMix(a ^ secret[7], b ^ secret[1] ^ 8UL);
+        ulong high = BigMul(a, b, out ulong low);
+        return RapidMix(low ^ DefaultSecret7, high ^ DefaultSecret1 ^ 8UL);
     }
 
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0, ulong[]? secret = null)
     {
         secret ??= DefaultSecret;
-        seed ^= RapidMix(seed ^ secret[2], secret[1]);
+        ulong secret0 = secret[0];
+        ulong secret1 = secret[1];
+        ulong secret2 = secret[2];
+        ulong secret7 = secret[7];
+
+        seed ^= RapidMix(seed ^ secret2, secret1);
 
         ulong a = 0;
         ulong b = 0;
@@ -66,9 +73,9 @@ public static class RapidHashNano64
 
                 while (i > 48)
                 {
-                    seed = RapidMix(Read64(data, offset) ^ secret[0], Read64(data, offset + 8) ^ seed);
-                    see1 = RapidMix(Read64(data, offset + 16) ^ secret[1], Read64(data, offset + 24) ^ see1);
-                    see2 = RapidMix(Read64(data, offset + 32) ^ secret[2], Read64(data, offset + 40) ^ see2);
+                    seed = RapidMix(Read64(data, offset) ^ secret0, Read64(data, offset + 8) ^ seed);
+                    see1 = RapidMix(Read64(data, offset + 16) ^ secret1, Read64(data, offset + 24) ^ see1);
+                    see2 = RapidMix(Read64(data, offset + 32) ^ secret2, Read64(data, offset + 40) ^ see2);
 
                     offset += 48;
                     i -= 48;
@@ -80,18 +87,18 @@ public static class RapidHashNano64
 
             if (i > 16)
             {
-                seed = RapidMix(Read64(data, offset) ^ secret[2], Read64(data, offset + 8) ^ seed);
+                seed = RapidMix(Read64(data, offset) ^ secret2, Read64(data, offset + 8) ^ seed);
                 if (i > 32)
-                    seed = RapidMix(Read64(data, offset + 16) ^ secret[2], Read64(data, offset + 24) ^ seed);
+                    seed = RapidMix(Read64(data, offset + 16) ^ secret2, Read64(data, offset + 24) ^ seed);
             }
 
-            a = Read64(data, offset + i - 16) ^ (ulong)i;
-            b = Read64(data, offset + i - 8);
+            a = Read64(data, (offset + i) - 16) ^ (ulong)i;
+            b = Read64(data, (offset + i) - 8);
         }
 
-        a ^= secret[1];
+        a ^= secret1;
         b ^= seed;
         RapidMum(ref a, ref b);
-        return RapidMix(a ^ secret[7], b ^ secret[1] ^ (ulong)i);
+        return RapidMix(a ^ secret7, b ^ secret1 ^ (ulong)i);
     }
 }
