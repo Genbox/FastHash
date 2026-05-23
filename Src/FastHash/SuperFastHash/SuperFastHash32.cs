@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.SuperFastHash;
 
@@ -19,13 +19,36 @@ public static class SuperFastHash32
         return hash;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static uint ComputeIndex(uint input, uint seed)
+    {
+        uint hash = seed + (ushort)input;
+        hash = (hash << 16) ^ ((input >> 16) << 11) ^ hash;
+        hash += hash >> 11;
+        hash ^= hash << 3;
+        hash += hash >> 5;
+        hash ^= hash << 4;
+        hash += hash >> 17;
+        hash ^= hash << 25;
+        hash += hash >> 6;
+        return hash;
+    }
+
     public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
         if (data.Length <= 0)
             return 0;
 
+        return ComputeHash(data, (uint)data.Length);
+    }
+
+    public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
+    {
+        if (data.Length <= 0)
+            return 0;
+
         int length = data.Length;
-        uint hash = (uint)length, tmp;
+        uint hash = seed, tmp;
         int rem = length & 3;
         length >>= 2;
 

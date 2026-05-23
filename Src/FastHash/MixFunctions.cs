@@ -4,6 +4,14 @@ namespace Genbox.FastHash;
 
 public static class MixFunctions
 {
+    #region Others
+
+    // https://github.com/backtrace-labs/umash/tree/master
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong PK_rlxrlx_Umash_64(ulong h) => h ^ RotateLeft(h, 8) ^ RotateLeft(h, 33);
+
+    #endregion
+
     /*
       Naming: <Initials>_<Construction>_<CommonName>_<Bits>
       Construction:
@@ -214,9 +222,9 @@ public static class MixFunctions
     {
         h ^= RotateRight(h, 25) ^ RotateRight(h, 47);
         h *= 0x9E6C63D0676A9A99;
-        h ^= h >> 23 ^ h >> 51;
+        h ^= (h >> 23) ^ (h >> 51);
         h *= 0x9E6D62D06F6A9A9B;
-        h ^= h >> 23 ^ h >> 51;
+        h ^= (h >> 23) ^ (h >> 51);
         return h;
     }
 
@@ -554,17 +562,6 @@ public static class MixFunctions
 
         ulong hi2 = BigMul(m1, 0x1B03738712FAD5C9, out ulong lo2);
         return hi2 ^ lo2;
-    }
-
-    #endregion
-
-    #region Others
-
-    // https://github.com/backtrace-labs/umash/tree/master
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong PK_rlxrlx_Umash_64(ulong h)
-    {
-        return h ^ RotateLeft(h, 8) ^ RotateLeft(h, 33);
     }
 
     #endregion

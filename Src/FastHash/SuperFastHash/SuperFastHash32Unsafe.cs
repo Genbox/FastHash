@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastHash.SuperFastHash;
+namespace Genbox.FastHash.SuperFastHash;
 
 public static class SuperFastHash32Unsafe
 {
@@ -7,7 +7,15 @@ public static class SuperFastHash32Unsafe
         if (data == null || length <= 0)
             return 0;
 
-        uint hash = (uint)length, tmp;
+        return ComputeHash(data, length, (uint)length);
+    }
+
+    public static unsafe uint ComputeHash(byte* data, int length, uint seed)
+    {
+        if (data == null || length <= 0)
+            return 0;
+
+        uint hash = seed, tmp;
         int rem = length & 3;
         length >>= 2;
 
