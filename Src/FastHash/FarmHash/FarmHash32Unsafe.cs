@@ -1,4 +1,4 @@
-﻿using Genbox.FastHash.CityHash;
+using Genbox.FastHash.CityHash;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.FarmHash.FarmHashConstants;
 
@@ -34,11 +34,11 @@ public static class FarmHash32Unsafe
         // len > 24
         uint h = len, g = C1 * len, f = g;
         {
-            uint a0 = RotateRight(Read32(data + len - 4) * C1, 17) * C2;
-            uint a1 = RotateRight(Read32(data + len - 8) * C1, 17) * C2;
-            uint a2 = RotateRight(Read32(data + len - 16) * C1, 17) * C2;
-            uint a3 = RotateRight(Read32(data + len - 12) * C1, 17) * C2;
-            uint a4 = RotateRight(Read32(data + len - 20) * C1, 17) * C2;
+            uint a0 = RotateRight(Read32((data + len) - 4) * C1, 17) * C2;
+            uint a1 = RotateRight(Read32((data + len) - 8) * C1, 17) * C2;
+            uint a2 = RotateRight(Read32((data + len) - 16) * C1, 17) * C2;
+            uint a3 = RotateRight(Read32((data + len) - 12) * C1, 17) * C2;
+            uint a4 = RotateRight(Read32((data + len) - 20) * C1, 17) * C2;
             h ^= a0;
             h = RotateRight(h, 19);
             h = (h * 5) + 0xe6546b64;
@@ -113,19 +113,19 @@ public static class FarmHash32Unsafe
     {
         uint a = len, b = len * 5, c = 9, d = b + seed;
         a += Read32(s);
-        b += Read32(s + len - 4);
+        b += Read32((s + len) - 4);
         c += Read32(s + ((len >> 1) & 4));
         return AA_xmxmx_Murmur_32(seed ^ Mur(c, Mur(b, Mur(a, d))));
     }
 
     private static unsafe uint Hash32Len13to24(byte* s, uint len, uint seed)
     {
-        uint a = Read32(s - 4 + (len >> 1));
+        uint a = Read32((s - 4) + (len >> 1));
         uint b = Read32(s + 4);
-        uint c = Read32(s + len - 8);
+        uint c = Read32((s + len) - 8);
         uint d = Read32(s + (len >> 1));
         uint e = Read32(s);
-        uint f = Read32(s + len - 4);
+        uint f = Read32((s + len) - 4);
         uint h = (d * C1) + len + seed;
         a = RotateRight(a, 12) + f;
         h = Mur(c, h) + a;

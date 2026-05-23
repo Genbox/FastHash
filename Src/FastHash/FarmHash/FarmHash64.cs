@@ -17,7 +17,7 @@ public static class FarmHash64
         return HashLen16(c, d, mul);
     }
 
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1 = 81, ulong seed2 = 0)
+    public static ulong ComputeHash(ReadOnlySpan<byte> data)
     {
         uint len = (uint)data.Length;
 
@@ -33,8 +33,16 @@ public static class FarmHash64
         if (len <= 256)
             return Hash64(data, len);
 
-        return Hash64WithSeeds(data, len, seed1, seed2);
+        return Hash64WithSeeds(data, len, 81, 0);
     }
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
+    {
+        uint len = (uint)data.Length;
+        return Hash64NaWithSeed(data, len, seed);
+    }
+
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2) => Hash64NaWithSeeds(data, (uint)data.Length, seed1, seed2);
 
     private static ulong HashLen0to16(ReadOnlySpan<byte> data, uint length)
     {
@@ -78,16 +86,32 @@ public static class FarmHash64
     private static ulong HashLen33to64(ReadOnlySpan<byte> data, uint length)
     {
         const ulong mul0 = K2 - 30;
-        ulong mul1 = K2 - 30 + (2 * length);
+        ulong mul1 = (K2 - 30) + (2 * length);
         ulong h0 = H32(data, 0, 32, mul0);
         ulong h1 = H32(data, length - 32, 32, mul1);
         return ((h1 * mul1) + h0) * mul1;
     }
 
+    private static ulong HashLen33to64Na(ReadOnlySpan<byte> data, uint length)
+    {
+        ulong mul = K2 + (length * 2);
+        ulong a = Read64(data) * K2;
+        ulong b = Read64(data, 8);
+        ulong c = Read64(data, length - 8) * mul;
+        ulong d = Read64(data, length - 16) * K2;
+        ulong y = RotateRight(a + b, 43) + RotateRight(c, 30) + d;
+        ulong z = HashLen16(y, a + RotateRight(b + K2, 18) + c, mul);
+        ulong e = Read64(data, 16) * mul;
+        ulong f = Read64(data, 24);
+        ulong g = (y + Read64(data, length - 32)) * mul;
+        ulong h = (z + Read64(data, length - 24)) * mul;
+        return HashLen16(RotateRight(e + f, 43) + RotateRight(g, 30) + h, e + RotateRight(f + a, 18) + g, mul);
+    }
+
     private static ulong HashLen65to96(ReadOnlySpan<byte> data, uint length)
     {
         const ulong mul0 = K2 - 114;
-        ulong mul1 = K2 - 114 + (2 * length);
+        ulong mul1 = (K2 - 114) + (2 * length);
         ulong h0 = H32(data, 0, 32, mul0);
         ulong h1 = H32(data, 32, 32, mul1);
         ulong h2 = H32(data, length - 32, 32, mul1, h0, h1);
@@ -106,8 +130,8 @@ public static class FarmHash64
     {
         ulong a = Read64(data, offset) * K1;
         ulong b = Read64(data, 8 + offset);
-        ulong c = Read64(data, length - 8 + offset) * mul;
-        ulong d = Read64(data, length - 16 + offset) * K2;
+        ulong c = Read64(data, (length - 8) + offset) * mul;
+        ulong d = Read64(data, (length - 16) + offset) * K2;
         ulong u = RotateRight(a + b, 43) + RotateRight(c, 30) + d + seed0;
         ulong v = a + RotateRight(b + K2, 18) + c + seed1;
         a = ShiftMix((u ^ v) * mul);
@@ -126,20 +150,17 @@ public static class FarmHash64
         return new UInt128(a + z, b + c);
     }
 
-    private static UInt128 WeakHashLen32WithSeeds(ReadOnlySpan<byte> data, uint offset, ulong a, ulong b)
-    {
-        return WeakHashLen32WithSeeds(Read64(data, offset),
-            Read64(data, 8 + offset),
-            Read64(data, 16 + offset),
-            Read64(data, 24 + offset),
-            a,
-            b);
-    }
+    private static UInt128 WeakHashLen32WithSeeds(ReadOnlySpan<byte> data, uint offset, ulong a, ulong b) => WeakHashLen32WithSeeds(Read64(data, offset),
+        Read64(data, 8 + offset),
+        Read64(data, 16 + offset),
+        Read64(data, 24 + offset),
+        a,
+        b);
 
     private static ulong Hash64WithSeeds(ReadOnlySpan<byte> s, uint len, ulong seed0, ulong seed1)
     {
         if (len <= 64)
-            return HashLen16(Hash64(s, len) - seed0, seed1, 0x9ddfea08eb382d69UL); //PORT NOTE: This used to refer to Hash128to64, which was the same as HashLen16, just with hardcoded mul
+            return Hash64NaWithSeeds(s, len, seed0, seed1);
 
         // For strings over 64 bytes we loop.  Internal state consists of
         // 64 bytes: u, v, w, x, y, and z.
@@ -154,18 +175,18 @@ public static class FarmHash64
 
         // Set end so that after the loop we have 1 to 64 bytes left to process.
         uint index = 0;
-        uint end = (len - 1) / 64 * 64;
-        uint last64 = end + ((len - 1) & 63) - 63;
+        uint end = ((len - 1) / 64) * 64;
+        uint last64 = (end + ((len - 1) & 63)) - 63;
         do
         {
-            ulong a0 = Read64(s);
-            ulong a1 = Read64(s, 8);
-            ulong a2 = Read64(s, 16);
-            ulong a3 = Read64(s, 24);
-            ulong a4 = Read64(s, 32);
-            ulong a5 = Read64(s, 40);
-            ulong a6 = Read64(s, 48);
-            ulong a7 = Read64(s, 56);
+            ulong a0 = Read64(s, index);
+            ulong a1 = Read64(s, index + 8);
+            ulong a2 = Read64(s, index + 16);
+            ulong a3 = Read64(s, index + 24);
+            ulong a4 = Read64(s, index + 32);
+            ulong a5 = Read64(s, index + 40);
+            ulong a6 = Read64(s, index + 48);
+            ulong a7 = Read64(s, index + 56);
             x += a0 + a1;
             y += a2;
             z += a3;
@@ -214,14 +235,29 @@ public static class FarmHash64
         w.Low += (len - 1) & 63;
         u += y;
         y += u;
-        x = RotateRight(y - x + v.Low + Read64(s, index + 8), 37) * mul;
+        x = RotateRight((y - x) + v.Low + Read64(s, index + 8), 37) * mul;
         y = RotateRight(y ^ v.High ^ Read64(s, index + 48), 42) * mul;
         x ^= w.High * 9;
         y += v.Low + Read64(s, index + 40);
         z = RotateRight(z + w.Low, 33) * mul;
         v = WeakHashLen32WithSeeds(s, index + 0, v.High * mul, x + w.Low);
         w = WeakHashLen32WithSeeds(s, index + 32, z + w.High, y + Read64(s, index + 16));
-        return H(HashLen16(v.Low + x, w.Low ^ y, mul) + z - u, H(v.High + y, w.High + z, K2, 30) ^ x, K2, 31);
+        return H((HashLen16(v.Low + x, w.Low ^ y, mul) + z) - u, H(v.High + y, w.High + z, K2, 30) ^ x, K2, 31);
+    }
+
+    private static ulong Hash64NaWithSeed(ReadOnlySpan<byte> s, uint len, ulong seed) => Hash64NaWithSeeds(s, len, K2, seed);
+
+    private static ulong Hash64NaWithSeeds(ReadOnlySpan<byte> s, uint len, ulong seed0, ulong seed1) => HashLen16(Hash64Na(s, len) - seed0, seed1);
+
+    private static ulong Hash64Na(ReadOnlySpan<byte> s, uint len)
+    {
+        if (len <= 32)
+            return len <= 16 ? HashLen0to16(s, len) : HashLen17to32(s, len);
+
+        if (len <= 64)
+            return HashLen33to64Na(s, len);
+
+        return Hash64(s, len);
     }
 
     private static ulong Hash64(ReadOnlySpan<byte> s, uint len)
@@ -237,7 +273,7 @@ public static class FarmHash64
         }
 
         if (len <= 64)
-            return HashLen33to64(s, len);
+            return HashLen33to64Na(s, len);
 
         // For strings over 64 bytes we loop. Internal state consists of 56 bytes: v, w, x, y, and z.
         ulong x = seed;
@@ -249,17 +285,17 @@ public static class FarmHash64
 
         // Set end so that after the loop we have 1 to 64 bytes left to process.
         uint index = 0;
-        uint end = (len - 1) / 64 * 64;
-        uint last64 = end + ((len - 1) & 63) - 63;
+        uint end = ((len - 1) / 64) * 64;
+        uint last64 = (end + ((len - 1) & 63)) - 63;
         do
         {
-            x = RotateRight(x + y + v.Low + Read64(s, 8), 37) * K1;
-            y = RotateRight(y + v.High + Read64(s, 48), 42) * K1;
+            x = RotateRight(x + y + v.Low + Read64(s, index + 8), 37) * K1;
+            y = RotateRight(y + v.High + Read64(s, index + 48), 42) * K1;
             x ^= w.High;
-            y += v.Low + Read64(s, 40);
+            y += v.Low + Read64(s, index + 40);
             z = RotateRight(z + w.Low, 33) * K1;
-            v = WeakHashLen32WithSeeds(s, 0, v.High * K1, x + w.Low);
-            w = WeakHashLen32WithSeeds(s, 32, z + w.High, y + Read64(s, 16));
+            v = WeakHashLen32WithSeeds(s, index, v.High * K1, x + w.Low);
+            w = WeakHashLen32WithSeeds(s, index + 32, z + w.High, y + Read64(s, index + 16));
             Swap(ref z, ref x);
             index += 64;
         } while (index != end);
