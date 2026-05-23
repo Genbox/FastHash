@@ -4,62 +4,48 @@ namespace Genbox.FastHash.HighwayHash;
 
 public static class HighwayHash64Unsafe
 {
-    public static unsafe ulong ComputeIndex(ulong input)
+    public static ulong ComputeIndex(ulong input)
     {
-        ulong value = input;
-        byte* ptr = (byte*)&value;
         HighwayHashState state = new HighwayHashState();
-        HighwayHashReset(HighwayHashConstants.DefaultKeys, ref state);
-        HighwayHashUpdateRemainder(ptr, 8, ref state);
+        HighwayHashReset(HighwayHashConstants.DefaultKey0, HighwayHashConstants.DefaultKey1, HighwayHashConstants.DefaultKey2, HighwayHashConstants.DefaultKey3, ref state);
+        HighwayHashUpdateIndex(input, ref state);
         return HighwayHashFinalize64(state);
     }
 
-    public static unsafe ulong ComputeIndex(ulong input, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
+    public static ulong ComputeIndex(ulong input, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
     {
-        ulong value = input;
-        byte* ptr = (byte*)&value;
         HighwayHashState state = new HighwayHashState();
         HighwayHashReset(seed1, seed2, seed3, seed4, ref state);
-        HighwayHashUpdateRemainder(ptr, 8, ref state);
+        HighwayHashUpdateIndex(input, ref state);
         return HighwayHashFinalize64(state);
     }
 
-    public static unsafe ulong ComputeIndex(ulong input, ulong[] keys)
+    public static ulong ComputeIndex(ulong input, ulong[] keys)
     {
-        ulong value = input;
-        byte* ptr = (byte*)&value;
         HighwayHashState state = new HighwayHashState();
         HighwayHashReset(keys, ref state);
-        HighwayHashUpdateRemainder(ptr, 8, ref state);
+        HighwayHashUpdateIndex(input, ref state);
         return HighwayHashFinalize64(state);
     }
 
     public static unsafe ulong ComputeHash(byte* data, int size, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
     {
-        uint len = (uint)size;
-
-        ulong[] key = [seed1, seed2, seed3, seed4];
-
         HighwayHashState state = new HighwayHashState();
-        ProcessAll(data, len, key, ref state);
+        ProcessAll(data, (uint)size, seed1, seed2, seed3, seed4, ref state);
         return HighwayHashFinalize64(state);
     }
 
     public static unsafe ulong ComputeHash(byte* data, int size)
     {
-        uint len = (uint)size;
-
         HighwayHashState state = new HighwayHashState();
-        ProcessAll(data, len, HighwayHashConstants.DefaultKeys, ref state);
+        ProcessAll(data, (uint)size, HighwayHashConstants.DefaultKey0, HighwayHashConstants.DefaultKey1, HighwayHashConstants.DefaultKey2, HighwayHashConstants.DefaultKey3, ref state);
         return HighwayHashFinalize64(state);
     }
 
     public static unsafe ulong ComputeHash(byte* data, int size, ulong[] keys)
     {
-        uint len = (uint)size;
-
         HighwayHashState state = new HighwayHashState();
-        ProcessAll(data, len, keys, ref state);
+        ProcessAll(data, (uint)size, keys, ref state);
         return HighwayHashFinalize64(state);
     }
 
@@ -130,32 +116,27 @@ public static class HighwayHash64Unsafe
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void HighwayHashUpdatePacket(byte* packet, ref HighwayHashState state)
     {
-        ulong* lanes = stackalloc ulong[4];
-        lanes[0] = Read64(packet + 0);
-        lanes[1] = Read64(packet + 8);
-        lanes[2] = Read64(packet + 16);
-        lanes[3] = Read64(packet + 24);
-        Update(lanes, ref state);
+        Update(Read64(packet + 0), Read64(packet + 8), Read64(packet + 16), Read64(packet + 24), ref state);
     }
 
-    private static unsafe void Update(ulong* lanes, ref HighwayHashState state)
+    private static void Update(ulong lane0, ulong lane1, ulong lane2, ulong lane3, ref HighwayHashState state)
     {
-        state.v1_0 += state.mul0_0 + lanes[0];
+        state.v1_0 += state.mul0_0 + lane0;
         state.mul0_0 ^= (state.v1_0 & 0xffffffff) * (state.v0_0 >> 32);
         state.v0_0 += state.mul1_0;
         state.mul1_0 ^= (state.v0_0 & 0xffffffff) * (state.v1_0 >> 32);
 
-        state.v1_1 += state.mul0_1 + lanes[1];
+        state.v1_1 += state.mul0_1 + lane1;
         state.mul0_1 ^= (state.v1_1 & 0xffffffff) * (state.v0_1 >> 32);
         state.v0_1 += state.mul1_1;
         state.mul1_1 ^= (state.v0_1 & 0xffffffff) * (state.v1_1 >> 32);
 
-        state.v1_2 += state.mul0_2 + lanes[2];
+        state.v1_2 += state.mul0_2 + lane2;
         state.mul0_2 ^= (state.v1_2 & 0xffffffff) * (state.v0_2 >> 32);
         state.v0_2 += state.mul1_2;
         state.mul1_2 ^= (state.v0_2 & 0xffffffff) * (state.v1_2 >> 32);
 
-        state.v1_3 += state.mul0_3 + lanes[3];
+        state.v1_3 += state.mul0_3 + lane3;
         state.mul0_3 ^= (state.v1_3 & 0xffffffff) * (state.v0_3 >> 32);
         state.v0_3 += state.mul1_3;
         state.mul1_3 ^= (state.v0_3 & 0xffffffff) * (state.v1_3 >> 32);
@@ -164,6 +145,31 @@ public static class HighwayHash64Unsafe
         ZipperMergeAndAdd(state.v1_3, state.v1_2, ref state.v0_3, ref state.v0_2);
         ZipperMergeAndAdd(state.v0_1, state.v0_0, ref state.v1_1, ref state.v1_0);
         ZipperMergeAndAdd(state.v0_3, state.v0_2, ref state.v1_3, ref state.v1_2);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void HighwayHashUpdateIndex(ulong input, ref HighwayHashState state)
+    {
+        const ulong length = 0x0000000800000008UL;
+        state.v0_0 += length;
+        state.v0_1 += length;
+        state.v0_2 += length;
+        state.v0_3 += length;
+
+        state.v1_0 = RotateHalvesLeft8(state.v1_0);
+        state.v1_1 = RotateHalvesLeft8(state.v1_1);
+        state.v1_2 = RotateHalvesLeft8(state.v1_2);
+        state.v1_3 = RotateHalvesLeft8(state.v1_3);
+
+        Update(input, 0, 0, 0, ref state);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong RotateHalvesLeft8(ulong value)
+    {
+        uint low = RotateLeft((uint)value, 8);
+        uint high = RotateLeft((uint)(value >> 32), 8);
+        return low | ((ulong)high << 32);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -186,6 +192,7 @@ public static class HighwayHash64Unsafe
         uint size_mod4 = size_mod32 & 3;
         byte* remainder = bytes + (size_mod32 & ~3);
         byte* packet = stackalloc byte[32];
+        Unsafe.InitBlockUnaligned(packet, 0, 32);
 
         state.v0_0 += ((ulong)size_mod32 << 32) + size_mod32;
         state.v0_1 += ((ulong)size_mod32 << 32) + size_mod32;
@@ -220,7 +227,7 @@ public static class HighwayHash64Unsafe
         if ((size_mod32 & 16) != 0)
         {
             for (i = 0; i < 4; i++)
-                packet[28 + i] = remainder[i + size_mod4 - 4];
+                packet[28 + i] = remainder[(i + size_mod4) - 4];
         }
         else
         {
@@ -244,16 +251,13 @@ public static class HighwayHash64Unsafe
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void PermuteAndUpdate(ref HighwayHashState state)
+    private static void PermuteAndUpdate(ref HighwayHashState state)
     {
-        ulong* permuted = stackalloc ulong[4];
-
-        // Permute(state.v0, permuted);
-        permuted[0] = (state.v0_2 >> 32) | (state.v0_2 << 32);
-        permuted[1] = (state.v0_3 >> 32) | (state.v0_3 << 32);
-        permuted[2] = (state.v0_0 >> 32) | (state.v0_0 << 32);
-        permuted[3] = (state.v0_1 >> 32) | (state.v0_1 << 32);
-
-        Update(permuted, ref state);
+        Update(
+            (state.v0_2 >> 32) | (state.v0_2 << 32),
+            (state.v0_3 >> 32) | (state.v0_3 << 32),
+            (state.v0_0 >> 32) | (state.v0_0 << 32),
+            (state.v0_1 >> 32) | (state.v0_1 << 32),
+            ref state);
     }
 }

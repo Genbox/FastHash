@@ -120,6 +120,8 @@ public class HashBenchmarks : IDisposable
 
     [Benchmark, BenchmarkCategory("Gx2Hash128")]
     public UInt128 Gx2Hash128Test() => Gx2Hash128.ComputeHash(_testData, new UInt128(0, 0));
+    [Benchmark, BenchmarkCategory("HighwayHash64")]
+    public unsafe ulong HighwayHash64UnsafeTest() => HighwayHash64Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark, BenchmarkCategory("MarvinHash32")]
     public uint MarvinHash32Test() => MarvinHash32.ComputeHash(_testData);
