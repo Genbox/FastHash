@@ -10,131 +10,151 @@ namespace Genbox.FastHash.GxHash;
 
 internal static class Gx2HashShared
 {
+    private const string UnsupportedMessage = "Gx2Hash requires AES intrinsics and AdvSimd on ARM.";
     private const int VECTOR_SIZE = 16;
     private const int UNROLL_FACTOR = 8;
 
+    public static bool IsSupported => (ArmAes.IsSupported && AdvSimd.IsSupported) || X86Aes.IsSupported;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Vector128<byte> Finalize(Vector128<byte> input)
+    internal static Vector128<byte> Compute(ReadOnlySpan<byte> bytes, long seed = 0) => Finalize(AesEncrypt(Compress(bytes), CreateSeed(seed)));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static Vector128<byte> Compute(Vector128<byte> input, long seed = 0) => Finalize(AesEncrypt(input, CreateSeed(seed)));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector128<byte> CreateSeed(long seed) => Vector128.Create(unchecked((ulong)seed), unchecked((ulong)seed)).AsByte();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector128<byte> Finalize(Vector128<byte> input)
     {
-        Vector128<byte> keys1 = Vector128.Create(0x713b01d0, 0x8f2f35db, 0xaf163956, 0x85459f85).AsByte();
-        Vector128<byte> keys2 = Vector128.Create(0x1de09647, 0x92cfa39c, 0x3dd99aca, 0xb89c054f).AsByte();
-        Vector128<byte> keys3 = Vector128.Create(0xc78b122b, 0x5544b1b7, 0x689d2b7d, 0xd0012e32).AsByte();
-
-        Vector128<byte> output = input;
-
-        if (ArmAes.IsSupported)
-        {
-            // ARM AES intrinsics require this sequence to match x86 AES output.
-            output = AdvSimd.Xor(ArmAes.MixColumns(ArmAes.Encrypt(output, Vector128<byte>.Zero)), keys1);
-            output = AdvSimd.Xor(ArmAes.MixColumns(ArmAes.Encrypt(output, Vector128<byte>.Zero)), keys2);
-            output = AdvSimd.Xor(ArmAes.Encrypt(output, Vector128<byte>.Zero), keys3);
-        }
-        else if (X86Aes.IsSupported)
-        {
-            output = X86Aes.Encrypt(output, keys1);
-            output = X86Aes.Encrypt(output, keys2);
-            output = X86Aes.EncryptLast(output, keys3);
-        }
-        else
-        {
-            throw new PlatformNotSupportedException("Only works when AES_NI is available");
-        }
-
-        return output;
+        input = AesEncrypt(input, Key0());
+        input = AesEncrypt(input, Key1());
+        return AesEncryptLast(input, Key2());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Vector128<byte> Compress(ReadOnlySpan<byte> bytes)
+    private static Vector128<byte> Compress(ReadOnlySpan<byte> bytes)
     {
-        // Get pointer of SIMD vectors from input span
-        ref Vector128<byte> ptr = ref Unsafe.As<byte, Vector128<byte>>(ref MemoryMarshal.GetReference(bytes));
-
         int len = bytes.Length;
+
+        if (len == 0)
+            return Vector128<byte>.Zero;
+
+        ref byte ptr = ref MemoryMarshal.GetReference(bytes);
+        ref Vector128<byte> vectorPtr = ref Unsafe.As<byte, Vector128<byte>>(ref ptr);
 
         if (len <= VECTOR_SIZE)
         {
             // Input fits on a single SIMD vector, however we might read beyond the input message.
-            return GetPartialVector(ref ptr, len);
+            // Thus we need this safe method that checks if it can safely read beyond or must copy.
+            return GetPartialVector(ref vectorPtr, len);
         }
 
         Vector128<byte> hashVector;
-        int remainingBytes;
+        int offset;
 
         int extraBytesCount = len % VECTOR_SIZE;
         if (extraBytesCount == 0)
         {
-            hashVector = ptr;
-            ptr = ref Unsafe.Add(ref ptr, 1);
-            remainingBytes = len - VECTOR_SIZE;
+            hashVector = vectorPtr;
+            offset = VECTOR_SIZE;
         }
         else
         {
-            // Start with partial vector so we can safely read beyond later.
-            hashVector = GetPartialVectorUnsafe(ref ptr, extraBytesCount);
-            ptr = ref Unsafe.AddByteOffset(ref ptr, extraBytesCount);
-            remainingBytes = len - extraBytesCount;
+            // If the input length does not match the length of a whole number of SIMD vectors,
+            // it means we'll need to read a partial vector. We can start with the partial vector first,
+            // so that we can safely read beyond since we expect the following bytes to still be part of
+            // the input.
+            hashVector = GetPartialVectorUnsafe(ref vectorPtr, extraBytesCount);
+            offset = extraBytesCount;
         }
 
-        if (len <= VECTOR_SIZE * 2)
+        Vector128<byte> tail = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref ptr, offset));
+        offset += VECTOR_SIZE;
+
+        if (len > VECTOR_SIZE * 2)
         {
-            hashVector = Compress(hashVector, ptr);
-        }
-        else if (len <= VECTOR_SIZE * 3)
-        {
-            hashVector = Compress(hashVector, Compress(ptr, Unsafe.Add(ref ptr, 1)));
-        }
-        else
-        {
-            hashVector = CompressMany(ref ptr, hashVector, remainingBytes);
+            // Fast path when input length > 32 and <= 48
+            Vector128<byte> next = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref ptr, offset));
+            offset += VECTOR_SIZE;
+            tail = AesEncrypt(tail, next);
+
+            if (len > VECTOR_SIZE * 3)
+            {
+                // Fast path when input length > 48 and <= 64
+                next = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref ptr, offset));
+                offset += VECTOR_SIZE;
+                tail = AesEncrypt(tail, next);
+
+                if (len > VECTOR_SIZE * 4)
+                    hashVector = CompressMany(ref ptr, offset, len, hashVector);
+            }
         }
 
-        return hashVector;
+        return AesEncryptLast(hashVector, AesEncrypt(AesEncrypt(tail, Key0()), Key1()));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Vector128<byte> CompressFast(Vector128<byte> a, Vector128<byte> b)
+    private static Vector128<byte> CompressMany(ref byte start, int offset, int end, Vector128<byte> hashVector)
     {
-        if (ArmAes.IsSupported)
-            return AdvSimd.Xor(ArmAes.MixColumns(ArmAes.Encrypt(a, Vector128<byte>.Zero)), b);
+        int remainingBytes = end - offset;
+        int unrollableBlocksCount = (remainingBytes / (VECTOR_SIZE * UNROLL_FACTOR)) * UNROLL_FACTOR;
+        int remainingBytesBeforeUnrolled = remainingBytes - (unrollableBlocksCount * VECTOR_SIZE);
+        int endOffset = offset + remainingBytesBeforeUnrolled;
 
-        if (X86Aes.IsSupported)
-            return X86Aes.Encrypt(a, b);
+        while (offset < endOffset)
+        {
+            Vector128<byte> block = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset));
+            hashVector = AesEncrypt(hashVector, block);
+            offset += VECTOR_SIZE;
+        }
 
-        throw new PlatformNotSupportedException("Only works when AES_NI is available");
+        return Compress8(ref start, offset, end, hashVector);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> CompressMany(ref Vector128<byte> start, Vector128<byte> hashVector, int len)
+    private static Vector128<byte> Compress8(ref byte start, int offset, int end, Vector128<byte> hashVector)
     {
-        int unrollableBlocksCount = len / (VECTOR_SIZE * UNROLL_FACTOR) * UNROLL_FACTOR;
-        ref Vector128<byte> end2 = ref Unsafe.Add(ref start, unrollableBlocksCount);
+        Vector128<byte> t1 = Vector128<byte>.Zero;
+        Vector128<byte> t2 = Vector128<byte>.Zero;
+        Vector128<byte> lane1 = hashVector;
+        Vector128<byte> lane2 = hashVector;
 
-        while (Unsafe.IsAddressLessThan(ref start, ref end2))
+        while (offset < end)
         {
-            Vector128<byte> blockHash = start;
-            blockHash = CompressFast(blockHash, Unsafe.Add(ref start, 1));
-            blockHash = CompressFast(blockHash, Unsafe.Add(ref start, 2));
-            blockHash = CompressFast(blockHash, Unsafe.Add(ref start, 3));
-            blockHash = CompressFast(blockHash, Unsafe.Add(ref start, 4));
-            blockHash = CompressFast(blockHash, Unsafe.Add(ref start, 5));
-            blockHash = CompressFast(blockHash, Unsafe.Add(ref start, 6));
-            blockHash = CompressFast(blockHash, Unsafe.Add(ref start, 7));
-            start = ref Unsafe.Add(ref start, UNROLL_FACTOR);
+            Vector128<byte> v0 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset));
+            Vector128<byte> v1 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + VECTOR_SIZE));
+            Vector128<byte> v2 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 2)));
+            Vector128<byte> v3 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 3)));
+            Vector128<byte> v4 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 4)));
+            Vector128<byte> v5 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 5)));
+            Vector128<byte> v6 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 6)));
+            Vector128<byte> v7 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 7)));
 
-            hashVector = Compress(hashVector, blockHash);
+            Vector128<byte> tmp1 = AesEncrypt(v0, v2);
+            Vector128<byte> tmp2 = AesEncrypt(v1, v3);
+
+            tmp1 = AesEncrypt(tmp1, v4);
+            tmp2 = AesEncrypt(tmp2, v5);
+
+            tmp1 = AesEncrypt(tmp1, v6);
+            tmp2 = AesEncrypt(tmp2, v7);
+
+            t1 = Vector128.Add(t1, Key0());
+            t2 = Vector128.Add(t2, Key1());
+
+            lane1 = AesEncryptLast(AesEncrypt(tmp1, t1), lane1);
+            lane2 = AesEncryptLast(AesEncrypt(tmp2, t2), lane2);
+
+            offset += VECTOR_SIZE * UNROLL_FACTOR;
         }
 
-        int remainingBlocksCount = (len / VECTOR_SIZE) - unrollableBlocksCount;
+        Vector128<byte> length = Vector128.Create(end).AsByte();
+        lane1 = Vector128.Add(lane1, length);
+        lane2 = Vector128.Add(lane2, length);
 
-        ref Vector128<byte> end = ref Unsafe.Add(ref start, remainingBlocksCount);
-
-        while (Unsafe.IsAddressLessThan(ref start, ref end))
-        {
-            hashVector = Compress(hashVector, start);
-            start = ref Unsafe.Add(ref start, 1);
-        }
-
-        return hashVector;
+        return AesEncrypt(lane1, lane2);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -169,38 +189,46 @@ internal static class Gx2HashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> Compress(Vector128<byte> a, Vector128<byte> b)
+    private static Vector128<byte> AesEncrypt(Vector128<byte> value, Vector128<byte> key)
     {
-        Vector128<byte> keys1 = Vector128.Create(0xFC3BC28E, 0x89C222E5, 0xB09D3E21, 0xF2784542).AsByte();
-        Vector128<byte> keys2 = Vector128.Create(0x03FCE279, 0xCB6B2E9B, 0xB361DC58, 0x39136BD9).AsByte();
-
         if (ArmAes.IsSupported)
-        {
-            b = AdvSimd.Xor(ArmAes.MixColumns(ArmAes.Encrypt(b, Vector128<byte>.Zero)), keys1);
-            b = AdvSimd.Xor(ArmAes.MixColumns(ArmAes.Encrypt(b, Vector128<byte>.Zero)), keys2);
-            return AdvSimd.Xor(ArmAes.Encrypt(a, Vector128<byte>.Zero), b);
-        }
-        if (X86Aes.IsSupported)
-        {
-            b = X86Aes.Encrypt(b, keys1);
-            b = X86Aes.Encrypt(b, keys2);
-            return X86Aes.EncryptLast(a, b);
-        }
+            return AdvSimd.Xor(ArmAes.MixColumns(ArmAes.Encrypt(value, Vector128<byte>.Zero)), key);
 
-        throw new PlatformNotSupportedException("Only works when AES_NI is available");
+        if (X86Aes.IsSupported)
+            return X86Aes.Encrypt(value, key);
+
+        throw new PlatformNotSupportedException(UnsupportedMessage);
     }
 
-    /// <summary>
-    /// Returns true if reading the ref value is safe.
-    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector128<byte> AesEncryptLast(Vector128<byte> value, Vector128<byte> key)
+    {
+        if (ArmAes.IsSupported)
+            return AdvSimd.Xor(ArmAes.Encrypt(value, Vector128<byte>.Zero), key);
+
+        if (X86Aes.IsSupported)
+            return X86Aes.EncryptLast(value, key);
+
+        throw new PlatformNotSupportedException(UnsupportedMessage);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector128<byte> Key0() => Vector128.Create(0xF2784542, 0xB09D3E21, 0x89C222E5, 0xFC3BC28E).AsByte();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector128<byte> Key1() => Vector128.Create(0x03FCE279, 0xCB6B2E9B, 0xB361DC58, 0x39132BD9).AsByte();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector128<byte> Key2() => Vector128.Create(0xD0012E32, 0x689D2B7D, 0x5544B1B7, 0xC78B122B).AsByte();
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe bool IsReadBeyondSafe(ref Vector128<byte> reference)
     {
         // 4096 bytes is a conservative value for the page size.
-        const int pageSize = 0x1000;
+        const int PAGE_SIZE = 0x1000;
         IntPtr address = (IntPtr)Unsafe.AsPointer(ref reference);
-        IntPtr offsetWithinPage = address & (pageSize - 1);
-        return offsetWithinPage < pageSize - VECTOR_SIZE;
+        IntPtr offsetWithinPage = address & (PAGE_SIZE - 1);
+        return offsetWithinPage < PAGE_SIZE - VECTOR_SIZE;
     }
 }
 #endif

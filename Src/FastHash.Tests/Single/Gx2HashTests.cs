@@ -7,10 +7,13 @@ public class Gx2HashTests
     [Fact]
     public void ValuesTest()
     {
-        Assert.Equal(456576800u, Gx2Hash32.ComputeHash(Array.Empty<byte>(), new UInt128(0, 0)));
-        Assert.Equal(978957914u, Gx2Hash32.ComputeHash(new byte[1], new UInt128(0, 0)));
-        Assert.Equal(3325885698u, Gx2Hash32.ComputeHash(new byte[1000], new UInt128(0, 0)));
-        Assert.Equal(1741430579u, Gx2Hash32.ComputeHash(Enumerable.Repeat((byte)42, 4242).ToArray(), new UInt128(42, 0)));
+        Assert.Equal(2533353535u, Gx2Hash32.ComputeHash(Array.Empty<byte>()));
+        Assert.Equal(4243413987u, Gx2Hash32.ComputeHash(new byte[1]));
+        Assert.Equal(2401749549u, Gx2Hash32.ComputeHash(new byte[1000]));
+        Assert.Equal(4156851105u, Gx2Hash32.ComputeHash(Enumerable.Repeat((byte)42, 4242).ToArray(), 42));
+        Assert.Equal(1981427771u, Gx2Hash32.ComputeHash(Enumerable.Repeat((byte)42, 4242).ToArray(), -42));
+        Assert.Equal(1156095992u, Gx2Hash32.ComputeHash("Hello World"u8, long.MaxValue));
+        Assert.Equal(540827083u, Gx2Hash32.ComputeHash("Hello World"u8, long.MinValue));
     }
 
     [Fact]
@@ -23,7 +26,7 @@ public class Gx2HashTests
         for (int i = 0; i < bytes.Length; i++)
         {
             ReadOnlySpan<byte> slice = bytes.AsSpan().Slice(0, i);
-            ulong hash = Gx2Hash64.ComputeHash(slice, new UInt128(42, 0));
+            ulong hash = Gx2Hash64.ComputeHash(slice, 42);
             Assert.NotEqual(0UL, hash);
             Assert.True(hashes.Add(hash));
         }
@@ -34,7 +37,7 @@ public class Gx2HashTests
         for (int i = 0; i < bytes.Length; i++)
         {
             ReadOnlySpan<byte> slice = bytes.AsSpan().Slice(0, i);
-            ulong hash = Gx2Hash64.ComputeHash(slice, new UInt128(42, 0));
+            ulong hash = Gx2Hash64.ComputeHash(slice, 42);
             Assert.NotEqual(0UL, hash);
             Assert.True(hashes.Add(hash));
         }
@@ -45,10 +48,10 @@ public class Gx2HashTests
         for (int i = 0; i < bytes.Length - 100; i++)
         {
             ReadOnlySpan<byte> slice = bytes.AsSpan().Slice(100, i);
-            ulong hashBefore = Gx2Hash64.ComputeHash(slice, new UInt128(42, 0));
+            ulong hashBefore = Gx2Hash64.ComputeHash(slice, 42);
             rnd.NextBytes(bytes.AsSpan().Slice(0, 100));
             rnd.NextBytes(bytes.AsSpan().Slice(100 + i));
-            ulong hashAfter = Gx2Hash64.ComputeHash(slice, new UInt128(42, 0));
+            ulong hashAfter = Gx2Hash64.ComputeHash(slice, 42);
             Assert.Equal(hashBefore, hashAfter);
         }
     }
@@ -59,13 +62,13 @@ public class Gx2HashTests
         for (int s = 0; s < 1200; s++)
         {
             byte[] bytes = new byte[s];
-            uint hash = Gx2Hash32.ComputeHash(bytes, new UInt128(42, 0));
+            uint hash = Gx2Hash32.ComputeHash(bytes, 42);
 
             for (int i = 0; i < s; i++)
             {
                 byte swap = bytes[i];
                 bytes[i] = 82;
-                uint newHash = Gx2Hash32.ComputeHash(bytes, new UInt128(42, 0));
+                uint newHash = Gx2Hash32.ComputeHash(bytes, 42);
                 bytes[i] = swap;
 
                 Assert.NotEqual(hash, newHash);
@@ -91,11 +94,11 @@ public class Gx2HashTests
         byte[] bytes = new byte[255];
         rnd.NextBytes(bytes);
 
-        uint hash = Gx2Hash32.ComputeHash(bytes, new UInt128(0, 0));
+        uint hash = Gx2Hash32.ComputeHash(bytes);
 
         SwapBytes(bytes, swapPositionA, swapPositionB, swapSize);
 
-        uint hashAfterSwap = Gx2Hash32.ComputeHash(bytes, new UInt128(0, 0));
+        uint hashAfterSwap = Gx2Hash32.ComputeHash(bytes);
 
         Assert.NotEqual(hash, hashAfterSwap);
     }
