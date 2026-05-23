@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.SipHash.SipHashConstants;
 
 namespace Genbox.FastHash.SipHash;
@@ -6,7 +6,16 @@ namespace Genbox.FastHash.SipHash;
 public static class SipHash64
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input, ulong seed1 = 0, ulong seed2 = 0, byte cRounds = 2, byte dRounds = 4)
+    public static ulong ComputeIndex(ulong input) => ComputeIndexDefaultRounds(input, 0, 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, ulong seed1) => ComputeIndexDefaultRounds(input, seed1, 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, ulong seed1, ulong seed2) => ComputeIndexDefaultRounds(input, seed1, seed2);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, ulong seed1, ulong seed2, byte cRounds, byte dRounds)
     {
         ulong v0 = v0Init ^ seed1;
         ulong v1 = v1Init ^ seed2;
@@ -30,6 +39,33 @@ public static class SipHash64
 
         for (i = 0; i < dRounds; ++i)
             SipRound(ref v0, ref v1, ref v2, ref v3);
+
+        return v0 ^ v1 ^ v2 ^ v3;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong ComputeIndexDefaultRounds(ulong input, ulong seed1, ulong seed2)
+    {
+        ulong v0 = v0Init ^ seed1;
+        ulong v1 = v1Init ^ seed2;
+        ulong v2 = v2Init ^ seed1;
+        ulong v3 = v3Init ^ seed2;
+
+        v3 ^= input;
+        SipRound(ref v0, ref v1, ref v2, ref v3);
+        SipRound(ref v0, ref v1, ref v2, ref v3);
+
+        v0 ^= input;
+        v3 ^= 576460752303423488UL;
+        SipRound(ref v0, ref v1, ref v2, ref v3);
+        SipRound(ref v0, ref v1, ref v2, ref v3);
+
+        v0 ^= 576460752303423488UL;
+        v2 ^= 0xFF;
+        SipRound(ref v0, ref v1, ref v2, ref v3);
+        SipRound(ref v0, ref v1, ref v2, ref v3);
+        SipRound(ref v0, ref v1, ref v2, ref v3);
+        SipRound(ref v0, ref v1, ref v2, ref v3);
 
         return v0 ^ v1 ^ v2 ^ v3;
     }

@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using static Genbox.FastHash.SipHash.SipHashConstants;
 
 namespace Genbox.FastHash.SipHash;
@@ -23,12 +23,9 @@ public static class SipHash64Unsafe
         v1 ^= seed2;
         v0 ^= seed1;
 
-        ulong* pInput = (ulong*)data;
-        ulong* pEnd = pInput + num;
-
-        while (pInput != pEnd)
+        for (int block = 0; block < num; block++)
         {
-            ulong m = *pInput++;
+            ulong m = Read64(data + (block * sizeof(ulong)));
             v3 ^= m;
 
             for (i = 0; i < cRounds; ++i)
