@@ -85,6 +85,7 @@ public class IndexTests
         TheoryData<Tuple32> data = new();
 
         data.Add(new Tuple32(nameof(CityHash32), CityHash32.ComputeIndex, CityHash32.ComputeHash));
+        data.Add(new Tuple32(nameof(Djb2AltHash32), Djb2AltHash32.ComputeIndex, Djb2AltHash32.ComputeHash));
         data.Add(new Tuple32(nameof(Djb2Hash32), Djb2Hash32.ComputeIndex, Djb2Hash32.ComputeHash));
         data.Add(new Tuple32(nameof(FarmHash32), FarmHash32.ComputeIndex, FarmHash32.ComputeHash));
         data.Add(new Tuple32(nameof(Fnv1aHash32), Fnv1aHash32.ComputeIndex, Fnv1aHash32.ComputeHash));
@@ -106,6 +107,7 @@ public class IndexTests
             data.Add(new Tuple64(nameof(AesniHash64), static x => AesniHash64.ComputeIndex(x), static x => AesniHash64.ComputeHash(x)));
 
         data.Add(new Tuple64(nameof(CityHash64), CityHash64.ComputeIndex, CityHash64.ComputeHash));
+        data.Add(new Tuple64(nameof(Djb2AltHash64), Djb2AltHash64.ComputeIndex, Djb2AltHash64.ComputeHash));
         data.Add(new Tuple64(nameof(Djb2Hash64), Djb2Hash64.ComputeIndex, Djb2Hash64.ComputeHash));
         data.Add(new Tuple64(nameof(FarshHash64), static x => FarshHash64.ComputeIndex(x), static x => FarshHash64.ComputeHash(x)));
         data.Add(new Tuple64(nameof(FoldHash64), static x => FoldHash64.ComputeIndex(x, 0), static x => FoldHash64.ComputeHash(x)));

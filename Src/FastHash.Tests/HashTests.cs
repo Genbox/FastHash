@@ -32,7 +32,8 @@ public class HashTests
     public static IEnumerable<object[]> CreateAlgorithms32()
     {
         yield return [nameof(CityHash32), () => CityHash32.ComputeHash(_data), new byte[] { 0x2A, 0x81, 0x7A, 0xBF }];
-        yield return [nameof(Djb2Hash32), () => Djb2Hash32.ComputeHash(_data), new byte[] { 0xCE, 0xED, 0x14, 0x36 }];
+        yield return [nameof(Djb2AltHash32), () => Djb2AltHash32.ComputeHash(_data), new byte[] { 0xCE, 0xED, 0x14, 0x36 }];
+        yield return [nameof(Djb2Hash32), () => Djb2Hash32.ComputeHash(_data), new byte[] { 0x9C, 0x17, 0x3D, 0x75 }];
         yield return [nameof(FarmHash32), () => FarmHash32.ComputeHash(_data), new byte[] { 0x2A, 0x81, 0x7A, 0xBF }];
         yield return [nameof(Fnv1aHash32), () => Fnv1aHash32.ComputeHash(_data), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 }];
         yield return [nameof(MarvinHash32), () => MarvinHash32.ComputeHash(_data, 0x2A, 0x2B), new byte[] { 0xAD, 0x28, 0xBF, 0x22 }];
@@ -45,6 +46,8 @@ public class HashTests
     {
         yield return [nameof(AesniHash64), () => AesniHash64.ComputeHash(_data), new byte[] { 0x28, 0x1C, 0x4A, 0x87, 0x26, 0x2B, 0x3E, 0xF6 }];
         yield return [nameof(CityHash64), () => CityHash64.ComputeHash(_data), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A }];
+        yield return [nameof(Djb2AltHash64), () => Djb2AltHash64.ComputeHash(_data), new byte[] { 0xCE, 0xED, 0x14, 0x36, 0xF9, 0x33, 0x6C, 0x8A }];
+        yield return [nameof(Djb2Hash64), () => Djb2Hash64.ComputeHash(_data), new byte[] { 0x9C, 0x17, 0x3D, 0x75, 0xA9, 0x35, 0x63, 0x0E }];
         yield return [nameof(FarmHash64), () => FarmHash64.ComputeHash(_data), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A }];
         yield return [nameof(Polymur2Hash64), () => Polymur2Hash64.ComputeHash(_data), new byte[] { 0x5B, 0x4B, 0xE3, 0xBC, 0xE2, 0x3, 0xB, 0xC5 }];
         yield return [nameof(SipHash64), () => SipHash64.ComputeHash(_data), new byte[] { 0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97 }];
@@ -67,7 +70,8 @@ public class HashTests
         return
         [
             [nameof(CityHash32Unsafe), () => CityHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x2A, 0x81, 0x7A, 0xBF }],
-            [nameof(Djb2Hash32Unsafe), () => Djb2Hash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xCE, 0xED, 0x14, 0x36 }],
+            [nameof(Djb2AltHash32Unsafe), () => Djb2AltHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xCE, 0xED, 0x14, 0x36 }],
+            [nameof(Djb2Hash32Unsafe), () => Djb2Hash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x9C, 0x17, 0x3D, 0x75 }],
             [nameof(FarmHash32Unsafe), () => FarmHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x2A, 0x81, 0x7A, 0xBF }],
             [nameof(Fnv1aHash32Unsafe), () => Fnv1aHash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x7E, 0xE0, 0x23 }],
             [nameof(Murmur3Hash32Unsafe), () => Murmur3Hash32Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xF6, 0x08, 0x79, 0x87 }],
@@ -81,6 +85,8 @@ public class HashTests
         return
         [
             [nameof(CityHash64Unsafe), () => CityHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A }],
+            [nameof(Djb2AltHash64Unsafe), () => Djb2AltHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xCE, 0xED, 0x14, 0x36, 0xF9, 0x33, 0x6C, 0x8A }],
+            [nameof(Djb2Hash64Unsafe), () => Djb2Hash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x9C, 0x17, 0x3D, 0x75, 0xA9, 0x35, 0x63, 0x0E }],
             [nameof(FarmHash64Unsafe), () => FarmHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A }],
             [nameof(MeowHash64Unsafe), () => MeowHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xCE, 0xF5, 0xCC, 0xAB, 0xBD, 0xC1, 0x2E, 0x9E }],
             [nameof(SipHash64Unsafe), () => SipHash64Unsafe.ComputeHash(_ptr, _data.Length), new byte[] { 0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97 }],

@@ -33,6 +33,9 @@ public class Index64Benchmarks
     public ulong CityHash64Test() => CityHash64.ComputeIndex(_value);
 
     [Benchmark]
+    public ulong Djb2AltHash64Test() => Djb2AltHash64.ComputeIndex(_value);
+
+    [Benchmark]
     public ulong Djb2Hash64Test() => Djb2Hash64.ComputeIndex(_value);
 
     [Benchmark]

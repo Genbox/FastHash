@@ -22,6 +22,9 @@ public class Index32Benchmarks
     public uint CityHash32Test() => CityHash32.ComputeIndex(_value);
 
     [Benchmark]
+    public uint Djb2AltHash32Test() => Djb2AltHash32.ComputeIndex(_value);
+
+    [Benchmark]
     public uint Djb2Hash32Test() => Djb2Hash32.ComputeIndex(_value);
 
     [Benchmark]

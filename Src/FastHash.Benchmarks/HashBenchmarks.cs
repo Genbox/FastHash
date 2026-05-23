@@ -64,6 +64,12 @@ public class HashBenchmarks : IDisposable
     [Benchmark, BenchmarkCategory("CityHash128")]
     public UInt128 CityHash128Test() => CityHash128.ComputeHash(_testData);
 
+    [Benchmark, BenchmarkCategory("Djb2AltHash32")]
+    public uint Djb2AltHash32Test() => Djb2AltHash32.ComputeHash(_testData);
+
+    [Benchmark, BenchmarkCategory("Djb2AltHash64")]
+    public ulong Djb2AltHash64Test() => Djb2AltHash64.ComputeHash(_testData);
+
     [Benchmark, BenchmarkCategory("Djb2Hash32")]
     public uint Djb2Hash32Test() => Djb2Hash32.ComputeHash(_testData);
 
@@ -159,6 +165,12 @@ public class HashBenchmarks : IDisposable
 
     [Benchmark, BenchmarkCategory("CityHash128")]
     public unsafe UInt128 CityHash128UnsafeTest() => CityHash128Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark, BenchmarkCategory("Djb2AltHash32")]
+    public unsafe uint Djb2AltHash32UnsafeTest() => Djb2AltHash32Unsafe.ComputeHash(_ptr, _testData.Length);
+
+    [Benchmark, BenchmarkCategory("Djb2AltHash64")]
+    public unsafe ulong Djb2AltHash64UnsafeTest() => Djb2AltHash64Unsafe.ComputeHash(_ptr, _testData.Length);
 
     [Benchmark, BenchmarkCategory("Djb2Hash32")]
     public unsafe uint Djb2Hash32UnsafeTest() => Djb2Hash32Unsafe.ComputeHash(_ptr, _testData.Length);
