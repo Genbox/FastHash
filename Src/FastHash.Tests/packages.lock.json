@@ -149,13 +149,13 @@
           "xunit.v3.runner.common": "[3.2.2]"
         }
       },
-      "Genbox.FastHash": {
+      "fasthash": {
         "type": "Project"
       },
-      "Genbox.FastHash.TestShared": {
+      "fasthash.testshared": {
         "type": "Project",
         "dependencies": {
-          "Genbox.FastHash": "[1.0.0, )"
+          "FastHash": "[1.0.0, )"
         }
       }
     }

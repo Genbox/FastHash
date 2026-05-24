@@ -378,5 +378,3 @@ dotnet_diagnostic.CS8762.severity = error # Parameter must have a non-null value
 # temp broken
 dotnet_diagnostic.SS039.severity = none # EnumWithoutDefaultValue
 dotnet_diagnostic.GU0017.severity = none # Don't use discarded
-
-

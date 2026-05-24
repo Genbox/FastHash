@@ -166,13 +166,13 @@
         "resolved": "4.7.0",
         "contentHash": "VybpaOQQhqE6siHppMktjfGBw1GCwvCqiufqmP8F1nj7fTUNtW35LOEt3UZTEsECfo+ELAl/9o9nJx3U91i7vA=="
       },
-      "Genbox.FastHash": {
+      "fasthash": {
         "type": "Project"
       },
-      "Genbox.FastHash.TestShared": {
+      "fasthash.testshared": {
         "type": "Project",
         "dependencies": {
-          "Genbox.FastHash": "[1.0.0, )"
+          "FastHash": "[1.0.0, )"
         }
       }
     }
