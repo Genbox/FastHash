@@ -15,7 +15,7 @@
 
     <!--Assembly settings-->
     <RootNamespace>Genbox.$(MSBuildProjectName)</RootNamespace>
-    <AssemblyName>Genbox.$(MSBuildProjectName)</AssemblyName>
+    <AssemblyName Condition="'$(PackAssemblyName)' == 'true'">Genbox.$(MSBuildProjectName)</AssemblyName>
 
     <!--C# settings-->
     <LangVersion>latest</LangVersion>

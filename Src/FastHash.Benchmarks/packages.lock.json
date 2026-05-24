@@ -170,7 +170,10 @@
         "type": "Project"
       },
       "Genbox.FastHash.TestShared": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Genbox.FastHash": "[1.0.0, )"
+        }
       }
     }
   }

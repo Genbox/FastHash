@@ -1,32 +1,14 @@
 using System.Runtime.InteropServices;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Order;
-using Genbox.FastHash.AesniHash;
 using Genbox.FastHash.Benchmarks.Code;
-using Genbox.FastHash.CityHash;
-using Genbox.FastHash.DjbHash;
-using Genbox.FastHash.FarmHash;
-using Genbox.FastHash.FarshHash;
-using Genbox.FastHash.FnvHash;
-using Genbox.FastHash.FoldHash;
-using Genbox.FastHash.GxHash;
-using Genbox.FastHash.HighwayHash;
-using Genbox.FastHash.MarvinHash;
-using Genbox.FastHash.MeowHash;
-using Genbox.FastHash.MurmurHash;
-using Genbox.FastHash.PolymurHash;
-using Genbox.FastHash.RapidHash;
-using Genbox.FastHash.SipHash;
-using Genbox.FastHash.SuperFastHash;
-using Genbox.FastHash.T1haHash;
-using Genbox.FastHash.WyHash;
-using Genbox.FastHash.XxHash;
+using Genbox.FastHash.TestShared;
 
 namespace Genbox.FastHash.Benchmarks;
 
 [MbPrSecColumn, GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByParams)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-public class HashBenchmarks : IDisposable
+public class HashBenchmarks
 {
     private readonly ulong[] _crcResult = new ulong[4];
     private unsafe byte* _ptr;
@@ -35,15 +17,27 @@ public class HashBenchmarks : IDisposable
     [Params(32 * 1024 * 1024)]
     public int Size { get; set; }
 
-    public unsafe void Dispose()
-    {
-        NativeMemory.Free(_ptr);
-        GC.SuppressFinalize(this);
-    }
+    public static IEnumerable<Hash32Algorithm> ManagedHash32Algorithms() => AlgorithmCatalog.Hash32Algorithms.Where(static x => x.Hash != null);
+
+    public static IEnumerable<Hash64Algorithm> ManagedHash64Algorithms() => AlgorithmCatalog.Hash64Algorithms.Where(static x => x.Hash != null);
+
+    public static IEnumerable<Hash128Algorithm> ManagedHash128Algorithms() => AlgorithmCatalog.Hash128Algorithms.Where(static x => x.Hash != null);
+
+    public static IEnumerable<Hash256Algorithm> ManagedHash256Algorithms() => AlgorithmCatalog.Hash256Algorithms.Where(static x => x.Hash != null);
+
+    public static IEnumerable<Hash32Algorithm> UnsafeHash32Algorithms() => AlgorithmCatalog.Hash32Algorithms.Where(static x => x.UnsafeHash != null);
+
+    public static IEnumerable<Hash64Algorithm> UnsafeHash64Algorithms() => AlgorithmCatalog.Hash64Algorithms.Where(static x => x.UnsafeHash != null);
+
+    public static IEnumerable<Hash128Algorithm> UnsafeHash128Algorithms() => AlgorithmCatalog.Hash128Algorithms.Where(static x => x.UnsafeHash != null);
+
+    public static IEnumerable<Hash256Algorithm> UnsafeHash256Algorithms() => AlgorithmCatalog.Hash256Algorithms.Where(static x => x.UnsafeHash != null);
 
     [GlobalSetup]
     public unsafe void Setup()
     {
+        Cleanup();
+
         _testData = BenchmarkHelper.GetRandomBytes(Size);
         _ptr = (byte*)NativeMemory.Alloc((nuint)Size);
 
@@ -51,208 +45,49 @@ public class HashBenchmarks : IDisposable
             _ptr[i] = _testData[i];
     }
 
-    [Benchmark, BenchmarkCategory("AesniHash64")]
-    public ulong AesniHash64Test() => AesniHash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("AesniHash128")]
-    public UInt128 AesniHash128Test() => AesniHash128.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("CityHash32")]
-    public uint CityHash32Test() => CityHash32.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("CityHash64")]
-    public ulong CityHash64Test() => CityHash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("CityHash128")]
-    public UInt128 CityHash128Test() => CityHash128.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("CityHashCrc128")]
-    public UInt128 CityHashCrc128Test() => CityHashCrc128.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("CityHashCrc256")]
-    public void CityHashCrc256Test() => CityHashCrc256.ComputeHash(_testData, _crcResult);
-
-    [Benchmark, BenchmarkCategory("Djb2AltHash32")]
-    public uint Djb2AltHash32Test() => Djb2AltHash32.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Djb2AltHash64")]
-    public ulong Djb2AltHash64Test() => Djb2AltHash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Djb2Hash32")]
-    public uint Djb2Hash32Test() => Djb2Hash32.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Djb2Hash64")]
-    public ulong Djb2Hash64Test() => Djb2Hash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("FarmHash32")]
-    public uint FarmHash32Test() => FarmHash32.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("FarmHash64")]
-    public ulong FarmHash64Test() => FarmHash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("FarmHash128")]
-    public UInt128 FarmHash128Test() => FarmHash128.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("FarshHash64")]
-    public ulong FarshHash64Test() => FarshHash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("FoldHash64")]
-    public ulong FoldHash64Test() => FoldHash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("FoldHashQuality64")]
-    public ulong FoldHashQuality64Test() => FoldHashQuality64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Fnv1aHash32")]
-    public uint Fnv1aHash32Test() => Fnv1aHash32.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Fnv1aHash64")]
-    public ulong Fnv1aHash64Test() => Fnv1aHash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Gx2Hash32")]
-    public uint Gx2Hash32Test() => Gx2Hash32.ComputeHash(_testData, 0);
-
-    [Benchmark, BenchmarkCategory("Gx2Hash64")]
-    public ulong Gx2Hash64Test() => Gx2Hash64.ComputeHash(_testData, 0);
-
-    [Benchmark, BenchmarkCategory("Gx2Hash128")]
-    public UInt128 Gx2Hash128Test() => Gx2Hash128.ComputeHash(_testData, 0);
-
-    [Benchmark, BenchmarkCategory("HighwayHash64")]
-    public unsafe ulong HighwayHash64UnsafeTest() => HighwayHash64Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("MarvinHash32")]
-    public uint MarvinHash32Test() => MarvinHash32.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("MarvinHash64")]
-    public ulong MarvinHash64Test() => MarvinHash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Murmur3Hash32")]
-    public uint Murmur3Hash32Test() => Murmur3Hash32.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Murmur3Hash128")]
-    public UInt128 Murmur3Hash128Test() => Murmur3Hash128.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Polymur2Hash64")]
-    public ulong Polymur2Hash64Test() => Polymur2Hash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Rapid3Hash64")]
-    public ulong Rapid3Hash64Test() => Rapid3Hash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Rapid3HashMicro64")]
-    public ulong Rapid3HashMicro64Test() => Rapid3HashMicro64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Rapid3HashNano64")]
-    public ulong Rapid3HashNano64Test() => Rapid3HashNano64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("SipHash64")]
-    public ulong SipHash64Test() => SipHash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("T1ha2Hash64")]
-    public ulong T1ha2Hash64Test() => T1ha2Hash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("SuperFastHash32")]
-    public uint SuperFastHash32Test() => SuperFastHash32.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("XxHash32")]
-    public uint XxHash32Test() => XxHash32.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("XxHash64")]
-    public ulong XxHash64Test() => XxHash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Xx3Hash64")]
-    public ulong Xx3Hash64Test() => Xx3Hash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Xx3Hash128")]
-    public UInt128 Xx3Hash128Test() => Xx3Hash128.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Wy3Hash64")]
-    public ulong Wy3Hash64Test() => Wy3Hash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("Wy4Hash64")]
-    public ulong Wy4Hash64Test() => Wy4Hash64.ComputeHash(_testData);
-
-    [Benchmark, BenchmarkCategory("CityHash32")]
-    public unsafe uint CityHash32UnsafeTest() => CityHash32Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("CityHash64")]
-    public unsafe ulong CityHash64UnsafeTest() => CityHash64Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("CityHash128")]
-    public unsafe UInt128 CityHash128UnsafeTest() => CityHash128Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("CityHashCrc128")]
-    public unsafe UInt128 CityHashCrc128UnsafeTest() => CityHashCrc128Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("CityHashCrc256")]
-    public unsafe void CityHashCrc256UnsafeTest()
+    [GlobalCleanup]
+    public unsafe void Cleanup()
     {
-        fixed (ulong* result = _crcResult)
-            CityHashCrc256Unsafe.ComputeHash(_ptr, _testData.Length, result);
+        if (_ptr == null)
+            return;
+
+        NativeMemory.Free(_ptr);
+        _ptr = null;
     }
 
-    [Benchmark, BenchmarkCategory("Djb2AltHash32")]
-    public unsafe uint Djb2AltHash32UnsafeTest() => Djb2AltHash32Unsafe.ComputeHash(_ptr, _testData.Length);
+    [Benchmark, BenchmarkCategory("Managed32")]
+    [ArgumentsSource(nameof(ManagedHash32Algorithms))]
+    public uint Managed32(Hash32Algorithm algorithm) => algorithm.Hash!(_testData);
 
-    [Benchmark, BenchmarkCategory("Djb2AltHash64")]
-    public unsafe ulong Djb2AltHash64UnsafeTest() => Djb2AltHash64Unsafe.ComputeHash(_ptr, _testData.Length);
+    [Benchmark, BenchmarkCategory("Managed64")]
+    [ArgumentsSource(nameof(ManagedHash64Algorithms))]
+    public ulong Managed64(Hash64Algorithm algorithm) => algorithm.Hash!(_testData);
 
-    [Benchmark, BenchmarkCategory("Djb2Hash32")]
-    public unsafe uint Djb2Hash32UnsafeTest() => Djb2Hash32Unsafe.ComputeHash(_ptr, _testData.Length);
+    [Benchmark, BenchmarkCategory("Managed128")]
+    [ArgumentsSource(nameof(ManagedHash128Algorithms))]
+    public UInt128 Managed128(Hash128Algorithm algorithm) => algorithm.Hash!(_testData);
 
-    [Benchmark, BenchmarkCategory("Djb2Hash64")]
-    public unsafe ulong Djb2Hash64UnsafeTest() => Djb2Hash64Unsafe.ComputeHash(_ptr, _testData.Length);
+    [Benchmark, BenchmarkCategory("Managed256")]
+    [ArgumentsSource(nameof(ManagedHash256Algorithms))]
+    public void Managed256(Hash256Algorithm algorithm) => algorithm.Hash!(_testData, _crcResult);
 
-    [Benchmark, BenchmarkCategory("FarmHash32")]
-    public unsafe uint FarmHash32UnsafeTest() => FarmHash32Unsafe.ComputeHash(_ptr, _testData.Length);
+    [Benchmark, BenchmarkCategory("Unsafe32")]
+    [ArgumentsSource(nameof(UnsafeHash32Algorithms))]
+    public unsafe uint Unsafe32(Hash32Algorithm algorithm) => algorithm.UnsafeHash!(_ptr, _testData.Length);
 
-    [Benchmark, BenchmarkCategory("FarmHash64")]
-    public unsafe ulong FarmHash64UnsafeTest() => FarmHash64Unsafe.ComputeHash(_ptr, _testData.Length);
+    [Benchmark, BenchmarkCategory("Unsafe64")]
+    [ArgumentsSource(nameof(UnsafeHash64Algorithms))]
+    public unsafe ulong Unsafe64(Hash64Algorithm algorithm) => algorithm.UnsafeHash!(_ptr, _testData.Length);
 
-    [Benchmark, BenchmarkCategory("FarmHash128")]
-    public unsafe UInt128 FarmHash128UnsafeTest() => FarmHash128Unsafe.ComputeHash(_ptr, _testData.Length);
+    [Benchmark, BenchmarkCategory("Unsafe128")]
+    [ArgumentsSource(nameof(UnsafeHash128Algorithms))]
+    public unsafe UInt128 Unsafe128(Hash128Algorithm algorithm) => algorithm.UnsafeHash!(_ptr, _testData.Length);
 
-    [Benchmark, BenchmarkCategory("FarshHash64")]
-    public unsafe ulong FarshHash64UnsafeTest() => FarshHash64Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("Fnv1aHash32")]
-    public unsafe uint Fnv1aHash32UnsafeTest() => Fnv1aHash32Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("Fnv1aHash64")]
-    public unsafe ulong Fnv1aHash64UnsafeTest() => Fnv1aHash64Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("MeowHash64")]
-    public unsafe ulong MeowHash64UnsafeTest() => MeowHash64Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("MeowHash128")]
-    public unsafe UInt128 MeowHash128UnsafeTest() => MeowHash128Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("Murmur3Hash32")]
-    public unsafe uint Murmur3Hash32UnsafeTest() => Murmur3Hash32Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("Murmur3Hash128")]
-    public unsafe UInt128 Murmur3Hash128UnsafeTest() => Murmur3Hash128Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("SipHash64")]
-    public unsafe ulong SipHash64UnsafeTest() => SipHash64Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("SuperFastHash32")]
-    public unsafe uint SuperFastHash32UnsafeTest() => SuperFastHash32Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("XxHash32")]
-    public unsafe uint XxHash32UnsafeTest() => XxHash32Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("XxHash64")]
-    public unsafe ulong XxHash64UnsafeTest() => XxHash64Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("Xx3Hash64")]
-    public unsafe ulong Xx3Hash64UnsafeTest() => Xx3Hash64Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("Xx3Hash128")]
-    public unsafe UInt128 Xx3Hash128UnsafeTest() => Xx3Hash128Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("Wy3Hash64")]
-    public unsafe ulong Wy3Hash64UnsafeTest() => Wy3Hash64Unsafe.ComputeHash(_ptr, _testData.Length);
-
-    [Benchmark, BenchmarkCategory("Wy4Hash64")]
-    public unsafe ulong Wy4Hash64UnsafeTest() => Wy4Hash64Unsafe.ComputeHash(_ptr, _testData.Length);
+    [Benchmark, BenchmarkCategory("Unsafe256")]
+    [ArgumentsSource(nameof(UnsafeHash256Algorithms))]
+    public unsafe void Unsafe256(Hash256Algorithm algorithm)
+    {
+        fixed (ulong* result = _crcResult)
+            algorithm.UnsafeHash!(_ptr, _testData.Length, result);
+    }
 }

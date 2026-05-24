@@ -1,0 +1,47 @@
+<Solution>
+  <Folder Name="/_Github/">
+    <File Path=".github/FUNDING.yml" />
+  </Folder>
+  <Folder Name="/_Github/IssueTemplates/">
+    <File Path=".github/ISSUE_TEMPLATE/bug_report.md" />
+    <File Path=".github/ISSUE_TEMPLATE/feature_request.md" />
+  </Folder>
+  <Folder Name="/_Github/Workflows/">
+    <File Path=".github/workflows/generic-build.yml" />
+    <File Path=".github/workflows/nuget-release.yml" />
+  </Folder>
+  <Folder Name="/_Imports/" />
+  <Folder Name="/_Imports/Local/">
+    <File Path="Locals/Directory.Build.props" />
+    <File Path="Locals/Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/_Imports/Managed/">
+    <File Path="Src/Directory.Build.props" />
+    <File Path="Src/Directory.Build.targets" />
+  </Folder>
+  <Folder Name="/_Imports/Managed/Packages/">
+    <File Path="Src/Directory.Packages.Analyzers.props" />
+    <File Path="Src/Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/_Imports/Managed/Project/">
+    <File Path="Imports/Benchmarks.props" />
+    <File Path="Imports/Examples.props" />
+    <File Path="Imports/Library.props" />
+    <File Path="Imports/Tests.props" />
+  </Folder>
+  <Folder Name="/_Items/">
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="LICENSE.txt" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/_Scripts/">
+    <File Path="Scripts/Build.ps1" />
+    <File Path="Scripts/Publish.ps1" />
+  </Folder>
+  <Project Path="Src/FastHash.Benchmarks/FastHash.Benchmarks.csproj" />
+  <Project Path="Src/FastHash.Examples/FastHash.Examples.csproj" />
+  <Project Path="Src/FastHash.Tests/FastHash.Tests.csproj" />
+  <Project Path="Src/FastHash.TestShared/FastHash.TestShared.csproj" />
+  <Project Path="Src/FastHash/FastHash.csproj" />
+</Solution>
