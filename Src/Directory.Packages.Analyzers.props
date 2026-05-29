@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <Import Project="../Locals/Directory.Packages.Analyzers.props" Condition="Exists('../Locals/Directory.Packages.Analyzers.props')" />
 
