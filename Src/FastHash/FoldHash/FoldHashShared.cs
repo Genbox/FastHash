@@ -13,7 +13,7 @@ internal static class FoldHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong FoldedMultiply(ulong x, ulong y) => Shared.Fold128To64(x, y);
+    internal static ulong FoldedMultiply(ulong x, ulong y) => Fold128To64(x, y);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong RotateRight(ulong value, int count)

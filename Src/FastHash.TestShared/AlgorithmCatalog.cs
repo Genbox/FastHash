@@ -1,6 +1,7 @@
 using Genbox.FastHash.AbslHash;
 using Genbox.FastHash.AesniHash;
 using Genbox.FastHash.CityHash;
+using Genbox.FastHash.ClHash;
 using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.FarshHash;
@@ -42,6 +43,7 @@ public static unsafe class AlgorithmCatalog
         new(nameof(AbslHash64), static data => AbslHash64.ComputeHash(data), null, [0x77, 0xCF, 0x62, 0x40, 0x1B, 0xBB, 0x2B, 0x8B]),
         new(nameof(AesniHash64), static data => AesniHash64.ComputeHash(data), null, [0x28, 0x1C, 0x4A, 0x87, 0x26, 0x2B, 0x3E, 0xF6]),
         new(nameof(CityHash64), static data => CityHash64.ComputeHash(data), static (data, length) => CityHash64Unsafe.ComputeHash(data, length), [0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A]),
+        new(nameof(ClHash64), static data => ClHash64.ComputeHash(data), static (data, length) => ClHash64Unsafe.ComputeHash(data, length), [0xB6, 0xA4, 0xCD, 0x9F, 0xCF, 0x43, 0x06, 0xBF]),
         new(nameof(Djb2AltHash64), static data => Djb2AltHash64.ComputeHash(data), static (data, length) => Djb2AltHash64Unsafe.ComputeHash(data, length), [0xCE, 0xED, 0x14, 0x36, 0xF9, 0x33, 0x6C, 0x8A]),
         new(nameof(Djb2Hash64), static data => Djb2Hash64.ComputeHash(data), static (data, length) => Djb2Hash64Unsafe.ComputeHash(data, length), [0x9C, 0x17, 0x3D, 0x75, 0xA9, 0x35, 0x63, 0x0E]),
         new(nameof(FarshHash64), static data => FarshHash64.ComputeHash(data), static (data, length) => FarshHash64Unsafe.ComputeHash(data, length), [0x81, 0x2D, 0x68, 0xB2, 0xE4, 0x17, 0xBE, 0x05]),

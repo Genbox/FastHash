@@ -19,6 +19,7 @@ These hash functions are included in the library.
 | [AbslHash](https://github.com/abseil/abseil-cpp/)                                                                                                       |      -       | The Abseil Authors                                              |       Apache 2.0        |
 | [AesniHash](https://github.com/synopse/mORMot2)                                                                                                         |      -       | Arnaud Bouchez                                                  |      MPL/GPL/LGPL       |
 | [CityHash](https://github.com/google/cityhash)                                                                                                          |    1.1.1     | Geoff Pike, Jyrki Alakuijala                                    |           MIT           |
+| [CLHash](https://github.com/simdhash/clhash)                                                                                                            |    1.0.0     | Daniel Lemire, Owen Kaser                                       |       Apache 2.0        |
 | [DJBHash](http://www.cse.yorku.ca/~oz/hash.html)                                                                                                        |      -       | Daniel J. Bernstein                                             |          None           |
 | [FarmHash](https://github.com/google/farmhash)                                                                                                          |    1.1.0     | Geoff Pike                                                      |           MIT           |
 | [FarshHash](https://github.com/Bulat-Ziganshin/FARSH)                                                                                                   |    0.2.0     | Bulat Ziganshin                                                 |           MIT           |
@@ -46,6 +47,7 @@ The table below gives an overview of the implementations.
 | AbslHash      |    x    |        |       |   x   |        |       |   x    |        |    x     |
 | AesniHash     |    x    |        |       |   x   |   x    |   x   |   x    |        |          |
 | CityHash      |    x    |   x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
+| CLHash        |    x    |   x    |       |   x   |        |       |   x    |   x    |    x     |
 | DJBHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |          |
 | FarmHash      |    x    |   x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
 | FarshHash     |    x    |   x    |       |   x   |        |   x   |   x    |        |    x     |
