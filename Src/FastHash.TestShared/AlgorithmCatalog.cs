@@ -1,3 +1,4 @@
+using Genbox.FastHash.AbslHash;
 using Genbox.FastHash.AesniHash;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
@@ -38,6 +39,7 @@ public static unsafe class AlgorithmCatalog
 
     public static readonly Hash64Algorithm[] Hash64Algorithms =
     [
+        new(nameof(AbslHash64), static data => AbslHash64.ComputeHash(data), null, [0x77, 0xCF, 0x62, 0x40, 0x1B, 0xBB, 0x2B, 0x8B]),
         new(nameof(AesniHash64), static data => AesniHash64.ComputeHash(data), null, [0x28, 0x1C, 0x4A, 0x87, 0x26, 0x2B, 0x3E, 0xF6]),
         new(nameof(CityHash64), static data => CityHash64.ComputeHash(data), static (data, length) => CityHash64Unsafe.ComputeHash(data, length), [0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A]),
         new(nameof(Djb2AltHash64), static data => Djb2AltHash64.ComputeHash(data), static (data, length) => Djb2AltHash64Unsafe.ComputeHash(data, length), [0xCE, 0xED, 0x14, 0x36, 0xF9, 0x33, 0x6C, 0x8A]),
@@ -137,7 +139,6 @@ public static unsafe class AlgorithmCatalog
     public static Index32Algorithm GetIndex32(string name) => Index32Algorithms.Single(x => x.Name == name);
     public static Index64Algorithm GetIndex64(string name) => Index64Algorithms.Single(x => x.Name == name);
     public static Index128Algorithm GetIndex128(string name) => Index128Algorithms.Single(x => x.Name == name);
-
 }
 
 public unsafe delegate uint Hash32Unsafe(byte* data, int length);
