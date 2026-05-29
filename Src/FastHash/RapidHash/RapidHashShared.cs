@@ -100,8 +100,7 @@ internal static class RapidHashShared
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong RapidMix(ulong a, ulong b)
     {
-        ulong high = BigMul(a, b, out ulong low);
-        return low ^ high;
+        return Fold128To64(a, b);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

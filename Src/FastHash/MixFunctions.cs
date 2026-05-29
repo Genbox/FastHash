@@ -547,8 +547,7 @@ public static class MixFunctions
     {
         h += 0x60BEE2BEE120FC15;
 
-        ulong hi = BigMul(h, 0xA3B195354A39B70D, out ulong lo);
-        return hi ^ lo;
+        return Fold128To64(h, 0xA3B195354A39B70D);
     }
 
     //https://github.com/wangyi-fudan/wyhash
@@ -557,11 +556,8 @@ public static class MixFunctions
     {
         h += 0x60BEE2BEE120FC15;
 
-        ulong hi1 = BigMul(h, 0xA3B195354A39B70D, out ulong lo1);
-        ulong m1 = hi1 ^ lo1;
-
-        ulong hi2 = BigMul(m1, 0x1B03738712FAD5C9, out ulong lo2);
-        return hi2 ^ lo2;
+        ulong m1 = Fold128To64(h, 0xA3B195354A39B70D);
+        return Fold128To64(m1, 0x1B03738712FAD5C9);
     }
 
     #endregion

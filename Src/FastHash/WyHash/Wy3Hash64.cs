@@ -17,8 +17,8 @@ public static class Wy3Hash64
         ulong a = ((ulong)(uint)input << 32) | (uint)(input >> 32);
         ulong b = ((ulong)(uint)(input >> 32) << 32) | (uint)input;
 
-        ulong high = BigMul(a ^ 0xe7037ed1a0b428dbul, b ^ 0xa0761d6478bd642ful, out ulong low);
-        return _wymix(0xe7037ed1a0b428dbul ^ 8, low ^ high);
+        ulong mixed = Fold128To64(a ^ 0xe7037ed1a0b428dbul, b ^ 0xa0761d6478bd642ful);
+        return _wymix(0xe7037ed1a0b428dbul ^ 8, mixed);
     }
 
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);

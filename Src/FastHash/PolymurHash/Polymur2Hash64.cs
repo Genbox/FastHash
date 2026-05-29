@@ -81,12 +81,7 @@ public static class Polymur2Hash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static UInt128 polymur_mul128(ulong a, ulong b)
-    {
-        UInt128 ret;
-        ret.High = BigMul(a, b, out ret.Low);
-        return ret;
-    }
+    private static UInt128 polymur_mul128(ulong a, ulong b) => Multiply64To128(a, b);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong polymur_red611(UInt128 x) => (x.Low & POLYMUR_P611) + ((x.Low >> 61) | (x.High << 3));

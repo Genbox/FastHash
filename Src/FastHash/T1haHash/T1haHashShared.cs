@@ -6,13 +6,6 @@ namespace Genbox.FastHash.T1haHash;
 internal static class T1haHashShared
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong Mux64(ulong value, ulong prime)
-    {
-        ulong high = BigMul(value, prime, out ulong low);
-        return low ^ high;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void MixUp(ref ulong x, ref ulong y, ulong value, ulong prime)
     {
         ulong high = BigMul(y + value, prime, out ulong low);
@@ -25,7 +18,7 @@ internal static class T1haHashShared
     {
         ulong x = (a + RotateRight(b, 41)) * Prime0;
         ulong y = (RotateRight(a, 23) + b) * Prime6;
-        return Mux64(x ^ y, Prime5);
+        return Fold128To64(x ^ y, Prime5);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

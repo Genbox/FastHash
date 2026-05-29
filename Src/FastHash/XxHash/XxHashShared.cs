@@ -21,18 +21,10 @@ internal static class XxHashShared
     internal static ulong XXH_xorshift64(ulong v64, int shift) => v64 ^ (v64 >> shift);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static UInt128 XXH_mult64to128(ulong lhs, ulong rhs)
-    {
-        ulong high = BigMul(lhs, rhs, out ulong low);
-        return new UInt128(low, high);
-    }
+    internal static UInt128 XXH_mult64to128(ulong lhs, ulong rhs) => Multiply64To128(lhs, rhs);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong XXH3_mul128_fold64(ulong lhs, ulong rhs)
-    {
-        UInt128 product = XXH_mult64to128(lhs, rhs);
-        return product.Low ^ product.High;
-    }
+    internal static ulong XXH3_mul128_fold64(ulong lhs, ulong rhs) => Fold128To64(lhs, rhs);
 
     internal static ulong XXH3_mix16B(ReadOnlySpan<byte> input, int offset, ReadOnlySpan<byte> secret, int secretOffset, ulong seed64)
     {

@@ -79,9 +79,5 @@ public static class Wy4Hash64
     private static ulong Wyr3(ReadOnlySpan<byte> data, int offset, int i) => ((ulong)data[offset] << 16) | ((ulong)data[offset + (i >> 1)] << 8) | data[(offset + i) - 1];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong Wymum(ulong a, ulong b)
-    {
-        ulong high = BigMul(a, b, out ulong low);
-        return high ^ low;
-    }
+    private static ulong Wymum(ulong a, ulong b) => Fold128To64(a, b);
 }
