@@ -44,7 +44,7 @@ The table below gives an overview of the implementations.
 
 | Name          | Managed | Unsafe | 32bit | 64bit | 128bit | Index | Seeded | Secret | Verified |
 |---------------|:-------:|:------:|:-----:|:-----:|:------:|:-----:|:------:|:------:|:--------:|
-| AbslHash      |    x    |        |       |   x   |        |       |   x    |        |    x     |
+| AbslHash      |    x    |   x    |       |   x   |        |       |   x    |        |    x     |
 | AesniHash     |    x    |        |       |   x   |   x    |   x   |   x    |        |          |
 | CityHash      |    x    |   x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
 | CLHash        |    x    |   x    |       |   x   |        |       |   x    |   x    |    x     |

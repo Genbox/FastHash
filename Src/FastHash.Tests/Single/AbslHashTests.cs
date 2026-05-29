@@ -22,6 +22,28 @@ public class AbslHashTests
 
         Assert.True(data.Length > 32);
         Assert.Equal(expected, AbslHash64.ComputeHash(data, seed));
+
+        unsafe
+        {
+            fixed (byte* ptr = data)
+                Assert.Equal(expected, AbslHash64Unsafe.ComputeHash(ptr, data.Length, seed));
+        }
+    }
+
+    [Fact]
+    public unsafe void UnsafeMatchesManaged()
+    {
+        byte[] data = Enumerable.Range(0, 5000).Select(static x => unchecked((byte)x)).ToArray();
+        ulong[] seeds = [0, 1, 0x531858a40bfa7ea1UL, ulong.MaxValue];
+
+        fixed (byte* ptr = data)
+        {
+            foreach (ulong seed in seeds)
+            {
+                for (int len = 0; len <= data.Length; len++)
+                    Assert.Equal(AbslHash64.ComputeHash(data.AsSpan(0, len), seed), AbslHash64Unsafe.ComputeHash(ptr, len, seed));
+            }
+        }
     }
 
     [Fact]

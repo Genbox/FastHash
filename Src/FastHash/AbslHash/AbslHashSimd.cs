@@ -25,7 +25,7 @@ internal static class AbslHashSimd
             len -= PiecewiseChunkSize;
         }
 
-        return len == 0 ? state : AbslHashShared.CombineContiguous(state, data);
+        return len == 0 ? state : AbslHash64.CombineContiguous(state, data);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

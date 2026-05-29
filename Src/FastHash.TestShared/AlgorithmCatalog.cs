@@ -40,7 +40,7 @@ public static unsafe class AlgorithmCatalog
 
     public static readonly Hash64Algorithm[] Hash64Algorithms =
     [
-        new(nameof(AbslHash64), static data => AbslHash64.ComputeHash(data), null, [0x77, 0xCF, 0x62, 0x40, 0x1B, 0xBB, 0x2B, 0x8B]),
+        new(nameof(AbslHash64), static data => AbslHash64.ComputeHash(data), static (data, length) => AbslHash64Unsafe.ComputeHash(data, length), [0x77, 0xCF, 0x62, 0x40, 0x1B, 0xBB, 0x2B, 0x8B]),
         new(nameof(AesniHash64), static data => AesniHash64.ComputeHash(data), null, [0x28, 0x1C, 0x4A, 0x87, 0x26, 0x2B, 0x3E, 0xF6]),
         new(nameof(CityHash64), static data => CityHash64.ComputeHash(data), static (data, length) => CityHash64Unsafe.ComputeHash(data, length), [0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A]),
         new(nameof(ClHash64), static data => ClHash64.ComputeHash(data), static (data, length) => ClHash64Unsafe.ComputeHash(data, length), [0xB6, 0xA4, 0xCD, 0x9F, 0xCF, 0x43, 0x06, 0xBF]),
