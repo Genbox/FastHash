@@ -1,3 +1,9 @@
+param(
+    [string]$NuGetKey = $env:NUGET_KEY,
+    [string]$PwshGKey = $env:PWSHG_KEY,
+    [string]$GitHubToken = $env:GITHUB_TOKEN
+)
+
 $Config = "Release"
 $Root = (Resolve-Path "$PSScriptRoot/..").Path
 $PublishDir = "$Root/Publish"
@@ -15,5 +21,5 @@ Get-ChildItem -Path "$PublishDir/*.nupkg" | ForEach-Object {
 
 # Push symbol packages to NuGet
 Get-ChildItem -Path "$PublishDir/*.snupkg" | ForEach-Object {
-    dotnet nuget push $_.FullName --api-key $env:NUGET_KEY --source https://api.nuget.org/v3/index.json
+    dotnet nuget push $_.FullName --api-key $NuGetKey --source https://api.nuget.org/v3/index.json
 }
