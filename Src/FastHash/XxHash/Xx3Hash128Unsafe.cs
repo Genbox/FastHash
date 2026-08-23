@@ -3,12 +3,33 @@ using static Genbox.FastHash.XxHash.XxHashUnsafeShared;
 
 namespace Genbox.FastHash.XxHash;
 
+/// <summary>Computes 128-bit XXH3 hashes from unmanaged memory.</summary>
 public static class Xx3Hash128Unsafe
 {
-    public static unsafe UInt128 ComputeHash(byte* data, int length) => ComputeHash(data, length, 0);
+    /// <summary>Computes a hash using a zero seed.</summary>
+    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <returns>The 128-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    public static unsafe UInt128 ComputeHash(byte* data, int length)
+    {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
 
+        return ComputeHash(data, length, 0);
+    }
+
+    /// <summary>Computes a hash for unmanaged data.</summary>
+    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 128-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
     public static unsafe UInt128 ComputeHash(byte* data, int length, ulong seed)
     {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
         fixed (byte* secretPtr = XxHashConstants.kSecret)
             return XXH3_128bits_internal(data, length, seed, secretPtr, XxHashConstants.SECRET_DEFAULT_SIZE, XXH3_hashLong_128b_withSeed);
     }
@@ -53,10 +74,9 @@ public static class Xx3Hash128Unsafe
 
         XXH3_hashLong_internal_loop(accPtr, input, len, secret, secretSize);
 
-        UInt128 uInt128;
-        uInt128.Low = XXH3_mergeAccs(accPtr, secret + XxHashConstants.SECRET_MERGEACCS_START, (ulong)len * XxHashConstants.PRIME64_1);
-        uInt128.High = XXH3_mergeAccs(accPtr, (secret + secretSize) - XxHashConstants.ACC_SIZE - XxHashConstants.SECRET_MERGEACCS_START, ~((ulong)len * XxHashConstants.PRIME64_2));
-        return uInt128;
+        return new UInt128(
+            XXH3_mergeAccs(accPtr, secret + XxHashConstants.SECRET_MERGEACCS_START, (ulong)len * XxHashConstants.PRIME64_1),
+            XXH3_mergeAccs(accPtr, (secret + secretSize) - XxHashConstants.ACC_SIZE - XxHashConstants.SECRET_MERGEACCS_START, ~((ulong)len * XxHashConstants.PRIME64_2)));
     }
 
     private static unsafe UInt128 XXH3_len_0to16_128b(byte* input, int len, byte* secret, ulong seed)
@@ -65,12 +85,9 @@ public static class Xx3Hash128Unsafe
         if (len >= 4) return XXH3_len_4to8_128b(input, len, secret, seed);
         if (len != 0) return XXH3_len_1to3_128b(input, len, secret, seed);
         {
-            UInt128 h128;
             ulong bitflipl = Read64(secret + 64) ^ Read64(secret + 72);
             ulong bitfliph = Read64(secret + 80) ^ Read64(secret + 88);
-            h128.Low = YC_xmxmx_XXH_64(seed ^ bitflipl);
-            h128.High = YC_xmxmx_XXH_64(seed ^ bitfliph);
-            return h128;
+            return new UInt128(YC_xmxmx_XXH_64(seed ^ bitflipl), YC_xmxmx_XXH_64(seed ^ bitfliph));
         }
     }
 
@@ -79,9 +96,7 @@ public static class Xx3Hash128Unsafe
         // XXH_ASSERT(secretSize >= XXH3_SECRET_SIZE_MIN); (void)secretSize;
         // XXH_ASSERT(16 < len && len <= 128);
 
-        UInt128 acc;
-        acc.Low = (ulong)len * XxHashConstants.PRIME64_1;
-        acc.High = 0;
+        UInt128 acc = new UInt128((ulong)len * XxHashConstants.PRIME64_1, 0);
 
 #if XXH_SIZE_OPT
         /* Smaller, but slightly slower. */
@@ -103,12 +118,9 @@ public static class Xx3Hash128Unsafe
         }
         acc = XXH128_mix32B(acc, input, (input + len) - 16, secret, seed);
 #endif
-        UInt128 h128;
-        h128.Low = acc.Low + acc.High;
-        h128.High = (acc.Low * XxHashConstants.PRIME64_1) + (acc.High * XxHashConstants.PRIME64_4) + (((ulong)len - seed) * XxHashConstants.PRIME64_2);
-        h128.Low = XXH3_avalanche(h128.Low);
-        h128.High = 0 - XXH3_avalanche(h128.High);
-        return h128;
+        ulong low = acc.Low + acc.High;
+        ulong high = (acc.Low * XxHashConstants.PRIME64_1) + (acc.High * XxHashConstants.PRIME64_4) + (((ulong)len - seed) * XxHashConstants.PRIME64_2);
+        return new UInt128(XXH3_avalanche(low), 0 - XXH3_avalanche(high));
     }
 
     private static unsafe UInt128 XXH3_len_9to16_128b(byte* input, int len, byte* secret, ulong seed)
@@ -123,7 +135,7 @@ public static class Xx3Hash128Unsafe
          * Put len in the middle of m128 to ensure that the length gets mixed to
          * both the low and high bits in the 128x64 multiply below.
          */
-        m128.Low += (ulong)(len - 1) << 54;
+        m128 = new UInt128(m128.Low + ((ulong)(len - 1) << 54), m128.High);
         input_hi ^= bitfliph;
 
         /*
@@ -134,19 +146,15 @@ public static class Xx3Hash128Unsafe
          * The best approach to this operation is different on 32-bit and 64-bit.
          */
 #if ARCH32
-        m128.High += (input_hi & 0xFFFFFFFF00000000ULL) + xxHashShared.XXH_mult32to64((uint)input_hi, XXH_PRIME32_2);
+        m128 = new UInt128(m128.Low, m128.High + (input_hi & 0xFFFFFFFF00000000ULL) + xxHashShared.XXH_mult32to64((uint)input_hi, XXH_PRIME32_2));
 #else
-        m128.High += input_hi + XXH_mult32to64((uint)input_hi, XxHashConstants.PRIME32_2 - 1);
+        m128 = new UInt128(m128.Low, m128.High + input_hi + XXH_mult32to64((uint)input_hi, XxHashConstants.PRIME32_2 - 1));
 #endif
 
-        m128.Low ^= ByteSwap(m128.High);
+        m128 = new UInt128(m128.Low ^ ByteSwap(m128.High), m128.High);
 
         UInt128 h128 = XXH_mult64to128(m128.Low, XxHashConstants.PRIME64_2);
-        h128.High += m128.High * XxHashConstants.PRIME64_2;
-
-        h128.Low = XXH3_avalanche(h128.Low);
-        h128.High = XXH3_avalanche(h128.High);
-        return h128;
+        return new UInt128(XXH3_avalanche(h128.Low), XXH3_avalanche(h128.High + (m128.High * XxHashConstants.PRIME64_2)));
     }
 
     private static unsafe UInt128 XXH3_len_1to3_128b(byte* input, int len, byte* secret, ulong seed)
@@ -173,10 +181,7 @@ public static class Xx3Hash128Unsafe
         ulong bitfliph = (Read32(secret + 8) ^ Read32(secret + 12)) - seed;
         ulong keyed_lo = combinedl ^ bitflipl;
         ulong keyed_hi = combinedh ^ bitfliph;
-        UInt128 h128;
-        h128.Low = YC_xmxmx_XXH_64(keyed_lo);
-        h128.High = YC_xmxmx_XXH_64(keyed_hi);
-        return h128;
+        return new UInt128(YC_xmxmx_XXH_64(keyed_lo), YC_xmxmx_XXH_64(keyed_hi));
     }
 
     private static unsafe UInt128 XXH3_len_4to8_128b(byte* input, int len, byte* secret, ulong seed)
@@ -193,16 +198,11 @@ public static class Xx3Hash128Unsafe
         ulong bitflip = (Read64(secret + 16) ^ Read64(secret + 24)) + seed;
         ulong keyed = input_64 ^ bitflip;
 
-        UInt128 m128 = XXH_mult64to128(keyed, XxHashConstants.PRIME64_1 + ((ulong)len << 2));
-
-        m128.High += m128.Low << 1;
-        m128.Low ^= m128.High >> 3;
-
-        m128.Low = XXH_xorshift64(m128.Low, 35);
-        m128.Low *= 0x9FB21C651E98DF25UL;
-        m128.Low = XXH_xorshift64(m128.Low, 28);
-        m128.High = XXH3_avalanche(m128.High);
-        return m128;
+        UInt128 product = XXH_mult64to128(keyed, XxHashConstants.PRIME64_1 + ((ulong)len << 2));
+        ulong high = product.High + (product.Low << 1);
+        ulong low = product.Low ^ (high >> 3);
+        low = XXH_xorshift64(low, 35) * 0x9FB21C651E98DF25UL;
+        return new UInt128(XXH_xorshift64(low, 28), XXH3_avalanche(high));
     }
 
     private static unsafe UInt128 XXH3_len_129to240_128b(byte* input, int len, byte* secret, ulong seed)
@@ -210,17 +210,14 @@ public static class Xx3Hash128Unsafe
         //XXH_ASSERT(secretSize >= XXH3_SECRET_SIZE_MIN); (void)secretSize;
         //XXH_ASSERT(128 < len && len <= XXH3_MIDSIZE_MAX);
 
-        UInt128 acc;
+        UInt128 acc = new UInt128((ulong)len * XxHashConstants.PRIME64_1, 0);
         int nbRounds = len / 32;
         int i;
-        acc.Low = (ulong)len * XxHashConstants.PRIME64_1;
-        acc.High = 0;
 
         for (i = 0; i < 4; i++)
             acc = XXH128_mix32B(acc, input + (32 * i), input + (32 * i) + 16, secret + (32 * i), seed);
 
-        acc.Low = XXH3_avalanche(acc.Low);
-        acc.High = XXH3_avalanche(acc.High);
+        acc = new UInt128(XXH3_avalanche(acc.Low), XXH3_avalanche(acc.High));
 
         for (i = 4; i < nbRounds; i++)
             acc = XXH128_mix32B(acc, input + (32 * i), input + (32 * i) + 16, secret + XxHashConstants.MIDSIZE_STARTOFFSET + (32 * (i - 4)), seed);
@@ -232,20 +229,17 @@ public static class Xx3Hash128Unsafe
             (secret + XxHashConstants.SECRET_SIZE_MIN) - XxHashConstants.MIDSIZE_LASTOFFSET - 16,
             0UL - seed);
 
-        UInt128 h128;
-        h128.Low = acc.Low + acc.High;
-        h128.High = (acc.Low * XxHashConstants.PRIME64_1) + (acc.High * XxHashConstants.PRIME64_4) + (((ulong)len - seed) * XxHashConstants.PRIME64_2);
-        h128.Low = XXH3_avalanche(h128.Low);
-        h128.High = 0 - XXH3_avalanche(h128.High);
-        return h128;
+        ulong low = acc.Low + acc.High;
+        ulong high = (acc.Low * XxHashConstants.PRIME64_1) + (acc.High * XxHashConstants.PRIME64_4) + (((ulong)len - seed) * XxHashConstants.PRIME64_2);
+        return new UInt128(XXH3_avalanche(low), 0 - XXH3_avalanche(high));
     }
 
     private static unsafe UInt128 XXH128_mix32B(UInt128 acc, byte* input_1, byte* input_2, byte* secret, ulong seed)
     {
-        acc.Low += XXH3_mix16B(input_1, secret + 0, seed);
-        acc.Low ^= Read64(input_2) + Read64(input_2 + 8);
-        acc.High += XXH3_mix16B(input_2, secret + 16, seed);
-        acc.High ^= Read64(input_1) + Read64(input_1 + 8);
-        return acc;
+        ulong low = acc.Low + XXH3_mix16B(input_1, secret, seed);
+        low ^= Read64(input_2) + Read64(input_2 + 8);
+        ulong high = acc.High + XXH3_mix16B(input_2, secret + 16, seed);
+        high ^= Read64(input_1) + Read64(input_1 + 8);
+        return new UInt128(low, high);
     }
 }

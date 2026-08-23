@@ -3,8 +3,12 @@ using static Genbox.FastHash.XxHash.XxHashConstants;
 
 namespace Genbox.FastHash.XxHash;
 
+/// <summary>Computes 32-bit xxHash hashes.</summary>
 public static class XxHash32
 {
+    /// <summary>Computes a hash for a 32-bit index.</summary>
+    /// <param name="input">The index to hash.</param>
+    /// <returns>The 32-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ComputeIndex(uint input)
     {
@@ -21,8 +25,15 @@ public static class XxHash32
         return h32;
     }
 
+    /// <summary>Computes a hash for the supplied data using a zero seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <returns>The 32-bit hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
+    /// <summary>Computes a hash for the supplied data.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 32-bit hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         uint len = (uint)data.Length;

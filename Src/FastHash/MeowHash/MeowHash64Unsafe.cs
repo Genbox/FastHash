@@ -1,12 +1,18 @@
 #if NET8_0_OR_GREATER
 namespace Genbox.FastHash.MeowHash;
 
+/// <summary>Provides pointer-based access to the 64-bit MeowHash algorithm.</summary>
 public static class MeowHash64Unsafe
 {
+    /// <summary>Gets whether the required AES, SSE, SSE2, and SSSE3 intrinsics are supported.</summary>
     public static bool IsSupported => MeowHash128Unsafe.IsSupported;
 
+    /// <summary>Computes the hash of an unmanaged byte sequence.</summary>
+    /// <param name="data">A pointer to at least <paramref name="len" /> bytes.</param><param name="len">The non-negative number of bytes to hash.</param><returns>The 64-bit hash.</returns><exception cref="PlatformNotSupportedException">The required hardware intrinsics are unavailable.</exception><exception cref="ArgumentOutOfRangeException"><paramref name="len" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int len)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(len);
+
         if (!IsSupported)
             throw new PlatformNotSupportedException("MeowHash requires AES, SSE, SSE2, and SSSE3 intrinsics.");
 

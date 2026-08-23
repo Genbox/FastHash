@@ -8,21 +8,45 @@ using static Genbox.FastHash.ClHash.ClHashShared;
 
 namespace Genbox.FastHash.ClHash;
 
+/// <summary>Provides 64-bit CLHash functions.</summary>
 public static class ClHash64
 {
     private static readonly ulong[] _defaultKey = CreateKey(DefaultSeed1, DefaultSeed2);
 
+    /// <summary>Gets whether the required CPU intrinsics are available.</summary>
     public static bool IsSupported => ClHash64Unsafe.IsSupported;
 
+    /// <summary>Creates a CLHash key from two seeds.</summary>
+    /// <param name="seed1">The first key seed.</param>
+    /// <param name="seed2">The second key seed.</param>
+    /// <returns>A CLHash key.</returns>
+    public static ulong[] CreateKey(ulong seed1, ulong seed2) => ClHashShared.CreateKey(seed1, seed2);
+
+    /// <summary>Computes the hash of data with the default key.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, _defaultKey);
 
+    /// <summary>Computes the hash of data using a key derived from two seeds.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="seed1">The first key seed.</param>
+    /// <param name="seed2">The second key seed.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2)
     {
         Span<ulong> key = stackalloc ulong[Random64BitWordsNeeded];
-        CreateKey(seed1, seed2, key);
+        ClHashShared.CreateKey(seed1, seed2, key);
         return ComputeHash(data, key);
     }
 
+    /// <summary>Computes the hash of data using a CLHash key.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="key">The CLHash key.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentException"><paramref name="key"/> is invalid.</exception>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ReadOnlySpan<ulong> key)
     {
         if (!IsSupported)
@@ -36,6 +60,14 @@ public static class ClHash64
     {
         if (key.Length != Random64BitWordsNeeded)
             throw new ArgumentException($"CLHash keys must contain exactly {Random64BitWordsNeeded} 64-bit words.", nameof(key));
+
+        ValidatePolynomial(key[WordsPerBlock], key[WordsPerBlock + 1], nameof(key));
+    }
+
+    internal static void ValidatePolynomial(ulong low, ulong high, string paramName)
+    {
+        if (ClHashShared.IsInvalidPolynomial(low, high))
+            throw new ArgumentException("CLHash keys must have a non-zero, non-degenerate polynomial multiplier.", paramName);
     }
 
     private static ulong ComputeHashCore(ReadOnlySpan<byte> data, ReadOnlySpan<ulong> key)

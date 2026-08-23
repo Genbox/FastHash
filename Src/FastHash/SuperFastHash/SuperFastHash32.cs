@@ -2,8 +2,12 @@ using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.SuperFastHash;
 
+/// <summary>Provides 32-bit SuperFastHash computations.</summary>
 public static class SuperFastHash32
 {
+    /// <summary>Computes a hash index for <paramref name="input"/> using the default seed.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <returns>The 32-bit hash index.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ComputeIndex(uint input)
     {
@@ -19,6 +23,10 @@ public static class SuperFastHash32
         return hash;
     }
 
+    /// <summary>Computes a hash index for <paramref name="input"/> using <paramref name="seed"/>.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 32-bit hash index.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ComputeIndex(uint input, uint seed)
     {
@@ -34,6 +42,9 @@ public static class SuperFastHash32
         return hash;
     }
 
+    /// <summary>Computes a 32-bit hash for <paramref name="data"/> using its length as the seed.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <returns>The 32-bit hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
         if (data.Length <= 0)
@@ -42,6 +53,10 @@ public static class SuperFastHash32
         return ComputeHash(data, (uint)data.Length);
     }
 
+    /// <summary>Computes a 32-bit hash for <paramref name="data"/> using <paramref name="seed"/>.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 32-bit hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         if (data.Length <= 0)

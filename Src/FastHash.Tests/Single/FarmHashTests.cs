@@ -66,7 +66,7 @@ public class FarmHashTests
         }
     }
 
-    private uint CreateSeed(int offset, int salt)
+    private static uint CreateSeed(int offset, int salt)
     {
         unchecked
         {

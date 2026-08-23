@@ -7,6 +7,7 @@ using System.Runtime.Intrinsics.X86;
 
 namespace Genbox.FastHash.MeowHash;
 
+/// <summary>Provides pointer-based access to the 128-bit MeowHash algorithm.</summary>
 public static class MeowHash128Unsafe
 {
     private const int MEOW_PREFETCH_LIMIT = 0x3ff;
@@ -46,10 +47,19 @@ public static class MeowHash128Unsafe
         0x70, 0x80, 0x1F, 0x2E, 0x28, 0x58, 0xEF, 0xC1,
         0x66, 0x36, 0x92, 0x0D, 0x87, 0x15, 0x74, 0xE6
     ];
+    /// <summary>Gets whether the required AES, SSE, SSE2, and SSSE3 intrinsics are supported.</summary>
     public static bool IsSupported => Aes.IsSupported && Sse.IsSupported && Sse2.IsSupported && Ssse3.IsSupported;
 
+    /// <summary>Computes the hash of an unmanaged byte sequence using the default seed.</summary>
+    /// <param name="data">A pointer to at least <paramref name="len" /> bytes, or any pointer when <paramref name="len" /> is zero.</param>
+    /// <param name="len">The non-negative number of bytes to hash.</param>
+    /// <returns>The 128-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">The required hardware intrinsics are unavailable.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="len" /> is negative.</exception>
     public static unsafe UInt128 ComputeHash(byte* data, int len)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(len);
+
         if (!IsSupported)
             throw new PlatformNotSupportedException("MeowHash requires AES, SSE, SSE2, and SSSE3 intrinsics.");
 
@@ -118,7 +128,7 @@ public static class MeowHash128Unsafe
     }
 
     [SuppressMessage("Major Code Smell", "S907:\"goto\" statement should not be used")]
-    public static unsafe Vector128<byte> MeowHash(byte* seed128Init, int len, byte* sourceInit)
+    internal static unsafe Vector128<byte> MeowHash(byte* seed128Init, int len, byte* sourceInit)
     {
         Vector128<byte> xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7; // NOTE(casey): xmm0-xmm7 are the hash accumulation lanes
         Vector128<byte> xmm8, xmm10, xmm15; // NOTE(casey): xmm8-xmm15 hold values to be appended (residual, length)

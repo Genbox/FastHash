@@ -1,18 +1,36 @@
 namespace Genbox.FastHash.SuperFastHash;
 
+/// <summary>Provides unsafe 32-bit SuperFastHash computations over unmanaged memory.</summary>
 public static class SuperFastHash32Unsafe
 {
+    /// <summary>Computes a 32-bit hash for an unmanaged byte sequence using its length as the seed.</summary>
+    /// <param name="data">A pointer to at least <paramref name="length"/> bytes, or null when <paramref name="length"/> is zero.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <returns>The 32-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
     public static unsafe uint ComputeHash(byte* data, int length)
     {
-        if (data == null || length <= 0)
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        if (data == null || length == 0)
             return 0;
 
         return ComputeHash(data, length, (uint)length);
     }
 
+    /// <summary>Computes a 32-bit hash for an unmanaged byte sequence using <paramref name="seed"/>.</summary>
+    /// <param name="data">A pointer to at least <paramref name="length"/> bytes, or null when <paramref name="length"/> is zero.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 32-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
     public static unsafe uint ComputeHash(byte* data, int length, uint seed)
     {
-        if (data == null || length <= 0)
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        if (data == null || length == 0)
             return 0;
 
         uint hash = seed;

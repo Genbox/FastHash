@@ -3,11 +3,17 @@ using System.Runtime.InteropServices;
 
 namespace Genbox.FastHash.MarvinHash;
 
+/// <summary>Provides the 64-bit Marvin hash algorithm.</summary>
 public static class MarvinHash64
 {
+    /// <summary>Computes the hash of a 64-bit value using the default seeds.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0xb79308cd, 0xced93cd5);
 
+    /// <summary>Computes the hash of a 64-bit value.</summary>
+    /// <param name="input">The value to hash.</param><param name="seed1">The first hash seed.</param><param name="seed2">The second hash seed.</param><returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, uint seed1, uint seed2)
     {
@@ -30,8 +36,12 @@ public static class MarvinHash64
         return ((ulong)seed1 << 32) | seed2;
     }
 
+    /// <summary>Computes the hash of a byte sequence using the default seeds.</summary>
+    /// <param name="data">The bytes to hash.</param><returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0xb79308cd, 0xced93cd5);
 
+    /// <summary>Computes the hash of a byte sequence.</summary>
+    /// <param name="data">The bytes to hash.</param><param name="seed1">The first hash seed.</param><param name="seed2">The second hash seed.</param><returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, uint seed1, uint seed2)
     {
         ComputeHash(ref MemoryMarshal.GetReference(data), (uint)data.Length, ref seed1, ref seed2);

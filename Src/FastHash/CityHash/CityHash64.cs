@@ -4,8 +4,12 @@ using static Genbox.FastHash.CityHash.CityHashConstants;
 
 namespace Genbox.FastHash.CityHash;
 
+/// <summary>Provides 64-bit CityHash functions.</summary>
 public static class CityHash64
 {
+    /// <summary>Computes the hash of a 64-bit value.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
     {
@@ -17,10 +21,22 @@ public static class CityHash64
         return HashLen16(c, d, mul);
     }
 
+    /// <summary>Computes the hash of data with the default seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => CityHash64Internal(data);
 
+    /// <summary>Computes the hash of data with a seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed) => CityHash64WithSeeds(data, K2, seed);
 
+    /// <summary>Computes the hash of data with two seeds.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="seed1">The first hash seed.</param>
+    /// <param name="seed2">The second hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2) => CityHash64WithSeeds(data, seed1, seed2);
 
     private static ulong CityHash64Internal(ReadOnlySpan<byte> s)

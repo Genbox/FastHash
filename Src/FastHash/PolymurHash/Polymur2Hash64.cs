@@ -4,21 +4,53 @@ using static Genbox.FastHash.PolymurHash.PolymurConstants;
 
 namespace Genbox.FastHash.PolymurHash;
 
+/// <summary>Contains immutable, seed-derived parameters for <see cref="Polymur2Hash64"/>.</summary>
+public sealed class PolymurHashParams
+{
+    internal readonly Polymur2Hash64.Parameters Parameters;
+
+    /// <summary>Initializes parameters derived from <paramref name="seed"/>.</summary>
+    /// <param name="seed">The seed from which to derive the parameters.</param>
+    public PolymurHashParams(ulong seed) => Parameters = Polymur2Hash64.CreateParams(seed);
+}
+
+/// <summary>Provides 64-bit Polymur hash computations.</summary>
 public static class Polymur2Hash64
 {
     private static readonly Parameters _params = CreateParams(0);
 
+    /// <summary>Computes a hash index for <paramref name="input"/> using the default seed.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <returns>The 64-bit hash index.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
 
+    /// <summary>Computes a hash index for <paramref name="input"/> using <paramref name="seed"/>.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash index.</returns>
     public static ulong ComputeIndex(ulong input, ulong seed)
     {
         Parameters p = seed == 0 ? _params : CreateParams(seed);
-        return ComputeIndex(input, ref p);
+        return ComputeIndex(input, in p);
+    }
+
+    /// <summary>Computes a hash index for <paramref name="input"/> using precomputed <paramref name="parameters"/>.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <param name="parameters">The seed-derived hash parameters.</param>
+    /// <returns>The 64-bit hash index.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="parameters" /> is <see langword="null" />.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeIndex(ulong input, PolymurHashParams parameters)
+    {
+        if (parameters == null)
+            throw new ArgumentNullException(nameof(parameters));
+
+        return ComputeIndex(input, in parameters.Parameters);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong ComputeIndex(ulong input, ref Parameters p)
+    private static ulong ComputeIndex(ulong input, in Parameters p)
     {
         const int len = 8;
         ulong m0 = input & 0x00ffffffffffffffUL;
@@ -30,22 +62,51 @@ public static class Polymur2Hash64
         return polymur_mix(h) + p.s;
     }
 
+    /// <summary>Computes a 64-bit hash for <paramref name="data"/> using the default seed.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
+    /// <summary>Computes a 64-bit hash for <paramref name="data"/> using <paramref name="seed"/>.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed) => ComputeHash(data, seed, 0);
 
+    /// <summary>Computes a 64-bit hash for <paramref name="data"/> using a seed and tweak.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <param name="tweak">An additional value incorporated into the hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed, ulong tweak)
     {
         Parameters p = seed == 0 ? _params : CreateParams(seed);
-        return polymur_hash(data, data.Length, ref p, tweak);
+        return polymur_hash(data, data.Length, in p, tweak);
     }
 
-    private static Parameters CreateParams(ulong seed)
+    /// <summary>Computes a 64-bit hash for <paramref name="data"/> using precomputed <paramref name="parameters"/>.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="parameters">The seed-derived hash parameters.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="parameters" /> is <see langword="null" />.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, PolymurHashParams parameters) => ComputeHash(data, parameters, 0);
+
+    /// <summary>Computes a 64-bit hash for <paramref name="data"/> using precomputed parameters and a tweak.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="parameters">The seed-derived hash parameters.</param>
+    /// <param name="tweak">An additional value incorporated into the hash.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="parameters" /> is <see langword="null" />.</exception>
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, PolymurHashParams parameters, ulong tweak)
     {
-        Parameters p = new Parameters();
-        polymur_init_params_from_seed(ref p, seed);
-        return p;
+        if (parameters == null)
+            throw new ArgumentNullException(nameof(parameters));
+
+        return polymur_hash(data, data.Length, in parameters.Parameters, tweak);
     }
+
+    internal static Parameters CreateParams(ulong seed) => polymur_init_params_from_seed(seed);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint polymur_load_le_u32(ReadOnlySpan<byte> p, int offset) => Read32(p, offset);
@@ -75,9 +136,8 @@ public static class Polymur2Hash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static UInt128 polymur_add128(UInt128 a, UInt128 b)
     {
-        a.Low += b.Low;
-        a.High += b.High + (a.Low < b.Low ? 1UL : 0UL);
-        return a;
+        ulong low = a.Low + b.Low;
+        return new UInt128(low, a.High + b.High + (low < b.Low ? 1UL : 0UL));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,9 +152,9 @@ public static class Polymur2Hash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong polymur_mix(ulong x) => JM_xmxmx_Mx2_64(x);
 
-    private static void polymur_init_params(ref Parameters p, ulong k_seed, ulong s_seed)
+    private static Parameters polymur_init_params(ulong k_seed, ulong s_seed)
     {
-        p.s = s_seed ^ POLYMUR_ARBITRARY1; // People love to pass zero.
+        ulong s = s_seed ^ POLYMUR_ARBITRARY1; // People love to pass zero.
 
         // POLYMUR_POW37[i] = 37^(2^i) mod (2^61 - 1)
         // Could be replaced by a 512 byte LUT, costs ~400 byte overhead but 2x
@@ -130,28 +190,24 @@ public static class Polymur2Hash64
             ulong k = polymur_extrared611(polymur_red611(polymur_mul128(ka, kb)));
 
             // ~46.875% success rate. Bound on k^7 needed for efficient reduction.
-            p.k = polymur_extrared611(k);
-            p.k2 = polymur_extrared611(polymur_red611(polymur_mul128(p.k, p.k)));
-            p.k3 = polymur_red611(polymur_mul128(p.k, p.k2));
-            ulong k4 = polymur_red611(polymur_mul128(p.k2, p.k2));
-            p.k7 = polymur_extrared611(polymur_red611(polymur_mul128(p.k3, k4)));
+            ulong key = polymur_extrared611(k);
+            ulong k2 = polymur_extrared611(polymur_red611(polymur_mul128(key, key)));
+            ulong k3 = polymur_red611(polymur_mul128(key, k2));
+            ulong k4 = polymur_red611(polymur_mul128(k2, k2));
+            ulong k7 = polymur_extrared611(polymur_red611(polymur_mul128(k3, k4)));
 
-            if (p.k7 < (1UL << 60) - (1UL << 56))
-                break;
+            if (k7 < (1UL << 60) - (1UL << 56))
+                return new Parameters(key, k2, k3, k7, s);
 
             // Our key space is log2(totient(2^61 - 2) * (2^60-2^56)/2^61) ~= 57.4 bits.
         }
 
-        p.initialized = true;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void polymur_init_params_from_seed(ref Parameters p, ulong seed)
-    {
-        polymur_init_params(ref p, polymur_mix(seed + POLYMUR_ARBITRARY3), polymur_mix(seed + POLYMUR_ARBITRARY4));
-    }
+    private static Parameters polymur_init_params_from_seed(ulong seed) => polymur_init_params(polymur_mix(seed + POLYMUR_ARBITRARY3), polymur_mix(seed + POLYMUR_ARBITRARY4));
 
-    private static ulong polymur_hash_poly611(ReadOnlySpan<byte> buf, int len, ref Parameters p, ulong tweak)
+    private static ulong polymur_hash_poly611(ReadOnlySpan<byte> buf, int len, in Parameters p, ulong tweak)
     {
         ulong poly_acc = tweak;
         int bufPtr = 0;
@@ -223,20 +279,28 @@ public static class Polymur2Hash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong polymur_hash(ReadOnlySpan<byte> buf, int len, ref Parameters p, ulong tweak)
+    private static ulong polymur_hash(ReadOnlySpan<byte> buf, int len, in Parameters p, ulong tweak)
     {
-        ulong h = polymur_hash_poly611(buf, len, ref p, tweak);
+        ulong h = polymur_hash_poly611(buf, len, in p, tweak);
         return polymur_mix(h) + p.s;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct Parameters
+    internal readonly struct Parameters
     {
-        internal ulong k;
-        internal ulong k2;
-        internal ulong k3;
-        internal ulong k7;
-        internal ulong s;
-        internal bool initialized;
+        internal Parameters(ulong k, ulong k2, ulong k3, ulong k7, ulong s)
+        {
+            this.k = k;
+            this.k2 = k2;
+            this.k3 = k3;
+            this.k7 = k7;
+            this.s = s;
+        }
+
+        internal readonly ulong k;
+        internal readonly ulong k2;
+        internal readonly ulong k3;
+        internal readonly ulong k7;
+        internal readonly ulong s;
     }
 }

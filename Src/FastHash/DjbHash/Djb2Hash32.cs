@@ -3,8 +3,12 @@ using static Genbox.FastHash.DjbHash.DjbHashConstants;
 
 namespace Genbox.FastHash.DjbHash;
 
+/// <summary>Provides the 32-bit DJB2 hash algorithm.</summary>
 public static class Djb2Hash32
 {
+    /// <summary>Computes the hash of a 32-bit integer.</summary>
+    /// <param name="input">The integer to hash.</param>
+    /// <returns>The 32-bit DJB2 hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ComputeIndex(uint input)
     {
@@ -16,6 +20,9 @@ public static class Djb2Hash32
         return hash;
     }
 
+    /// <summary>Computes the hash of a byte sequence.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <returns>The 32-bit DJB2 hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
         uint hash = InitHash;

@@ -5,6 +5,26 @@ namespace Genbox.FastHash.Tests;
 
 public class GeneralTests
 {
+    [Fact]
+    public void UInt128HasValueEquality()
+    {
+        UInt128 value = new UInt128(1, 2);
+        UInt128 equalValue = new UInt128(1, 2);
+        UInt128 differentLow = new UInt128(3, 2);
+        UInt128 differentHigh = new UInt128(1, 4);
+
+        Assert.True(value.Equals(equalValue));
+        Assert.True(value.Equals((object)equalValue));
+        Assert.False(value.Equals((object?)null));
+        Assert.Equal(value.GetHashCode(), equalValue.GetHashCode());
+        Assert.True(value == equalValue);
+        Assert.True(value != differentLow);
+        Assert.True(value != differentHigh);
+        const BindingFlags fieldFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+        Assert.True(typeof(UInt128).GetField(nameof(UInt128.Low), fieldFlags)!.IsInitOnly);
+        Assert.True(typeof(UInt128).GetField(nameof(UInt128.High), fieldFlags)!.IsInitOnly);
+    }
+
     [Theory, MemberData(nameof(GetAllTypesOf))]
     public void CheckAllHaveCorrectName(Type type)
     {

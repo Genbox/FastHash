@@ -4,12 +4,21 @@ using static Genbox.FastHash.AbslHash.AbslHashShared;
 
 namespace Genbox.FastHash.AbslHash;
 
+/// <summary>Provides 64-bit Abseil hash functions.</summary>
 public static class AbslHash64
 {
+    /// <summary>Gets whether the SIMD implementation is available.</summary>
     public static bool IsSimdSupported => AbslHashShared.IsSimdSupported;
 
+    /// <summary>Computes the hash of data with the default seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
+    /// <summary>Computes the hash of data with a seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed) => CombineContiguous(seed, data);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

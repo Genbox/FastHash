@@ -7,13 +7,24 @@ using System.Runtime.Intrinsics.X86;
 
 namespace Genbox.FastHash.AesniHash;
 
+/// <summary>Provides 128-bit AES-NI hash functions.</summary>
 public static class AesniHash128
 {
+    /// <summary>Gets whether the required CPU intrinsics are available.</summary>
     public static bool IsSupported => Aes.IsSupported && Sse2.IsSupported && Ssse3.IsSupported;
 
+    /// <summary>Computes the hash of a 64-bit value with the default seed.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <returns>The 128-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UInt128 ComputeIndex(ulong input) => ComputeIndex(input, 0);
 
+    /// <summary>Computes the hash of a 64-bit value with a seed.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 128-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UInt128 ComputeIndex(ulong input, uint seed)
     {
@@ -24,8 +35,17 @@ public static class AesniHash128
         return Unsafe.As<Vector128<byte>, UInt128>(ref res);
     }
 
+    /// <summary>Computes the hash of data with the default seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <returns>The 128-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
+    /// <summary>Computes the hash of data with a seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 128-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         if (!IsSupported)

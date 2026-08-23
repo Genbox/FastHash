@@ -4,13 +4,24 @@ using System.Runtime.Intrinsics;
 
 namespace Genbox.FastHash.AesniHash;
 
+/// <summary>Provides 64-bit AES-NI hash functions.</summary>
 public static class AesniHash64
 {
+    /// <summary>Gets whether the required CPU intrinsics are available.</summary>
     public static bool IsSupported => AesniHash128.IsSupported;
 
+    /// <summary>Computes the hash of a 64-bit value with the default seed.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
 
+    /// <summary>Computes the hash of a 64-bit value with a seed.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, uint seed)
     {
@@ -21,8 +32,17 @@ public static class AesniHash64
         return Unsafe.As<Vector128<byte>, ulong>(ref res);
     }
 
+    /// <summary>Computes the hash of data with the default seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
+    /// <summary>Computes the hash of data with a seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         if (!IsSupported)

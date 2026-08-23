@@ -2,11 +2,15 @@ using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash;
 
+/// <summary>Provides non-cryptographic integer mixing functions.</summary>
 public static class MixFunctions
 {
     #region Others
 
     // https://github.com/backtrace-labs/umash/tree/master
+    /// <summary>Applies the Umash 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong PK_rlxrlx_Umash_64(ulong h) => h ^ RotateLeft(h, 8) ^ RotateLeft(h, 33);
 
@@ -26,6 +30,9 @@ public static class MixFunctions
 
     //Source: https://github.com/aappleby/smhasher/tree/master
 
+    /// <summary>Applies the MurmurHash3 32-bit finalizer.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint AA_xmxmx_Murmur_32(uint h)
     {
@@ -37,6 +44,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the MurmurHash3 64-bit finalizer.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong AA_xmxmx_Murmur_64(ulong h)
     {
@@ -55,6 +65,9 @@ public static class MixFunctions
     //https://jonkagstrom.com/bit-mixer-construction/index.html
     //https://jonkagstrom.com/mx3/mx3_rev2.html
 
+    /// <summary>Applies the Depth7 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong JM_mrm_Depth7_64(ulong h)
     {
@@ -65,6 +78,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Depth8 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong JM_mxm_Depth8_64(ulong h)
     {
@@ -75,6 +91,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Depth9 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong JM_xmx_Depth9_64(ulong h)
     {
@@ -85,6 +104,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Depth11 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong JM_mxma_Depth11_64(ulong h)
     {
@@ -96,6 +118,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Depth11 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong JM_mxmx_Depth11_64(ulong h)
     {
@@ -107,6 +132,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Depth12 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong JM_xmrx_Depth12_64(ulong h)
     {
@@ -117,6 +145,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Depth13 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong JM_mxmxm_Depth13_64(ulong h)
     {
@@ -129,6 +160,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Depth14 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong JM_mxrmx_Depth14_64(ulong h)
     {
@@ -140,6 +174,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Depth15 64-bit mixing function.</summary>
+    /// <param name="x">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong JM_mxmxmx_Depth15_64(ulong x)
     {
@@ -152,6 +189,9 @@ public static class MixFunctions
         return x;
     }
 
+    /// <summary>Applies the Mx2 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong JM_xmxmx_Mx2_64(ulong h)
     {
@@ -163,6 +203,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Mx3 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong JM_xmxmxmx_Mx3_64(ulong h)
     {
@@ -181,6 +224,9 @@ public static class MixFunctions
     #region Murmur variant - Pelle Evensen
 
     // https://mostlymangling.blogspot.com/2018/07/on-mixing-functions-in-fast-splittable.html#conclusion
+    /// <summary>Applies the Pelle Evensen 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong PE_rrxrrxmxmx_rrmxmx_64(ulong h)
     {
@@ -193,6 +239,9 @@ public static class MixFunctions
     }
 
     // https://mostlymangling.blogspot.com/2019/01/
+    /// <summary>Applies the Pelle Evensen 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong PE_rrxrrmrrxrrxmx_rrxmrrxmsx0_64(ulong h)
     {
@@ -205,6 +254,9 @@ public static class MixFunctions
     }
 
     // https://mostlymangling.blogspot.com/2019/12/?m=0
+    /// <summary>Applies the Moremur 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong PE_xmxmx_Moremur_64(ulong h)
     {
@@ -217,6 +269,9 @@ public static class MixFunctions
     }
 
     // http://mostlymangling.blogspot.com/2020/01/nasam-not-another-strange-acronym-mixer.html
+    /// <summary>Applies the Nasam 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong PE_rrxrrxmxxmxx_Nasam_64(ulong h)
     {
@@ -234,6 +289,9 @@ public static class MixFunctions
 
     // http://zimbry.blogspot.com/2011/09/better-bit-mixing-improving-on.html
 
+    /// <summary>Applies the Stafford Mix01 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix01_64(ulong h)
     {
@@ -245,6 +303,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Stafford Mix02 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix02_64(ulong h)
     {
@@ -256,6 +317,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Stafford Mix03 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix03_64(ulong h)
     {
@@ -267,6 +331,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Stafford Mix04 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix04_64(ulong h)
     {
@@ -278,6 +345,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Stafford Mix05 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix05_64(ulong h)
     {
@@ -289,6 +359,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Stafford Mix06 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix06_64(ulong h)
     {
@@ -300,6 +373,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Stafford Mix07 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix07_64(ulong h)
     {
@@ -311,6 +387,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Stafford Mix08 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix08_64(ulong h)
     {
@@ -322,6 +401,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Stafford Mix09 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix09_64(ulong h)
     {
@@ -333,6 +415,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Stafford Mix10 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix10_64(ulong h)
     {
@@ -344,6 +429,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Stafford Mix11 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix11_64(ulong h)
     {
@@ -355,6 +443,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Stafford Mix12 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix12_64(ulong h)
     {
@@ -367,6 +458,9 @@ public static class MixFunctions
     }
 
     // This is the variant used in SplitMix64
+    /// <summary>Applies the Stafford Mix13 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix13_64(ulong h)
     {
@@ -378,6 +472,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the Stafford Mix14 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DS_xmxmx_Mix14_64(ulong h)
     {
@@ -394,6 +491,9 @@ public static class MixFunctions
     #region Murmur variant - Others
 
     // https://github.com/ztanml/fast-hash
+    /// <summary>Applies the FastHash 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong EZ_xmx_FastHash_64(ulong h)
     {
@@ -404,6 +504,9 @@ public static class MixFunctions
     }
 
     // https://dl.acm.org/doi/pdf/10.1145/3485525
+    /// <summary>Applies the Lea 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DL_xmxmx_Lea_64(ulong h)
     {
@@ -416,6 +519,9 @@ public static class MixFunctions
     }
 
     // https://gist.github.com/degski/6e2069d6035ae04d5d6f64981c995ec2
+    /// <summary>Applies the Degski 32-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint DE_xmxmx_Degski_32(uint h)
     {
@@ -428,6 +534,9 @@ public static class MixFunctions
     }
 
     // https://gist.github.com/degski/6e2069d6035ae04d5d6f64981c995ec2
+    /// <summary>Applies the Degski 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong DE_xmxmx_Degski_64(ulong h)
     {
@@ -440,6 +549,9 @@ public static class MixFunctions
     }
 
     // https://github.com/skeeto/hash-prospector/issues/23
+    /// <summary>Applies the Fp64 32-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint FP_xsxxmx_Fp64_32(uint h)
     {
@@ -452,6 +564,9 @@ public static class MixFunctions
     }
 
     // https://github.com/skeeto/hash-prospector/issues/19
+    /// <summary>Applies the LowBias 32-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint CW_xmxmx_LowBias_32(uint h)
     {
@@ -464,6 +579,9 @@ public static class MixFunctions
     }
 
     // https://github.com/skeeto/hash-prospector/tree/master
+    /// <summary>Applies the Triple 32-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint CW_xmxmxmx_Triple_32(uint h)
     {
@@ -478,6 +596,9 @@ public static class MixFunctions
     }
 
     // https://github.com/google/cityhash
+    /// <summary>Applies the CityHash 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong GP_mxxmxxm_CityHash_64(ulong h)
     {
@@ -490,6 +611,9 @@ public static class MixFunctions
     }
 
     // https://github.com/tommyettinger/smhasher-with-junk/blob/master/smhasher3/hashes/ax.cpp#L97
+    /// <summary>Applies the AxMix 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong TE_rlxrlmrlxrlx_AxMix_64(ulong h)
     {
@@ -505,6 +629,9 @@ public static class MixFunctions
 
     // https://github.com/Cyan4973/xxHash/tree/dev
 
+    /// <summary>Applies the XXH 32-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint YC_xmxmx_XXH_32(uint h)
     {
@@ -516,6 +643,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the XXH 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong YC_xmxmx_XXH_64(ulong h)
     {
@@ -527,6 +657,9 @@ public static class MixFunctions
         return h;
     }
 
+    /// <summary>Applies the XXH3 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong YC_xmx_XXH3_64(ulong h)
     {
@@ -542,6 +675,9 @@ public static class MixFunctions
 
     //https://github.com/wangyi-fudan/wyhash
 
+    /// <summary>Applies the Wymix 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong WF_amx_Wymix_64(ulong h)
     {
@@ -551,6 +687,9 @@ public static class MixFunctions
     }
 
     //https://github.com/wangyi-fudan/wyhash
+    /// <summary>Applies the repeated Wymix 64-bit mixing function.</summary>
+    /// <param name="h">The value to mix.</param>
+    /// <returns>The mixed value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong WF_amxmx_Wymix_64(ulong h)
     {

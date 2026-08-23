@@ -5,12 +5,16 @@ using static Genbox.FastHash.FarmHash.FarmHashConstants;
 
 namespace Genbox.FastHash.FarmHash;
 
+/// <summary>Provides the 32-bit FarmHash algorithm.</summary>
 public static class FarmHash32
 {
     // farmhashmk is a seeded version of CityHash
     // farmhashcc is a non-seeded version of CityHash
     // The non-seeded version is a slightly modified version of CityHash for inputs larger than 24, and identical with CityHash on lengths less than 24.
 
+    /// <summary>Computes the hash of a 32-bit integer.</summary>
+    /// <param name="input">The integer to hash.</param>
+    /// <returns>The 32-bit FarmHash value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ComputeIndex(uint input)
     {
@@ -28,6 +32,10 @@ public static class FarmHash32
         return AA_xmxmx_Murmur_32(Mur(b, Mur(4, c)));
     }
 
+    /// <summary>Computes the hash of a byte sequence using a seed.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 32-bit FarmHash value.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         uint len = (uint)data.Length;
@@ -42,12 +50,23 @@ public static class FarmHash32
         return Mur(ComputeHash(data.Slice(24)) + seed, h);
     }
 
+    /// <summary>Computes the hash of a byte sequence.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <returns>The 32-bit FarmHash value.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
         uint len = (uint)data.Length;
 
         if (len <= 24)
-            return len <= 12 ? len <= 4 ? CityHash32.Hash32Len0to4(data, len) : CityHash32.Hash32Len5to12(data, len) : CityHash32.Hash32Len13to24(data, len);
+        {
+            if (len <= 4)
+                return CityHash32.Hash32Len0to4(data, len);
+
+            if (len <= 12)
+                return CityHash32.Hash32Len5to12(data, len);
+
+            return CityHash32.Hash32Len13to24(data, len);
+        }
 
         // len > 24
         uint h = len, g = C1 * len, f = g;

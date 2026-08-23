@@ -4,8 +4,12 @@ using static Genbox.FastHash.FarmHash.FarmHashConstants;
 
 namespace Genbox.FastHash.FarmHash;
 
+/// <summary>Provides the 64-bit FarmHash algorithm.</summary>
 public static class FarmHash64
 {
+    /// <summary>Computes the hash of a 64-bit integer.</summary>
+    /// <param name="input">The integer to hash.</param>
+    /// <returns>The 64-bit FarmHash value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
     {
@@ -17,6 +21,9 @@ public static class FarmHash64
         return HashLen16(c, d, mul);
     }
 
+    /// <summary>Computes the hash of a byte sequence.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <returns>The 64-bit FarmHash value.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data)
     {
         uint len = (uint)data.Length;
@@ -36,12 +43,21 @@ public static class FarmHash64
         return Hash64WithSeeds(data, len, 81, 0);
     }
 
+    /// <summary>Computes the hash of a byte sequence using a seed.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit FarmHash value.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         uint len = (uint)data.Length;
         return Hash64NaWithSeed(data, len, seed);
     }
 
+    /// <summary>Computes the hash of a byte sequence using two seeds.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="seed1">The first hash seed.</param>
+    /// <param name="seed2">The second hash seed.</param>
+    /// <returns>The 64-bit FarmHash value.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2) => Hash64NaWithSeeds(data, (uint)data.Length, seed1, seed2);
 
     private static ulong HashLen0to16(ReadOnlySpan<byte> data, uint length)
@@ -190,49 +206,40 @@ public static class FarmHash64
             x += a0 + a1;
             y += a2;
             z += a3;
-            v.Low += a4;
-            v.High += a5 + a1;
-            w.Low += a6;
-            w.High += a7;
+            v = new UInt128(v.Low + a4, v.High + a5 + a1);
+            w = new UInt128(w.Low + a6, w.High + a7);
 
             x = RotateRight(x, 26);
             x *= 9;
             y = RotateRight(y, 29);
             z *= mul;
-            v.Low = RotateRight(v.Low, 33);
-            v.High = RotateRight(v.High, 30);
-            w.Low ^= x;
-            w.Low *= 9;
+            v = new UInt128(RotateRight(v.Low, 33), RotateRight(v.High, 30));
+            w = new UInt128((w.Low ^ x) * 9, w.High);
             z = RotateRight(z, 32);
             z += w.High;
-            w.High += z;
+            w = new UInt128(w.Low, w.High + z);
             z *= 9;
             Swap(ref u, ref y);
 
             z += a0 + a6;
-            v.Low += a2;
-            v.High += a3;
-            w.Low += a4;
-            w.High += a5 + a6;
+            v = new UInt128(v.Low + a2, v.High + a3);
+            w = new UInt128(w.Low + a4, w.High + a5 + a6);
             x += a1;
             y += a7;
 
             y += v.Low;
-            v.Low += x - y;
-            v.High += w.Low;
-            w.Low += v.High;
-            w.High += x - y;
+            v = new UInt128(v.Low + x - y, v.High + w.Low);
+            w = new UInt128(w.Low + v.High, w.High + x - y);
             x += w.High;
-            w.High = RotateRight(w.High, 34);
+            w = new UInt128(w.Low, RotateRight(w.High, 34));
             Swap(ref u, ref z);
             index += 64;
         } while (index != end);
         // Make s point to the last 64 bytes of input.
         index = last64;
         u *= 9;
-        v.High = RotateRight(v.High, 28);
-        v.Low = RotateRight(v.Low, 20);
-        w.Low += (len - 1) & 63;
+        v = new UInt128(RotateRight(v.Low, 20), RotateRight(v.High, 28));
+        w = new UInt128(w.Low + ((len - 1) & 63), w.High);
         u += y;
         y += u;
         x = RotateRight((y - x) + v.Low + Read64(s, index + 8), 37) * mul;
@@ -252,7 +259,12 @@ public static class FarmHash64
     private static ulong Hash64Na(ReadOnlySpan<byte> s, uint len)
     {
         if (len <= 32)
-            return len <= 16 ? HashLen0to16(s, len) : HashLen17to32(s, len);
+        {
+            if (len <= 16)
+                return HashLen0to16(s, len);
+
+            return HashLen17to32(s, len);
+        }
 
         if (len <= 64)
             return HashLen33to64Na(s, len);
@@ -279,8 +291,8 @@ public static class FarmHash64
         ulong x = seed;
         ulong y = unchecked(seed * K1) + 113;
         ulong z = ShiftMix((y * K2) + 113) * K2;
-        UInt128 v = new UInt128();
-        UInt128 w = new UInt128();
+        UInt128 v = new UInt128(0, 0);
+        UInt128 w = new UInt128(0, 0);
         x = (x * K2) + Read64(s);
 
         // Set end so that after the loop we have 1 to 64 bytes left to process.
@@ -303,9 +315,9 @@ public static class FarmHash64
         ulong mul = K1 + ((z & 0xff) << 1);
         // Make s point to the last 64 bytes of input.
         index = last64;
-        w.Low += (len - 1) & 63;
-        v.Low += w.Low;
-        w.Low += v.Low;
+        w = new UInt128(w.Low + ((len - 1) & 63), w.High);
+        v = new UInt128(v.Low + w.Low, v.High);
+        w = new UInt128(w.Low + v.Low, w.High);
         x = RotateRight(x + y + v.Low + Read64(s, index + 8), 37) * mul;
         y = RotateRight(y + v.High + Read64(s, index + 48), 42) * mul;
         x ^= w.High * 9;

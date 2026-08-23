@@ -4,16 +4,41 @@ using static Genbox.FastHash.CityHash.CityHashConstants;
 
 namespace Genbox.FastHash.CityHash;
 
+/// <summary>Provides pointer-based 32-bit CityHash functions.</summary>
 public static class CityHash32Unsafe
 {
-    public static unsafe uint ComputeHash(byte* data, int length) => ComputeHash(data, length, 0);
+    /// <summary>Computes the hash of a memory region with the default seed.</summary>
+    /// <param name="data">A pointer to the data to hash.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <returns>The 32-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    public static unsafe uint ComputeHash(byte* data, int length)
+    {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
 
+        return ComputeHash(data, length, 0);
+    }
+
+    /// <summary>Computes the hash of a memory region with a seed.</summary>
+    /// <param name="data">A pointer to the data to hash.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 32-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
     public static unsafe uint ComputeHash(byte* data, int length, uint seed)
     {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
         uint len = (uint)length;
 
+        if (len <= 4)
+            return Hash32Len0to4(data, len, seed);
+        if (len <= 12)
+            return Hash32Len5to12(data, len, seed);
         if (len <= 24)
-            return len <= 12 ? len <= 4 ? Hash32Len0to4(data, len, seed) : Hash32Len5to12(data, len, seed) : Hash32Len13to24(data, len, seed);
+            return Hash32Len13to24(data, len, seed);
 
         // len > 24
         uint h = len + seed, g = C1 * h, f = g;

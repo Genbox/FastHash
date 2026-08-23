@@ -4,11 +4,19 @@ using System.Runtime.Intrinsics;
 
 namespace Genbox.FastHash.GxHash;
 
+/// <summary>Provides the 64-bit GxHash2 hash algorithm.</summary>
 public static class Gx2Hash64
 {
+    /// <summary>Computes the hash of a 64-bit value using the default seed.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
 
+    /// <summary>Computes the hash of a 64-bit value.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, long seed)
     {
@@ -18,9 +26,16 @@ public static class Gx2Hash64
         return Unsafe.As<Vector128<byte>, ulong>(ref hash);
     }
 
+    /// <summary>Computes the hash of a byte sequence using the default seed.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
+    /// <summary>Computes the hash of a byte sequence.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeHash(ReadOnlySpan<byte> data, long seed)
     {

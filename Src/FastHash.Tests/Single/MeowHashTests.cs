@@ -41,6 +41,32 @@ public class MeowHashTests
         }
     }
 
+    [Fact]
+    public unsafe void TestRemainderAndBlockBoundaries()
+    {
+        if (!MeowHash128.IsSupported)
+            return;
+
+        byte[] data = CreateSequence256();
+        for (int length = 0; length <= 33; length++)
+        {
+            fixed (byte* ptr = data)
+            {
+                UInt128 unsafeHash = MeowHash128Unsafe.ComputeHash(ptr, length);
+                Assert.Equal(unsafeHash, MeowHash128.ComputeHash(data.AsSpan(0, length)));
+            }
+        }
+
+        foreach (int length in new[] { 255, 256 })
+        {
+            fixed (byte* ptr = data)
+            {
+                UInt128 unsafeHash = MeowHash128Unsafe.ComputeHash(ptr, length);
+                Assert.Equal(unsafeHash, MeowHash128.ComputeHash(data.AsSpan(0, length)));
+            }
+        }
+    }
+
     private static UInt128 ParseMeowHash(string value)
     {
         string[] parts = value.Split('-');

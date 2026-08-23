@@ -4,11 +4,21 @@ using static Genbox.FastHash.RapidHash.RapidHashShared;
 
 namespace Genbox.FastHash.RapidHash;
 
+/// <summary>Provides the 64-bit RapidHash v3 algorithm.</summary>
 public static class Rapid3Hash64
 {
+    /// <summary>Computes a hash index for <paramref name="input"/>.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash index.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed = DefaultIndexSeed) => RapidHashShared.ComputeIndex(input, seed);
 
+    /// <summary>Computes a 64-bit hash for <paramref name="data"/>.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <param name="secret">An optional array containing at least eight secret values.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0, ulong[]? secret = null)
     {
         secret ??= DefaultSecret;

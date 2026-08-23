@@ -3,11 +3,17 @@ using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
 
 namespace Genbox.FastHash.MurmurHash;
 
+/// <summary>Provides the 128-bit MurmurHash3 hash algorithm.</summary>
 public static class Murmur3Hash128
 {
+    /// <summary>Computes the hash of a 64-bit value using a zero seed.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <returns>The 128-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UInt128 ComputeIndex(ulong input) => ComputeIndex(input, 0);
 
+    /// <summary>Computes the hash of a 64-bit value.</summary>
+    /// <param name="input">The value to hash.</param><param name="seed">The hash seed.</param><returns>The 128-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UInt128 ComputeIndex(ulong input, uint seed)
     {
@@ -35,8 +41,12 @@ public static class Murmur3Hash128
         return new UInt128(h1, h2);
     }
 
+    /// <summary>Computes the hash of a byte sequence using a zero seed.</summary>
+    /// <param name="data">The bytes to hash.</param><returns>The 128-bit hash.</returns>
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
+    /// <summary>Computes the hash of a byte sequence.</summary>
+    /// <param name="data">The bytes to hash.</param><param name="seed">The hash seed.</param><returns>The 128-bit hash.</returns>
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         uint length = (uint)data.Length;

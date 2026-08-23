@@ -3,11 +3,19 @@ using static Genbox.FastHash.WyHash.WyHashConstants;
 
 namespace Genbox.FastHash.WyHash;
 
+/// <summary>Computes 64-bit wyhash version 4 hashes.</summary>
 public static class Wy4Hash64
 {
+    /// <summary>Computes a hash for a 64-bit index using a zero seed.</summary>
+    /// <param name="input">The index to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
 
+    /// <summary>Computes a hash for a 64-bit index.</summary>
+    /// <param name="input">The index to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed)
     {
@@ -16,8 +24,15 @@ public static class Wy4Hash64
         return Wymum(Wymum(a, b), 8UL ^ Wyp4);
     }
 
+    /// <summary>Computes a hash for the supplied data using a zero seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
+    /// <summary>Computes a hash for the supplied data.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         int length = data.Length;

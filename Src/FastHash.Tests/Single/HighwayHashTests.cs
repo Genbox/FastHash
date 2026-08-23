@@ -60,14 +60,18 @@ public class HighwayHashTests
         TestHash64(0x53c516cce478cad7ul, data, 33, _testKeys2);
     }
 
-    private unsafe void TestHash64(ulong expected, byte[] data, int size, ulong[] key)
+    private static unsafe void TestHash64(ulong expected, byte[] data, int size, ulong[] key)
     {
         fixed (byte* ptr = data)
         {
             ulong hash = HighwayHash64Unsafe.ComputeHash(ptr, size, key[0], key[1], key[2], key[3]);
             Assert.Equal(expected, hash);
+
+            hash = HighwayHash64Unsafe.ComputeHash(ptr, size, key);
+            Assert.Equal(expected, hash);
         }
 
         Assert.Equal(expected, HighwayHash64.ComputeHash(data.AsSpan(0, size), key[0], key[1], key[2], key[3]));
+        Assert.Equal(expected, HighwayHash64.ComputeHash(data.AsSpan(0, size), key));
     }
 }

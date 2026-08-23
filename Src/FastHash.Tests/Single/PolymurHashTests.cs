@@ -152,4 +152,25 @@ public class PolymurHashTests
                 Assert.Fail($"Test at index {i} failed with string {s}\nExpected {expected:X}, got {h:X}");
         }
     }
+
+    [Fact]
+    public void InitializedParametersMatchSeededOverloads()
+    {
+        const ulong tweak = 0xabcdef0123456789UL;
+
+        foreach (ulong seed in new ulong[] { 0UL, 0xfedbca9876543210UL })
+        {
+            PolymurHashParams parameters = new PolymurHashParams(seed);
+
+            for (int i = 0; i < POLYMUR_TEST_STRINGS.Length; i++)
+            {
+                ReadOnlySpan<byte> data = Encoding.ASCII.GetBytes(POLYMUR_TEST_STRINGS[i]);
+                Assert.Equal(Polymur2Hash64.ComputeHash(data, seed), Polymur2Hash64.ComputeHash(data, parameters));
+                Assert.Equal(Polymur2Hash64.ComputeHash(data, seed, tweak), Polymur2Hash64.ComputeHash(data, parameters, tweak));
+            }
+
+            const ulong input = 0x0123456789abcdefUL;
+            Assert.Equal(Polymur2Hash64.ComputeIndex(input, seed), Polymur2Hash64.ComputeIndex(input, parameters));
+        }
+    }
 }

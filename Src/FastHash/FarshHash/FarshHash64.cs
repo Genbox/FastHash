@@ -3,11 +3,19 @@ using static Genbox.FastHash.FarshHash.FarshHashConstants;
 
 namespace Genbox.FastHash.FarshHash;
 
+/// <summary>Provides the 64-bit Farsh hash algorithm.</summary>
 public static class FarshHash64
 {
+    /// <summary>Computes the hash of a 64-bit integer using a zero seed.</summary>
+    /// <param name="input">The integer to hash.</param>
+    /// <returns>The 64-bit Farsh hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
 
+    /// <summary>Computes the hash of a 64-bit integer.</summary>
+    /// <param name="input">The integer to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit Farsh hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed)
     {
@@ -22,8 +30,15 @@ public static class FarshHash64
         return low | ((ulong)high << 32);
     }
 
+    /// <summary>Computes the hash of a byte sequence using a zero seed.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <returns>The 64-bit Farsh hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
+    /// <summary>Computes the hash of a byte sequence.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit Farsh hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         ulong lowSum = seed;

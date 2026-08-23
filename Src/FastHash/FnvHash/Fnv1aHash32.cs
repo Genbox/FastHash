@@ -3,9 +3,12 @@ using static Genbox.FastHash.FnvHash.FnvHashConstants;
 
 namespace Genbox.FastHash.FnvHash;
 
-/// <summary>Fowler–Noll–Vo hash implementation</summary>
+/// <summary>Provides the 32-bit FNV-1a hash algorithm.</summary>
 public static class Fnv1aHash32
 {
+    /// <summary>Computes the hash of a 32-bit integer.</summary>
+    /// <param name="input">The integer to hash.</param>
+    /// <returns>The 32-bit FNV-1a hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ComputeIndex(uint input)
     {
@@ -17,6 +20,9 @@ public static class Fnv1aHash32
         return hash;
     }
 
+    /// <summary>Computes the hash of a byte sequence.</summary>
+    /// <param name="data">The bytes to hash.</param>
+    /// <returns>The 32-bit FNV-1a hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
         uint hash = FNV1_32_INIT;

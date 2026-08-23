@@ -2,8 +2,12 @@ using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.HighwayHash;
 
+/// <summary>Provides the 64-bit HighwayHash algorithm.</summary>
 public static class HighwayHash64
 {
+    /// <summary>Computes the hash of a 64-bit value using the default key.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
     {
@@ -13,6 +17,8 @@ public static class HighwayHash64
         return Finalize64(state);
     }
 
+    /// <summary>Computes the hash of a 64-bit value.</summary>
+    /// <param name="input">The value to hash.</param><param name="seed1">The first key word.</param><param name="seed2">The second key word.</param><param name="seed3">The third key word.</param><param name="seed4">The fourth key word.</param><returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
     {
@@ -22,15 +28,21 @@ public static class HighwayHash64
         return Finalize64(state);
     }
 
+    /// <summary>Computes the hash of a 64-bit value.</summary>
+    /// <param name="input">The value to hash.</param><param name="keys">The four key words.</param><returns>The 64-bit hash.</returns><exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception><exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong[] keys)
     {
+        ValidateKeys(keys);
+
         HighwayHashState state = new HighwayHashState();
         Reset(keys, ref state);
         UpdateIndex(input, ref state);
         return Finalize64(state);
     }
 
+    /// <summary>Computes the hash of a byte sequence using the default key.</summary>
+    /// <param name="data">The bytes to hash.</param><returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data)
     {
         HighwayHashState state = new HighwayHashState();
@@ -38,6 +50,8 @@ public static class HighwayHash64
         return Finalize64(state);
     }
 
+    /// <summary>Computes the hash of a byte sequence.</summary>
+    /// <param name="data">The bytes to hash.</param><param name="seed1">The first key word.</param><param name="seed2">The second key word.</param><param name="seed3">The third key word.</param><param name="seed4">The fourth key word.</param><returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
     {
         HighwayHashState state = new HighwayHashState();
@@ -45,6 +59,8 @@ public static class HighwayHash64
         return Finalize64(state);
     }
 
+    /// <summary>Computes the hash of a byte sequence.</summary>
+    /// <param name="data">The bytes to hash.</param><param name="keys">The four key words.</param><returns>The 64-bit hash.</returns><exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception><exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong[] keys)
     {
         HighwayHashState state = new HighwayHashState();
@@ -52,8 +68,19 @@ public static class HighwayHash64
         return Finalize64(state);
     }
 
+    internal static void ValidateKeys(ulong[]? keys)
+    {
+        if (keys == null)
+            throw new ArgumentNullException(nameof(keys));
+
+        if (keys.Length < 4)
+            throw new ArgumentException("HighwayHash keys must contain at least four 64-bit words.", nameof(keys));
+    }
+
     private static void Reset(ulong[] key, ref HighwayHashState state)
     {
+        ValidateKeys(key);
+
         state.mul0_0 = 0xdbe6d5d5fe4cce2ful;
         state.mul0_1 = 0xa4093822299f31d0ul;
         state.mul0_2 = 0x13198a2e03707344ul;
@@ -198,6 +225,7 @@ public static class HighwayHash64
         int sizeMod4 = sizeMod32 & 3;
         int remainderOffset = sizeMod32 & ~3;
         Span<byte> packet = stackalloc byte[32];
+        packet.Clear();
 
         state.v0_0 += ((ulong)sizeMod32 << 32) + (uint)sizeMod32;
         state.v0_1 += ((ulong)sizeMod32 << 32) + (uint)sizeMod32;

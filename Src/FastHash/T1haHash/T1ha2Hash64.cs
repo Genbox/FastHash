@@ -4,11 +4,19 @@ using static Genbox.FastHash.T1haHash.T1haHashShared;
 
 namespace Genbox.FastHash.T1haHash;
 
+/// <summary>Computes 64-bit t1ha2 hashes.</summary>
 public static class T1ha2Hash64
 {
+    /// <summary>Computes a hash for a 64-bit index using a zero seed.</summary>
+    /// <param name="input">The index to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
 
+    /// <summary>Computes a hash for a 64-bit index.</summary>
+    /// <param name="input">The index to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed)
     {
@@ -18,8 +26,15 @@ public static class T1ha2Hash64
         return Final64(a, b);
     }
 
+    /// <summary>Computes a hash for the supplied data using a zero seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
+    /// <summary>Computes a hash for the supplied data.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         int length = data.Length;

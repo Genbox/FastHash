@@ -4,8 +4,12 @@ using static Genbox.FastHash.XxHash.XxHashShared;
 
 namespace Genbox.FastHash.XxHash;
 
+/// <summary>Computes 64-bit XXH3 hashes.</summary>
 public static class Xx3Hash64
 {
+    /// <summary>Computes a hash for a 64-bit index using a zero seed.</summary>
+    /// <param name="input">The index to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
     {
@@ -16,6 +20,10 @@ public static class Xx3Hash64
         return XXH3_rrmxmx(keyed, 8);
     }
 
+    /// <summary>Computes a hash for a 64-bit index.</summary>
+    /// <param name="input">The index to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed)
     {
@@ -29,8 +37,15 @@ public static class Xx3Hash64
         return XXH3_rrmxmx(keyed, 8);
     }
 
+    /// <summary>Computes a hash for the supplied data using a zero seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
+    /// <summary>Computes a hash for the supplied data.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         int length = data.Length;
@@ -45,22 +60,22 @@ public static class Xx3Hash64
         }
 #endif
 
-        return XXH3_64bits_internal(data, length, seed, kSecret, SECRET_DEFAULT_SIZE, XXH3_hashLong_64b_withSeed);
+        return XXH3_64bits_internal(data, length, seed);
     }
 
-    private static ulong XXH3_hashLong_64b_withSeed_internal(ReadOnlySpan<byte> input, int len, ulong seed, XXH3_f_accumulate_512 f_acc512, XXH3_f_scrambleAcc f_scramble, XXH3_f_initCustomSecret f_initSec)
+    private static ulong XXH3_hashLong_64b_withSeed_internal(ReadOnlySpan<byte> input, int len, ulong seed)
     {
         if (seed == 0)
-            return XXH3_hashLong_64b_internal(input, len, kSecret, SECRET_DEFAULT_SIZE, f_acc512, f_scramble);
+            return XXH3_hashLong_64b_internal(input, len, kSecret, SECRET_DEFAULT_SIZE);
 
         Span<byte> secret = stackalloc byte[SECRET_DEFAULT_SIZE];
-        f_initSec(secret, seed);
-        return XXH3_hashLong_64b_internal(input, len, secret, SECRET_DEFAULT_SIZE, f_acc512, f_scramble);
+        XXH3_initCustomSecret_scalar(secret, seed);
+        return XXH3_hashLong_64b_internal(input, len, secret, SECRET_DEFAULT_SIZE);
     }
 
-    private static ulong XXH3_hashLong_64b_withSeed(ReadOnlySpan<byte> input, int len, ulong seed, ReadOnlySpan<byte> secret, int secretLen) => XXH3_hashLong_64b_withSeed_internal(input, len, seed, XXH3_accumulate_512_scalar, XXH3_scrambleAcc_scalar, XXH3_initCustomSecret_scalar);
+    private static ulong XXH3_hashLong_64b_withSeed(ReadOnlySpan<byte> input, int len, ulong seed) => XXH3_hashLong_64b_withSeed_internal(input, len, seed);
 
-    private static ulong XXH3_hashLong_64b_internal(ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize, XXH3_f_accumulate_512 f_acc512, XXH3_f_scrambleAcc f_scramble)
+    private static ulong XXH3_hashLong_64b_internal(ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize)
     {
         Span<ulong> acc = stackalloc ulong[ACC_NB];
         acc[0] = INIT_ACC[0];
@@ -72,23 +87,23 @@ public static class Xx3Hash64
         acc[6] = INIT_ACC[6];
         acc[7] = INIT_ACC[7];
 
-        XXH3_hashLong_internal_loop(acc, input, len, secret, secretSize, f_acc512, f_scramble);
+        XXH3_hashLong_internal_loop(acc, input, len, secret, secretSize);
         ulong res = XXH3_mergeAccs(acc, secret, SECRET_MERGEACCS_START, (ulong)len * PRIME64_1);
         return res;
     }
 
-    private static ulong XXH3_64bits_internal(ReadOnlySpan<byte> input, int len, ulong seed64, ReadOnlySpan<byte> secret, int secretLen, XXH3_hashLong64_f f_hashLong)
+    private static ulong XXH3_64bits_internal(ReadOnlySpan<byte> input, int len, ulong seed64)
     {
         // XXH_ASSERT(secretLen >= XXH3_SECRET_SIZE_MIN);
 
         if (len <= 16)
-            return XXH3_len_0to16_64b(input, len, secret, seed64);
+            return XXH3_len_0to16_64b(input, len, kSecret, seed64);
         if (len <= 128)
-            return XXH3_len_17to128_64b(input, len, secret, seed64);
+            return XXH3_len_17to128_64b(input, len, kSecret, seed64);
         if (len <= MIDSIZE_MAX)
-            return XXH3_len_129to240_64b(input, len, secret, seed64);
+            return XXH3_len_129to240_64b(input, len, kSecret, seed64);
 
-        return f_hashLong(input, len, seed64, secret, secretLen);
+        return XXH3_hashLong_64b_withSeed(input, len, seed64);
     }
 
     private static ulong XXH3_len_0to16_64b(ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, ulong seed)

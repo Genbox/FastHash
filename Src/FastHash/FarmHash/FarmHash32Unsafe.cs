@@ -4,14 +4,24 @@ using static Genbox.FastHash.FarmHash.FarmHashConstants;
 
 namespace Genbox.FastHash.FarmHash;
 
+/// <summary>Provides unsafe access to the 32-bit FarmHash algorithm.</summary>
 public static class FarmHash32Unsafe
 {
     // farmhashmk is a seeded version of CityHash
     // farmhashcc is a non-seeded version of CityHash
     // The non-seeded version is a slightly modified version of CityHash for inputs larger than 24, and identical with CityHash on lengths less than 24.
 
+    /// <summary>Computes the hash of bytes at an unmanaged address using a seed.</summary>
+    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 32-bit FarmHash value.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
     public static unsafe uint ComputeHash(byte* data, int length, uint seed)
     {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
         uint len = (uint)length;
 
         if (len <= 24)
@@ -24,12 +34,28 @@ public static class FarmHash32Unsafe
         return Mur(ComputeHash(data + 24, length - 24) + seed, h);
     }
 
+    /// <summary>Computes the hash of bytes at an unmanaged address.</summary>
+    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <returns>The 32-bit FarmHash value.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
     public static unsafe uint ComputeHash(byte* data, int length)
     {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
         uint len = (uint)length;
 
         if (len <= 24)
-            return len <= 12 ? len <= 4 ? CityHash32Unsafe.Hash32Len0to4(data, len) : CityHash32Unsafe.Hash32Len5to12(data, len) : CityHash32Unsafe.Hash32Len13to24(data, len);
+        {
+            if (len <= 4)
+                return CityHash32Unsafe.Hash32Len0to4(data, len);
+
+            if (len <= 12)
+                return CityHash32Unsafe.Hash32Len5to12(data, len);
+
+            return CityHash32Unsafe.Hash32Len13to24(data, len);
+        }
 
         // len > 24
         uint h = len, g = C1 * len, f = g;

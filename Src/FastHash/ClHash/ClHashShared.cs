@@ -10,28 +10,49 @@ internal static class ClHashShared
 {
     internal static ulong[] CreateKey(ulong seed1, ulong seed2)
     {
+        ValidateSeeds(seed1, seed2);
+
         ulong[] key = new ulong[Random64BitWordsNeeded];
-        CreateKey(seed1, seed2, key);
+        CreateKeyCore(seed1, seed2, key);
         return key;
     }
 
     internal static void CreateKey(ulong seed1, ulong seed2, Span<ulong> key)
     {
+        ValidateSeeds(seed1, seed2);
+
         if (key.Length != Random64BitWordsNeeded)
             throw new ArgumentException($"CLHash keys must contain exactly {Random64BitWordsNeeded} 64-bit words.", nameof(key));
 
+        CreateKeyCore(seed1, seed2, key);
+    }
+
+    private static void ValidateSeeds(ulong seed1, ulong seed2)
+    {
+        if (seed1 == 0)
+            throw new ArgumentOutOfRangeException(nameof(seed1), "CLHash seeds must be non-zero.");
+
+        if (seed2 == 0)
+            throw new ArgumentOutOfRangeException(nameof(seed2), "CLHash seeds must be non-zero.");
+    }
+
+    private static void CreateKeyCore(ulong seed1, ulong seed2, Span<ulong> key)
+    {
         ulong part1 = seed1;
         ulong part2 = seed2;
 
         for (int i = 0; i < key.Length; i++)
             key[i] = XorShift128Plus(ref part1, ref part2);
 
-        while (key[128] == 0 && key[129] == 1)
+        while (IsInvalidPolynomial(key[WordsPerBlock], key[WordsPerBlock + 1]))
         {
-            key[128] = XorShift128Plus(ref part1, ref part2);
-            key[129] = XorShift128Plus(ref part1, ref part2);
+            key[WordsPerBlock] = XorShift128Plus(ref part1, ref part2);
+            key[WordsPerBlock + 1] = XorShift128Plus(ref part1, ref part2);
         }
     }
+
+    internal static bool IsInvalidPolynomial(ulong low, ulong high) =>
+        low == 0 && ((high & 0x3fff_ffff_ffff_ffffUL) == 0 || high == 1);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong XorShift128Plus(ref ulong part1, ref ulong part2)

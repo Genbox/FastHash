@@ -7,20 +7,40 @@ using static Genbox.FastHash.ClHash.ClHashShared;
 
 namespace Genbox.FastHash.ClHash;
 
+/// <summary>Provides pointer-based 64-bit CLHash functions.</summary>
 public static class ClHash64Unsafe
 {
     private static readonly ulong[] _defaultKey = CreateKey(DefaultSeed1, DefaultSeed2);
 
+    /// <summary>Gets whether the required CPU intrinsics are available.</summary>
     public static bool IsSupported => Pclmulqdq.IsSupported && Sse2.IsSupported && Ssse3.IsSupported;
 
+    /// <summary>Computes the hash of a memory region with the default key.</summary>
+    /// <param name="data">A pointer to the data to hash.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
+
         fixed (ulong* key = _defaultKey)
             return ComputeHash(data, length, key);
     }
 
+    /// <summary>Computes the hash of a memory region using a key derived from two seeds.</summary>
+    /// <param name="data">A pointer to the data to hash.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <param name="seed1">The first key seed.</param>
+    /// <param name="seed2">The second key seed.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1, ulong seed2)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
+
         Span<ulong> key = stackalloc ulong[Random64BitWordsNeeded];
         CreateKey(seed1, seed2, key);
 
@@ -28,20 +48,38 @@ public static class ClHash64Unsafe
             return ComputeHash(data, length, keyPtr);
     }
 
+    /// <summary>Computes the hash of a memory region using a CLHash key.</summary>
+    /// <param name="data">A pointer to the data to hash.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <param name="key">The CLHash key.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentException"><paramref name="key"/> is invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ReadOnlySpan<ulong> key)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
         ClHash64.ValidateKey(key);
 
         fixed (ulong* keyPtr = key)
             return ComputeHash(data, length, keyPtr);
     }
 
+    /// <summary>Computes the hash of a memory region using a CLHash key pointer.</summary>
+    /// <param name="data">A pointer to the data to hash.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <param name="key">A pointer to the CLHash key.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong* key)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
+
         if (!IsSupported)
             throw new PlatformNotSupportedException("CLHash requires PCLMULQDQ, SSE2, and SSSE3 intrinsics.");
 
-        ArgumentOutOfRangeException.ThrowIfNegative(length);
+        ClHash64.ValidatePolynomial(key[WordsPerBlock], key[WordsPerBlock + 1], nameof(key));
 
         return ComputeHashCore(data, length, key);
     }

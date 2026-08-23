@@ -2,24 +2,48 @@ using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.HighwayHash;
 
+/// <summary>Provides pointer-based access to the 64-bit HighwayHash algorithm.</summary>
 public static class HighwayHash64Unsafe
 {
+    /// <summary>Computes the hash of an unmanaged byte sequence.</summary>
+    /// <param name="data">A pointer to at least <paramref name="size" /> bytes, or any pointer when <paramref name="size" /> is zero.</param>
+    /// <param name="size">The non-negative number of bytes to hash.</param>
+    /// <param name="seed1">The first key word.</param>
+    /// <param name="seed2">The second key word.</param>
+    /// <param name="seed3">The third key word.</param>
+    /// <param name="seed4">The fourth key word.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="size" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int size, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
     {
+        if (size < 0)
+            throw new ArgumentOutOfRangeException(nameof(size));
+
         HighwayHashState state = new HighwayHashState();
         ProcessAll(data, (uint)size, seed1, seed2, seed3, seed4, ref state);
         return HighwayHashFinalize64(state);
     }
 
+    /// <summary>Computes the hash of an unmanaged byte sequence using the default key.</summary>
+    /// <param name="data">A pointer to at least <paramref name="size" /> bytes.</param><param name="size">The non-negative number of bytes to hash.</param><returns>The 64-bit hash.</returns><exception cref="ArgumentOutOfRangeException"><paramref name="size" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int size)
     {
+        if (size < 0)
+            throw new ArgumentOutOfRangeException(nameof(size));
+
         HighwayHashState state = new HighwayHashState();
         ProcessAll(data, (uint)size, HighwayHashConstants.DefaultKey0, HighwayHashConstants.DefaultKey1, HighwayHashConstants.DefaultKey2, HighwayHashConstants.DefaultKey3, ref state);
         return HighwayHashFinalize64(state);
     }
 
+    /// <summary>Computes the hash of an unmanaged byte sequence.</summary>
+    /// <param name="data">A pointer to at least <paramref name="size" /> bytes.</param><param name="size">The non-negative number of bytes to hash.</param><param name="keys">The four key words.</param><returns>The 64-bit hash.</returns><exception cref="ArgumentOutOfRangeException"><paramref name="size" /> is negative.</exception><exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception><exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
     public static unsafe ulong ComputeHash(byte* data, int size, ulong[] keys)
     {
+        if (size < 0)
+            throw new ArgumentOutOfRangeException(nameof(size));
+        HighwayHash64.ValidateKeys(keys);
+
         HighwayHashState state = new HighwayHashState();
         ProcessAll(data, (uint)size, keys, ref state);
         return HighwayHashFinalize64(state);

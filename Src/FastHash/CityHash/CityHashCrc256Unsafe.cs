@@ -6,12 +6,23 @@ using static Genbox.FastHash.CityHash.CityHashShared;
 
 namespace Genbox.FastHash.CityHash;
 
+/// <summary>Provides pointer-based hardware-accelerated 256-bit CityHash CRC functions.</summary>
 public static class CityHashCrc256Unsafe
 {
+    /// <summary>Gets whether the required CPU intrinsics are available.</summary>
     public static bool IsSupported => Sse42.X64.IsSupported;
 
+    /// <summary>Computes the hash of a memory region into a four-word result.</summary>
+    /// <param name="data">A pointer to the data to hash.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <param name="result">A pointer to at least four destination words.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe void ComputeHash(byte* data, int length, ulong* result)
     {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
         if (!IsSupported)
             throw new PlatformNotSupportedException("CityHashCrc requires SSE4.2 x64 intrinsics.");
 

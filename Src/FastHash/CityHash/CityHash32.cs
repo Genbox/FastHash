@@ -4,8 +4,12 @@ using static Genbox.FastHash.CityHash.CityHashConstants;
 
 namespace Genbox.FastHash.CityHash;
 
+/// <summary>Provides 32-bit CityHash functions.</summary>
 public static class CityHash32
 {
+    /// <summary>Computes the hash of a 32-bit value.</summary>
+    /// <param name="input">The value to hash.</param>
+    /// <returns>The 32-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ComputeIndex(uint input)
     {
@@ -23,14 +27,25 @@ public static class CityHash32
         return AA_xmxmx_Murmur_32(Mur(b, Mur(4, c)));
     }
 
+    /// <summary>Computes the hash of data with the default seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <returns>The 32-bit hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
+    /// <summary>Computes the hash of data with a seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 32-bit hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         uint len = (uint)data.Length;
 
+        if (len <= 4)
+            return Hash32Len0to4(data, len, seed);
+        if (len <= 12)
+            return Hash32Len5to12(data, len, seed);
         if (len <= 24)
-            return len <= 12 ? len <= 4 ? Hash32Len0to4(data, len, seed) : Hash32Len5to12(data, len, seed) : Hash32Len13to24(data, len, seed);
+            return Hash32Len13to24(data, len, seed);
 
         // len > 24
         uint h = len + seed, g = C1 * h, f = g;

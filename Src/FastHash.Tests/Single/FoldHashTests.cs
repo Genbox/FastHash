@@ -93,5 +93,6 @@ public class FoldHashTests
     }
 
     private readonly record struct Vector(byte[] Data, ulong Seed, ulong Expected);
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Auto)]
     private readonly record struct IndexVector(ulong Input, ulong Seed, ulong FastExpected, ulong QualityExpected);
 }

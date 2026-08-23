@@ -4,12 +4,31 @@ using static Genbox.FastHash.AbslHash.AbslHashShared;
 
 namespace Genbox.FastHash.AbslHash;
 
+/// <summary>Provides pointer-based 64-bit Abseil hash functions.</summary>
 public static class AbslHash64Unsafe
 {
+    /// <summary>Gets whether the SIMD implementation is available.</summary>
     public static bool IsSimdSupported => AbslHashShared.IsSimdSupported;
 
-    public static unsafe ulong ComputeHash(byte* data, int length) => ComputeHash(data, length, 0);
+    /// <summary>Computes the hash of a memory region with the default seed.</summary>
+    /// <param name="data">A pointer to the data to hash.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    public static unsafe ulong ComputeHash(byte* data, int length)
+    {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
 
+        return ComputeHash(data, length, 0);
+    }
+
+    /// <summary>Computes the hash of a memory region with a seed.</summary>
+    /// <param name="data">A pointer to the data to hash.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed)
     {
         if (length < 0)

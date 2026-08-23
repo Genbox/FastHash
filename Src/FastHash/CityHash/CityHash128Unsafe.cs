@@ -4,10 +4,19 @@ using static Genbox.FastHash.CityHash.CityHashConstants;
 
 namespace Genbox.FastHash.CityHash;
 
+/// <summary>Provides pointer-based 128-bit CityHash functions.</summary>
 public static class CityHash128Unsafe
 {
+    /// <summary>Computes the hash of a memory region with the default seed.</summary>
+    /// <param name="data">A pointer to the data to hash.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <returns>The 128-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
     public static unsafe UInt128 ComputeHash(byte* data, int length)
     {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
         uint len = (uint)length;
         if (len >= 16)
         {
@@ -18,8 +27,17 @@ public static class CityHash128Unsafe
         return CityHash128WithSeed(data, len, new UInt128(K0, K1));
     }
 
+    /// <summary>Computes the hash of a memory region with a seed.</summary>
+    /// <param name="data">A pointer to the data to hash.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 128-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
     public static unsafe UInt128 ComputeHash(byte* data, int length, UInt128 seed)
     {
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
         uint len = (uint)length;
         return CityHash128WithSeed(data, len, seed);
     }
@@ -68,14 +86,12 @@ public static class CityHash128Unsafe
 
         // We expect len >= 128 to be the common case.  Keep 56 bytes of state:
         // v, w, x, y, and z.
-        UInt128 v, w;
         ulong x = seed.Low;
         ulong y = seed.High;
         ulong z = len * K1;
-        v.Low = (RotateRight(y ^ K1, 49) * K1) + Read64(s);
-        v.High = (RotateRight(v.Low, 42) * K1) + Read64(s + 8);
-        w.Low = (RotateRight(y + z, 35) * K1) + x;
-        w.High = RotateRight(x + Read64(s + 88), 53) * K1;
+        ulong vLow = (RotateRight(y ^ K1, 49) * K1) + Read64(s);
+        UInt128 v = new UInt128(vLow, (RotateRight(vLow, 42) * K1) + Read64(s + 8));
+        UInt128 w = new UInt128((RotateRight(y + z, 35) * K1) + x, RotateRight(x + Read64(s + 88), 53) * K1);
 
         // This is the same inner loop as CityHash64(), manually unrolled.
         do
@@ -103,19 +119,19 @@ public static class CityHash128Unsafe
         x += RotateRight(v.Low + z, 49) * K0;
         y = (y * K0) + RotateRight(w.High, 37);
         z = (z * K0) + RotateRight(w.Low, 27);
-        w.Low *= 9;
-        v.Low *= K0;
+        w = new UInt128(w.Low * 9, w.High);
+        v = new UInt128(v.Low * K0, v.High);
         // If 0 < len < 128, hash up to 4 chunks of 32 bytes each from the end of s.
         for (uint tail_done = 0; tail_done < len;)
         {
             tail_done += 32;
             y = (RotateRight(x + y, 42) * K0) + v.High;
-            w.Low += Read64(((s + len) - tail_done) + 16);
+            w = new UInt128(w.Low + Read64(((s + len) - tail_done) + 16), w.High);
             x = (x * K0) + w.Low;
             z += w.High + Read64((s + len) - tail_done);
-            w.High += v.Low;
+            w = new UInt128(w.Low, w.High + v.Low);
             v = WeakHashLen32WithSeeds((s + len) - tail_done, v.Low + z, v.High);
-            v.Low *= K0;
+            v = new UInt128(v.Low * K0, v.High);
         }
         // At this point our 56 bytes of state should contain more than
         // enough information for a strong 128-bit hash.  We use two

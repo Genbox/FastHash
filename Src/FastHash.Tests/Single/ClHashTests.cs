@@ -61,7 +61,7 @@ public class ClHashTests
         foreach (Vector vector in Vectors)
         {
             byte[] data = vector.Data ?? pattern.AsSpan(0, vector.Length).ToArray();
-            ulong[] key = ClHashShared.CreateKey(vector.Seed1, vector.Seed2);
+            ulong[] key = ClHash64.CreateKey(vector.Seed1, vector.Seed2);
 
             Assert.Equal(vector.Expected, ClHash64.ComputeHash(data, vector.Seed1, vector.Seed2));
             Assert.Equal(vector.Expected, ClHash64.ComputeHash(data, key));
@@ -76,18 +76,66 @@ public class ClHashTests
     }
 
     [Fact]
-    public void ReusedKeyIsDeterministic()
+    public unsafe void GeneratedKeyCanBeReused()
     {
         if (!ClHash64.IsSupported)
             return;
 
         byte[] data = "my dog"u8.ToArray();
-        ulong[] key1 = ClHashShared.CreateKey(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL);
-        ulong[] key2 = ClHashShared.CreateKey(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL);
+        ulong[] key1 = ClHash64.CreateKey(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL);
+        ulong[] key2 = ClHash64.CreateKey(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL);
 
+        Assert.Equal(ClHashConstants.Random64BitWordsNeeded, key1.Length);
         Assert.Equal(key1, key2);
         Assert.Equal(ClHash64.ComputeHash(data, key1), ClHash64.ComputeHash(data, key2));
         Assert.NotEqual(ClHash64.ComputeHash(data, key1), ClHash64.ComputeHash("my cat"u8, key1));
+
+        fixed (byte* dataPtr = data)
+        {
+            Assert.Equal(ClHash64.ComputeHash(data, key1), ClHash64Unsafe.ComputeHash(dataPtr, data.Length, key1));
+        }
+    }
+
+    [Fact]
+    public void ZeroSeedsAreRejected()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => ClHash64.CreateKey(0, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => ClHash64.CreateKey(1, 0));
+        Assert.Throws<ArgumentOutOfRangeException>(() => ClHash64.ComputeHash("data"u8, 0, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => ClHash64.ComputeHash("data"u8, 1, 0));
+    }
+
+    [Fact]
+    public void GeneratedKeysHaveValidPolynomial()
+    {
+        for (ulong seed = 1; seed <= 1_000; seed++)
+        {
+            ulong[] key = ClHash64.CreateKey(seed, seed + 1);
+            Assert.False(ClHashShared.IsInvalidPolynomial(key[128], key[129]));
+        }
+
+        Assert.True(ClHashShared.IsInvalidPolynomial(0, 0));
+        Assert.True(ClHashShared.IsInvalidPolynomial(0, 1));
+        Assert.True(ClHashShared.IsInvalidPolynomial(0, 1UL << 62));
+    }
+
+    [Fact]
+    public unsafe void DegenerateCustomKeysAreRejected()
+    {
+        ulong[] allZeroKey = new ulong[ClHashConstants.Random64BitWordsNeeded];
+
+        ulong[] unitPolynomial = ClHash64.CreateKey(1, 2);
+        unitPolynomial[128] = 0;
+        unitPolynomial[129] = 1;
+
+        Assert.Throws<ArgumentException>(() => ClHash64.ComputeHash("data"u8, allZeroKey));
+        Assert.Throws<ArgumentException>(() => ClHash64.ComputeHash("data"u8, unitPolynomial));
+
+        if (ClHash64Unsafe.IsSupported)
+        {
+            byte[] data = "data"u8.ToArray();
+            Assert.Throws<ArgumentException>(() => ComputeUnsafe(data, allZeroKey));
+        }
     }
 
     [Fact]
@@ -184,7 +232,7 @@ public class ClHashTests
         byte[] data = new byte[length];
 
         for (int i = 0; i < data.Length; i++)
-            data[i] = (byte)((i * 0x9E + 0x37) & 0xFF);
+            data[i] = (byte)(((i * 0x9E) + 0x37) & 0xFF);
 
         return data;
     }
@@ -217,6 +265,13 @@ public class ClHashTests
     }
 
     private static void FlipBit(byte[] data, int bit) => data[bit >> 3] ^= (byte)(1 << (bit & 7));
+
+    private static unsafe ulong ComputeUnsafe(byte[] data, ulong[] key)
+    {
+        fixed (byte* dataPtr = data)
+        fixed (ulong* keyPtr = key)
+            return ClHash64Unsafe.ComputeHash(dataPtr, data.Length, keyPtr);
+    }
 
     private readonly record struct Vector(ulong Seed1, ulong Seed2, byte[]? Data, int Length, ulong Expected);
 }

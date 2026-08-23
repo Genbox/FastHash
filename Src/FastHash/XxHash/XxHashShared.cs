@@ -38,7 +38,7 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void XXH3_hashLong_internal_loop(Span<ulong> acc, ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize, XXH3_f_accumulate_512 f_acc512, XXH3_f_scrambleAcc f_scramble)
+    internal static void XXH3_hashLong_internal_loop(Span<ulong> acc, ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize)
     {
         XXH3_hashLong_internal_loop_scalar(acc, input, len, secret, secretSize);
     }
@@ -80,16 +80,6 @@ internal static class XxHashShared
     private static ulong XXH3_mix2Accs(Span<ulong> acc, int offset, ReadOnlySpan<byte> secret, int secretOffset) => XXH3_mul128_fold64(acc[offset + 0] ^ Read64(secret, secretOffset), acc[offset + 1] ^ Read64(secret, secretOffset + 8));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void XXH3_accumulate(Span<ulong> acc, ReadOnlySpan<byte> input, ReadOnlySpan<byte> secret, int nbStripes, XXH3_f_accumulate_512 f_acc512)
-    {
-        for (int n = 0; n < nbStripes; n++)
-        {
-            ReadOnlySpan<byte> inp = input.Slice(n * STRIPE_LEN);
-            f_acc512(acc, inp, secret.Slice(n * SECRET_CONSUME_RATE));
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void XXH3_accumulate_scalar(Span<ulong> acc, ReadOnlySpan<byte> input, int inputOffset, ReadOnlySpan<byte> secret, int secretOffset, int nbStripes)
     {
         for (int n = 0; n < nbStripes; n++)
@@ -97,22 +87,10 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void XXH3_accumulate_512_scalar(Span<ulong> acc, ReadOnlySpan<byte> input, ReadOnlySpan<byte> secret)
-    {
-        XXH3_accumulate_512_scalar(acc, input, 0, secret, 0);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void XXH3_accumulate_512_scalar(Span<ulong> acc, ReadOnlySpan<byte> input, int inputOffset, ReadOnlySpan<byte> secret, int secretOffset)
     {
         for (int i = 0; i < ACC_NB; i++)
             XXH3_scalarRound(acc, input, inputOffset, secret, secretOffset, i);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void XXH3_scalarRound(Span<ulong> acc, ReadOnlySpan<byte> input, ReadOnlySpan<byte> secret, int lane)
-    {
-        XXH3_scalarRound(acc, input, 0, secret, 0, lane);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -129,22 +107,10 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void XXH3_scrambleAcc_scalar(Span<ulong> acc, ReadOnlySpan<byte> secret)
-    {
-        XXH3_scrambleAcc_scalar(acc, secret, 0);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void XXH3_scrambleAcc_scalar(Span<ulong> acc, ReadOnlySpan<byte> secret, int secretOffset)
     {
         for (int i = 0; i < ACC_NB; i++)
             XXH3_scalarScrambleRound(acc, secret, secretOffset, i);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void XXH3_scalarScrambleRound(Span<ulong> acc, ReadOnlySpan<byte> secret, int lane)
-    {
-        XXH3_scalarScrambleRound(acc, secret, 0, lane);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -175,9 +141,4 @@ internal static class XxHashShared
         }
     }
 
-    internal delegate ulong XXH3_hashLong64_f(ReadOnlySpan<byte> input, int len, ulong seed64, ReadOnlySpan<byte> secret, int secretLen);
-    internal delegate UInt128 XXH3_hashLong128_f(ReadOnlySpan<byte> input, int len, ulong seed64, ReadOnlySpan<byte> secret, int secretLen);
-    internal delegate void XXH3_f_scrambleAcc(Span<ulong> acc, ReadOnlySpan<byte> secret);
-    internal delegate void XXH3_f_initCustomSecret(Span<byte> customSecret, ulong seed);
-    internal delegate void XXH3_f_accumulate_512(Span<ulong> acc, ReadOnlySpan<byte> input, ReadOnlySpan<byte> secret);
 }

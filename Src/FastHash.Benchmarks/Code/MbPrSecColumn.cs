@@ -20,7 +20,8 @@ public class MbPrSecColumn : IColumn
 
     public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
     {
-        Statistics? stats = summary[benchmarkCase].ResultStatistics;
+        BenchmarkReport? report = summary.Reports.FirstOrDefault(x => ReferenceEquals(x.BenchmarkCase, benchmarkCase));
+        Statistics? stats = report?.ResultStatistics;
 
         if (stats == null)
             return "?";

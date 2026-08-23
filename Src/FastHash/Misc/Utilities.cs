@@ -92,6 +92,13 @@ internal static class Utilities
 #if NET5_0_OR_GREATER
         return Math.BigMul(a, b, out low);
 #else
+        return BigMulScalar(a, b, out low);
+#endif
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ulong BigMulScalar(ulong a, ulong b, out ulong low)
+    {
         unchecked
         {
             low = a * b;
@@ -110,7 +117,6 @@ internal static class Utilities
             ulong middle = p10 + (p00 >> 32) + (uint)p01;
             return p11 + (middle >> 32) + (p01 >> 32);
         }
-#endif
     }
 
     #region Unsafe read/write

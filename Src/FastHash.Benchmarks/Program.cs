@@ -1,3 +1,4 @@
+using System.Runtime.Intrinsics.X86;
 using BenchmarkDotNet.Analysers;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
@@ -7,10 +8,13 @@ using BenchmarkDotNet.Validators;
 
 namespace Genbox.FastHash.Benchmarks;
 
-public class Program
+internal static class Program
 {
     public static void Main(string[] args)
     {
+        if (!Bmi2.X64.IsSupported)
+            throw new PlatformNotSupportedException("BMI2 x64 support is required to run the benchmarks.");
+
         IConfig config = ManualConfig.CreateMinimumViable()
                                      .AddJob(new Job(new RunMode
                                      {
