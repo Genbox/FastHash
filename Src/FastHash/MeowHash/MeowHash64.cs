@@ -4,7 +4,7 @@ using System.Runtime.Intrinsics;
 
 namespace Genbox.FastHash.MeowHash;
 
-/// <summary>Provides the 64-bit MeowHash algorithm.</summary>
+/// <summary>Provides the low 64 bits of the canonical 128-bit MeowHash result.</summary>
 public static class MeowHash64
 {
     /// <summary>Gets whether the required AES, SSE, SSE2, and SSSE3 intrinsics are supported.</summary>

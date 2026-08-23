@@ -3,7 +3,7 @@ using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
 
 namespace Genbox.FastHash.MurmurHash;
 
-/// <summary>Provides the 128-bit MurmurHash3 hash algorithm.</summary>
+/// <summary>Provides the 128-bit MurmurHash3 x64 algorithm.</summary>
 public static class Murmur3Hash128
 {
     /// <summary>Computes the hash of a 64-bit value using a zero seed.</summary>

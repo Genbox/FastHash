@@ -2,7 +2,7 @@ using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
 
 namespace Genbox.FastHash.MurmurHash;
 
-/// <summary>Provides pointer-based access to the 128-bit MurmurHash3 algorithm.</summary>
+/// <summary>Provides pointer-based access to the 128-bit MurmurHash3 x64 algorithm.</summary>
 public static class Murmur3Hash128Unsafe
 {
     /// <summary>Computes the hash of an unmanaged byte sequence using a zero seed.</summary>

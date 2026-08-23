@@ -14,29 +14,29 @@
 
 These hash functions are included in the library.
 
-| Name                                                                                                                                                    |   Version    | Authors                                                         |         License         |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------|:------------:|-----------------------------------------------------------------|:-----------------------:|
-| [AbslHash](https://github.com/abseil/abseil-cpp/)                                                                                                       |      -       | The Abseil Authors                                              |       Apache 2.0        |
-| [AesniHash](https://github.com/synopse/mORMot2)                                                                                                         |      -       | Arnaud Bouchez                                                  |      MPL/GPL/LGPL       |
-| [CityHash](https://github.com/google/cityhash)                                                                                                          |    1.1.1     | Geoff Pike, Jyrki Alakuijala                                    |           MIT           |
-| [CLHash](https://github.com/simdhash/clhash)                                                                                                            |    1.0.0     | Daniel Lemire, Owen Kaser                                       |       Apache 2.0        |
-| [DJBHash](http://www.cse.yorku.ca/~oz/hash.html)                                                                                                        |      -       | Daniel J. Bernstein                                             |          None           |
-| [FarmHash](https://github.com/google/farmhash)                                                                                                          |    1.1.0     | Geoff Pike                                                      |           MIT           |
-| [FarshHash](https://github.com/Bulat-Ziganshin/FARSH)                                                                                                   |    0.2.0     | Bulat Ziganshin                                                 |           MIT           |
-| [FNVHash](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function)                                                                   |      -       | Glenn Fowler, Landon Curt Noll, Kiem-Phong Vo                   |         CC0 1.0         |
-| [FoldHash](https://github.com/orlp/foldhash)                                                                                                            |    0.2.0     | Orson Peters                                                    |          Zlib           |
-| [Gx2Hash](https://github.com/ogxd/gxhash)                                                                                                               |    3.5.0     | Orso G.                                                         |           MIT           |
-| [HighwayHash](https://github.com/google/highwayhash)                                                                                                    |      -       | Jyrki Alakuijala, Bill Cox, Jan Wassenberg                      |       Apache 2.0        |
-| [MarvinHash](https://github.com/dotnet/runtime/blob/4017327955f1d8ddc43980eb1848c52fbb131dfc/src/libraries/System.Private.CoreLib/src/System/Marvin.cs) |      -       | Niels Ferguson, Reid Borsuk, Jeffrey Cooperstein, Matthew Ellis |           MIT           |
-| [MeowHash](https://github.com/cmuratori/meow_hash)                                                                                                      |    0.5.0     | Molly Rocket, Inc.                                              |          Zlib           |
-| [MurmurHash](https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp)                                                                      |    3.0.0     | Austin Appleby                                                  |      Public domain      |
-| [PolymurHash](https://github.com/orlp/polymur-hash)                                                                                                     |    2.0.0     | Orson Peters                                                    |          Zlib           |
-| [RapidHash](https://github.com/Nicoshev/rapidhash)                                                                                                      |    3.0.0     | Nicolas De Carli                                                |           MIT           |
-| [SipHash](https://github.com/veorq/SipHash)                                                                                                             |    1.0.0     | Jean-Philippe Aumasson, Daniel J. Bernstein                     | CC0/MIT/Apache-2.0+LLVM |
-| [SuperFastHash](http://www.azillionmonkeys.com/qed/hash.html)                                                                                           |      -       | Paul Hsieh                                                      |      BSD 3-Clause       |
-| [T1haHash](https://github.com/erthink/t1ha)                                                                                                             |    2.1.1     | Positive Technologies, Leonid Yuriev                            |          Zlib           |
-| [WyHash](https://github.com/wangyi-fudan/wyhash)                                                                                                        | 3.0.0, 4.3.0 | Wang Yi                                                         |        Unlicense        |
-| [xxHash](https://github.com/Cyan4973/xxHash)                                                                                                            |    0.8.3     | Yann Collet                                                     |      BSD 2-Clause       |
+| Name                                                                                                                                                    |                Version                 | Authors                                                         | License                 |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------:|-----------------------------------------------------------------|-------------------------|
+| [AbslHash](https://github.com/abseil/abseil-cpp/)                                                                                                       |                   -                    | The Abseil Authors                                              | Apache 2.0              |
+| [AesniHash](https://github.com/synopse/mORMot2)                                                                                                         |                   -                    | Arnaud Bouchez                                                  | MPL/GPL/LGPL            |
+| [CityHash](https://github.com/google/cityhash)                                                                                                          |           1.1.1 (`4726e30`)            | Geoff Pike, Jyrki Alakuijala                                    | MIT                     |
+| [CLHash](https://github.com/simdhash/clhash)                                                                                                            |           1.0.0 (`fd0331c`)            | Daniel Lemire, Owen Kaser                                       | Apache 2.0              |
+| [DJBHash](http://www.cse.yorku.ca/~oz/hash.html)                                                                                                        |                   -                    | Daniel J. Bernstein                                             | None                    |
+| [FarmHash](https://github.com/google/farmhash)                                                                                                          |           1.1.0 (`0d859a8`)            | Geoff Pike                                                      | MIT                     |
+| [FarshHash](https://github.com/Bulat-Ziganshin/FARSH)                                                                                                   |           0.2.0 (`d74ef3a`)            | Bulat Ziganshin                                                 | MIT                     |
+| [FNVHash](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function)                                                                   |                   -                    | Glenn Fowler, Landon Curt Noll, Kiem-Phong Vo                   | CC0 1.0                 |
+| [FoldHash](https://github.com/orlp/foldhash)                                                                                                            |           0.2.0 (`8f878c6`)            | Orson Peters                                                    | Zlib                    |
+| [Gx2Hash](https://github.com/ogxd/gxhash)                                                                                                               |           3.5.0 (`6438a7b`)            | Orso G.                                                         | MIT                     |
+| [HighwayHash](https://github.com/google/highwayhash)                                                                                                    |                   -                    | Jyrki Alakuijala, Bill Cox, Jan Wassenberg                      | Apache 2.0              |
+| [MarvinHash](https://github.com/dotnet/runtime/blob/4017327955f1d8ddc43980eb1848c52fbb131dfc/src/libraries/System.Private.CoreLib/src/System/Marvin.cs) |               `4017327`                | Niels Ferguson, Reid Borsuk, Jeffrey Cooperstein, Matthew Ellis | MIT                     |
+| [MeowHash](https://github.com/cmuratori/meow_hash)                                                                                                      |         0.5/calico (`b080caa`)         | Molly Rocket, Inc.                                              | Zlib                    |
+| [MurmurHash](https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp)                                                                      |           3.0.0 (`92cf370`)            | Austin Appleby                                                  | Public domain           |
+| [PolymurHash](https://github.com/orlp/polymur-hash)                                                                                                     |           2.0.0 (`c6cc688`)            | Orson Peters                                                    | Zlib                    |
+| [RapidHash](https://github.com/Nicoshev/rapidhash)                                                                                                      |           3.0.0 (`bc4b4ba`)            | Nicolas De Carli                                                | MIT                     |
+| [SipHash](https://github.com/veorq/SipHash)                                                                                                             |           1.0.0 (`dfaa38e`)            | Jean-Philippe Aumasson, Daniel J. Bernstein                     | CC0/MIT/Apache-2.0+LLVM |
+| [SuperFastHash](http://www.azillionmonkeys.com/qed/hash.html)                                                                                           |                   -                    | Paul Hsieh                                                      | BSD 3-Clause            |
+| [T1ha2Hash](https://github.com/erthink/t1ha)                                                                                                            |           2.1.1 (`0db5d6b`)            | Positive Technologies, Leonid Yuriev                            | Zlib                    |
+| [WyHash](https://github.com/wangyi-fudan/wyhash)                                                                                                        |  3.0.0 (`9f68c1b`), 4.3.0 (`2ac9a50`)  | Wang Yi                                                         | Unlicense               |
+| [xxHash](https://github.com/Cyan4973/xxHash)                                                                                                            |           0.8.3 (`e626a72`)            | Yann Collet                                                     | BSD 2-Clause            |
 
 ### Implementation status
 
@@ -54,13 +54,13 @@ The table below gives an overview of the implementations.
 | FNVHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |          |
 | FoldHash      |    x    |        |       |   x   |        |   x   |   x    |   x    |          |
 | Gx2Hash       |    x    |        |   x   |   x   |   x    |   x   |   x    |        |          |
-| HighwayHash   |         |   x    |       |   x   |        |   x   |   x    |        |    x     |
+| HighwayHash   |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
 | MarvinHash    |    x    |        |   x   |   x   |        |   x   |   x    |        |          |
 | MeowHash      |         |   x    |       |   x   |   x    |   x   |        |        |          |
 | MurmurHash    |    x    |   x    |   x   |       |   x    |   x   |   x    |        |    -     |
 | PolymurHash   |    x    |        |       |   x   |        |   x   |   x    |        |          |
 | RapidHash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
-| SipHash       |    x    |   x    |       |   x   |        |   x   |   x    |        |    x     |
+| SipHash       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
 | SuperFastHash |    x    |   x    |   x   |       |        |   x   |   x    |        |          |
 | T1ha2Hash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
 | WyHash3       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
@@ -68,14 +68,14 @@ The table below gives an overview of the implementations.
 | xxHash        |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    x     |
 | xxHash3       |    x    |   x    |       |   x   |   x    |   x   |   x    |        |    x     |
 
-* **Managed:** The there is a fully managed implementation in C#.
-* **Unsafe:** There is an unmanaged implementation that uses pointers etc. These are usually faster.
-* **Bits:** 32bit means there is a 32bit optimized implementation that returns an uint. 64bit means optimized for 64bit platforms.
-* **Index:**  It has an _index_ version, which can hash a 32/64bit integer directly. Usually used for [Hash Table](https://en.wikipedia.org/wiki/Hash_table) mapping.
-* **Seeded:** It takes an input seed which can help prevent denial-of-service due to hash collisions.
-* **Secret:** It supports a user-provided secret. Much like seeded version it protects against DoS attacks, but with stronger security guarantees.
-* **Verified:** The original author has provided test vectors and they have been tested against the implementation. A '-' means test vectors
-  exist, but not yet implemented.
+* **Managed:** Fully managed C# implementation.
+* **Unsafe:** Pointer-based implementation.
+* **Bits:** Output widths exposed by the implementation.
+* **Index:** Hashes a 32-bit or 64-bit integer directly.
+* **Seeded:** Accepts an input seed to vary hash results.
+* **Secret:** Accepts caller-provided key material.
+* **Verified:** Tested against vectors supplied by the original author. A '-' means vectors exist but are not yet included.
+* **WYHASH_CONDOM:** Define this compilation symbol when building from source to select upstream mode 2 (blind multiplication). Default builds use upstream mode 1.
 
 ### Performance
 

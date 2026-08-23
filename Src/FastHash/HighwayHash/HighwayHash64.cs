@@ -9,13 +9,7 @@ public static class HighwayHash64
     /// <param name="input">The value to hash.</param>
     /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input)
-    {
-        HighwayHashState state = new HighwayHashState();
-        Reset(HighwayHashConstants.DefaultKey0, HighwayHashConstants.DefaultKey1, HighwayHashConstants.DefaultKey2, HighwayHashConstants.DefaultKey3, ref state);
-        UpdateIndex(input, ref state);
-        return Finalize64(state);
-    }
+    public static ulong ComputeIndex(ulong input) => ComputeIndex(input, HighwayHashConstants.DefaultKey0, HighwayHashConstants.DefaultKey1, HighwayHashConstants.DefaultKey2, HighwayHashConstants.DefaultKey3);
 
     /// <summary>Computes the hash of a 64-bit value.</summary>
     /// <param name="input">The value to hash.</param><param name="seed1">The first key word.</param><param name="seed2">The second key word.</param><param name="seed3">The third key word.</param><param name="seed4">The fourth key word.</param><returns>The 64-bit hash.</returns>
@@ -29,7 +23,7 @@ public static class HighwayHash64
     }
 
     /// <summary>Computes the hash of a 64-bit value.</summary>
-    /// <param name="input">The value to hash.</param><param name="keys">The four key words.</param><returns>The 64-bit hash.</returns><exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception><exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
+    /// <param name="input">The value to hash.</param><param name="keys">The key words; the first four are used.</param><returns>The 64-bit hash.</returns><exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception><exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong[] keys)
     {
@@ -42,13 +36,9 @@ public static class HighwayHash64
     }
 
     /// <summary>Computes the hash of a byte sequence using the default key.</summary>
-    /// <param name="data">The bytes to hash.</param><returns>The 64-bit hash.</returns>
-    public static ulong ComputeHash(ReadOnlySpan<byte> data)
-    {
-        HighwayHashState state = new HighwayHashState();
-        ProcessAll(data, HighwayHashConstants.DefaultKey0, HighwayHashConstants.DefaultKey1, HighwayHashConstants.DefaultKey2, HighwayHashConstants.DefaultKey3, ref state);
-        return Finalize64(state);
-    }
+    /// <param name="data">The bytes to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, HighwayHashConstants.DefaultKey0, HighwayHashConstants.DefaultKey1, HighwayHashConstants.DefaultKey2, HighwayHashConstants.DefaultKey3);
 
     /// <summary>Computes the hash of a byte sequence.</summary>
     /// <param name="data">The bytes to hash.</param><param name="seed1">The first key word.</param><param name="seed2">The second key word.</param><param name="seed3">The third key word.</param><param name="seed4">The fourth key word.</param><returns>The 64-bit hash.</returns>
@@ -60,7 +50,7 @@ public static class HighwayHash64
     }
 
     /// <summary>Computes the hash of a byte sequence.</summary>
-    /// <param name="data">The bytes to hash.</param><param name="keys">The four key words.</param><returns>The 64-bit hash.</returns><exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception><exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
+    /// <param name="data">The bytes to hash.</param><param name="keys">The key words; the first four are used.</param><returns>The 64-bit hash.</returns><exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception><exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong[] keys)
     {
         HighwayHashState state = new HighwayHashState();

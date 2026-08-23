@@ -1,7 +1,7 @@
 #if NET8_0_OR_GREATER
 namespace Genbox.FastHash.MeowHash;
 
-/// <summary>Provides pointer-based access to the 64-bit MeowHash algorithm.</summary>
+/// <summary>Provides the low 64 bits of the canonical 128-bit MeowHash result from unmanaged memory.</summary>
 public static class MeowHash64Unsafe
 {
     /// <summary>Gets whether the required AES, SSE, SSE2, and SSSE3 intrinsics are supported.</summary>

@@ -47,13 +47,13 @@ public static unsafe class AlgorithmCatalog
         new(nameof(ClHash64), static data => ClHash64.ComputeHash(data), static (data, length) => ClHash64Unsafe.ComputeHash(data, length), [0xB6, 0xA4, 0xCD, 0x9F, 0xCF, 0x43, 0x06, 0xBF]),
         new(nameof(Djb2AltHash64), static data => Djb2AltHash64.ComputeHash(data), static (data, length) => Djb2AltHash64Unsafe.ComputeHash(data, length), [0xCE, 0xED, 0x14, 0x36, 0xF9, 0x33, 0x6C, 0x8A]),
         new(nameof(Djb2Hash64), static data => Djb2Hash64.ComputeHash(data), static (data, length) => Djb2Hash64Unsafe.ComputeHash(data, length), [0x9C, 0x17, 0x3D, 0x75, 0xA9, 0x35, 0x63, 0x0E]),
-        new(nameof(FarshHash64), static data => FarshHash64.ComputeHash(data), static (data, length) => FarshHash64Unsafe.ComputeHash(data, length), [0x81, 0x2D, 0x68, 0xB2, 0xE4, 0x17, 0xBE, 0x05]),
         new(nameof(FarmHash64), static data => FarmHash64.ComputeHash(data), static (data, length) => FarmHash64Unsafe.ComputeHash(data, length), [0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A]),
+        new(nameof(FarshHash64), static data => FarshHash64.ComputeHash(data), static (data, length) => FarshHash64Unsafe.ComputeHash(data, length), [0x81, 0x2D, 0x68, 0xB2, 0xE4, 0x17, 0xBE, 0x05]),
         new(nameof(Fnv1aHash64), static data => Fnv1aHash64.ComputeHash(data), static (data, length) => Fnv1aHash64Unsafe.ComputeHash(data, length), [0xD6, 0x35, 0xE0, 0x8E, 0x10, 0x08, 0x2F, 0x47]),
         new(nameof(FoldHash64), static data => FoldHash64.ComputeHash(data), null, [0xA5, 0x30, 0x7C, 0x35, 0x3C, 0x68, 0xA7, 0x89]),
         new(nameof(FoldHashQuality64), static data => FoldHashQuality64.ComputeHash(data), null, [0xF9, 0xAD, 0xBA, 0x70, 0x6F, 0x2C, 0x68, 0x4A]),
         new(nameof(Gx2Hash64), static data => Gx2Hash64.ComputeHash(data), null, [0xC3, 0x3A, 0xB7, 0x2A, 0x79, 0xCC, 0xEB, 0xB5]),
-        new(nameof(HighwayHash64Unsafe), null, static (data, length) => HighwayHash64Unsafe.ComputeHash(data, length), [0x63, 0x6C, 0x8E, 0x47, 0x06, 0x37, 0xCF, 0x16]),
+        new(nameof(HighwayHash64), static data => HighwayHash64.ComputeHash(data), static (data, length) => HighwayHash64Unsafe.ComputeHash(data, length), [0x63, 0x6C, 0x8E, 0x47, 0x06, 0x37, 0xCF, 0x16]),
         new(nameof(MarvinHash64), static data => MarvinHash64.ComputeHash(data), null, [0x57, 0x44, 0xD2, 0xD9, 0xA0, 0x67, 0x18, 0xDA]),
         new(nameof(MeowHash64Unsafe), null, static (data, length) => MeowHash64Unsafe.ComputeHash(data, length), [0xCE, 0xF5, 0xCC, 0xAB, 0xBD, 0xC1, 0x2E, 0x9E]),
         new(nameof(Polymur2Hash64), static data => Polymur2Hash64.ComputeHash(data), null, [0xD8, 0x4B, 0xE5, 0xDB, 0x3C, 0x80, 0x53, 0x69]),
@@ -63,8 +63,8 @@ public static unsafe class AlgorithmCatalog
         new(nameof(SipHash64), static data => SipHash64.ComputeHash(data), static (data, length) => SipHash64Unsafe.ComputeHash(data, length), [0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97]),
         new(nameof(T1ha2Hash64), static data => T1ha2Hash64.ComputeHash(data), null, [0xC6, 0x87, 0xF0, 0xA7, 0x0E, 0x1B, 0x29, 0xD7]),
 #if WYHASH_CONDOM
-        new(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), null),
-        new(nameof(Wy4Hash64), static data => Wy4Hash64.ComputeHash(data), static (data, length) => Wy4Hash64Unsafe.ComputeHash(data, length), null),
+        new(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), [0x18, 0x9E, 0xBE, 0x26, 0x2D, 0x21, 0xA9, 0xDE]),
+        new(nameof(Wy4Hash64), static data => Wy4Hash64.ComputeHash(data), static (data, length) => Wy4Hash64Unsafe.ComputeHash(data, length), [0xAB, 0x41, 0xEE, 0xF3, 0xA1, 0x88, 0x05, 0x72]),
 #else
         new(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), [0x96, 0x99, 0x78, 0xA4, 0x3B, 0x3F, 0x80, 0x76]),
         new(nameof(Wy4Hash64), static data => Wy4Hash64.ComputeHash(data), static (data, length) => Wy4Hash64Unsafe.ComputeHash(data, length), [0xB5, 0xE9, 0x6F, 0x43, 0xBE, 0x0A, 0x9C, 0x40]),
@@ -111,14 +111,14 @@ public static unsafe class AlgorithmCatalog
         new(nameof(CityHash64), CityHash64.ComputeIndex, CityHash64.ComputeHash),
         new(nameof(Djb2AltHash64), Djb2AltHash64.ComputeIndex, Djb2AltHash64.ComputeHash),
         new(nameof(Djb2Hash64), Djb2Hash64.ComputeIndex, Djb2Hash64.ComputeHash),
-        new(nameof(FoldHash64), static input => FoldHash64.ComputeIndex(input, 0), static data => FoldHash64.ComputeHash(data)),
-        new(nameof(FoldHashQuality64), static input => FoldHashQuality64.ComputeIndex(input, 0), static data => FoldHashQuality64.ComputeHash(data)),
         new(nameof(FarmHash64), FarmHash64.ComputeIndex, static data => FarmHash64.ComputeHash(data)),
         new(nameof(FarshHash64), FarshHash64.ComputeIndex, FarshHash64.ComputeHash),
+        new(nameof(FoldHash64), FoldHash64.ComputeIndex, FoldHash64.ComputeHash),
+        new(nameof(FoldHashQuality64), FoldHashQuality64.ComputeIndex, FoldHashQuality64.ComputeHash),
         new(nameof(Fnv1aHash64), Fnv1aHash64.ComputeIndex, Fnv1aHash64.ComputeHash),
         new(nameof(Gx2Hash64), static input => Gx2Hash64.ComputeIndex(input), static data => Gx2Hash64.ComputeHash(data)),
         new(nameof(HighwayHash64), HighwayHash64.ComputeIndex, HighwayHash64.ComputeHash),
-        new(nameof(MarvinHash64), static input => MarvinHash64.ComputeIndex(input), static data => MarvinHash64.ComputeHash(data)),
+        new(nameof(MarvinHash64), MarvinHash64.ComputeIndex, static data => MarvinHash64.ComputeHash(data)),
         new(nameof(MeowHash64), MeowHash64.ComputeIndex, MeowHash64.ComputeHash),
         new(nameof(Polymur2Hash64), Polymur2Hash64.ComputeIndex, static data => Polymur2Hash64.ComputeHash(data)),
         new(nameof(Rapid3Hash64), static input => Rapid3Hash64.ComputeIndex(input, 0), static data => Rapid3Hash64.ComputeHash(data)),
@@ -148,45 +148,4 @@ public static unsafe class AlgorithmCatalog
     public static Index32Algorithm GetIndex32(string name) => Index32Algorithms.Single(x => x.Name == name);
     public static Index64Algorithm GetIndex64(string name) => Index64Algorithms.Single(x => x.Name == name);
     public static Index128Algorithm GetIndex128(string name) => Index128Algorithms.Single(x => x.Name == name);
-}
-
-public unsafe delegate uint Hash32Unsafe(byte* data, int length);
-public unsafe delegate ulong Hash64Unsafe(byte* data, int length);
-public unsafe delegate UInt128 Hash128Unsafe(byte* data, int length);
-public delegate void Hash256(ReadOnlySpan<byte> data, Span<ulong> result);
-public unsafe delegate void Hash256Unsafe(byte* data, int length, ulong* result);
-
-public readonly record struct Hash32Algorithm(string Name, Func<ReadOnlySpan<byte>, uint>? Hash, Hash32Unsafe? UnsafeHash, byte[]? Expected)
-{
-    public override string ToString() => Name;
-}
-
-public readonly record struct Hash64Algorithm(string Name, Func<ReadOnlySpan<byte>, ulong>? Hash, Hash64Unsafe? UnsafeHash, byte[]? Expected)
-{
-    public override string ToString() => Name;
-}
-
-public readonly record struct Hash128Algorithm(string Name, Func<ReadOnlySpan<byte>, UInt128>? Hash, Hash128Unsafe? UnsafeHash, byte[]? Expected)
-{
-    public override string ToString() => Name;
-}
-
-public readonly record struct Hash256Algorithm(string Name, Hash256? Hash, Hash256Unsafe? UnsafeHash)
-{
-    public override string ToString() => Name;
-}
-
-public readonly record struct Index32Algorithm(string Name, Func<uint, uint> Index, Func<ReadOnlySpan<byte>, uint> Hash)
-{
-    public override string ToString() => Name;
-}
-
-public readonly record struct Index64Algorithm(string Name, Func<ulong, ulong> Index, Func<ReadOnlySpan<byte>, ulong> Hash)
-{
-    public override string ToString() => Name;
-}
-
-public readonly record struct Index128Algorithm(string Name, Func<ulong, UInt128> Index, Func<ReadOnlySpan<byte>, UInt128> Hash)
-{
-    public override string ToString() => Name;
 }
