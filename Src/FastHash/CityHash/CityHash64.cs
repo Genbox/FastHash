@@ -49,6 +49,7 @@ public static class CityHash64
                 return HashLen0to16(s, len);
             return HashLen17to32(s, len);
         }
+
         if (len <= 64)
             return HashLen33to64(s, len);
 
@@ -64,6 +65,7 @@ public static class CityHash64
         // Decrease len to the nearest multiple of 64, and operate on 64-byte chunks.
         len = (len - 1) & ~63u;
         uint offset = 0;
+
         do
         {
             x = RotateRight(x + y + v.Low + Read64(s, offset + 8), 37) * K1;
@@ -77,6 +79,7 @@ public static class CityHash64
             offset += 64;
             len -= 64;
         } while (len != 0);
+
         return HashLen16(HashLen16(v.Low, w.Low) + (ShiftMix(y) * K1) + z, HashLen16(v.High, w.High) + x);
     }
 

@@ -15,7 +15,7 @@ public class GeneralTests
 
         Assert.True(value.Equals(equalValue));
         Assert.True(value.Equals((object)equalValue));
-        Assert.False(value.Equals((object?)null));
+        Assert.False(value.Equals(null));
         Assert.Equal(value.GetHashCode(), equalValue.GetHashCode());
         Assert.True(value == equalValue);
         Assert.True(value != differentLow);
@@ -25,9 +25,12 @@ public class GeneralTests
         Assert.True(typeof(UInt128).GetField(nameof(UInt128.High), fieldFlags)!.IsInitOnly);
     }
 
-    [Theory, MemberData(nameof(GetAllTypesOf))]
+    [Theory]
+    [MemberData(nameof(GetAllTypesOf))]
     public void CheckAllHaveCorrectName(Type type)
     {
+        ArgumentNullException.ThrowIfNull(type);
+
         Assert.True(type.Name.EndsWith("32", StringComparison.Ordinal) ||
                     type.Name.EndsWith("32Unsafe", StringComparison.Ordinal) ||
                     type.Name.EndsWith("64", StringComparison.Ordinal) ||

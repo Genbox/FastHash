@@ -6,20 +6,20 @@ namespace Genbox.FastHash.SipHash;
 /// <summary>Provides 64-bit SipHash computations.</summary>
 public static class SipHash64
 {
-    /// <summary>Computes a hash index for <paramref name="input"/> using default seeds and rounds.</summary>
+    /// <summary>Computes a hash index for <paramref name="input" /> using default seeds and rounds.</summary>
     /// <param name="input">The value to hash.</param>
     /// <returns>The 64-bit hash index.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input) => ComputeIndexDefaultRounds(input, 0, 0);
 
-    /// <summary>Computes a hash index for <paramref name="input"/> using <paramref name="seed1"/> and default rounds.</summary>
+    /// <summary>Computes a hash index for <paramref name="input" /> using <paramref name="seed1" /> and default rounds.</summary>
     /// <param name="input">The value to hash.</param>
     /// <param name="seed1">The first hash seed.</param>
     /// <returns>The 64-bit hash index.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed1) => ComputeIndexDefaultRounds(input, seed1, 0);
 
-    /// <summary>Computes a hash index for <paramref name="input"/> using the supplied seeds and default rounds.</summary>
+    /// <summary>Computes a hash index for <paramref name="input" /> using the supplied seeds and default rounds.</summary>
     /// <param name="input">The value to hash.</param>
     /// <param name="seed1">The first hash seed.</param>
     /// <param name="seed2">The second hash seed.</param>
@@ -27,7 +27,7 @@ public static class SipHash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed1, ulong seed2) => ComputeIndexDefaultRounds(input, seed1, seed2);
 
-    /// <summary>Computes a hash index for <paramref name="input"/> using the supplied seeds and rounds.</summary>
+    /// <summary>Computes a hash index for <paramref name="input" /> using the supplied seeds and rounds.</summary>
     /// <param name="input">The value to hash.</param>
     /// <param name="seed1">The first hash seed.</param>
     /// <param name="seed2">The second hash seed.</param>
@@ -90,25 +90,25 @@ public static class SipHash64
         return v0 ^ v1 ^ v2 ^ v3;
     }
 
-    /// <summary>Computes a 64-bit hash for <paramref name="data"/> using default seeds and rounds.</summary>
+    /// <summary>Computes a 64-bit hash for <paramref name="data" /> using default seeds and rounds.</summary>
     /// <param name="data">The bytes to hash.</param>
     /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0, 0);
 
-    /// <summary>Computes a 64-bit hash for <paramref name="data"/> using <paramref name="seed1"/> and default rounds.</summary>
+    /// <summary>Computes a 64-bit hash for <paramref name="data" /> using <paramref name="seed1" /> and default rounds.</summary>
     /// <param name="data">The bytes to hash.</param>
     /// <param name="seed1">The first hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1) => ComputeHash(data, seed1, 0);
 
-    /// <summary>Computes a 64-bit hash for <paramref name="data"/> using the supplied seeds and default rounds.</summary>
+    /// <summary>Computes a 64-bit hash for <paramref name="data" /> using the supplied seeds and default rounds.</summary>
     /// <param name="data">The bytes to hash.</param>
     /// <param name="seed1">The first hash seed.</param>
     /// <param name="seed2">The second hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2) => ComputeHash(data, seed1, seed2, 2, 4);
 
-    /// <summary>Computes a 64-bit hash for <paramref name="data"/> using the supplied seeds and rounds.</summary>
+    /// <summary>Computes a 64-bit hash for <paramref name="data" /> using the supplied seeds and rounds.</summary>
     /// <param name="data">The bytes to hash.</param>
     /// <param name="seed1">The first hash seed.</param>
     /// <param name="seed2">The second hash seed.</param>

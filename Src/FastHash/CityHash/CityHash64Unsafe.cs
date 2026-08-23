@@ -7,7 +7,7 @@ public static class CityHash64Unsafe
     /// <param name="data">A pointer to the data to hash.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length)
     {
         if (length < 0)
@@ -21,7 +21,7 @@ public static class CityHash64Unsafe
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed)
     {
         if (length < 0)
@@ -36,7 +36,7 @@ public static class CityHash64Unsafe
     /// <param name="seed1">The first hash seed.</param>
     /// <param name="seed2">The second hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1, ulong seed2)
     {
         if (length < 0)

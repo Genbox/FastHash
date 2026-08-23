@@ -12,7 +12,12 @@ public static class HighwayHash64
     public static ulong ComputeIndex(ulong input) => ComputeIndex(input, HighwayHashConstants.DefaultKey0, HighwayHashConstants.DefaultKey1, HighwayHashConstants.DefaultKey2, HighwayHashConstants.DefaultKey3);
 
     /// <summary>Computes the hash of a 64-bit value.</summary>
-    /// <param name="input">The value to hash.</param><param name="seed1">The first key word.</param><param name="seed2">The second key word.</param><param name="seed3">The third key word.</param><param name="seed4">The fourth key word.</param><returns>The 64-bit hash.</returns>
+    /// <param name="input">The value to hash.</param>
+    /// <param name="seed1">The first key word.</param>
+    /// <param name="seed2">The second key word.</param>
+    /// <param name="seed3">The third key word.</param>
+    /// <param name="seed4">The fourth key word.</param>
+    /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
     {
@@ -23,7 +28,11 @@ public static class HighwayHash64
     }
 
     /// <summary>Computes the hash of a 64-bit value.</summary>
-    /// <param name="input">The value to hash.</param><param name="keys">The key words; the first four are used.</param><returns>The 64-bit hash.</returns><exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception><exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
+    /// <param name="input">The value to hash.</param>
+    /// <param name="keys">The key words; the first four are used.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception>
+    /// <exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong[] keys)
     {
@@ -41,7 +50,12 @@ public static class HighwayHash64
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, HighwayHashConstants.DefaultKey0, HighwayHashConstants.DefaultKey1, HighwayHashConstants.DefaultKey2, HighwayHashConstants.DefaultKey3);
 
     /// <summary>Computes the hash of a byte sequence.</summary>
-    /// <param name="data">The bytes to hash.</param><param name="seed1">The first key word.</param><param name="seed2">The second key word.</param><param name="seed3">The third key word.</param><param name="seed4">The fourth key word.</param><returns>The 64-bit hash.</returns>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="seed1">The first key word.</param>
+    /// <param name="seed2">The second key word.</param>
+    /// <param name="seed3">The third key word.</param>
+    /// <param name="seed4">The fourth key word.</param>
+    /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
     {
         HighwayHashState state = new HighwayHashState();
@@ -50,7 +64,11 @@ public static class HighwayHash64
     }
 
     /// <summary>Computes the hash of a byte sequence.</summary>
-    /// <param name="data">The bytes to hash.</param><param name="keys">The key words; the first four are used.</param><returns>The 64-bit hash.</returns><exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception><exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="keys">The key words; the first four are used.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception>
+    /// <exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong[] keys)
     {
         HighwayHashState state = new HighwayHashState();
@@ -138,10 +156,7 @@ public static class HighwayHash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void UpdatePacket(ReadOnlySpan<byte> packet, int offset, ref HighwayHashState state)
-    {
-        Update(Read64(packet, offset), Read64(packet, offset + 8), Read64(packet, offset + 16), Read64(packet, offset + 24), ref state);
-    }
+    private static void UpdatePacket(ReadOnlySpan<byte> packet, int offset, ref HighwayHashState state) => Update(Read64(packet, offset), Read64(packet, offset + 8), Read64(packet, offset + 16), Read64(packet, offset + 24), ref state);
 
     private static void Update(ulong lane0, ulong lane1, ulong lane2, ulong lane3, ref HighwayHashState state)
     {
@@ -269,13 +284,9 @@ public static class HighwayHash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void PermuteAndUpdate(ref HighwayHashState state)
-    {
-        Update(
-            (state.v0_2 >> 32) | (state.v0_2 << 32),
-            (state.v0_3 >> 32) | (state.v0_3 << 32),
-            (state.v0_0 >> 32) | (state.v0_0 << 32),
-            (state.v0_1 >> 32) | (state.v0_1 << 32),
-            ref state);
-    }
+    private static void PermuteAndUpdate(ref HighwayHashState state) => Update((state.v0_2 >> 32) | (state.v0_2 << 32),
+        (state.v0_3 >> 32) | (state.v0_3 << 32),
+        (state.v0_0 >> 32) | (state.v0_0 << 32),
+        (state.v0_1 >> 32) | (state.v0_1 << 32),
+        ref state);
 }

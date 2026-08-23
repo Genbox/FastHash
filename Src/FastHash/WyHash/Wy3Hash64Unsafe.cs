@@ -14,10 +14,10 @@ namespace Genbox.FastHash.WyHash;
 public static class Wy3Hash64Unsafe
 {
     /// <summary>Computes a hash using the default secret and a zero seed.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="length" /> readable bytes; it may be null only when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length)
     {
         if (length < 0)
@@ -27,11 +27,11 @@ public static class Wy3Hash64Unsafe
     }
 
     /// <summary>Computes a hash using the default secret.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="length" /> readable bytes; it may be null only when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed)
     {
         if (length < 0)
@@ -50,7 +50,7 @@ public static class Wy3Hash64Unsafe
                     if (len >= 4)
                     {
                         a = Read32(data);
-                        b = Read32(data + len - 4);
+                        b = Read32((data + len) - 4);
                     }
                     else if (len > 0)
                     {
@@ -66,7 +66,7 @@ public static class Wy3Hash64Unsafe
                 else
                 {
                     a = Read64(data);
-                    b = Read64(data + len - 8);
+                    b = Read64((data + len) - 8);
                 }
             }
             else
@@ -76,6 +76,7 @@ public static class Wy3Hash64Unsafe
                 if (i > 48)
                 {
                     ulong see1 = seed, see2 = seed;
+
                     do
                     {
                         seed = _wymix(Read64(data) ^ secret[1], Read64(data + 8) ^ seed);
@@ -84,17 +85,21 @@ public static class Wy3Hash64Unsafe
                         data += 48;
                         i -= 48;
                     } while (i > 48);
+
                     seed ^= see1 ^ see2;
                 }
+
                 while (i > 16)
                 {
                     seed = _wymix(Read64(data) ^ secret[1], Read64(data + 8) ^ seed);
                     i -= 16;
                     data += 16;
                 }
+
                 a = Read64((data + i) - 16);
                 b = Read64((data + i) - 8);
             }
+
             return _wymix(secret[1] ^ len, _wymix(a ^ secret[1], b ^ seed));
         }
     }

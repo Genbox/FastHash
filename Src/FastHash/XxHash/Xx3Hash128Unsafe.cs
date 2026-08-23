@@ -7,10 +7,10 @@ namespace Genbox.FastHash.XxHash;
 public static class Xx3Hash128Unsafe
 {
     /// <summary>Computes a hash using a zero seed.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="length" /> readable bytes; it may be null only when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <returns>The 128-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe UInt128 ComputeHash(byte* data, int length)
     {
         if (length < 0)
@@ -20,11 +20,11 @@ public static class Xx3Hash128Unsafe
     }
 
     /// <summary>Computes a hash for unmanaged data.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="length" /> readable bytes; it may be null only when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 128-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe UInt128 ComputeHash(byte* data, int length, ulong seed)
     {
         if (length < 0)
@@ -74,8 +74,7 @@ public static class Xx3Hash128Unsafe
 
         XXH3_hashLong_internal_loop(accPtr, input, len, secret, secretSize);
 
-        return new UInt128(
-            XXH3_mergeAccs(accPtr, secret + XxHashConstants.SECRET_MERGEACCS_START, (ulong)len * XxHashConstants.PRIME64_1),
+        return new UInt128(XXH3_mergeAccs(accPtr, secret + XxHashConstants.SECRET_MERGEACCS_START, (ulong)len * XxHashConstants.PRIME64_1),
             XXH3_mergeAccs(accPtr, (secret + secretSize) - XxHashConstants.ACC_SIZE - XxHashConstants.SECRET_MERGEACCS_START, ~((ulong)len * XxHashConstants.PRIME64_2)));
     }
 
@@ -101,8 +100,10 @@ public static class Xx3Hash128Unsafe
 #if XXH_SIZE_OPT
         /* Smaller, but slightly slower. */
         size_t i = (len - 1) / 32;
-        do {
-            acc = XXH128_mix32B(acc, input+16*i, input+len-16*(i+1), secret+32*i, seed);
+
+        do
+        {
+            acc = XXH128_mix32B(acc, input + 16 * i, input + len - 16 * (i + 1), secret + 32 * i, seed);
         } while (i-- != 0);
 #else
         if (len > 32)
@@ -114,8 +115,10 @@ public static class Xx3Hash128Unsafe
 
                 acc = XXH128_mix32B(acc, input + 32, (input + len) - 48, secret + 64, seed);
             }
+
             acc = XXH128_mix32B(acc, input + 16, (input + len) - 32, secret + 32, seed);
         }
+
         acc = XXH128_mix32B(acc, input, (input + len) - 16, secret, seed);
 #endif
         ulong low = acc.Low + acc.High;

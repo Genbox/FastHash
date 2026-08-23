@@ -53,6 +53,7 @@ internal static class Gx2HashShared
         int offset;
 
         int extraBytesCount = len % VECTOR_SIZE;
+
         if (extraBytesCount == 0)
         {
             hashVector = vectorPtr;

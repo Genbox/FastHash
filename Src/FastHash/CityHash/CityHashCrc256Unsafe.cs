@@ -16,7 +16,7 @@ public static class CityHashCrc256Unsafe
     /// <param name="data">A pointer to the data to hash.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="result">A pointer to at least four destination words.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe void ComputeHash(byte* data, int length, ulong* result)
     {
@@ -58,6 +58,7 @@ public static class CityHashCrc256Unsafe
         // 240 bytes of input per iteration.
         uint iters = length / 240;
         length -= iters * 240;
+
         do
         {
             Chunk(0);

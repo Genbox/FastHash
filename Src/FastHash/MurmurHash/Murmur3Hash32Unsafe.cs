@@ -19,7 +19,11 @@ public static class Murmur3Hash32Unsafe
     }
 
     /// <summary>Computes the hash of an unmanaged byte sequence.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length" /> bytes.</param><param name="length">The number of bytes to hash.</param><param name="seed">The hash seed.</param><returns>The 32-bit hash.</returns><exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
+    /// <param name="data">A pointer to at least <paramref name="length" /> bytes.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 32-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe uint ComputeHash(byte* data, int length, uint seed)
     {
         if (length < 0)

@@ -7,6 +7,7 @@ namespace Genbox.FastHash.Tests.Single;
 public class WyHashTests
 {
 #if !WYHASH_CONDOM
+
     // wyhash 3.0 vectors from old_versions/wyhash_final2.h.
     [Theory]
     [InlineData(0, "", 0x42bc986dc5eec4d3)]
@@ -94,10 +95,7 @@ public class WyHashTests
     [InlineData(16, 0x2ed87bcc1c57e97a)]
     [InlineData(48, 0x1f4742a4b9460fce)]
     [InlineData(97, 0x65f43dd1c27cadf1)]
-    public void Wy3Hash64CustomSecretVectors(int length, ulong hash)
-    {
-        Assert.Equal(hash, Wy3Hash64.ComputeHash(CreateTestData(length), 123, [1, 2, 3, 4]));
-    }
+    public void Wy3Hash64CustomSecretVectors(int length, ulong hash) => Assert.Equal(hash, Wy3Hash64.ComputeHash(CreateTestData(length), 123, [1, 2, 3, 4]));
 
     [Theory]
     [InlineData(0, 0x000000000000023e)]
@@ -108,10 +106,7 @@ public class WyHashTests
     [InlineData(16, 0x33884072b5961b23)]
     [InlineData(48, 0xd7626a4a45fbbb4e)]
     [InlineData(97, 0x01f08aff0d34880a)]
-    public void Wy4Hash64CustomSecretVectors(int length, ulong hash)
-    {
-        Assert.Equal(hash, Wy4Hash64.ComputeHash(CreateTestData(length), 123, [1, 2, 3, 4]));
-    }
+    public void Wy4Hash64CustomSecretVectors(int length, ulong hash) => Assert.Equal(hash, Wy4Hash64.ComputeHash(CreateTestData(length), 123, [1, 2, 3, 4]));
 #endif
 
     [Fact]
@@ -148,6 +143,7 @@ public class WyHashTests
     public void Wy3Hash64IndexTest()
     {
         ulong val = 1ul;
+
         for (int i = 1; i <= 64; i++)
         {
             ulong h1 = Wy3Hash64.ComputeHash(BitConverter.GetBytes(val));

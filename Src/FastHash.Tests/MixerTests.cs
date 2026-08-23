@@ -9,6 +9,8 @@ public class MixerTests
     [MemberData(nameof(GetFunctions))]
     public void RandomDistributionTest(MixSpec64 spec)
     {
+        ArgumentNullException.ThrowIfNull(spec);
+
         int[] buckets = new int[100];
         const uint iterations = 1_000_000;
 

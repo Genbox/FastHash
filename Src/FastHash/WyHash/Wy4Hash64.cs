@@ -38,9 +38,9 @@ public static class Wy4Hash64
 
     /// <summary>Computes a hash for the supplied data using a custom secret and a zero seed.</summary>
     /// <param name="data">The data to hash.</param>
-    /// <param name="secret">The secret containing at least four words, or <see langword="null"/> to use the default secret.</param>
+    /// <param name="secret">The secret containing at least four words, or <see langword="null" /> to use the default secret.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentException"><paramref name="secret"/> contains fewer than four words.</exception>
+    /// <exception cref="ArgumentException"><paramref name="secret" /> contains fewer than four words.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong[]? secret) => ComputeHash(data, 0, secret);
 
     /// <summary>Computes a hash for the supplied data using the default secret.</summary>
@@ -52,9 +52,9 @@ public static class Wy4Hash64
     /// <summary>Computes a hash for the supplied data.</summary>
     /// <param name="data">The data to hash.</param>
     /// <param name="seed">The hash seed.</param>
-    /// <param name="secret">The secret containing at least four words, or <see langword="null"/> to use the default secret.</param>
+    /// <param name="secret">The secret containing at least four words, or <see langword="null" /> to use the default secret.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentException"><paramref name="secret"/> contains fewer than four words.</exception>
+    /// <exception cref="ArgumentException"><paramref name="secret" /> contains fewer than four words.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed, ulong[]? secret)
     {
         secret ??= V4DefaultSecret;
@@ -93,6 +93,7 @@ public static class Wy4Hash64
             {
                 ulong see1 = seed;
                 ulong see2 = seed;
+
                 do
                 {
                     seed = Wymix(Read64(data, offset) ^ secret[1], Read64(data, offset + 8) ^ seed);
@@ -112,8 +113,8 @@ public static class Wy4Hash64
                 i -= 16;
             }
 
-            a = Read64(data, offset + i - 16);
-            b = Read64(data, offset + i - 8);
+            a = Read64(data, (offset + i) - 16);
+            b = Read64(data, (offset + i) - 8);
         }
 
         a ^= secret[1];

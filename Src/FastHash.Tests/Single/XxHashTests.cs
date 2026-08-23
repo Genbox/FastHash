@@ -39,6 +39,7 @@ public class XxHashTests
         _sanityBuffer = new byte[2367];
 
         ulong byteGen = PRIME32;
+
         for (int i = 0; i < _sanityBuffer.Length; i++)
         {
             _sanityBuffer[i] = (byte)(byteGen >> 56);
@@ -52,9 +53,9 @@ public class XxHashTests
         for (int i = 0; i < _testVectors32.Length; i++)
         {
             (int len, uint seed, uint result) = _testVectors32[i];
-            Assert.Equal(result, XxHash32.ComputeHash(_sanityBuffer[..len], seed));
+            Assert.Equal(result, XxHash32.ComputeHash(_sanityBuffer.AsSpan(0, len), seed));
 
-            fixed (byte* ptr = _sanityBuffer[..len])
+            fixed (byte* ptr = _sanityBuffer)
                 Assert.Equal(result, XxHash32Unsafe.ComputeHash(ptr, len, seed));
         }
     }
@@ -65,9 +66,9 @@ public class XxHashTests
         for (int i = 0; i < _testVectors64.Length; i++)
         {
             (int len, uint seed, ulong result) = _testVectors64[i];
-            Assert.Equal(XxHash64.ComputeHash(_sanityBuffer[..len], seed), result);
+            Assert.Equal(XxHash64.ComputeHash(_sanityBuffer.AsSpan(0, len), seed), result);
 
-            fixed (byte* ptr = _sanityBuffer[..len])
+            fixed (byte* ptr = _sanityBuffer)
                 Assert.Equal(XxHash64Unsafe.ComputeHash(ptr, len, seed), result);
         }
     }
@@ -76,6 +77,7 @@ public class XxHashTests
     public void XxHashIndexTest()
     {
         ulong val = 1ul;
+
         for (int i = 1; i <= 64; i++)
         {
             ulong h1 = XxHash64.ComputeHash(BitConverter.GetBytes(val));

@@ -7,28 +7,28 @@ public class HashTests
     private static readonly byte[] _data = "This is a test!!"u8.ToArray();
 
     public static IEnumerable<object[]> CreateAlgorithms32() => AlgorithmCatalog.Hash32Algorithms
-        .Where(static x => x.Hash != null && x.Expected != null)
-        .Select(static x => new object[] { x.Name, x.Expected! });
+                                                                                .Where(static x => x.Hash != null && x.Expected != null)
+                                                                                .Select(static x => new object[] { x.Name, x.Expected! });
 
     public static IEnumerable<object[]> CreateAlgorithms64() => AlgorithmCatalog.Hash64Algorithms
-        .Where(static x => x.Hash != null && x.Expected != null)
-        .Select(static x => new object[] { x.Name, x.Expected! });
+                                                                                .Where(static x => x.Hash != null && x.Expected != null)
+                                                                                .Select(static x => new object[] { x.Name, x.Expected! });
 
     public static IEnumerable<object[]> CreateAlgorithms128() => AlgorithmCatalog.Hash128Algorithms
-        .Where(static x => x.Hash != null && x.Expected != null)
-        .Select(static x => new object[] { x.Name, x.Expected! });
+                                                                                 .Where(static x => x.Hash != null && x.Expected != null)
+                                                                                 .Select(static x => new object[] { x.Name, x.Expected! });
 
     public static IEnumerable<object[]> CreateAlgorithmsUnsafe32() => AlgorithmCatalog.Hash32Algorithms
-        .Where(static x => x.UnsafeHash != null && x.Expected != null)
-        .Select(static x => new object[] { x.Name, x.Expected! });
+                                                                                      .Where(static x => x.UnsafeHash != null && x.Expected != null)
+                                                                                      .Select(static x => new object[] { x.Name, x.Expected! });
 
     public static IEnumerable<object[]> CreateAlgorithmsUnsafe64() => AlgorithmCatalog.Hash64Algorithms
-        .Where(static x => x.UnsafeHash != null && x.Expected != null)
-        .Select(static x => new object[] { x.Name, x.Expected! });
+                                                                                      .Where(static x => x.UnsafeHash != null && x.Expected != null)
+                                                                                      .Select(static x => new object[] { x.Name, x.Expected! });
 
     public static IEnumerable<object[]> CreateAlgorithmsUnsafe128() => AlgorithmCatalog.Hash128Algorithms
-        .Where(static x => x.UnsafeHash != null && x.Expected != null)
-        .Select(static x => new object[] { x.Name, x.Expected! });
+                                                                                       .Where(static x => x.UnsafeHash != null && x.Expected != null)
+                                                                                       .Select(static x => new object[] { x.Name, x.Expected! });
 
     [Theory]
     [MemberData(nameof(CreateAlgorithms32))]

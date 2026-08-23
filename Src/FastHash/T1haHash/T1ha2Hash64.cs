@@ -49,6 +49,7 @@ public static class T1ha2Hash64
             ulong d = ~(ulong)length + RotateRight(seed, 19);
 
             int limit = length - 32;
+
             while (offset <= limit)
             {
                 ulong w0 = Read64(data, offset);

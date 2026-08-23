@@ -22,12 +22,12 @@ public readonly struct UInt128 : IEquatable<UInt128>
 
     /// <summary>Determines whether this value equals another 128-bit value.</summary>
     /// <param name="other">The value to compare.</param>
-    /// <returns><see langword="true"/> when both words are equal; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true" /> when both words are equal; otherwise, <see langword="false" />.</returns>
     public bool Equals(UInt128 other) => Low == other.Low && High == other.High;
 
     /// <summary>Determines whether this value equals the specified object.</summary>
     /// <param name="obj">The object to compare.</param>
-    /// <returns><see langword="true"/> when <paramref name="obj"/> is an equal <see cref="UInt128"/>; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true" /> when <paramref name="obj" /> is an equal <see cref="UInt128" />; otherwise, <see langword="false" />.</returns>
     public override bool Equals(object? obj) => obj is UInt128 other && Equals(other);
 
     /// <summary>Returns the hash code for this value.</summary>

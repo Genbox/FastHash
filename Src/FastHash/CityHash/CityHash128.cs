@@ -60,8 +60,9 @@ public static class CityHash128
     {
         ulong a = seed.Low;
         ulong b = seed.High;
-        ulong c = 0;
-        ulong d = 0;
+        ulong c;
+        ulong d;
+
         if (len <= 16)
         {
             a = ShiftMix(a * K1) * K1;
@@ -73,8 +74,10 @@ public static class CityHash128
             c = HashLen16(Read64(s, len - 8) + K1, a);
             d = HashLen16(b + len, c + Read64(s, len - 16));
             a += d;
+
             // len > 16 here, so do...while is safe
             uint offset = 0;
+
             do
             {
                 a ^= ShiftMix(Read64(s, offset) * K1) * K1;
@@ -87,6 +90,7 @@ public static class CityHash128
                 len -= 16;
             } while (len > 16);
         }
+
         a = HashLen16(a, c);
         b = HashLen16(d, b);
         return new UInt128(a ^ b, HashLen16(b, a));
@@ -108,6 +112,7 @@ public static class CityHash128
 
         // This is the same inner loop as CityHash64(), manually unrolled.
         uint offset = 0;
+
         do
         {
             x = RotateRight(x + y + v.Low + Read64(s, offset + 8), 37) * K1;
@@ -130,11 +135,13 @@ public static class CityHash128
             offset += 64;
             len -= 128;
         } while (len >= 128);
+
         x += RotateRight(v.Low + z, 49) * K0;
         y = (y * K0) + RotateRight(w.High, 37);
         z = (z * K0) + RotateRight(w.Low, 27);
         w = new UInt128(w.Low * 9, w.High);
         v = new UInt128(v.Low * K0, v.High);
+
         // If 0 < len < 128, hash up to 4 chunks of 32 bytes each from the end of s.
         for (uint tail_done = 0; tail_done < len;)
         {
@@ -147,6 +154,7 @@ public static class CityHash128
             v = WeakHashLen32WithSeeds(s, (offset + len) - tail_done, v.Low + z, v.High);
             v = new UInt128(v.Low * K0, v.High);
         }
+
         // At this point our 56 bytes of state should contain more than
         // enough information for a strong 128-bit hash.  We use two
         // different 56-byte-to-8-byte hashes to get a 16-byte final result.

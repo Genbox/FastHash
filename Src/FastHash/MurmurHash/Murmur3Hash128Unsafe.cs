@@ -19,7 +19,11 @@ public static class Murmur3Hash128Unsafe
     }
 
     /// <summary>Computes the hash of an unmanaged byte sequence.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length" /> bytes.</param><param name="length">The number of bytes to hash.</param><param name="seed">The hash seed.</param><returns>The 128-bit hash.</returns><exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
+    /// <param name="data">A pointer to at least <paramref name="length" /> bytes.</param>
+    /// <param name="length">The number of bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 128-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe UInt128 ComputeHash(byte* data, int length, uint seed)
     {
         if (length < 0)
@@ -83,7 +87,7 @@ public static class Murmur3Hash128Unsafe
                 k2 ^= (ulong)tail[9] << 8;
                 goto case 9;
             case 9:
-                k2 ^= (ulong)tail[8] << 0;
+                k2 ^= tail[8];
 
                 k2 *= C2_64;
                 k2 = RotateLeft(k2, 33);
@@ -113,7 +117,7 @@ public static class Murmur3Hash128Unsafe
                 k1 ^= (ulong)tail[1] << 8;
                 goto case 1;
             case 1:
-                k1 ^= (ulong)tail[0] << 0;
+                k1 ^= tail[0];
 
                 k1 *= C1_64;
                 k1 = RotateLeft(k1, 31);

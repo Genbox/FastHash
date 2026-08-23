@@ -49,6 +49,7 @@ public class HighwayHashTests
     {
         byte[] data = new byte[kMaxSize + 1];
         byte i;
+
         for (i = 0; i <= kMaxSize; i++)
         {
             data[i] = i;

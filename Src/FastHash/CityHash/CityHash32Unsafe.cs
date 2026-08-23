@@ -11,7 +11,7 @@ public static class CityHash32Unsafe
     /// <param name="data">A pointer to the data to hash.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <returns>The 32-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe uint ComputeHash(byte* data, int length)
     {
         if (length < 0)
@@ -25,7 +25,7 @@ public static class CityHash32Unsafe
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 32-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe uint ComputeHash(byte* data, int length, uint seed)
     {
         if (length < 0)
@@ -63,6 +63,7 @@ public static class CityHash32Unsafe
         f = RotateRight(f, 19);
         f = (f * 5) + 0xe6546b64;
         uint iters = (len - 1) / 20;
+
         do
         {
             a0 = RotateRight(Read32(data) * C1, 17) * C2;
@@ -90,6 +91,7 @@ public static class CityHash32Unsafe
             Permute3(ref f, ref h, ref g);
             data += 20;
         } while (--iters != 0);
+
         g = RotateRight(g, 11) * C1;
         g = RotateRight(g, 17) * C1;
         f = RotateRight(f, 11) * C1;
@@ -108,12 +110,14 @@ public static class CityHash32Unsafe
     {
         uint b = 0;
         uint c = 9;
+
         for (int i = 0; i < len; i++)
         {
             uint v = (uint)(sbyte)*(s + i);
             b = (b * C1) + v;
             c ^= b;
         }
+
         return AA_xmxmx_Murmur_32(Mur(b, Mur(len, c)));
     }
 
@@ -121,12 +125,14 @@ public static class CityHash32Unsafe
     {
         uint b = seed;
         uint c = 9;
+
         for (int i = 0; i < len; i++)
         {
             uint v = (uint)(sbyte)*(s + i);
             b = (b * C1) + v;
             c ^= b;
         }
+
         return AA_xmxmx_Murmur_32(Mur(b, Mur(len, c)));
     }
 

@@ -78,6 +78,7 @@ public class Xx3HashTests
         _sanityBuffer = new byte[2367];
 
         ulong byteGen = PRIME32;
+
         for (int i = 0; i < _sanityBuffer.Length; i++)
         {
             _sanityBuffer[i] = (byte)(byteGen >> 56);

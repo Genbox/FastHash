@@ -20,6 +20,9 @@ public class MbPrSecColumn : IColumn
 
     public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
     {
+        ArgumentNullException.ThrowIfNull(summary);
+        ArgumentNullException.ThrowIfNull(benchmarkCase);
+
         BenchmarkReport? report = summary.Reports.FirstOrDefault(x => ReferenceEquals(x.BenchmarkCase, benchmarkCase));
         Statistics? stats = report?.ResultStatistics;
 
@@ -36,9 +39,11 @@ public class MbPrSecColumn : IColumn
         //Mean is in nanoseconds, which is 1.000.000.000x less than a second
         double time = stats.Mean / 1000 / 1000 / 1000;
 
-        double opsPrSec = (size / 1024f / 1024) / time;
+        double opsPrSec = size / 1024f / 1024 / time;
         return opsPrSec.ToString("N0", NumberFormatInfo.InvariantInfo);
     }
+
+    public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style) => GetValue(summary, benchmarkCase);
 
     public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase) => false;
     public bool IsAvailable(Summary summary) => true;
@@ -46,8 +51,7 @@ public class MbPrSecColumn : IColumn
     public ColumnCategory Category => ColumnCategory.Custom;
     public bool IsNumeric => true;
     public UnitType UnitType => UnitType.Dimensionless;
-    public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style) => GetValue(summary, benchmarkCase);
     public int PriorityInCategory => 1;
-    public override string ToString() => ColumnName;
     public string Legend => "Mibibytes pr. second";
+    public override string ToString() => ColumnName;
 }

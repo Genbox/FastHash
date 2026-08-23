@@ -1,6 +1,6 @@
 namespace Genbox.FastHash.Benchmarks.Code;
 
-public static class BenchmarkHelper
+internal static class BenchmarkHelper
 {
     public static byte[] GetRandomBytes(int count)
     {

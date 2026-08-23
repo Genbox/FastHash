@@ -45,7 +45,7 @@ public static class ClHash64
     /// <param name="data">The data to hash.</param>
     /// <param name="key">The CLHash key.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentException"><paramref name="key"/> is invalid.</exception>
+    /// <exception cref="ArgumentException"><paramref name="key" /> is invalid.</exception>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ReadOnlySpan<ulong> key)
     {
@@ -66,7 +66,7 @@ public static class ClHash64
 
     internal static void ValidatePolynomial(ulong low, ulong high, string paramName)
     {
-        if (ClHashShared.IsInvalidPolynomial(low, high))
+        if (IsInvalidPolynomial(low, high))
             throw new ArgumentException("CLHash keys must have a non-zero, non-degenerate polynomial multiplier.", paramName);
     }
 
@@ -78,7 +78,7 @@ public static class ClHash64
         polyValue = Sse2.And(polyValue.AsUInt32(), Vector128.Create(0xffffffffU, 0xffffffffU, 0xffffffffU, 0x3fffffffU)).AsByte();
 
         int fullWords = lengthBytes / sizeof(ulong);
-        int wordsIncludingPartial = (lengthBytes + sizeof(ulong) - 1) / sizeof(ulong);
+        int wordsIncludingPartial = ((lengthBytes + sizeof(ulong)) - 1) / sizeof(ulong);
 
         if (WordsPerBlock < wordsIncludingPartial)
         {
@@ -99,10 +99,9 @@ public static class ClHash64
                 acc = Mul128By128To128LazyMod127(polyValue, acc);
 
                 Vector128<byte> h1;
-                if ((lengthBytes % sizeof(ulong)) == 0)
-                {
+
+                if (lengthBytes % sizeof(ulong) == 0)
                     h1 = ClMulHalfScalarProductWithTailWithoutReduction(key, data, t * sizeof(ulong), remain);
-                }
                 else
                 {
                     ulong lastWord = CreateLastWord(data, fullWords * sizeof(ulong), lengthBytes);
@@ -111,7 +110,7 @@ public static class ClHash64
 
                 acc = Sse2.Xor(acc, h1);
             }
-            else if ((lengthBytes % sizeof(ulong)) != 0)
+            else if (lengthBytes % sizeof(ulong) != 0)
             {
                 acc = Mul128By128To128LazyMod127(polyValue, acc);
                 ulong lastWord = CreateLastWord(data, fullWords * sizeof(ulong), lengthBytes);
@@ -126,10 +125,9 @@ public static class ClHash64
 
         {
             Vector128<byte> acc;
-            if ((lengthBytes % sizeof(ulong)) == 0)
-            {
+
+            if (lengthBytes % sizeof(ulong) == 0)
                 acc = ClMulHalfScalarProductWithTailWithoutReduction(key, data, 0, fullWords);
-            }
             else
             {
                 ulong lastWord = CreateLastWord(data, fullWords * sizeof(ulong), lengthBytes);
@@ -141,7 +139,6 @@ public static class ClHash64
             return PrecompReduction64(acc);
         }
     }
-
 
     private static Vector128<byte> ClMulHalfScalarProductWithoutReduction(ReadOnlySpan<ulong> randomSource, ReadOnlySpan<byte> data, int dataOffset, int lengthWords)
     {

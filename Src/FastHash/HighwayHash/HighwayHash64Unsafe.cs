@@ -6,10 +6,10 @@ namespace Genbox.FastHash.HighwayHash;
 public static class HighwayHash64Unsafe
 {
     /// <summary>Computes the hash of an unmanaged byte sequence using the default key.</summary>
-    /// <param name="data">A pointer to at least <paramref name="size"/> bytes, or any pointer when <paramref name="size"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="size" /> bytes, or any pointer when <paramref name="size" /> is zero.</param>
     /// <param name="size">The non-negative number of bytes to hash.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="size"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="size" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int size) => ComputeHash(data, size, HighwayHashConstants.DefaultKey0, HighwayHashConstants.DefaultKey1, HighwayHashConstants.DefaultKey2, HighwayHashConstants.DefaultKey3);
 
     /// <summary>Computes the hash of an unmanaged byte sequence.</summary>
@@ -32,7 +32,13 @@ public static class HighwayHash64Unsafe
     }
 
     /// <summary>Computes the hash of an unmanaged byte sequence.</summary>
-    /// <param name="data">A pointer to at least <paramref name="size" /> bytes.</param><param name="size">The non-negative number of bytes to hash.</param><param name="keys">The key words; the first four are used.</param><returns>The 64-bit hash.</returns><exception cref="ArgumentOutOfRangeException"><paramref name="size" /> is negative.</exception><exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception><exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
+    /// <param name="data">A pointer to at least <paramref name="size" /> bytes.</param>
+    /// <param name="size">The non-negative number of bytes to hash.</param>
+    /// <param name="keys">The key words; the first four are used.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="size" /> is negative.</exception>
+    /// <exception cref="ArgumentNullException"><paramref name="keys" /> is <see langword="null" />.</exception>
+    /// <exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
     public static unsafe ulong ComputeHash(byte* data, int size, ulong[] keys)
     {
         if (size < 0)
@@ -109,10 +115,7 @@ public static class HighwayHash64Unsafe
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void HighwayHashUpdatePacket(byte* packet, ref HighwayHashState state)
-    {
-        Update(Read64(packet + 0), Read64(packet + 8), Read64(packet + 16), Read64(packet + 24), ref state);
-    }
+    private static unsafe void HighwayHashUpdatePacket(byte* packet, ref HighwayHashState state) => Update(Read64(packet + 0), Read64(packet + 8), Read64(packet + 16), Read64(packet + 24), ref state);
 
     private static void Update(ulong lane0, ulong lane1, ulong lane2, ulong lane3, ref HighwayHashState state)
     {
@@ -233,6 +236,7 @@ public static class HighwayHash64Unsafe
                 packet[16 + 2] = remainder[size_mod4 - 1];
             }
         }
+
         HighwayHashUpdatePacket(packet, ref state);
     }
 
@@ -246,13 +250,9 @@ public static class HighwayHash64Unsafe
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void PermuteAndUpdate(ref HighwayHashState state)
-    {
-        Update(
-            (state.v0_2 >> 32) | (state.v0_2 << 32),
-            (state.v0_3 >> 32) | (state.v0_3 << 32),
-            (state.v0_0 >> 32) | (state.v0_0 << 32),
-            (state.v0_1 >> 32) | (state.v0_1 << 32),
-            ref state);
-    }
+    private static void PermuteAndUpdate(ref HighwayHashState state) => Update((state.v0_2 >> 32) | (state.v0_2 << 32),
+        (state.v0_3 >> 32) | (state.v0_3 << 32),
+        (state.v0_0 >> 32) | (state.v0_0 << 32),
+        (state.v0_1 >> 32) | (state.v0_1 << 32),
+        ref state);
 }

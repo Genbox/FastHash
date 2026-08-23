@@ -46,9 +46,7 @@ public static class FarshHash32
         }
 
         if (length > 0)
-        {
             sum = farsh_combine(sum, farsh_partial_block(data, offset));
-        }
 
         return farsh_final(sum) ^ FARSH_KEYS[0];
     }
@@ -59,6 +57,7 @@ public static class FarshHash32
         ulong sum = 0;
 
         uint j = 0;
+
         for (uint i = 0; i < STRIPE; i += 8, j += 2)
         {
             uint val1 = Read32(data, (uint)offset + i);
@@ -129,10 +128,7 @@ public static class FarshHash32
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        void AddPartial(uint v1, uint v2)
-        {
-            sum += (v1 + FARSH_KEYS[keyindex]) * (ulong)(v2 + FARSH_KEYS[keyindex + 1]);
-        }
+        void AddPartial(uint value1, uint value2) => sum += (value1 + FARSH_KEYS[keyindex]) * (ulong)(value2 + FARSH_KEYS[keyindex + 1]);
 
         return sum;
     }

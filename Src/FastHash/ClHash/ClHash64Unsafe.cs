@@ -19,7 +19,7 @@ public static class ClHash64Unsafe
     /// <param name="data">A pointer to the data to hash.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length)
     {
@@ -35,7 +35,7 @@ public static class ClHash64Unsafe
     /// <param name="seed1">The first key seed.</param>
     /// <param name="seed2">The second key seed.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1, ulong seed2)
     {
@@ -53,8 +53,8 @@ public static class ClHash64Unsafe
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="key">The CLHash key.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentException"><paramref name="key"/> is invalid.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentException"><paramref name="key" /> is invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ReadOnlySpan<ulong> key)
     {
@@ -70,7 +70,7 @@ public static class ClHash64Unsafe
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="key">A pointer to the CLHash key.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong* key)
     {
@@ -90,7 +90,7 @@ public static class ClHash64Unsafe
         polyValue = Sse2.And(polyValue.AsUInt32(), Vector128.Create(0xffffffffU, 0xffffffffU, 0xffffffffU, 0x3fffffffU)).AsByte();
 
         int fullWords = lengthBytes / sizeof(ulong);
-        int wordsIncludingPartial = (lengthBytes + sizeof(ulong) - 1) / sizeof(ulong);
+        int wordsIncludingPartial = ((lengthBytes + sizeof(ulong)) - 1) / sizeof(ulong);
 
         if (WordsPerBlock < wordsIncludingPartial)
         {
@@ -111,10 +111,9 @@ public static class ClHash64Unsafe
                 acc = Mul128By128To128LazyMod127(polyValue, acc);
 
                 Vector128<byte> h1;
-                if ((lengthBytes % sizeof(ulong)) == 0)
-                {
+
+                if (lengthBytes % sizeof(ulong) == 0)
                     h1 = ClMulHalfScalarProductWithTailWithoutReduction(key, data + (t * sizeof(ulong)), remain);
-                }
                 else
                 {
                     ulong lastWord = CreateLastWord(lengthBytes, data + (fullWords * sizeof(ulong)));
@@ -123,7 +122,7 @@ public static class ClHash64Unsafe
 
                 acc = Sse2.Xor(acc, h1);
             }
-            else if ((lengthBytes % sizeof(ulong)) != 0)
+            else if (lengthBytes % sizeof(ulong) != 0)
             {
                 acc = Mul128By128To128LazyMod127(polyValue, acc);
                 ulong lastWord = CreateLastWord(lengthBytes, data + (fullWords * sizeof(ulong)));
@@ -138,10 +137,9 @@ public static class ClHash64Unsafe
 
         {
             Vector128<byte> acc;
-            if ((lengthBytes % sizeof(ulong)) == 0)
-            {
+
+            if (lengthBytes % sizeof(ulong) == 0)
                 acc = ClMulHalfScalarProductWithTailWithoutReduction(key, data, fullWords);
-            }
             else
             {
                 ulong lastWord = CreateLastWord(lengthBytes, data + (fullWords * sizeof(ulong)));
@@ -153,7 +151,6 @@ public static class ClHash64Unsafe
             return PrecompReduction64(acc);
         }
     }
-
 
     private static unsafe Vector128<byte> ClMulHalfScalarProductWithoutReduction(ulong* randomSource, byte* data, int lengthWords)
     {

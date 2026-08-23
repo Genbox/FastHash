@@ -158,7 +158,7 @@ public static class AbslHash64
             len -= 64;
         } while (len > 64);
 
-        currentState = (currentState ^ duplicatedState0) ^ (duplicatedState1 + duplicatedState2);
+        currentState = currentState ^ duplicatedState0 ^ (duplicatedState1 + duplicatedState2);
 
         if (len > 32)
             currentState = Mix32Bytes(data, offset, currentState);

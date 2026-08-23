@@ -23,6 +23,7 @@ public class Gx2HashTests
 
         // Check that zero filled inputs are hashes differently depending on their size
         byte[] bytes = new byte[1000];
+
         for (int i = 0; i < bytes.Length; i++)
         {
             ReadOnlySpan<byte> slice = bytes.AsSpan().Slice(0, i);
@@ -34,6 +35,7 @@ public class Gx2HashTests
         // Check that zero padding affects output hash
         hashes.Clear();
         bytes[0] = 123;
+
         for (int i = 0; i < bytes.Length; i++)
         {
             ReadOnlySpan<byte> slice = bytes.AsSpan().Slice(0, i);
@@ -45,6 +47,7 @@ public class Gx2HashTests
         // Check that we don't hash beyond input data
         Random rnd = new Random(123);
         rnd.NextBytes(bytes);
+
         for (int i = 0; i < bytes.Length - 100; i++)
         {
             ReadOnlySpan<byte> slice = bytes.AsSpan().Slice(100, i);
@@ -105,11 +108,18 @@ public class Gx2HashTests
 
     private static void SwapBytes(Span<byte> span, int pos1, int pos2, int n)
     {
-        if (pos1 < 0 || pos2 < 0 || n < 0)
-            throw new ArgumentOutOfRangeException("Positions and length must be non-negative.");
+        ArgumentOutOfRangeException.ThrowIfNegative(pos1);
+        ArgumentOutOfRangeException.ThrowIfNegative(pos2);
+        ArgumentOutOfRangeException.ThrowIfNegative(n);
 
-        if (pos1 + n > span.Length || pos2 + n > span.Length)
-            throw new ArgumentOutOfRangeException("Positions and length must be within the span's length.");
+        if (n > span.Length)
+            throw new ArgumentOutOfRangeException(nameof(n), "Length must be within the span's length.");
+
+        if (pos1 > span.Length - n)
+            throw new ArgumentOutOfRangeException(nameof(pos1), "Position and length must be within the span's length.");
+
+        if (pos2 > span.Length - n)
+            throw new ArgumentOutOfRangeException(nameof(pos2), "Position and length must be within the span's length.");
 
         Span<byte> temp = stackalloc byte[n];
         span.Slice(pos1, n).CopyTo(temp);

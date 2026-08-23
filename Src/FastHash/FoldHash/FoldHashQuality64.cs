@@ -48,15 +48,15 @@ public static class FoldHashQuality64
     /// <param name="data">The bytes to hash.</param>
     /// <param name="sharedSeed">The shared seed array, which must contain at least six values.</param>
     /// <returns>The 64-bit FoldHash value.</returns>
-    /// <exception cref="ArgumentException"><paramref name="sharedSeed"/> contains fewer than six values.</exception>
+    /// <exception cref="ArgumentException"><paramref name="sharedSeed" /> contains fewer than six values.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong[]? sharedSeed) => ComputeHash(data, 0, sharedSeed);
 
     /// <summary>Computes the higher-quality hash of a byte sequence using per-hasher and shared seeds.</summary>
     /// <param name="data">The bytes to hash.</param>
     /// <param name="seed">The per-hasher seed.</param>
-    /// <param name="sharedSeed">The shared seed array, or <see langword="null"/> to use the default; a supplied array must contain at least six values.</param>
+    /// <param name="sharedSeed">The shared seed array, or <see langword="null" /> to use the default; a supplied array must contain at least six values.</param>
     /// <returns>The 64-bit FoldHash value.</returns>
-    /// <exception cref="ArgumentException"><paramref name="sharedSeed"/> contains fewer than six values.</exception>
+    /// <exception cref="ArgumentException"><paramref name="sharedSeed" /> contains fewer than six values.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed, ulong[]? sharedSeed)
     {
         sharedSeed ??= DefaultSharedSeed;

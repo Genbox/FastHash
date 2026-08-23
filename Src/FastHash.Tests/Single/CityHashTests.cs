@@ -321,6 +321,7 @@ public class CityHashTests
         {
             ulong a = 9;
             ulong b = 777;
+
             for (int i = 0; i < DataSize; i++)
             {
                 a += b;
@@ -339,6 +340,7 @@ public class CityHashTests
         fixed (byte* data = _data)
         {
             int i = 0;
+
             for (; i < TestSize - 1; i++)
             {
                 Assert.Equal(_testData[i][15], CityHash32Unsafe.ComputeHash(data + (i * i), i));
@@ -356,6 +358,7 @@ public class CityHashTests
         fixed (byte* data = _data)
         {
             int i = 0;
+
             for (; i < TestSize - 1; i++)
             {
                 Assert.Equal(_testData[i][0], CityHash64Unsafe.ComputeHash(data + (i * i), i));

@@ -10,7 +10,7 @@ public static class CityHashCrc256
     /// <summary>Computes the hash of data into a four-word result.</summary>
     /// <param name="data">The data to hash.</param>
     /// <param name="result">The destination span, which must contain at least four words.</param>
-    /// <exception cref="ArgumentException"><paramref name="result"/> contains fewer than four words.</exception>
+    /// <exception cref="ArgumentException"><paramref name="result" /> contains fewer than four words.</exception>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe void ComputeHash(ReadOnlySpan<byte> data, Span<ulong> result)
     {

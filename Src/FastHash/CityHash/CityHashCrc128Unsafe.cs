@@ -14,7 +14,7 @@ public static class CityHashCrc128Unsafe
     /// <param name="data">A pointer to the data to hash.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <returns>The 128-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe UInt128 ComputeHash(byte* data, int length)
     {
@@ -32,7 +32,7 @@ public static class CityHashCrc128Unsafe
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 128-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
     public static unsafe UInt128 ComputeHash(byte* data, int length, UInt128 seed)
     {

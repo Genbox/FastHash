@@ -7,47 +7,47 @@ public class ClHashTests
 {
     private static readonly Vector[] Vectors =
     [
-        new(0x0000000000000001UL, 0x0000000000000002UL, [], 0, 0x0000000000000000UL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, "a"u8.ToArray(), 1, 0xacdafcbac501bd30UL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, "ab"u8.ToArray(), 2, 0x59b6ffb15b82bb2fUL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, "abc"u8.ToArray(), 3, 0xf56dc687673624d3UL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, "1234567"u8.ToArray(), 7, 0xef7c0d4bc4edaeb5UL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, "12345678"u8.ToArray(), 8, 0x87a001bd8c8dafffUL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, "123456789"u8.ToArray(), 9, 0x5760dd6ecd63f100UL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, "abcdefghijklmnop"u8.ToArray(), 16, 0x7ebb571f25d48fcbUL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, "The quick brown fox jumps over the lazy dog"u8.ToArray(), 43, 0x0f6a83d8db4a998cUL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, null, 64, 0xacdf8cc8a72bfde4UL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, null, 100, 0x1f60236eda78ab3aUL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, null, 127, 0x7a5aee3ac782c430UL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, null, 128, 0x2862c359af8542baUL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, null, 1016, 0x2617c19c67e57316UL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, null, 1023, 0x3235cc7231b295aeUL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, null, 1024, 0x1fe72f990185b827UL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, null, 1025, 0x12ac8f7233faec1aUL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, null, 1031, 0x05f81daaea50a081UL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, null, 2048, 0x2d8de569eadfdfd3UL),
-        new(0x0000000000000001UL, 0x0000000000000002UL, null, 4096, 0x161626acc79338d6UL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, [], 0, 0x0000000000000000UL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, "a"u8.ToArray(), 1, 0xacdafcbac501bd30UL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, "ab"u8.ToArray(), 2, 0x59b6ffb15b82bb2fUL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, "abc"u8.ToArray(), 3, 0xf56dc687673624d3UL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, "1234567"u8.ToArray(), 7, 0xef7c0d4bc4edaeb5UL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, "12345678"u8.ToArray(), 8, 0x87a001bd8c8dafffUL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, "123456789"u8.ToArray(), 9, 0x5760dd6ecd63f100UL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, "abcdefghijklmnop"u8.ToArray(), 16, 0x7ebb571f25d48fcbUL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, "The quick brown fox jumps over the lazy dog"u8.ToArray(), 43, 0x0f6a83d8db4a998cUL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, null, 64, 0xacdf8cc8a72bfde4UL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, null, 100, 0x1f60236eda78ab3aUL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, null, 127, 0x7a5aee3ac782c430UL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, null, 128, 0x2862c359af8542baUL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, null, 1016, 0x2617c19c67e57316UL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, null, 1023, 0x3235cc7231b295aeUL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, null, 1024, 0x1fe72f990185b827UL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, null, 1025, 0x12ac8f7233faec1aUL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, null, 1031, 0x05f81daaea50a081UL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, null, 2048, 0x2d8de569eadfdfd3UL),
+        new Vector(0x0000000000000001UL, 0x0000000000000002UL, null, 4096, 0x161626acc79338d6UL),
 
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, [], 0, 0x0000000000000000UL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "a"u8.ToArray(), 1, 0x4ea7e19b3349b1b4UL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "ab"u8.ToArray(), 2, 0x7986c3e43cb8ed61UL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "abc"u8.ToArray(), 3, 0x48ac6e6f91526149UL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "1234567"u8.ToArray(), 7, 0x3e1e6dc170a084e1UL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "12345678"u8.ToArray(), 8, 0x02ec9d5ed2b10bb4UL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "123456789"u8.ToArray(), 9, 0xb0f75433e605c3bdUL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "abcdefghijklmnop"u8.ToArray(), 16, 0x9eb5bb194ebe739bUL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "The quick brown fox jumps over the lazy dog"u8.ToArray(), 43, 0xf079e453f4d1d1f7UL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 64, 0x769b8d02511a2d8dUL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 100, 0x8b6fb22f92dea08cUL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 127, 0xa57195473dc2581aUL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 128, 0x3a00a31f270bbdedUL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 1016, 0x5a120e562baa8754UL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 1023, 0xeee727c8f7378128UL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 1024, 0xe9596a9495802c1eUL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 1025, 0xa8ed3395c92b425eUL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 1031, 0xa23ceab428aac1a5UL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 2048, 0x5121c873b32faedeUL),
-        new(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 4096, 0xfe60f0243de4f18eUL)
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, [], 0, 0x0000000000000000UL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "a"u8.ToArray(), 1, 0x4ea7e19b3349b1b4UL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "ab"u8.ToArray(), 2, 0x7986c3e43cb8ed61UL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "abc"u8.ToArray(), 3, 0x48ac6e6f91526149UL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "1234567"u8.ToArray(), 7, 0x3e1e6dc170a084e1UL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "12345678"u8.ToArray(), 8, 0x02ec9d5ed2b10bb4UL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "123456789"u8.ToArray(), 9, 0xb0f75433e605c3bdUL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "abcdefghijklmnop"u8.ToArray(), 16, 0x9eb5bb194ebe739bUL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, "The quick brown fox jumps over the lazy dog"u8.ToArray(), 43, 0xf079e453f4d1d1f7UL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 64, 0x769b8d02511a2d8dUL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 100, 0x8b6fb22f92dea08cUL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 127, 0xa57195473dc2581aUL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 128, 0x3a00a31f270bbdedUL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 1016, 0x5a120e562baa8754UL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 1023, 0xeee727c8f7378128UL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 1024, 0xe9596a9495802c1eUL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 1025, 0xa8ed3395c92b425eUL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 1031, 0xa23ceab428aac1a5UL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 2048, 0x5121c873b32faedeUL),
+        new Vector(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL, null, 4096, 0xfe60f0243de4f18eUL)
     ];
 
     [Fact]
@@ -67,6 +67,7 @@ public class ClHashTests
             Assert.Equal(vector.Expected, ClHash64.ComputeHash(data, key));
 
             byte[] buffer = data.Length == 0 ? new byte[1] : data;
+
             fixed (byte* ptr = buffer)
             {
                 Assert.Equal(vector.Expected, ClHash64Unsafe.ComputeHash(ptr, vector.Length, vector.Seed1, vector.Seed2));
@@ -91,9 +92,7 @@ public class ClHashTests
         Assert.NotEqual(ClHash64.ComputeHash(data, key1), ClHash64.ComputeHash("my cat"u8, key1));
 
         fixed (byte* dataPtr = data)
-        {
             Assert.Equal(ClHash64.ComputeHash(data, key1), ClHash64Unsafe.ComputeHash(dataPtr, data.Length, key1));
-        }
     }
 
     [Fact]
@@ -120,7 +119,7 @@ public class ClHashTests
     }
 
     [Fact]
-    public unsafe void DegenerateCustomKeysAreRejected()
+    public void DegenerateCustomKeysAreRejected()
     {
         ulong[] allZeroKey = new ulong[ClHashConstants.Random64BitWordsNeeded];
 
@@ -171,7 +170,7 @@ public class ClHashTests
         if (!ClHash64.IsSupported)
             return;
 
-        ulong[] key = CreateByteOffsetKey(1, negateIndex: true);
+        ulong[] key = CreateByteOffsetKey(1, true);
 
         for (int bit = 0; bit < 64; bit++)
         {
@@ -252,7 +251,7 @@ public class ClHashTests
         byte[] keyBytes = new byte[ClHashConstants.RandomBytesNeeded];
 
         for (int i = 0; i < keyBytes.Length; i++)
-            keyBytes[i] = unchecked((byte)(i + 1 - (i * i)));
+            keyBytes[i] = unchecked((byte)((i + 1) - (i * i)));
 
         return BytesToULongs(keyBytes);
     }

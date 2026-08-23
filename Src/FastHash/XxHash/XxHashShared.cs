@@ -31,17 +31,12 @@ internal static class XxHashShared
         ulong input_lo = Read64(input, offset);
         ulong input_hi = Read64(input, offset + 8);
 
-        return XXH3_mul128_fold64(
-            input_lo ^ (Read64(secret, secretOffset) + seed64),
-            input_hi ^ (Read64(secret, secretOffset + 8) - seed64)
-        );
+        return XXH3_mul128_fold64(input_lo ^ (Read64(secret, secretOffset) + seed64),
+            input_hi ^ (Read64(secret, secretOffset + 8) - seed64));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void XXH3_hashLong_internal_loop(Span<ulong> acc, ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize)
-    {
-        XXH3_hashLong_internal_loop_scalar(acc, input, len, secret, secretSize);
-    }
+    internal static void XXH3_hashLong_internal_loop(Span<ulong> acc, ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize) => XXH3_hashLong_internal_loop_scalar(acc, input, len, secret, secretSize);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void XXH3_hashLong_internal_loop_scalar(Span<ulong> acc, ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize)
@@ -59,6 +54,7 @@ internal static class XxHashShared
         /* last partial block */
         //  XXH_ASSERT(len > XXH_STRIPE_LEN);
         int nbStripes = (len - 1 - (block_len * nb_blocks)) / STRIPE_LEN;
+
         // XXH_ASSERT(nbStripes <= (secretSize / XXH_SECRET_CONSUME_RATE));
         XXH3_accumulate_scalar(acc, input, nb_blocks * block_len, secret, 0, nbStripes);
 
@@ -140,5 +136,4 @@ internal static class XxHashShared
             Write64(customSecret, (16 * i) + 8, hi);
         }
     }
-
 }

@@ -47,6 +47,7 @@ public static class MeowHash128Unsafe
         0x70, 0x80, 0x1F, 0x2E, 0x28, 0x58, 0xEF, 0xC1,
         0x66, 0x36, 0x92, 0x0D, 0x87, 0x15, 0x74, 0xE6
     ];
+
     /// <summary>Gets whether the required AES, SSE, SSE2, and SSSE3 intrinsics are supported.</summary>
     public static bool IsSupported => Aes.IsSupported && Sse.IsSupported && Sse2.IsSupported && Ssse3.IsSupported;
 
@@ -197,13 +198,15 @@ public static class MeowHash128Unsafe
         // NOTE(casey): Load any less-than-32-byte residual
         Vector128<byte> xmm9 = Vector128<byte>.Zero;
         Vector128<byte> xmm11 = Vector128<byte>.Zero;
-        // TODO(casey): I need to put more thought into how the end-of-buffer stuff is actually working out here,
+
+        // NOTE(casey): I need to put more thought into how the end-of-buffer stuff is actually working out here,
         // because I _think_ it may be possible to remove the first branch (on Len8) and let the mask zero out the
         // result, but it would take a little thought to make sure it couldn't read off the end of the buffer due
         // to the & 0xf on the align computation.
         // NOTE(casey): First, we have to load the part that is _not_ 16-byte aligned
         byte* last = sourceInit + (len & ~0xf);
         uint len8 = (uint)(len & 0xf);
+
         if (len8 > 0)
         {
             // NOTE(casey): Load the mask early
@@ -327,15 +330,11 @@ public static class MeowHash128Unsafe
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void MEOW_MIX(ref Vector128<byte> r1, ref Vector128<byte> r2, ref Vector128<byte> r3, ref Vector128<byte> r4, ref Vector128<byte> r5, byte* ptr)
-    {
-        MEOW_MIX_REG(ref r1, ref r2, ref r3, ref r4, ref r5,
-            Sse2.LoadVector128(ptr + 15),
-            Sse2.LoadVector128(ptr + 0),
-            Sse2.LoadVector128(ptr + 1),
-            Sse2.LoadVector128(ptr + 16)
-        );
-    }
+    private static unsafe void MEOW_MIX(ref Vector128<byte> r1, ref Vector128<byte> r2, ref Vector128<byte> r3, ref Vector128<byte> r4, ref Vector128<byte> r5, byte* ptr) => MEOW_MIX_REG(ref r1, ref r2, ref r3, ref r4, ref r5,
+        Sse2.LoadVector128(ptr + 15),
+        Sse2.LoadVector128(ptr + 0),
+        Sse2.LoadVector128(ptr + 1),
+        Sse2.LoadVector128(ptr + 16));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void MEOW_SHUFFLE(ref Vector128<byte> r1, ref Vector128<byte> r2, Vector128<byte> r3, ref Vector128<byte> r4, ref Vector128<byte> r5, Vector128<byte> r6)

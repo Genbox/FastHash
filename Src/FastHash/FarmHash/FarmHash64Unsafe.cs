@@ -10,10 +10,10 @@ public static class FarmHash64Unsafe
     //farmhashuo - 64bit with seed
 
     /// <summary>Computes the hash of bytes at an unmanaged address.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="length" /> readable bytes; it may be null only when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <returns>The 64-bit FarmHash value.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length)
     {
         if (length < 0)
@@ -37,11 +37,11 @@ public static class FarmHash64Unsafe
     }
 
     /// <summary>Computes the hash of bytes at an unmanaged address using a seed.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="length" /> readable bytes; it may be null only when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 64-bit FarmHash value.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed)
     {
         if (length < 0)
@@ -52,12 +52,12 @@ public static class FarmHash64Unsafe
     }
 
     /// <summary>Computes the hash of bytes at an unmanaged address using two seeds.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="length" /> readable bytes; it may be null only when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed1">The first hash seed.</param>
     /// <param name="seed2">The second hash seed.</param>
     /// <returns>The 64-bit FarmHash value.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1, ulong seed2)
     {
         if (length < 0)
@@ -77,12 +77,14 @@ public static class FarmHash64Unsafe
             ulong d = (RotateRight(a, 25) + b) * mul;
             return HashLen16(c, d, mul);
         }
+
         if (length >= 4)
         {
             ulong mul = K2 + (length * 2);
             ulong a = Read32(data);
             return HashLen16(length + (a << 3), Read32((data + length) - 4), mul);
         }
+
         if (length > 0)
         {
             byte a = data[0];
@@ -92,6 +94,7 @@ public static class FarmHash64Unsafe
             uint z = length + ((uint)c << 2);
             return ShiftMix((y * K2) ^ (z * K0)) * K2;
         }
+
         return K2;
     }
 
@@ -199,6 +202,7 @@ public static class FarmHash64Unsafe
         uint index = 0;
         uint end = ((len - 1) / 64) * 64;
         uint last64 = (end + ((len - 1) & 63)) - 63;
+
         do
         {
             ulong a0 = Read64(s + index);
@@ -234,13 +238,14 @@ public static class FarmHash64Unsafe
             y += a7;
 
             y += v.Low;
-            v = new UInt128(v.Low + x - y, v.High + w.Low);
-            w = new UInt128(w.Low + v.High, w.High + x - y);
+            v = new UInt128((v.Low + x) - y, v.High + w.Low);
+            w = new UInt128(w.Low + v.High, (w.High + x) - y);
             x += w.High;
             w = new UInt128(w.Low, RotateRight(w.High, 34));
             Swap(ref u, ref z);
             index += 64;
         } while (index != end);
+
         // Make s point to the last 64 bytes of input.
         index = last64;
         u *= 9;
@@ -305,6 +310,7 @@ public static class FarmHash64Unsafe
         uint index = 0;
         uint end = ((len - 1) / 64) * 64;
         uint last64 = (end + ((len - 1) & 63)) - 63;
+
         do
         {
             x = RotateRight(x + y + v.Low + Read64(s + index + 8), 37) * K1;
@@ -319,6 +325,7 @@ public static class FarmHash64Unsafe
         } while (index != end);
 
         ulong mul = K1 + ((z & 0xff) << 1);
+
         // Make s point to the last 64 bytes of input.
         index = last64;
         w = new UInt128(w.Low + ((len - 1) & 63), w.High);

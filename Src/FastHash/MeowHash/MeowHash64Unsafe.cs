@@ -8,7 +8,11 @@ public static class MeowHash64Unsafe
     public static bool IsSupported => MeowHash128Unsafe.IsSupported;
 
     /// <summary>Computes the hash of an unmanaged byte sequence.</summary>
-    /// <param name="data">A pointer to at least <paramref name="len" /> bytes.</param><param name="len">The non-negative number of bytes to hash.</param><returns>The 64-bit hash.</returns><exception cref="PlatformNotSupportedException">The required hardware intrinsics are unavailable.</exception><exception cref="ArgumentOutOfRangeException"><paramref name="len" /> is negative.</exception>
+    /// <param name="data">A pointer to at least <paramref name="len" /> bytes.</param>
+    /// <param name="len">The non-negative number of bytes to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">The required hardware intrinsics are unavailable.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="len" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int len)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(len);

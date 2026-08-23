@@ -12,11 +12,11 @@ public class MeowHashTests
 
     private static readonly Vector[] Vectors =
     [
-        new Vector("empty", [], "75A7B555-0383265E-657CA02A-5859C045"),
-        new Vector("a", "a"u8.ToArray(), "B26B64E1-346CA4B5-D8BE5296-340E50E3"),
-        new Vector("abc", "abc"u8.ToArray(), "5F6D236B-424C9AB4-19F773EC-430ACC3B"),
-        new Vector("message digest", MessageDigest, "FDD80026-549F8348-9B0FBD11-3B9C49DF"),
-        new Vector("seq256", Sequence256, "C8D5A459-085BA8B7-D3604660-411FE318")
+        new Vector([], "75A7B555-0383265E-657CA02A-5859C045"),
+        new Vector("a"u8.ToArray(), "B26B64E1-346CA4B5-D8BE5296-340E50E3"),
+        new Vector("abc"u8.ToArray(), "5F6D236B-424C9AB4-19F773EC-430ACC3B"),
+        new Vector(MessageDigest, "FDD80026-549F8348-9B0FBD11-3B9C49DF"),
+        new Vector(Sequence256, "C8D5A459-085BA8B7-D3604660-411FE318")
     ];
 
     [Fact]
@@ -48,6 +48,7 @@ public class MeowHashTests
             return;
 
         byte[] data = CreateSequence256();
+
         for (int length = 0; length <= 33; length++)
         {
             fixed (byte* ptr = data)
@@ -70,10 +71,10 @@ public class MeowHashTests
     private static UInt128 ParseMeowHash(string value)
     {
         string[] parts = value.Split('-');
-        uint v3 = uint.Parse(parts[0], NumberStyles.HexNumber);
-        uint v2 = uint.Parse(parts[1], NumberStyles.HexNumber);
-        uint v1 = uint.Parse(parts[2], NumberStyles.HexNumber);
-        uint v0 = uint.Parse(parts[3], NumberStyles.HexNumber);
+        uint v3 = uint.Parse(parts[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+        uint v2 = uint.Parse(parts[1], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+        uint v1 = uint.Parse(parts[2], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+        uint v0 = uint.Parse(parts[3], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
         ulong low = ((ulong)v1 << 32) | v0;
         ulong high = ((ulong)v3 << 32) | v2;
         return new UInt128(low, high);
@@ -88,6 +89,6 @@ public class MeowHashTests
         return data;
     }
 
-    private readonly record struct Vector(string Name, byte[] Data, string Expected);
+    private readonly record struct Vector(byte[] Data, string Expected);
 }
 #endif

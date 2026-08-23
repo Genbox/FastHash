@@ -8,16 +8,13 @@ namespace Genbox.FastHash.Benchmarks;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class ReadAlignedBenchmarks
 {
-    private byte[] _testData;
+    private byte[] _testData = [];
 
     [Params(8, 32, 128, 1024, 1024 * 1024 * 32)]
     public int Size { get; set; }
 
     [GlobalSetup]
-    public void Setup()
-    {
-        _testData = BenchmarkHelper.GetRandomBytes(Size);
-    }
+    public void Setup() => _testData = BenchmarkHelper.GetRandomBytes(Size);
 
     [Benchmark]
     public ulong OneAtTheTime()

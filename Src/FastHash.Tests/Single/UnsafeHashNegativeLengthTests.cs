@@ -1,3 +1,18 @@
+using Genbox.FastHash.AbslHash;
+using Genbox.FastHash.CityHash;
+using Genbox.FastHash.ClHash;
+using Genbox.FastHash.DjbHash;
+using Genbox.FastHash.FarmHash;
+using Genbox.FastHash.FarshHash;
+using Genbox.FastHash.FnvHash;
+using Genbox.FastHash.HighwayHash;
+using Genbox.FastHash.MeowHash;
+using Genbox.FastHash.MurmurHash;
+using Genbox.FastHash.SipHash;
+using Genbox.FastHash.SuperFastHash;
+using Genbox.FastHash.WyHash;
+using Genbox.FastHash.XxHash;
+
 namespace Genbox.FastHash.Tests.Single;
 
 public class UnsafeHashNegativeLengthTests
@@ -7,72 +22,72 @@ public class UnsafeHashNegativeLengthTests
     {
         byte* data = null;
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => AbslHash.AbslHash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => AbslHash.AbslHash64Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => AbslHash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => AbslHash64Unsafe.ComputeHash(data, -1, 1));
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash.CityHash32Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash.CityHash32Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash.CityHash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash.CityHash64Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash.CityHash64Unsafe.ComputeHash(data, -1, 1, 2));
-        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash.CityHash128Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash.CityHash128Unsafe.ComputeHash(data, -1, default));
-        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash.CityHashCrc128Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash.CityHashCrc128Unsafe.ComputeHash(data, -1, default));
-        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash.CityHashCrc256Unsafe.ComputeHash(data, -1, null));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash32Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash32Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash64Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash64Unsafe.ComputeHash(data, -1, 1, 2));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash128Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CityHash128Unsafe.ComputeHash(data, -1, default));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CityHashCrc128Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CityHashCrc128Unsafe.ComputeHash(data, -1, default));
+        Assert.Throws<ArgumentOutOfRangeException>(() => CityHashCrc256Unsafe.ComputeHash(data, -1, null));
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => ClHash.ClHash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => ClHash.ClHash64Unsafe.ComputeHash(data, -1, 1, 2));
-        Assert.Throws<ArgumentOutOfRangeException>(() => ClHash.ClHash64Unsafe.ComputeHash(data, -1, new ulong[ClHash.ClHashConstants.Random64BitWordsNeeded]));
-        Assert.Throws<ArgumentOutOfRangeException>(() => ClHash.ClHash64Unsafe.ComputeHash(data, -1, (ulong*)null));
+        Assert.Throws<ArgumentOutOfRangeException>(() => ClHash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => ClHash64Unsafe.ComputeHash(data, -1, 1, 2));
+        Assert.Throws<ArgumentOutOfRangeException>(() => ClHash64Unsafe.ComputeHash(data, -1, new ulong[ClHashConstants.Random64BitWordsNeeded]));
+        Assert.Throws<ArgumentOutOfRangeException>(() => ClHash64Unsafe.ComputeHash(data, -1, (ulong*)null));
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => DjbHash.Djb2Hash32Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => DjbHash.Djb2Hash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => DjbHash.Djb2AltHash32Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => DjbHash.Djb2AltHash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Djb2Hash32Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Djb2Hash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Djb2AltHash32Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Djb2AltHash64Unsafe.ComputeHash(data, -1));
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => FarshHash.FarshHash32Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => FarshHash.FarshHash32Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => FarshHash.FarshHash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => FarshHash.FarshHash64Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash.FarmHash32Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash.FarmHash32Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash.FarmHash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash.FarmHash64Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash.FarmHash64Unsafe.ComputeHash(data, -1, 1, 2));
-        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash.FarmHash128Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash.FarmHash128Unsafe.ComputeHash(data, -1, default));
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarshHash32Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarshHash32Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarshHash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarshHash64Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash32Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash32Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash64Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash64Unsafe.ComputeHash(data, -1, 1, 2));
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash128Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash128Unsafe.ComputeHash(data, -1, default));
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => FnvHash.Fnv1aHash32Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => FnvHash.Fnv1aHash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => HighwayHash.HighwayHash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => HighwayHash.HighwayHash64Unsafe.ComputeHash(data, -1, 1, 2, 3, 4));
-        Assert.Throws<ArgumentOutOfRangeException>(() => HighwayHash.HighwayHash64Unsafe.ComputeHash(data, -1, new ulong[4]));
-        Assert.Throws<ArgumentOutOfRangeException>(() => MeowHash.MeowHash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => MeowHash.MeowHash128Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => MurmurHash.Murmur3Hash32Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => MurmurHash.Murmur3Hash32Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => MurmurHash.Murmur3Hash128Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => MurmurHash.Murmur3Hash128Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Fnv1aHash32Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Fnv1aHash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => HighwayHash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => HighwayHash64Unsafe.ComputeHash(data, -1, 1, 2, 3, 4));
+        Assert.Throws<ArgumentOutOfRangeException>(() => HighwayHash64Unsafe.ComputeHash(data, -1, new ulong[4]));
+        Assert.Throws<ArgumentOutOfRangeException>(() => MeowHash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => MeowHash128Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Murmur3Hash32Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Murmur3Hash32Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Murmur3Hash128Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Murmur3Hash128Unsafe.ComputeHash(data, -1, 1));
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => SipHash.SipHash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => SipHash.SipHash64Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => SipHash.SipHash64Unsafe.ComputeHash(data, -1, 1, 2));
-        Assert.Throws<ArgumentOutOfRangeException>(() => SipHash.SipHash64Unsafe.ComputeHash(data, -1, 1, 2, 2, 4));
-        Assert.Throws<ArgumentOutOfRangeException>(() => SuperFastHash.SuperFastHash32Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => SuperFastHash.SuperFastHash32Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => SipHash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => SipHash64Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => SipHash64Unsafe.ComputeHash(data, -1, 1, 2));
+        Assert.Throws<ArgumentOutOfRangeException>(() => SipHash64Unsafe.ComputeHash(data, -1, 1, 2, 2, 4));
+        Assert.Throws<ArgumentOutOfRangeException>(() => SuperFastHash32Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => SuperFastHash32Unsafe.ComputeHash(data, -1, 1));
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => WyHash.Wy3Hash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => WyHash.Wy3Hash64Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => WyHash.Wy4Hash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => WyHash.Wy4Hash64Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => XxHash.XxHash32Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => XxHash.XxHash32Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => XxHash.XxHash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => XxHash.XxHash64Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => XxHash.Xx3Hash64Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => XxHash.Xx3Hash64Unsafe.ComputeHash(data, -1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => XxHash.Xx3Hash128Unsafe.ComputeHash(data, -1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => XxHash.Xx3Hash128Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Wy3Hash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Wy3Hash64Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Wy4Hash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Wy4Hash64Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => XxHash32Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => XxHash32Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => XxHash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => XxHash64Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Xx3Hash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Xx3Hash64Unsafe.ComputeHash(data, -1, 1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Xx3Hash128Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Xx3Hash128Unsafe.ComputeHash(data, -1, 1));
     }
 }

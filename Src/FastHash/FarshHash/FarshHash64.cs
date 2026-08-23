@@ -74,6 +74,7 @@ public static class FarshHash64
         highSum = 0;
 
         uint j = 0;
+
         for (uint i = 0; i < STRIPE; i += 8, j += 2)
         {
             uint val1 = Read32(data, (uint)offset + i);
@@ -145,10 +146,10 @@ public static class FarshHash64
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        void AddPartial(uint v1, uint v2)
+        void AddPartial(uint value1, uint value2)
         {
-            low += (v1 + FARSH_KEYS[keyIndex]) * (ulong)(v2 + FARSH_KEYS[keyIndex + 1]);
-            high += (v1 + FARSH_KEYS[keyIndex + 4]) * (ulong)(v2 + FARSH_KEYS[keyIndex + 5]);
+            low += (value1 + FARSH_KEYS[keyIndex]) * (ulong)(value2 + FARSH_KEYS[keyIndex + 1]);
+            high += (value1 + FARSH_KEYS[keyIndex + 4]) * (ulong)(value2 + FARSH_KEYS[keyIndex + 5]);
         }
 
         lowSum = low;

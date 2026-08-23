@@ -1,6 +1,6 @@
 namespace Genbox.FastHash.Examples;
 
-public static class Program
+internal static class Program
 {
     public static void Main()
     {

@@ -11,13 +11,14 @@ public static class CityHash128Unsafe
     /// <param name="data">A pointer to the data to hash.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <returns>The 128-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe UInt128 ComputeHash(byte* data, int length)
     {
         if (length < 0)
             throw new ArgumentOutOfRangeException(nameof(length));
 
         uint len = (uint)length;
+
         if (len >= 16)
         {
             UInt128 seed = new UInt128(Read64(data), Read64(data + 8) + K0);
@@ -32,7 +33,7 @@ public static class CityHash128Unsafe
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 128-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe UInt128 ComputeHash(byte* data, int length, UInt128 seed)
     {
         if (length < 0)
@@ -48,8 +49,9 @@ public static class CityHash128Unsafe
     {
         ulong a = seed.Low;
         ulong b = seed.High;
-        ulong c = 0;
-        ulong d = 0;
+        ulong c;
+        ulong d;
+
         if (len <= 16)
         {
             a = ShiftMix(a * K1) * K1;
@@ -61,6 +63,7 @@ public static class CityHash128Unsafe
             c = HashLen16(Read64((s + len) - 8) + K1, a);
             d = HashLen16(b + len, c + Read64((s + len) - 16));
             a += d;
+
             // len > 16 here, so do...while is safe
             do
             {
@@ -74,6 +77,7 @@ public static class CityHash128Unsafe
                 len -= 16;
             } while (len > 16);
         }
+
         a = HashLen16(a, c);
         b = HashLen16(d, b);
         return new UInt128(a ^ b, HashLen16(b, a));
@@ -116,11 +120,13 @@ public static class CityHash128Unsafe
             s += 64;
             len -= 128;
         } while (len >= 128);
+
         x += RotateRight(v.Low + z, 49) * K0;
         y = (y * K0) + RotateRight(w.High, 37);
         z = (z * K0) + RotateRight(w.Low, 27);
         w = new UInt128(w.Low * 9, w.High);
         v = new UInt128(v.Low * K0, v.High);
+
         // If 0 < len < 128, hash up to 4 chunks of 32 bytes each from the end of s.
         for (uint tail_done = 0; tail_done < len;)
         {
@@ -133,6 +139,7 @@ public static class CityHash128Unsafe
             v = WeakHashLen32WithSeeds((s + len) - tail_done, v.Low + z, v.High);
             v = new UInt128(v.Low * K0, v.High);
         }
+
         // At this point our 56 bytes of state should contain more than
         // enough information for a strong 128-bit hash.  We use two
         // different 56-byte-to-8-byte hashes to get a 16-byte final result.

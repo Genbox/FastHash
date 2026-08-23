@@ -79,6 +79,7 @@ internal static class XxHashUnsafeShared
         /* last partial block */
         //  XXH_ASSERT(len > XXH_STRIPE_LEN);
         int nbStripes = (len - 1 - (block_len * nb_blocks)) / STRIPE_LEN;
+
         // XXH_ASSERT(nbStripes <= (secretSize / XXH_SECRET_CONSUME_RATE));
         XXH3_accumulate_scalar(acc, input + (nb_blocks * block_len), secret, nbStripes);
 
@@ -156,10 +157,8 @@ internal static class XxHashUnsafeShared
         ulong input_lo = Read64(input);
         ulong input_hi = Read64(input + 8);
 
-        return XXH3_mul128_fold64(
-            input_lo ^ (Read64(secret) + seed64),
-            input_hi ^ (Read64(secret + 8) - seed64)
-        );
+        return XXH3_mul128_fold64(input_lo ^ (Read64(secret) + seed64),
+            input_hi ^ (Read64(secret + 8) - seed64));
     }
 
     internal unsafe delegate ulong XXH3_hashLong64_f_unsafe(byte* input, int len, ulong seed64, byte* secret, int secretLen);

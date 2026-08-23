@@ -23,11 +23,14 @@ public static class Murmur3Hash32
     }
 
     /// <summary>Computes the hash of a byte sequence using a zero seed.</summary>
-    /// <param name="data">The bytes to hash.</param><returns>The 32-bit hash.</returns>
+    /// <param name="data">The bytes to hash.</param>
+    /// <returns>The 32-bit hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
     /// <summary>Computes the hash of a byte sequence.</summary>
-    /// <param name="data">The bytes to hash.</param><param name="seed">The hash seed.</param><returns>The 32-bit hash.</returns>
+    /// <param name="data">The bytes to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 32-bit hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         uint length = (uint)data.Length;

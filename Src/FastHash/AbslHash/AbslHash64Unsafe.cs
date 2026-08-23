@@ -14,7 +14,7 @@ public static class AbslHash64Unsafe
     /// <param name="data">A pointer to the data to hash.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length)
     {
         if (length < 0)
@@ -28,7 +28,7 @@ public static class AbslHash64Unsafe
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed)
     {
         if (length < 0)
@@ -75,7 +75,7 @@ public static class AbslHash64Unsafe
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe ulong CombineContiguous9To16(ulong state, byte* data, int len) => Mix(state ^ Read64(data), Mul ^ Read64(data + len - 8));
+    private static unsafe ulong CombineContiguous9To16(ulong state, byte* data, int len) => Mix(state ^ Read64(data), Mul ^ Read64((data + len) - 8));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe ulong CombineContiguous17To32(ulong state, byte* data, int len)
@@ -90,7 +90,7 @@ public static class AbslHash64Unsafe
     private static unsafe ulong Read4To8(byte* data, int len)
     {
         ulong mostSignificant = (ulong)Read32(data) << 32;
-        ulong leastSignificant = Read32(data + len - 4);
+        ulong leastSignificant = Read32((data + len) - 4);
         return mostSignificant | leastSignificant;
     }
 
@@ -174,7 +174,7 @@ public static class AbslHash64Unsafe
             len -= 64;
         } while (len > 64);
 
-        currentState = (currentState ^ duplicatedState0) ^ (duplicatedState1 + duplicatedState2);
+        currentState = currentState ^ duplicatedState0 ^ (duplicatedState1 + duplicatedState2);
 
         if (len > 32)
             currentState = Mix32Bytes(data, offset, currentState);

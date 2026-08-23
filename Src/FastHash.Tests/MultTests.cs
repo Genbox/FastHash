@@ -1,6 +1,5 @@
-using Genbox.FastHash.TestShared;
 using Genbox.FastHash.Misc;
-using System.Runtime.Intrinsics.X86;
+using Genbox.FastHash.TestShared;
 
 namespace Genbox.FastHash.Tests;
 
@@ -40,7 +39,7 @@ public class MultTests
     [Fact]
     public void Scalar64ProductionMulMatchesMathBigMulForRandomInputs()
     {
-        Random random = new(0x51A1A64);
+        Random random = new Random(0x51A1A64);
 
         for (int i = 0; i < 10_000; i++)
             AssertBigMul(NextUInt64(random), NextUInt64(random));

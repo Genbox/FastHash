@@ -187,9 +187,11 @@ public static class Xx3Hash64
 #if XXH_SIZE_OPT
         /* Smaller and cleaner, but slightly slower. */
         int i = (len - 1) / 32;
-        do {
-            acc += XXH3_mix16B(input+16 * i, secret+32*i, seed);
-            acc += XXH3_mix16B(input+len-16*(i+1), secret+32*i+16, seed);
+
+        do
+        {
+            acc += XXH3_mix16B(input + 16 * i, secret + 32 * i, seed);
+            acc += XXH3_mix16B(input + len - 16 * (i + 1), secret + 32 * i + 16, seed);
         } while (i-- != 0);
 #else
         if (len > 32)
@@ -201,9 +203,11 @@ public static class Xx3Hash64
                     acc += XXH3_mix16B(input, 48, secret, 96, seed);
                     acc += XXH3_mix16B(input, len - 64, secret, 112, seed);
                 }
+
                 acc += XXH3_mix16B(input, 32, secret, 64, seed);
                 acc += XXH3_mix16B(input, len - 48, secret, 80, seed);
             }
+
             acc += XXH3_mix16B(input, 16, secret, 32, seed);
             acc += XXH3_mix16B(input, len - 32, secret, 48, seed);
         }

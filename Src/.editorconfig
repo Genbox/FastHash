@@ -1,0 +1,67 @@
+# Project-specific settings.
+
+# Hash API names and upstream-compatible implementation identifiers intentionally
+# preserve their established spelling.
+[FastHash/{AbslHash,CityHash,ClHash,FarmHash,FarshHash,FnvHash,FoldHash,GxHash,HighwayHash,MeowHash,MurmurHash,PolymurHash,SipHash,T1haHash,WyHash,XxHash}/*.cs]
+resharper_inconsistent_naming_highlighting = none
+
+[FastHash.Tests/HashTests.cs]
+resharper_inconsistent_naming_highlighting = none
+dotnet_diagnostic.S6640.severity = none
+
+[FastHash.Tests/Single/{FarmHashTests,FarshHashTests,FnvHashTests,HighwayHashTests,PolymurHashTests,SipHashTests,T1ha2HashTests,Xx3HashTests,XxHashTests}.cs]
+resharper_inconsistent_naming_highlighting = none
+
+[FastHash.TestShared/Mult.cs]
+resharper_inconsistent_naming_highlighting = none
+
+[FastHash.Benchmarks/{Index32Benchmarks,Index64Benchmarks}.cs]
+resharper_inconsistent_naming_highlighting = none
+
+# These guard helpers are unavailable on the library's netstandard2.1 target.
+[FastHash/**/*.cs]
+dotnet_diagnostic.CA1510.severity = none
+dotnet_diagnostic.CA1512.severity = none
+resharper_int_variable_overflow_in_unchecked_context_highlighting = none
+dotnet_diagnostic.S6640.severity = none
+
+# Unsafe test and benchmark entry points intentionally exercise pointer APIs.
+[FastHash.TestShared/*.cs]
+dotnet_diagnostic.S6640.severity = none
+
+[FastHash.Tests/**/*.cs]
+dotnet_diagnostic.S6640.severity = none
+
+[FastHash.Benchmarks/HashBenchmarks.cs]
+dotnet_diagnostic.S6640.severity = none
+
+# Variable SIMD operands are required by these implementations.
+[FastHash/ClHash/ClHashShared.cs]
+dotnet_diagnostic.CA1857.severity = none
+
+[FastHash/MeowHash/MeowHash128.cs]
+dotnet_diagnostic.CA1857.severity = none
+
+[FastHash/MeowHash/MeowHash128Unsafe.cs]
+dotnet_diagnostic.CA1857.severity = none
+
+# Span and pointer overloads are grouped separately for readability.
+[FastHash/Misc/Utilities.cs]
+dotnet_diagnostic.S4136.severity = none
+
+# The test deliberately mutates and then restores each byte.
+[FastHash.Tests/Single/Gx2HashTests.cs]
+dotnet_diagnostic.S4143.severity = none
+
+# BenchmarkDotNet discovers public types and writes Params properties via reflection.
+[FastHash.Benchmarks/**/*.cs]
+dotnet_diagnostic.CA1515.severity = none
+resharper_unused_auto_property_accessor_global_highlighting = none
+
+[FastHash.Benchmarks/*.cs]
+dotnet_diagnostic.CA1515.severity = none
+resharper_unused_auto_property_accessor_global_highlighting = none
+
+# Benchmark arguments are supplied as non-null values by BenchmarkDotNet.
+[FastHash.Benchmarks/MixerBenchmarks.cs]
+dotnet_diagnostic.CA1062.severity = none

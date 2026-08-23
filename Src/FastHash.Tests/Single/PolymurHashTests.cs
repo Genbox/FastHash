@@ -158,7 +158,7 @@ public class PolymurHashTests
     {
         const ulong tweak = 0xabcdef0123456789UL;
 
-        foreach (ulong seed in new ulong[] { 0UL, 0xfedbca9876543210UL })
+        foreach (ulong seed in new[] { 0UL, 0xfedbca9876543210UL })
         {
             PolymurHashParams parameters = new PolymurHashParams(seed);
 

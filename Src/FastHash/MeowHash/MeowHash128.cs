@@ -13,7 +13,9 @@ public static class MeowHash128
     public static bool IsSupported => Aes.IsSupported && Sse.IsSupported && Sse2.IsSupported && Ssse3.IsSupported;
 
     /// <summary>Computes the hash of a 64-bit value.</summary>
-    /// <param name="input">The value to hash.</param><returns>The 128-bit hash.</returns><exception cref="PlatformNotSupportedException">The required hardware intrinsics are unavailable.</exception>
+    /// <param name="input">The value to hash.</param>
+    /// <returns>The 128-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">The required hardware intrinsics are unavailable.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static UInt128 ComputeIndex(ulong input)
     {
@@ -25,7 +27,9 @@ public static class MeowHash128
     }
 
     /// <summary>Computes the hash of a byte sequence.</summary>
-    /// <param name="data">The bytes to hash.</param><returns>The 128-bit hash.</returns><exception cref="PlatformNotSupportedException">The required hardware intrinsics are unavailable.</exception>
+    /// <param name="data">The bytes to hash.</param>
+    /// <returns>The 128-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">The required hardware intrinsics are unavailable.</exception>
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data)
     {
         Vector128<byte> res = ComputeHashVector(data);
@@ -192,15 +196,11 @@ public static class MeowHash128
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void MEOW_MIX(ref Vector128<byte> r1, ref Vector128<byte> r2, ref Vector128<byte> r3, ref Vector128<byte> r4, ref Vector128<byte> r5, ReadOnlySpan<byte> data, int offset)
-    {
-        MEOW_MIX_REG(ref r1, ref r2, ref r3, ref r4, ref r5,
-            LoadVector(data, offset + 15),
-            LoadVector(data, offset),
-            LoadVector(data, offset + 1),
-            LoadVector(data, offset + 16)
-        );
-    }
+    private static void MEOW_MIX(ref Vector128<byte> r1, ref Vector128<byte> r2, ref Vector128<byte> r3, ref Vector128<byte> r4, ref Vector128<byte> r5, ReadOnlySpan<byte> data, int offset) => MEOW_MIX_REG(ref r1, ref r2, ref r3, ref r4, ref r5,
+        LoadVector(data, offset + 15),
+        LoadVector(data, offset),
+        LoadVector(data, offset + 1),
+        LoadVector(data, offset + 16));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Vector128<byte> LoadVector(ReadOnlySpan<byte> data, int offset)

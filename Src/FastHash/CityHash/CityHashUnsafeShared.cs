@@ -16,12 +16,14 @@ internal static class CityHashUnsafeShared
             ulong d = (RotateRight(a, 25) + b) * mul;
             return HashLen16(c, d, mul);
         }
+
         if (len >= 4)
         {
             ulong mul = K2 + (len * 2);
             ulong a = Read32(s);
             return HashLen16(len + (a << 3), Read32((s + len) - 4), mul);
         }
+
         if (len > 0)
         {
             byte a = s[0];
@@ -31,6 +33,7 @@ internal static class CityHashUnsafeShared
             uint z = len + ((uint)c << 2);
             return ShiftMix((y * K2) ^ (z * K0)) * K2;
         }
+
         return K2;
     }
 

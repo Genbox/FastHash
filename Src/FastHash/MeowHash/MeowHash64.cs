@@ -11,7 +11,9 @@ public static class MeowHash64
     public static bool IsSupported => MeowHash128.IsSupported;
 
     /// <summary>Computes the hash of a 64-bit value.</summary>
-    /// <param name="input">The value to hash.</param><returns>The 64-bit hash.</returns><exception cref="PlatformNotSupportedException">The required hardware intrinsics are unavailable.</exception>
+    /// <param name="input">The value to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">The required hardware intrinsics are unavailable.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
     {
@@ -23,7 +25,9 @@ public static class MeowHash64
     }
 
     /// <summary>Computes the hash of a byte sequence.</summary>
-    /// <param name="data">The bytes to hash.</param><returns>The 64-bit hash.</returns><exception cref="PlatformNotSupportedException">The required hardware intrinsics are unavailable.</exception>
+    /// <param name="data">The bytes to hash.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="PlatformNotSupportedException">The required hardware intrinsics are unavailable.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data)
     {
         Vector128<byte> res = MeowHash128.ComputeHashVector(data);

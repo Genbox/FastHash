@@ -12,11 +12,11 @@ public static class FarmHash32Unsafe
     // The non-seeded version is a slightly modified version of CityHash for inputs larger than 24, and identical with CityHash on lengths less than 24.
 
     /// <summary>Computes the hash of bytes at an unmanaged address using a seed.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="length" /> readable bytes; it may be null only when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 32-bit FarmHash value.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe uint ComputeHash(byte* data, int length, uint seed)
     {
         if (length < 0)
@@ -30,15 +30,16 @@ public static class FarmHash32Unsafe
             if (len >= 5) return Hash32Len5to12(data, len, seed);
             return Hash32Len0to4(data, len, seed);
         }
+
         uint h = Hash32Len13to24(data, 24, seed ^ len);
         return Mur(ComputeHash(data + 24, length - 24) + seed, h);
     }
 
     /// <summary>Computes the hash of bytes at an unmanaged address.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="length" /> readable bytes; it may be null only when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <returns>The 32-bit FarmHash value.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe uint ComputeHash(byte* data, int length)
     {
         if (length < 0)
@@ -82,6 +83,7 @@ public static class FarmHash32Unsafe
             f = (f * 5) + 0xe6546b64;
         }
         uint iters = (len - 1) / 20;
+
         do
         {
             uint a0 = RotateRight(Read32(data) * C1, 17) * C2;
@@ -109,6 +111,7 @@ public static class FarmHash32Unsafe
             Permute3(ref f, ref h, ref g);
             data += 20;
         } while (--iters != 0);
+
         g = RotateRight(g, 11) * C1;
         g = RotateRight(g, 17) * C1;
         f = RotateRight(f, 11) * C1;
@@ -126,12 +129,14 @@ public static class FarmHash32Unsafe
     {
         uint b = seed;
         uint c = 9;
+
         for (uint i = 0; i < len; i++)
         {
             uint v = (uint)(sbyte)s[i];
             b = (b * C1) + v;
             c ^= b;
         }
+
         return AA_xmxmx_Murmur_32(Mur(b, Mur(len, c)));
     }
 

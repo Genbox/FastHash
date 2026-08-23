@@ -112,8 +112,7 @@ public static class Xx3Hash128
 
         XXH3_hashLong_internal_loop(acc, input, len, secret, secretSize);
 
-        return new UInt128(
-            XXH3_mergeAccs(acc, secret, SECRET_MERGEACCS_START, (ulong)len * PRIME64_1),
+        return new UInt128(XXH3_mergeAccs(acc, secret, SECRET_MERGEACCS_START, (ulong)len * PRIME64_1),
             XXH3_mergeAccs(acc, secret, secretSize - ACC_SIZE - SECRET_MERGEACCS_START, ~((ulong)len * PRIME64_2)));
     }
 
@@ -139,8 +138,10 @@ public static class Xx3Hash128
 #if XXH_SIZE_OPT
         /* Smaller, but slightly slower. */
         size_t i = (len - 1) / 32;
-        do {
-            acc = XXH128_mix32B(acc, input+16*i, input+len-16*(i+1), secret+32*i, seed);
+
+        do
+        {
+            acc = XXH128_mix32B(acc, input + 16 * i, input + len - 16 * (i + 1), secret + 32 * i, seed);
         } while (i-- != 0);
 #else
         if (len > 32)
@@ -152,8 +153,10 @@ public static class Xx3Hash128
 
                 acc = XXH128_mix32B(acc, input, 32, input, len - 48, secret, 64, seed);
             }
+
             acc = XXH128_mix32B(acc, input, 16, input, len - 32, secret, 32, seed);
         }
+
         acc = XXH128_mix32B(acc, input, 0, input, len - 16, secret, 0, seed);
 #endif
         ulong low = acc.Low + acc.High;

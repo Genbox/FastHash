@@ -7,10 +7,10 @@ namespace Genbox.FastHash.SipHash;
 public static class SipHash64Unsafe
 {
     /// <summary>Computes a 64-bit hash for an unmanaged byte sequence using default seeds and rounds.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> bytes, or null when <paramref name="length"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="length" /> bytes, or null when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length)
     {
         if (length < 0)
@@ -19,12 +19,12 @@ public static class SipHash64Unsafe
         return ComputeHash(data, length, 0, 0);
     }
 
-    /// <summary>Computes a 64-bit hash for an unmanaged byte sequence using <paramref name="seed1"/> and default rounds.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> bytes, or null when <paramref name="length"/> is zero.</param>
+    /// <summary>Computes a 64-bit hash for an unmanaged byte sequence using <paramref name="seed1" /> and default rounds.</summary>
+    /// <param name="data">A pointer to at least <paramref name="length" /> bytes, or null when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed1">The first hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1)
     {
         if (length < 0)
@@ -34,12 +34,12 @@ public static class SipHash64Unsafe
     }
 
     /// <summary>Computes a 64-bit hash for an unmanaged byte sequence using the supplied seeds and default rounds.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> bytes, or null when <paramref name="length"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="length" /> bytes, or null when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed1">The first hash seed.</param>
     /// <param name="seed2">The second hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1, ulong seed2)
     {
         if (length < 0)
@@ -49,14 +49,14 @@ public static class SipHash64Unsafe
     }
 
     /// <summary>Computes a 64-bit hash for an unmanaged byte sequence using the supplied seeds and rounds.</summary>
-    /// <param name="data">A pointer to at least <paramref name="length"/> bytes, or null when <paramref name="length"/> is zero.</param>
+    /// <param name="data">A pointer to at least <paramref name="length" /> bytes, or null when <paramref name="length" /> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed1">The first hash seed.</param>
     /// <param name="seed2">The second hash seed.</param>
     /// <param name="cRounds">The number of compression rounds.</param>
     /// <param name="dRounds">The number of finalization rounds.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
     public static unsafe ulong ComputeHash(byte* data, int length, ulong seed1, ulong seed2, byte cRounds, byte dRounds)
     {
         if (length < 0)

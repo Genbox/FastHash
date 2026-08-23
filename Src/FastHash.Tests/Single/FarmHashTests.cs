@@ -54,6 +54,7 @@ public class FarmHashTests
         {
             ulong a = 9;
             ulong b = 777;
+
             for (int i = 0; i < DataSize; i++)
             {
                 a += b;
@@ -103,6 +104,7 @@ public class FarmHashTests
         fixed (byte* data = _data)
         {
             int i = 0;
+
             for (; i < TestSize - 1; i++)
             {
                 int offset = i * i;
@@ -147,6 +149,7 @@ public class FarmHashTests
         fixed (byte* data = _data)
         {
             int i = 0;
+
             for (; i < TestSize - 1; i++)
             {
                 int offset = i * i;

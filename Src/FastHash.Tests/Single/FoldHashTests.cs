@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Genbox.FastHash.FoldHash;
 
 namespace Genbox.FastHash.Tests.Single;
@@ -88,11 +89,12 @@ public class FoldHashTests
     {
         ulong[] sharedSeed = new ulong[5];
 
-        Assert.Throws<ArgumentException>(() => FoldHash64.ComputeHash(Hello, sharedSeed: sharedSeed));
-        Assert.Throws<ArgumentException>(() => FoldHashQuality64.ComputeHash(Hello, sharedSeed: sharedSeed));
+        Assert.Throws<ArgumentException>(() => FoldHash64.ComputeHash(Hello, sharedSeed));
+        Assert.Throws<ArgumentException>(() => FoldHashQuality64.ComputeHash(Hello, sharedSeed));
     }
 
     private readonly record struct Vector(byte[] Data, ulong Seed, ulong Expected);
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Auto)]
+
+    [StructLayout(LayoutKind.Auto)]
     private readonly record struct IndexVector(ulong Input, ulong Seed, ulong FastExpected, ulong QualityExpected);
 }

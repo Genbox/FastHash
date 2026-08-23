@@ -45,9 +45,10 @@ public class Rapid3HashTests
             ulong.MaxValue
         ];
 
+        Span<byte> data = stackalloc byte[8];
+
         foreach (ulong input in inputs)
         {
-            Span<byte> data = stackalloc byte[8];
             BinaryPrimitives.WriteUInt64LittleEndian(data, input);
 
             Assert.Equal(Rapid3Hash64.ComputeHash(data), Rapid3Hash64.ComputeIndex(input, 0));

@@ -46,6 +46,7 @@ public static class FarmHash32
             if (len >= 5) return Hash32Len5to12(data, len, seed);
             return Hash32Len0to4(data, len, seed);
         }
+
         uint h = Hash32Len13to24(data, 24, seed ^ len);
         return Mur(ComputeHash(data.Slice(24)) + seed, h);
     }
@@ -94,6 +95,7 @@ public static class FarmHash32
         }
         uint iters = (len - 1) / 20;
         int offset = 0;
+
         do
         {
             uint a0 = RotateRight(Read32(data, offset) * C1, 17) * C2;
@@ -121,6 +123,7 @@ public static class FarmHash32
             Permute3(ref f, ref h, ref g);
             offset += 20;
         } while (--iters != 0);
+
         g = RotateRight(g, 11) * C1;
         g = RotateRight(g, 17) * C1;
         f = RotateRight(f, 11) * C1;
@@ -138,12 +141,14 @@ public static class FarmHash32
     {
         uint b = seed;
         uint c = 9;
+
         for (int i = 0; i < len; i++)
         {
             uint v = (uint)(sbyte)s[i];
             b = (b * C1) + v;
             c ^= b;
         }
+
         return AA_xmxmx_Murmur_32(Mur(b, Mur(len, c)));
     }
 

@@ -73,6 +73,7 @@ public static class XxHash64
 
         h64 += len;
         len &= 31;
+
         while (len >= 8)
         {
             ulong k1 = Round(0, Read64(data, offset));

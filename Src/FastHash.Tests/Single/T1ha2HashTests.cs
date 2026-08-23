@@ -51,6 +51,7 @@ public class T1ha2HashTests
         Assert.Equal(T1haRefval2AtOnce[index++], T1ha2Hash64.ComputeHash(pattern));
 
         ulong seed = 1;
+
         for (int i = 1; i < 64; i++)
         {
             Assert.Equal(T1haRefval2AtOnce[index++], T1ha2Hash64.ComputeHash(pattern.AsSpan(0, i), seed));
@@ -58,6 +59,7 @@ public class T1ha2HashTests
         }
 
         seed = ulong.MaxValue;
+
         for (int i = 1; i <= 7; i++)
         {
             seed <<= 1;

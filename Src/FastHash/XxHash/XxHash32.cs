@@ -68,6 +68,7 @@ public static class XxHash32
 
         h32 += len;
         len &= 15;
+
         while (len >= 4)
         {
             h32 += Read32(data, offset) * PRIME32_3;

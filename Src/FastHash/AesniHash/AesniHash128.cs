@@ -104,6 +104,7 @@ public static class AesniHash128
         }
 
         ulong x = 0;
+
         switch (len)
         {
             case 15:

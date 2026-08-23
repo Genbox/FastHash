@@ -30,9 +30,9 @@ public static class Wy3Hash64
 
     /// <summary>Computes a hash for the supplied data using a custom secret and a zero seed.</summary>
     /// <param name="data">The data to hash.</param>
-    /// <param name="secret">The secret words, or <see langword="null"/> to use the default secret; the first four words are used.</param>
+    /// <param name="secret">The secret words, or <see langword="null" /> to use the default secret; the first four words are used.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentException"><paramref name="secret"/> contains fewer than four words.</exception>
+    /// <exception cref="ArgumentException"><paramref name="secret" /> contains fewer than four words.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong[]? secret) => ComputeHash(data, 0, secret);
 
     /// <summary>Computes a hash for the supplied data using the default secret.</summary>
@@ -44,9 +44,9 @@ public static class Wy3Hash64
     /// <summary>Computes a hash for the supplied data.</summary>
     /// <param name="data">The data to hash.</param>
     /// <param name="seed">The hash seed.</param>
-    /// <param name="secret">The secret words, or <see langword="null"/> to use the default secret; the first four words are used.</param>
+    /// <param name="secret">The secret words, or <see langword="null" /> to use the default secret; the first four words are used.</param>
     /// <returns>The 64-bit hash.</returns>
-    /// <exception cref="ArgumentException"><paramref name="secret"/> contains fewer than four words.</exception>
+    /// <exception cref="ArgumentException"><paramref name="secret" /> contains fewer than four words.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed, ulong[]? secret)
     {
         secret ??= V3DefaultSecret;
@@ -91,6 +91,7 @@ public static class Wy3Hash64
             if (i > 48)
             {
                 ulong see1 = seed, see2 = seed;
+
                 do
                 {
                     seed = _wymix(Read64(data, offset) ^ secret[1], Read64(data, offset + 8) ^ seed);
@@ -99,8 +100,10 @@ public static class Wy3Hash64
                     offset += 48;
                     i -= 48;
                 } while (i > 48);
+
                 seed ^= see1 ^ see2;
             }
+
             while (i > 16)
             {
                 uint offset1 = offset + 8;
@@ -108,9 +111,11 @@ public static class Wy3Hash64
                 i -= 16;
                 offset += 16;
             }
+
             a = Read64(data, (uint)((offset + i) - 16));
             b = Read64(data, (uint)((offset + i) - 8));
         }
+
         return _wymix(secret[1] ^ (uint)len, _wymix(a ^ secret[1], b ^ seed));
     }
 

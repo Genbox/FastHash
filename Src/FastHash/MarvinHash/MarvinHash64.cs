@@ -146,6 +146,7 @@ public static class MarvinHash64
         // count mod 4 = 3 -> [ ## ## ## ## | AA BB CC    ] -> 0xCCBB_AA##             -> 0x80CC_BBAA
 
         count = ~count << 3;
+
         if (BitConverter.IsLittleEndian)
         {
             partialResult >>= 8; // make some room for the 0x80 byte

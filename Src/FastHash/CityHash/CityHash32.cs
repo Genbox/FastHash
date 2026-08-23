@@ -71,6 +71,7 @@ public static class CityHash32
         f = (f * 5) + 0xe6546b64;
         uint iters = (len - 1) / 20;
         uint offset = 0;
+
         do
         {
             a0 = RotateRight(Read32(data, offset) * C1, 17) * C2;
@@ -98,6 +99,7 @@ public static class CityHash32
             Permute3(ref f, ref h, ref g);
             offset += 20;
         } while (--iters != 0);
+
         g = RotateRight(g, 11) * C1;
         g = RotateRight(g, 17) * C1;
         f = RotateRight(f, 11) * C1;
@@ -116,12 +118,14 @@ public static class CityHash32
     {
         uint b = 0;
         uint c = 9;
+
         for (int i = 0; i < len; i++)
         {
             uint v = (uint)(sbyte)s[i];
             b = (b * C1) + v;
             c ^= b;
         }
+
         return AA_xmxmx_Murmur_32(Mur(b, Mur(len, c)));
     }
 
@@ -129,12 +133,14 @@ public static class CityHash32
     {
         uint b = seed;
         uint c = 9;
+
         for (int i = 0; i < len; i++)
         {
             uint v = (uint)(sbyte)s[i];
             b = (b * C1) + v;
             c ^= b;
         }
+
         return AA_xmxmx_Murmur_32(Mur(b, Mur(len, c)));
     }
 

@@ -33,6 +33,7 @@ internal static class RapidHashShared
         if (length >= 4)
         {
             seed ^= (ulong)length;
+
             if (length >= 8)
             {
                 a = Read64(data);
@@ -98,10 +99,7 @@ internal static class RapidHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong RapidMix(ulong a, ulong b)
-    {
-        return Fold128To64(a, b);
-    }
+    internal static ulong RapidMix(ulong a, ulong b) => Fold128To64(a, b);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void RapidMum(ref ulong a, ref ulong b)
