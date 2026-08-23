@@ -10,6 +10,7 @@ using static Genbox.FastHash.WyHash.WyHashConstants;
 namespace Genbox.FastHash.WyHash;
 
 /// <summary>Computes 64-bit wyhash version 3 hashes from unmanaged memory.</summary>
+/// <remarks>Define <c>WYHASH_CONDOM</c> at build time to select upstream mode 2 (blind multiplication); otherwise upstream mode 1 is used.</remarks>
 public static class Wy3Hash64Unsafe
 {
     /// <summary>Computes a hash using the default secret and a zero seed.</summary>
@@ -36,7 +37,7 @@ public static class Wy3Hash64Unsafe
         if (length < 0)
             throw new ArgumentOutOfRangeException(nameof(length));
 
-        fixed (ulong* secret = DefaultSecret)
+        fixed (ulong* secret = V3DefaultSecret)
         {
             uint len = (uint)length;
             seed ^= secret[0];
@@ -44,20 +45,28 @@ public static class Wy3Hash64Unsafe
 
             if (len <= 16)
             {
-                if (len >= 4)
+                if (len <= 8)
                 {
-                    a = ((ulong)Read32(data) << 32) | Read32(data + ((len >> 3) << 2));
-                    b = ((ulong)Read32(data + (len - 4)) << 32) | Read32(data + (len - 4 - ((len >> 3) << 2)));
-                }
-                else if (len > 0)
-                {
-                    a = _wyr3(data, len);
-                    b = 0;
+                    if (len >= 4)
+                    {
+                        a = Read32(data);
+                        b = Read32(data + len - 4);
+                    }
+                    else if (len > 0)
+                    {
+                        a = _wyr3(data, len);
+                        b = 0;
+                    }
+                    else
+                    {
+                        a = 0;
+                        b = 0;
+                    }
                 }
                 else
                 {
-                    a = 0;
-                    b = 0;
+                    a = Read64(data);
+                    b = Read64(data + len - 8);
                 }
             }
             else

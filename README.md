@@ -63,7 +63,8 @@ The table below gives an overview of the implementations.
 | SipHash       |    x    |   x    |       |   x   |        |   x   |   x    |        |    x     |
 | SuperFastHash |    x    |   x    |   x   |       |        |   x   |   x    |        |          |
 | T1ha2Hash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
-| WyHash        |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
+| WyHash3       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
+| WyHash4       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
 | xxHash        |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    x     |
 | xxHash3       |    x    |   x    |       |   x   |   x    |   x   |   x    |        |    x     |
 
@@ -82,8 +83,7 @@ The table below gives an overview of the implementations.
 
 Measured on 32 MB data. The unsafe versions are implemented using C# unsafe code.
 
-**Note:** Speed is not everything. The quality of a hash is just as important, but much more difficult to measure. [See SMHasher](https://github.com/rurban/smhasher) for more
-details on hash quality.
+**Note:** Speed is not everything. The quality of a hash is just as important, but much more difficult to measure. [See SMHasher](https://github.com/rurban/smhasher) for more details on hash quality.
 
 | Method                |        Mean |     Error |    StdDev |   MiB/s |
 |-----------------------|------------:|----------:|----------:|--------:|

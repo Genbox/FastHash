@@ -10,6 +10,7 @@ using static Genbox.FastHash.WyHash.WyHashConstants;
 namespace Genbox.FastHash.WyHash;
 
 /// <summary>Computes 64-bit wyhash version 3 hashes.</summary>
+/// <remarks>Define <c>WYHASH_CONDOM</c> at build time to select upstream mode 2 (blind multiplication); otherwise upstream mode 1 is used.</remarks>
 public static class Wy3Hash64
 {
     /// <summary>Computes a hash for a 64-bit index.</summary>
@@ -18,11 +19,8 @@ public static class Wy3Hash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
     {
-        ulong a = ((ulong)(uint)input << 32) | (uint)(input >> 32);
-        ulong b = ((ulong)(uint)(input >> 32) << 32) | (uint)input;
-
-        ulong mixed = Fold128To64(a ^ 0xe7037ed1a0b428dbul, b ^ 0xa0761d6478bd642ful);
-        return _wymix(0xe7037ed1a0b428dbul ^ 8, mixed);
+        ulong seed = V3DefaultSecret[0];
+        return _wymix(V3DefaultSecret[1] ^ 8, _wymix((uint)input ^ V3DefaultSecret[1], (uint)(input >> 32) ^ seed));
     }
 
     /// <summary>Computes a hash for the supplied data using the default secret and a zero seed.</summary>
@@ -32,8 +30,9 @@ public static class Wy3Hash64
 
     /// <summary>Computes a hash for the supplied data using a custom secret and a zero seed.</summary>
     /// <param name="data">The data to hash.</param>
-    /// <param name="secret">The four-word secret, or <see langword="null"/> to use the default secret.</param>
+    /// <param name="secret">The secret words, or <see langword="null"/> to use the default secret; the first four words are used.</param>
     /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentException"><paramref name="secret"/> contains fewer than four words.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong[]? secret) => ComputeHash(data, 0, secret);
 
     /// <summary>Computes a hash for the supplied data using the default secret.</summary>
@@ -45,11 +44,14 @@ public static class Wy3Hash64
     /// <summary>Computes a hash for the supplied data.</summary>
     /// <param name="data">The data to hash.</param>
     /// <param name="seed">The hash seed.</param>
-    /// <param name="secret">The four-word secret, or <see langword="null"/> to use the default secret.</param>
+    /// <param name="secret">The secret words, or <see langword="null"/> to use the default secret; the first four words are used.</param>
     /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentException"><paramref name="secret"/> contains fewer than four words.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed, ulong[]? secret)
     {
-        secret ??= DefaultSecret;
+        secret ??= V3DefaultSecret;
+        if (secret.Length < 4)
+            throw new ArgumentException("The secret must contain at least four words.", nameof(secret));
 
         int len = data.Length;
         seed ^= secret[0];
@@ -57,20 +59,28 @@ public static class Wy3Hash64
 
         if (len <= 16)
         {
-            if (len >= 4)
+            if (len <= 8)
             {
-                a = ((ulong)Read32(data) << 32) | Read32(data, (len >> 3) << 2);
-                b = ((ulong)Read32(data, len - 4) << 32) | Read32(data, len - 4 - ((len >> 3) << 2));
-            }
-            else if (len > 0)
-            {
-                a = _wyr3(data, len);
-                b = 0;
+                if (len >= 4)
+                {
+                    a = Read32(data);
+                    b = Read32(data, len - 4);
+                }
+                else if (len > 0)
+                {
+                    a = _wyr3(data, len);
+                    b = 0;
+                }
+                else
+                {
+                    a = 0;
+                    b = 0;
+                }
             }
             else
             {
-                a = 0;
-                b = 0;
+                a = Read64(data);
+                b = Read64(data, len - 8);
             }
         }
         else

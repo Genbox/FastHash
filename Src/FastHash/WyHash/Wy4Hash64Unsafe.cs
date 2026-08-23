@@ -1,6 +1,7 @@
 namespace Genbox.FastHash.WyHash;
 
-/// <summary>Computes 64-bit wyhash version 4 hashes from unmanaged memory.</summary>
+/// <summary>Computes 64-bit wyhash final version 4.3 hashes from unmanaged memory.</summary>
+/// <remarks>Define <c>WYHASH_CONDOM</c> at build time to select upstream mode 2 (blind multiplication); otherwise upstream mode 1 is used.</remarks>
 public static class Wy4Hash64Unsafe
 {
     /// <summary>Computes a hash for unmanaged data.</summary>

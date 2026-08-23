@@ -3,96 +3,145 @@ using static Genbox.FastHash.WyHash.WyHashConstants;
 
 namespace Genbox.FastHash.WyHash;
 
-/// <summary>Computes 64-bit wyhash version 4 hashes.</summary>
+/// <summary>Computes 64-bit wyhash final version 4.3 hashes.</summary>
+/// <remarks>Define <c>WYHASH_CONDOM</c> at build time to select upstream mode 2 (blind multiplication); otherwise upstream mode 1 is used.</remarks>
 public static class Wy4Hash64
 {
-    /// <summary>Computes a hash for a 64-bit index using a zero seed.</summary>
+    /// <summary>Computes a hash for a 64-bit index using the default secret and a zero seed.</summary>
     /// <param name="input">The index to hash.</param>
     /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
 
-    /// <summary>Computes a hash for a 64-bit index.</summary>
+    /// <summary>Computes a hash for a 64-bit index using the default secret.</summary>
     /// <param name="input">The index to hash.</param>
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed)
     {
-        ulong a = (uint)input ^ seed ^ Wyp0;
-        ulong b = (uint)(input >> 32) ^ seed ^ Wyp1;
-        return Wymum(Wymum(a, b), 8UL ^ Wyp4);
+        ulong[] secret = V4DefaultSecret;
+        seed ^= Wymix(seed ^ secret[0], secret[1]);
+
+        ulong a = ((ulong)(uint)input << 32) | (uint)(input >> 32);
+        ulong b = ((ulong)(uint)(input >> 32) << 32) | (uint)input;
+        a ^= secret[1];
+        b ^= seed;
+        Wymum(ref a, ref b);
+        return Wymix(a ^ secret[0] ^ 8, b ^ secret[1]);
     }
 
-    /// <summary>Computes a hash for the supplied data using a zero seed.</summary>
+    /// <summary>Computes a hash for the supplied data using the default secret and a zero seed.</summary>
     /// <param name="data">The data to hash.</param>
     /// <returns>The 64-bit hash.</returns>
-    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0, null);
+
+    /// <summary>Computes a hash for the supplied data using a custom secret and a zero seed.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="secret">The secret containing at least four words, or <see langword="null"/> to use the default secret.</param>
+    /// <returns>The 64-bit hash.</returns>
+    /// <exception cref="ArgumentException"><paramref name="secret"/> contains fewer than four words.</exception>
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong[]? secret) => ComputeHash(data, 0, secret);
+
+    /// <summary>Computes a hash for the supplied data using the default secret.</summary>
+    /// <param name="data">The data to hash.</param>
+    /// <param name="seed">The hash seed.</param>
+    /// <returns>The 64-bit hash.</returns>
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed) => ComputeHash(data, seed, null);
 
     /// <summary>Computes a hash for the supplied data.</summary>
     /// <param name="data">The data to hash.</param>
     /// <param name="seed">The hash seed.</param>
+    /// <param name="secret">The secret containing at least four words, or <see langword="null"/> to use the default secret.</param>
     /// <returns>The 64-bit hash.</returns>
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
+    /// <exception cref="ArgumentException"><paramref name="secret"/> contains fewer than four words.</exception>
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed, ulong[]? secret)
     {
-        int length = data.Length;
-        int i = length;
-        int offset = 0;
+        secret ??= V4DefaultSecret;
+        if (secret.Length < 4)
+            throw new ArgumentException("The secret must contain at least four words.", nameof(secret));
 
-        if (i > 64)
+        seed ^= Wymix(seed ^ secret[0], secret[1]);
+
+        int len = data.Length;
+        ulong a, b;
+
+        if (len <= 16)
         {
-            ulong see1 = seed;
-            ulong see2 = seed;
-            ulong see3 = seed;
-
-            do
+            if (len >= 4)
             {
-                seed = Wymum(Read64(data, offset) ^ seed ^ Wyp0, Read64(data, offset + 8) ^ seed ^ Wyp1);
-                see1 = Wymum(Read64(data, offset + 16) ^ see1 ^ Wyp2, Read64(data, offset + 24) ^ see1 ^ Wyp3);
-                see2 = Wymum(Read64(data, offset + 32) ^ see2 ^ Wyp1, Read64(data, offset + 40) ^ see2 ^ Wyp2);
-                see3 = Wymum(Read64(data, offset + 48) ^ see3 ^ Wyp3, Read64(data, offset + 56) ^ see3 ^ Wyp0);
+                a = ((ulong)Read32(data) << 32) | Read32(data, (len >> 3) << 2);
+                b = ((ulong)Read32(data, len - 4) << 32) | Read32(data, len - 4 - ((len >> 3) << 2));
+            }
+            else if (len > 0)
+            {
+                a = Wyr3(data, len);
+                b = 0;
+            }
+            else
+            {
+                a = 0;
+                b = 0;
+            }
+        }
+        else
+        {
+            int i = len;
+            int offset = 0;
 
-                offset += 64;
-                i -= 64;
-            } while (i >= 64);
+            if (i >= 48)
+            {
+                ulong see1 = seed;
+                ulong see2 = seed;
+                do
+                {
+                    seed = Wymix(Read64(data, offset) ^ secret[1], Read64(data, offset + 8) ^ seed);
+                    see1 = Wymix(Read64(data, offset + 16) ^ secret[2], Read64(data, offset + 24) ^ see1);
+                    see2 = Wymix(Read64(data, offset + 32) ^ secret[3], Read64(data, offset + 40) ^ see2);
+                    offset += 48;
+                    i -= 48;
+                } while (i >= 48);
 
-            seed ^= see1 ^ see2 ^ see3;
+                seed ^= see1 ^ see2;
+            }
+
+            while (i > 16)
+            {
+                seed = Wymix(Read64(data, offset) ^ secret[1], Read64(data, offset + 8) ^ seed);
+                offset += 16;
+                i -= 16;
+            }
+
+            a = Read64(data, offset + i - 16);
+            b = Read64(data, offset + i - 8);
         }
 
-        return ComputeTail(data, offset, i, (ulong)length, seed);
+        a ^= secret[1];
+        b ^= seed;
+        Wymum(ref a, ref b);
+        return Wymix(a ^ secret[0] ^ (uint)len, b ^ secret[1]);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong ComputeTail(ReadOnlySpan<byte> data, int offset, int i, ulong length, ulong seed)
+    private static ulong Wyr3(ReadOnlySpan<byte> data, int len) => ((ulong)data[0] << 16) | ((ulong)data[len >> 1] << 8) | data[len - 1];
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void Wymum(ref ulong a, ref ulong b)
     {
-        if (i < 4)
-            return Wymum(Wymum((i != 0 ? Wyr3(data, offset, i) : 0) ^ seed ^ Wyp0, seed ^ Wyp1), length ^ Wyp4);
-
-        if (i <= 8)
-            return Wymum(Wymum(Read32(data, offset) ^ seed ^ Wyp0, Read32(data, (offset + i) - 4) ^ seed ^ Wyp1), length ^ Wyp4);
-
-        if (i <= 16)
-            return Wymum(Wymum(Read64(data, offset) ^ seed ^ Wyp0, Read64(data, (offset + i) - 8) ^ seed ^ Wyp1), length ^ Wyp4);
-
-        if (i <= 32)
-        {
-            ulong a = Wymum(Read64(data, offset) ^ seed ^ Wyp0, Read64(data, offset + 8) ^ seed ^ Wyp1);
-            ulong b = Wymum(Read64(data, (offset + i) - 16) ^ seed ^ Wyp2, Read64(data, (offset + i) - 8) ^ seed ^ Wyp3);
-            return Wymum(a ^ b, length ^ Wyp4);
-        }
-
-        {
-            ulong a = Wymum(Read64(data, offset) ^ seed ^ Wyp0, Read64(data, offset + 8) ^ seed ^ Wyp1);
-            ulong b = Wymum(Read64(data, offset + 16) ^ seed ^ Wyp2, Read64(data, offset + 24) ^ seed ^ Wyp3);
-            ulong c = Wymum(Read64(data, (offset + i) - 32) ^ seed ^ Wyp1, Read64(data, (offset + i) - 24) ^ seed ^ Wyp2);
-            ulong d = Wymum(Read64(data, (offset + i) - 16) ^ seed ^ Wyp3, Read64(data, (offset + i) - 8) ^ seed ^ Wyp0);
-            return Wymum(a ^ b ^ c ^ d, length ^ Wyp4);
-        }
+        ulong high = BigMul(a, b, out ulong low);
+#if WYHASH_CONDOM
+        a ^= low;
+        b ^= high;
+#else
+        a = low;
+        b = high;
+#endif
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong Wyr3(ReadOnlySpan<byte> data, int offset, int i) => ((ulong)data[offset] << 16) | ((ulong)data[offset + (i >> 1)] << 8) | data[(offset + i) - 1];
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong Wymum(ulong a, ulong b) => Fold128To64(a, b);
+    private static ulong Wymix(ulong a, ulong b)
+    {
+        Wymum(ref a, ref b);
+        return a ^ b;
+    }
 }

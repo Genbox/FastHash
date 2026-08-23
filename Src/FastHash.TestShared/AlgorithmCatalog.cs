@@ -61,8 +61,13 @@ public static unsafe class AlgorithmCatalog
         new(nameof(Rapid3HashNano64), static data => Rapid3HashNano64.ComputeHash(data), null, [0x9F, 0xF4, 0x50, 0x8C, 0x0E, 0xC2, 0xD5, 0x6A]),
         new(nameof(SipHash64), static data => SipHash64.ComputeHash(data), static (data, length) => SipHash64Unsafe.ComputeHash(data, length), [0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97]),
         new(nameof(T1ha2Hash64), static data => T1ha2Hash64.ComputeHash(data), null, [0xC6, 0x87, 0xF0, 0xA7, 0x0E, 0x1B, 0x29, 0xD7]),
-        new(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), [0x3F, 0xA2, 0x72, 0x2A, 0x57, 0x74, 0x52, 0xC2]),
-        new(nameof(Wy4Hash64), static data => Wy4Hash64.ComputeHash(data), static (data, length) => Wy4Hash64Unsafe.ComputeHash(data, length), [0xC5, 0x96, 0x5C, 0x8B, 0x33, 0x7D, 0x3F, 0x56]),
+#if WYHASH_CONDOM
+        new(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), null),
+        new(nameof(Wy4Hash64), static data => Wy4Hash64.ComputeHash(data), static (data, length) => Wy4Hash64Unsafe.ComputeHash(data, length), null),
+#else
+        new(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), [0x96, 0x99, 0x78, 0xA4, 0x3B, 0x3F, 0x80, 0x76]),
+        new(nameof(Wy4Hash64), static data => Wy4Hash64.ComputeHash(data), static (data, length) => Wy4Hash64Unsafe.ComputeHash(data, length), [0xB5, 0xE9, 0x6F, 0x43, 0xBE, 0x0A, 0x9C, 0x40]),
+#endif
         new(nameof(XxHash64), static data => XxHash64.ComputeHash(data), static (data, length) => XxHash64Unsafe.ComputeHash(data, length), [0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE]),
         new(nameof(Xx3Hash64), static data => Xx3Hash64.ComputeHash(data), static (data, length) => Xx3Hash64Unsafe.ComputeHash(data, length), [0xBF, 0x39, 0xFF, 0xB1, 0xB7, 0xF4, 0x3B, 0xC3])
     ];
