@@ -37,6 +37,9 @@ public class SmhasherVerificationTests
     public void FarmHash128Verification() => Verify128(static (data, seed) => FarmHash128.ComputeHash(data, new UInt128(seed, 0)), 0x305C0D9AU);
 
     [Fact]
+    public void FarshHash32Verification() => Verify32(static (data, seed) => FarshHash32.ComputeHash(data, seed), 0xBCDE332CU);
+
+    [Fact]
     public void FarshHash64Verification() => Verify64(static (data, seed) => FarshHash64.ComputeHash(data, seed), 0xDE2FDAEEU);
 
     [Fact]

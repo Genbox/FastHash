@@ -3,42 +3,42 @@ using static Genbox.FastHash.FarshHash.FarshHashConstants;
 
 namespace Genbox.FastHash.FarshHash;
 
-/// <summary>Provides the 64-bit Farsh hash algorithm.</summary>
+/// <summary>Provides two packed 32-bit FARSH outputs corresponding to <c>farsh_n</c> with <c>n = 2</c>.</summary>
 public static class FarshHash64
 {
-    /// <summary>Computes the hash of a 64-bit integer using a zero seed.</summary>
+    /// <summary>Computes two packed FARSH hashes of a 64-bit integer using a zero seed.</summary>
     /// <param name="input">The integer to hash.</param>
-    /// <returns>The 64-bit Farsh hash.</returns>
+    /// <returns>Hash 0 in the low 32 bits and hash 1 in the high 32 bits.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input) => ComputeIndex(input, 0);
 
-    /// <summary>Computes the hash of a 64-bit integer.</summary>
+    /// <summary>Computes two packed FARSH hashes of a 64-bit integer.</summary>
     /// <param name="input">The integer to hash.</param>
     /// <param name="seed">The hash seed.</param>
-    /// <returns>The 64-bit Farsh hash.</returns>
+    /// <returns>Hash 0 in the low 32 bits and hash 1 in the high 32 bits.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed)
     {
         uint val1 = (uint)input;
         uint val2 = (uint)(input >> 32);
 
-        ulong h = (val1 + 0xb8fe6c39u) * (ulong)(val2 + 0x23a44bbeu);
-        uint low = farsh_final(farsh_combine(seed, h)) ^ 0xb8fe6c39u;
+        ulong h = (val1 + FARSH_KEYS[0]) * (ulong)(val2 + FARSH_KEYS[1]);
+        uint low = farsh_final(farsh_combine(seed, h)) ^ FARSH_KEYS[0];
 
-        h = (val1 + 0xded46de9u) * (ulong)(val2 + 0x839097dbu);
-        uint high = farsh_final(farsh_combine(seed, h)) ^ 0xded46de9u;
+        h = (val1 + FARSH_KEYS[4]) * (ulong)(val2 + FARSH_KEYS[5]);
+        uint high = farsh_final(farsh_combine(seed, h)) ^ FARSH_KEYS[4];
         return low | ((ulong)high << 32);
     }
 
-    /// <summary>Computes the hash of a byte sequence using a zero seed.</summary>
+    /// <summary>Computes two packed FARSH hashes of a byte sequence using a zero seed.</summary>
     /// <param name="data">The bytes to hash.</param>
-    /// <returns>The 64-bit Farsh hash.</returns>
+    /// <returns>Hash 0 in the low 32 bits and hash 1 in the high 32 bits.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
 
-    /// <summary>Computes the hash of a byte sequence.</summary>
+    /// <summary>Computes two packed FARSH hashes of a byte sequence.</summary>
     /// <param name="data">The bytes to hash.</param>
     /// <param name="seed">The hash seed.</param>
-    /// <returns>The 64-bit Farsh hash.</returns>
+    /// <returns>Hash 0 in the low 32 bits and hash 1 in the high 32 bits.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         ulong lowSum = seed;
@@ -87,7 +87,7 @@ public static class FarshHash64
     {
         ulong low = 0;
         ulong high = 0;
-        int keyindex = 0;
+        int keyIndex = 0;
         int length = data.Length;
 
         uint chunks = (uint)((length - offset) >> 3);
@@ -96,10 +96,10 @@ public static class FarshHash64
         {
             uint val1 = Read32(data, offset);
             uint val2 = Read32(data, offset + sizeof(uint));
-            low += (val1 + FARSH_KEYS[keyindex]) * (ulong)(val2 + FARSH_KEYS[keyindex + 1]);
-            high += (val1 + FARSH_KEYS[keyindex + 4]) * (ulong)(val2 + FARSH_KEYS[keyindex + 5]);
+            low += (val1 + FARSH_KEYS[keyIndex]) * (ulong)(val2 + FARSH_KEYS[keyIndex + 1]);
+            high += (val1 + FARSH_KEYS[keyIndex + 4]) * (ulong)(val2 + FARSH_KEYS[keyIndex + 5]);
             offset += 8;
-            keyindex += 2;
+            keyIndex += 2;
         }
 
         uint v1;
@@ -111,7 +111,7 @@ public static class FarshHash64
             case 7:
                 v1 = Read32(data, offset);
                 offset += 4;
-                v2 = (uint)(data[0 + offset] | (data[1 + offset] << 8) | (data[2 + offset] << 16));
+                v2 = (uint)(data[offset] | (data[offset + 1] << 8) | (data[offset + 2] << 16));
                 AddPartial(v1, v2);
                 break;
             case 6:
@@ -131,7 +131,7 @@ public static class FarshHash64
                 AddPartial(v1, 0);
                 break;
             case 3:
-                v1 = (uint)(data[0 + offset] | (data[1 + offset] << 8) | (data[2 + offset] << 16));
+                v1 = (uint)(data[offset] | (data[offset + 1] << 8) | (data[offset + 2] << 16));
                 AddPartial(v1, 0);
                 break;
             case 2:
@@ -147,8 +147,8 @@ public static class FarshHash64
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void AddPartial(uint v1, uint v2)
         {
-            low += (v1 + FARSH_KEYS[keyindex]) * (ulong)(v2 + FARSH_KEYS[keyindex + 1]);
-            high += (v1 + FARSH_KEYS[keyindex + 4]) * (ulong)(v2 + FARSH_KEYS[keyindex + 5]);
+            low += (v1 + FARSH_KEYS[keyIndex]) * (ulong)(v2 + FARSH_KEYS[keyIndex + 1]);
+            high += (v1 + FARSH_KEYS[keyIndex + 4]) * (ulong)(v2 + FARSH_KEYS[keyIndex + 5]);
         }
 
         lowSum = low;

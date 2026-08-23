@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Text;
 using Genbox.FastHash.FarshHash;
 
@@ -53,23 +54,9 @@ public class FarshHashTests
         {
             string testData = new string('a', i);
 
-            ulong value = FarshHash64.ComputeHash(Encoding.ASCII.GetBytes(testData));
+            uint value = FarshHash32.ComputeHash(Encoding.ASCII.GetBytes(testData));
 
-            Assert.Equal(_vectors[i - 1], unchecked((uint)value));
-        }
-    }
-
-    [Fact]
-    public unsafe void TestVectors64()
-    {
-        foreach ((int length, ulong expected) in _vectors64)
-        {
-            byte[] data = Encoding.ASCII.GetBytes(new string('a', length));
-
-            Assert.Equal(expected, FarshHash64.ComputeHash(data));
-
-            fixed (byte* ptr = data)
-                Assert.Equal(expected, FarshHash64Unsafe.ComputeHash(ptr, data.Length));
+            Assert.Equal(_vectors[i - 1], value);
         }
     }
 
@@ -85,10 +72,63 @@ public class FarshHashTests
             {
                 fixed (byte* ptr = data)
                 {
-                    ulong value = FarshHash64Unsafe.ComputeHash(ptr, data.Length);
-                    Assert.Equal(_vectors[i - 1], unchecked((uint)value));
+                    uint value = FarshHash32Unsafe.ComputeHash(ptr, data.Length);
+                    Assert.Equal(_vectors[i - 1], value);
                 }
             }
         }
+    }
+
+    [Fact]
+    public unsafe void TestVectors64()
+    {
+        foreach ((int length, ulong expected) in _vectors64)
+        {
+            byte[] data = Encoding.ASCII.GetBytes(new string('a', length));
+            ulong value = FarshHash64.ComputeHash(data);
+
+            Assert.Equal(expected, value);
+            Assert.Equal(FarshHash32.ComputeHash(data), unchecked((uint)value));
+
+            fixed (byte* ptr = data)
+                Assert.Equal(expected, FarshHash64Unsafe.ComputeHash(ptr, data.Length));
+        }
+    }
+
+    [Fact]
+    public unsafe void SeededManagedAndUnsafeHashesMatch()
+    {
+        byte[] data = new byte[1025];
+        for (int i = 0; i < data.Length; i++)
+            data[i] = unchecked((byte)i);
+
+        const ulong seed = 0x0123456789ABCDEFUL;
+        int[] lengths = [0, 1, 4, 7, 8, 255, 256, 1023, 1024, 1025];
+
+        fixed (byte* ptr = data)
+        {
+            foreach (int length in lengths)
+            {
+                Assert.Equal(FarshHash32.ComputeHash(data.AsSpan(0, length), seed), FarshHash32Unsafe.ComputeHash(ptr, length, seed));
+                Assert.Equal(FarshHash64.ComputeHash(data.AsSpan(0, length), seed), FarshHash64Unsafe.ComputeHash(ptr, length, seed));
+            }
+        }
+    }
+
+    [Fact]
+    public void ComputeIndexMatchesLittleEndianBytes()
+    {
+        const uint input = 0x89ABCDEFU;
+        const ulong seed = 0x0123456789ABCDEFUL;
+        Span<byte> bytes = stackalloc byte[sizeof(uint)];
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes, input);
+
+        Assert.Equal(FarshHash32.ComputeHash(bytes, seed), FarshHash32.ComputeIndex(input, seed));
+
+        const ulong input64 = 0x0123456789ABCDEFUL;
+        Span<byte> bytes64 = stackalloc byte[sizeof(ulong)];
+        BinaryPrimitives.WriteUInt64LittleEndian(bytes64, input64);
+
+        Assert.Equal(FarshHash64.ComputeHash(bytes64, seed), FarshHash64.ComputeIndex(input64, seed));
     }
 }

@@ -31,6 +31,8 @@ public class UnsafeHashNegativeLengthTests
         Assert.Throws<ArgumentOutOfRangeException>(() => DjbHash.Djb2AltHash32Unsafe.ComputeHash(data, -1));
         Assert.Throws<ArgumentOutOfRangeException>(() => DjbHash.Djb2AltHash64Unsafe.ComputeHash(data, -1));
 
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarshHash.FarshHash32Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => FarshHash.FarshHash32Unsafe.ComputeHash(data, -1, 1));
         Assert.Throws<ArgumentOutOfRangeException>(() => FarshHash.FarshHash64Unsafe.ComputeHash(data, -1));
         Assert.Throws<ArgumentOutOfRangeException>(() => FarshHash.FarshHash64Unsafe.ComputeHash(data, -1, 1));
         Assert.Throws<ArgumentOutOfRangeException>(() => FarmHash.FarmHash32Unsafe.ComputeHash(data, -1));

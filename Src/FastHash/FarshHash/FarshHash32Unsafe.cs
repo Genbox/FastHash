@@ -3,15 +3,15 @@ using static Genbox.FastHash.FarshHash.FarshHashConstants;
 
 namespace Genbox.FastHash.FarshHash;
 
-/// <summary>Provides unsafe access to two packed 32-bit FARSH outputs corresponding to <c>farsh_n</c> with <c>n = 2</c>.</summary>
-public static class FarshHash64Unsafe
+/// <summary>Provides unsafe access to the 32-bit FARSH algorithm.</summary>
+public static class FarshHash32Unsafe
 {
-    /// <summary>Computes two packed FARSH hashes of bytes at an unmanaged address using a zero seed.</summary>
+    /// <summary>Computes the hash of bytes at an unmanaged address using a zero seed.</summary>
     /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
-    /// <returns>Hash 0 in the low 32 bits and hash 1 in the high 32 bits.</returns>
+    /// <returns>The 32-bit FARSH value.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
-    public static unsafe ulong ComputeHash(byte* data, int length)
+    public static unsafe uint ComputeHash(byte* data, int length)
     {
         if (length < 0)
             throw new ArgumentOutOfRangeException(nameof(length));
@@ -19,60 +19,52 @@ public static class FarshHash64Unsafe
         return ComputeHash(data, length, 0);
     }
 
-    /// <summary>Computes two packed FARSH hashes of bytes at an unmanaged address.</summary>
+    /// <summary>Computes the hash of bytes at an unmanaged address.</summary>
     /// <param name="data">A pointer to at least <paramref name="length"/> readable bytes; it may be null only when <paramref name="length"/> is zero.</param>
     /// <param name="length">The number of bytes to hash.</param>
     /// <param name="seed">The hash seed.</param>
-    /// <returns>Hash 0 in the low 32 bits and hash 1 in the high 32 bits.</returns>
+    /// <returns>The 32-bit FARSH value.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
-    public static unsafe ulong ComputeHash(byte* data, int length, ulong seed)
+    public static unsafe uint ComputeHash(byte* data, int length, ulong seed)
     {
         if (length < 0)
             throw new ArgumentOutOfRangeException(nameof(length));
 
-        ulong lowSum = seed;
-        ulong highSum = seed;
+        ulong sum = seed;
 
         while (length >= STRIPE)
         {
-            farsh_full_block(data, out ulong lowHash, out ulong highHash);
-            lowSum = farsh_combine(lowSum, lowHash);
-            highSum = farsh_combine(highSum, highHash);
+            sum = farsh_combine(sum, farsh_full_block(data));
             data += STRIPE;
             length -= STRIPE;
         }
 
         if (length > 0)
         {
-            farsh_partial_block(data, length, out ulong lowHash, out ulong highHash);
-            lowSum = farsh_combine(lowSum, lowHash);
-            highSum = farsh_combine(highSum, highHash);
+            sum = farsh_combine(sum, farsh_partial_block(data, length));
         }
 
-        uint low = farsh_final(lowSum) ^ FARSH_KEYS[0];
-        uint high = farsh_final(highSum) ^ FARSH_KEYS[4];
-        return low | ((ulong)high << 32);
+        return farsh_final(sum) ^ FARSH_KEYS[0];
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void farsh_full_block(byte* data, out ulong lowSum, out ulong highSum)
+    private static unsafe ulong farsh_full_block(byte* data)
     {
-        lowSum = 0;
-        highSum = 0;
+        ulong sum = 0;
 
         for (int i = 0; i < STRIPE_ELEMENTS; i += 2)
         {
             uint val1 = Read32(data + (i * sizeof(uint)));
             uint val2 = Read32(data + ((i + 1) * sizeof(uint)));
-            lowSum += (val1 + FARSH_KEYS[i]) * (ulong)(val2 + FARSH_KEYS[i + 1]);
-            highSum += (val1 + FARSH_KEYS[i + 4]) * (ulong)(val2 + FARSH_KEYS[i + 5]);
+            sum += (val1 + FARSH_KEYS[i]) * (ulong)(val2 + FARSH_KEYS[i + 1]);
         }
+
+        return sum;
     }
 
-    private static unsafe void farsh_partial_block(byte* data, int length, out ulong lowSum, out ulong highSum)
+    private static unsafe ulong farsh_partial_block(byte* data, int length)
     {
-        ulong low = 0;
-        ulong high = 0;
+        ulong sum = 0;
         int elements = (length / sizeof(uint)) & ~1;
         int i;
 
@@ -80,8 +72,7 @@ public static class FarshHash64Unsafe
         {
             uint val1 = Read32(data + (i * sizeof(uint)));
             uint val2 = Read32(data + ((i + 1) * sizeof(uint)));
-            low += (val1 + FARSH_KEYS[i]) * (ulong)(val2 + FARSH_KEYS[i + 1]);
-            high += (val1 + FARSH_KEYS[i + 4]) * (ulong)(val2 + FARSH_KEYS[i + 5]);
+            sum += (val1 + FARSH_KEYS[i]) * (ulong)(val2 + FARSH_KEYS[i + 1]);
             length -= 8;
         }
 
@@ -89,6 +80,7 @@ public static class FarshHash64Unsafe
 
         uint v1;
         uint v2;
+
         byte* ptr = data;
 
         switch (length)
@@ -132,12 +124,10 @@ public static class FarshHash64Unsafe
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void AddPartial(uint v1, uint v2)
         {
-            low += (v1 + FARSH_KEYS[i]) * (ulong)(v2 + FARSH_KEYS[i + 1]);
-            high += (v1 + FARSH_KEYS[i + 4]) * (ulong)(v2 + FARSH_KEYS[i + 5]);
+            sum += (v1 + FARSH_KEYS[i]) * (ulong)(v2 + FARSH_KEYS[i + 1]);
         }
 
-        lowSum = low;
-        highSum = high;
+        return sum;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

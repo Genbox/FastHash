@@ -50,7 +50,7 @@ The table below gives an overview of the implementations.
 | CLHash        |    x    |   x    |       |   x   |        |       |   x    |   x    |    x     |
 | DJBHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |          |
 | FarmHash      |    x    |   x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
-| FarshHash     |    x    |   x    |       |   x   |        |   x   |   x    |        |    x     |
+| FarshHash     |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    x     |
 | FNVHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |          |
 | FoldHash      |    x    |        |       |   x   |        |   x   |   x    |   x    |          |
 | Gx2Hash       |    x    |        |   x   |   x   |   x    |   x   |   x    |        |          |

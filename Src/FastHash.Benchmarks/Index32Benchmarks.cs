@@ -2,6 +2,7 @@ using BenchmarkDotNet.Order;
 using Genbox.FastHash.CityHash;
 using Genbox.FastHash.DjbHash;
 using Genbox.FastHash.FarmHash;
+using Genbox.FastHash.FarshHash;
 using Genbox.FastHash.FnvHash;
 using Genbox.FastHash.GxHash;
 using Genbox.FastHash.MarvinHash;
@@ -27,6 +28,9 @@ public class Index32Benchmarks
 
     [Benchmark]
     public uint FarmHash32Test() => FarmHash32.ComputeIndex(_value);
+
+    [Benchmark]
+    public uint FarshHash32Test() => FarshHash32.ComputeIndex(_value);
 
     [Benchmark]
     public uint Fnv1aHash32Test() => Fnv1aHash32.ComputeIndex(_value);
