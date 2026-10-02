@@ -20,6 +20,21 @@
           "System.Management": "9.0.5"
         }
       },
+      "ConfigureAwait.Fody": {
+        "type": "Direct",
+        "requested": "[3.4.1, )",
+        "resolved": "3.4.1",
+        "contentHash": "AWOHCZffhZMDNti3aMMKWHP2Gs+ACc5FSjLdBt8xEbpHZkTy856A5142e1S+nBg4EI2/0n9h0gEIvyt+/hWN9g==",
+        "dependencies": {
+          "Fody": "6.9.3"
+        }
+      },
+      "Fody": {
+        "type": "Direct",
+        "requested": "[6.9.3, )",
+        "resolved": "6.9.3",
+        "contentHash": "1CUGgFdyECDKgi5HaUBhdv6k+VG9Iy4OCforGfHyar3xQXAJypZkzymgKtWj/4SPd6nSG0Qi7NH71qHrDSZLaA=="
+      },
       "IDisposableAnalyzers": {
         "type": "Direct",
         "requested": "[4.0.8, )",
@@ -73,12 +88,6 @@
         "requested": "[10.32.0.713, )",
         "resolved": "10.32.0.713",
         "contentHash": "7GiMslvghy0n0t7r2oEAVbBeKTnYTXUOQPtZCwuN5FvtM+9vxf4BR4FVrq5o4KYUziHF/5NLR5SHQ3guBqYPow=="
-      },
-      "ToStringWithoutOverrideAnalyzer": {
-        "type": "Direct",
-        "requested": "[0.6.0, )",
-        "resolved": "0.6.0",
-        "contentHash": "7GBA+jSpam3NV9IFqTg/ZzUMHytjEnZ0DqGpzHvKWZHV7hGNer71KuDd8rC/+6HwZHswVUzZ14JPt4gi3WhIbw=="
       },
       "BenchmarkDotNet.Annotations": {
         "type": "Transitive",

@@ -13,6 +13,10 @@ insert_final_newline = false
 [**/{bin,obj}/**]
 generated_code = true
 
+[*.g.cs]
+generated_code = true
+dotnet_diagnostic.CS1591.severity = none
+
 # Two-space formats
 [*.{appxmanifest,axml,build,config,csproj,css,dbml,discomap,dtd,htm,html,js,json,jsonc,jsproj,lsproj,njsproj,nuspec,proj,props,resjson,resw,resx,StyleCop,targets,tasks,vbproj,xml,xsd,yaml,yml}]
 indent_size = 2
@@ -76,7 +80,7 @@ resharper_csharp_wrap_parameters_style = wrap_if_long
 resharper_csharp_wrap_primary_constructor_parameters_style = wrap_if_long
 resharper_indent_preprocessor_other = do_not_change
 resharper_instance_members_qualify_declared_in = this_class
-resharper_csharp_keep_existing_attribute_arrangement = true
+resharper_keep_existing_attribute_arrangement = true
 resharper_keep_existing_enum_arrangement = false
 resharper_nested_ternary_style = compact
 resharper_place_accessorholder_attribute_on_same_line = false
