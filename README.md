@@ -81,7 +81,7 @@ The table below gives an overview of the implementations.
 
 #### Hash functions
 
-Measured on 32 MB data. The unsafe versions are implemented using C# unsafe code.
+Measured on 32 KiB data. The unsafe versions are implemented using C# unsafe code.
 
 **Note:** Speed is not everything. The quality of a hash is just as important, but much more difficult to measure. [See SMHasher](https://github.com/rurban/smhasher) for more details on hash quality.
 
