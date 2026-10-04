@@ -65,6 +65,7 @@ public static class FoldHashQuality64
         FoldHashShared.ValidateSharedSeed(sharedSeed, nameof(sharedSeed));
 
         ulong perHasherSeed = FoldHashShared.FoldedMultiply(seed, ARBITRARY4) ^ ARBITRARY3;
+
         // The byte cast is lossless here: the rotation only uses the low 6 bits of the count.
         ulong accumulator = RotateRight(perHasherSeed, (byte)data.Length);
 
