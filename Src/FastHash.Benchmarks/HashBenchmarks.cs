@@ -14,7 +14,7 @@ public class HashBenchmarks
     private unsafe byte* _ptr;
     private byte[] _testData = null!;
 
-    [Params(1, 8, 64, 1024, 32 * 1024 * 1024)]
+    [Params(8, 64, 1024, 32 * 1024 * 1024)]
     public int Size { get; set; }
 
     public static IEnumerable<Hash32Algorithm> ManagedHash32Algorithms() => AlgorithmCatalog.Hash32Algorithms.Where(static x => x.Hash != null);
