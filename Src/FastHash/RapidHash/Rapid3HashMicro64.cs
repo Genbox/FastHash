@@ -12,7 +12,7 @@ public static class Rapid3HashMicro64
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 64-bit hash index.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ComputeIndex(ulong input, ulong seed = DefaultIndexSeed) => RapidHashShared.ComputeIndex(input, seed);
+    public static ulong ComputeIndex(ulong input, ulong seed = 0) => RapidHashShared.ComputeIndex(input, seed);
 
     /// <summary>Computes a 64-bit hash for <paramref name="data" />.</summary>
     /// <param name="data">The bytes to hash.</param>
