@@ -24,7 +24,7 @@ public static class FoldHash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong ComputeIndexCore(ulong input, ulong seed)
     {
-        ulong accumulator = FoldHashShared.RotateRight(seed ^ ARBITRARY3, sizeof(ulong));
+        ulong accumulator = RotateRight(seed ^ ARBITRARY3, sizeof(ulong));
         ulong s0 = accumulator ^ input;
         ulong s1 = ARBITRARY7 ^ input;
         return FoldHashShared.FoldedMultiply(s0, s1);
@@ -60,7 +60,8 @@ public static class FoldHash64
         FoldHashShared.ValidateSharedSeed(sharedSeed, nameof(sharedSeed));
 
         ulong perHasherSeed = seed ^ ARBITRARY3;
-        ulong accumulator = FoldHashShared.RotateRight(perHasherSeed, data.Length);
+        // The byte cast is lossless here: the rotation only uses the low 6 bits of the count.
+        ulong accumulator = RotateRight(perHasherSeed, (byte)data.Length);
 
         if (data.Length <= 16)
             return FoldHashShared.HashBytesShort(data, accumulator, sharedSeed);
