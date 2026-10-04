@@ -1,4 +1,6 @@
 #if NET8_0_OR_GREATER
+// C# port of AESNI_Hash from PeterRK/PageBloomFilter (src/aesni-hash.h, ae11846). Copyright (c) 2023, Ruan Kunliang.
+// Distributed under the BSD 3-Clause license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;

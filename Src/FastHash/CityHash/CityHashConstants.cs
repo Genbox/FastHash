@@ -1,3 +1,5 @@
+// C# port of google/cityhash 1.1.1 (4726e30). Copyright (c) 2011 Google, Inc.
+// Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 namespace Genbox.FastHash.CityHash;
 
 internal static class CityHashConstants

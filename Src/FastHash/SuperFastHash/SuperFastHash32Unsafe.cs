@@ -1,3 +1,5 @@
+// C# port of SuperFastHash by Paul Hsieh (http://www.azillionmonkeys.com/qed/hash.html).
+// Distributed under the Paul Hsieh derivative license; see THIRD-PARTY-NOTICES.txt at the repository root.
 namespace Genbox.FastHash.SuperFastHash;
 
 /// <summary>Provides unsafe 32-bit SuperFastHash computations over unmanaged memory.</summary>

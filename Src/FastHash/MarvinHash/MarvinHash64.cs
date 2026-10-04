@@ -1,3 +1,5 @@
+// C# port of Marvin from dotnet/runtime (4017327). Copyright (c) .NET Foundation and Contributors.
+// Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 

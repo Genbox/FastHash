@@ -1,3 +1,5 @@
+// C# port of orlp/foldhash 0.2.0 (8f878c6). Copyright (c) 2024 Orson Peters.
+// Distributed under the zlib license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.FoldHash;

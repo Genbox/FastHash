@@ -1,3 +1,5 @@
+// C# port of Cyan4973/xxHash 0.8.3 (e626a72). Copyright (c) 2012-2021 Yann Collet.
+// Distributed under the BSD 2-Clause license; see THIRD-PARTY-NOTICES.txt at the repository root.
 namespace Genbox.FastHash.XxHash;
 
 /// <summary>Computes 32-bit xxHash hashes from unmanaged memory.</summary>

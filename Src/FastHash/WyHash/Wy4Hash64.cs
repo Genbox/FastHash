@@ -1,3 +1,5 @@
+// C# port of wangyi-fudan/wyhash 4.3.0 (2ac9a50) by Wang Yi.
+// Distributed under the Unlicense; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.WyHash.WyHashConstants;
 

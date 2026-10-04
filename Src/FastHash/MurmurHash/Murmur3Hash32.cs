@@ -1,3 +1,5 @@
+// C# port of MurmurHash3 from aappleby/smhasher (92cf370), written by Austin Appleby and placed in the public domain.
+// See THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
 

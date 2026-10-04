@@ -1,4 +1,6 @@
 #if NET8_0_OR_GREATER
+// C# port of cmuratori/meow_hash 0.5/calico (b080caa). (C) Copyright 2018 Molly Rocket, Inc.
+// Distributed under the zlib license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;

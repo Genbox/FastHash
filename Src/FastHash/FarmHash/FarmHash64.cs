@@ -1,3 +1,5 @@
+// C# port of google/farmhash 1.1.0 (0d859a8). Copyright (c) 2014 Google, Inc.
+// Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashShared;
 using static Genbox.FastHash.FarmHash.FarmHashConstants;

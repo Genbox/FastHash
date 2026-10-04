@@ -1,4 +1,6 @@
 #if NET8_0_OR_GREATER
+// C# port of cmuratori/meow_hash 0.5/calico (b080caa). (C) Copyright 2018 Molly Rocket, Inc.
+// Distributed under the zlib license; see THIRD-PARTY-NOTICES.txt at the repository root.
 namespace Genbox.FastHash.MeowHash;
 
 /// <summary>Provides the low 64 bits of the canonical 128-bit MeowHash result from unmanaged memory.</summary>

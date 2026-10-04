@@ -1,4 +1,6 @@
 #if NET8_0_OR_GREATER
+// C# port of google/cityhash 1.1.1 (4726e30). Copyright (c) 2011 Google, Inc.
+// Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using static Genbox.FastHash.CityHash.CityHashConstants;
 using static Genbox.FastHash.CityHash.CityHashShared;
 

@@ -1,3 +1,5 @@
+// C# port of Cyan4973/xxHash 0.8.3 (e626a72). Copyright (c) 2012-2021 Yann Collet.
+// Distributed under the BSD 2-Clause license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using static Genbox.FastHash.XxHash.XxHashConstants;
 using static Genbox.FastHash.XxHash.XxHashShared;
 using static Genbox.FastHash.XxHash.XxHashUnsafeShared;

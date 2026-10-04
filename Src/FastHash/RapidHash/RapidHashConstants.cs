@@ -1,3 +1,5 @@
+// C# port of Nicoshev/rapidhash 3.0.0 (bc4b4ba). Copyright 2025 Nicolas De Carli.
+// Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 namespace Genbox.FastHash.RapidHash;
 
 internal static class RapidHashConstants

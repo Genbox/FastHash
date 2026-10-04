@@ -1,3 +1,5 @@
+// C# port of google/highwayhash (f8381f3). Copyright 2017 Google Inc. All Rights Reserved.
+// Distributed under the Apache License 2.0; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 
 namespace Genbox.FastHash.HighwayHash;

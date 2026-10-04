@@ -1,3 +1,5 @@
+// C# port of Bulat-Ziganshin/FARSH 0.2.0 (d74ef3a). Copyright (c) 2015-16 Bulat Ziganshin.
+// Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 namespace Genbox.FastHash.FarshHash;
 
 internal static class FarshHashConstants

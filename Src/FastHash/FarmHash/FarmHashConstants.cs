@@ -1,3 +1,5 @@
+// C# port of google/farmhash 1.1.0 (0d859a8). Copyright (c) 2014 Google, Inc.
+// Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 namespace Genbox.FastHash.FarmHash;
 
 internal static class FarmHashConstants

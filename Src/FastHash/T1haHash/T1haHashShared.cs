@@ -1,3 +1,5 @@
+// C# port of erthink/t1ha 2.1.1 (0db5d6b). Copyright (c) 2016-2020 Positive Technologies; portions Copyright (c) 2010-2013 Leonid Yuriev.
+// Distributed under the zlib license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.T1haHash.T1haHashConstants;
 

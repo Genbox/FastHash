@@ -1,3 +1,5 @@
+// C# port of wangyi-fudan/wyhash 3.0.0 (9f68c1b) by Wang Yi.
+// Distributed under the Unlicense; see THIRD-PARTY-NOTICES.txt at the repository root.
 //#define WYHASH_CONDOM
 
 //WYHASH_CONDOM protections produce different results:

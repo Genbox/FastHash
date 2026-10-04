@@ -1,3 +1,5 @@
+// C# port of orlp/polymur-hash 2.0.0 (c6cc688). Copyright (c) 2023 Orson Peters.
+// Distributed under the zlib license; see THIRD-PARTY-NOTICES.txt at the repository root.
 namespace Genbox.FastHash.PolymurHash;
 
 internal static class PolymurConstants

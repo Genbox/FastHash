@@ -1,3 +1,5 @@
+// C# implementation of FNV-1a by Glenn Fowler, Landon Curt Noll and Kiem-Phong Vo, which is in the public domain.
+// See THIRD-PARTY-NOTICES.txt at the repository root.
 using static Genbox.FastHash.FnvHash.FnvHashConstants;
 
 namespace Genbox.FastHash.FnvHash;

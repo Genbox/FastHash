@@ -1,3 +1,5 @@
+// C# implementation of the DJB2 hash by Daniel J. Bernstein, which is in the public domain.
+// See THIRD-PARTY-NOTICES.txt at the repository root.
 using static Genbox.FastHash.DjbHash.DjbHashConstants;
 
 namespace Genbox.FastHash.DjbHash;

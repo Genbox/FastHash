@@ -1,3 +1,5 @@
+// C# port of veorq/SipHash 1.0.0 (dfaa38e). Copyright 2012-2024 JP Aumasson.
+// Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.SipHash.SipHashConstants;
 
