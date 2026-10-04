@@ -23,6 +23,11 @@ public static class HighwayHash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
     {
+#if NET8_0_OR_GREATER
+        if (HighwayHashAvx2.IsSupported)
+            return HighwayHashAvx2.HashIndex(input, seed1, seed2, seed3, seed4);
+#endif
+
         HighwayHashState state = new HighwayHashState();
         Reset(seed1, seed2, seed3, seed4, ref state);
         UpdateIndex(input, ref state);
@@ -39,6 +44,11 @@ public static class HighwayHash64
     public static ulong ComputeIndex(ulong input, ulong[] keys)
     {
         ValidateKeys(keys);
+
+#if NET8_0_OR_GREATER
+        if (HighwayHashAvx2.IsSupported)
+            return HighwayHashAvx2.HashIndex(input, keys[0], keys[1], keys[2], keys[3]);
+#endif
 
         HighwayHashState state = new HighwayHashState();
         Reset(keys, ref state);
@@ -60,6 +70,11 @@ public static class HighwayHash64
     /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2, ulong seed3, ulong seed4)
     {
+#if NET8_0_OR_GREATER
+        if (HighwayHashAvx2.IsSupported)
+            return HighwayHashAvx2.Hash(data, seed1, seed2, seed3, seed4);
+#endif
+
         HighwayHashState state = new HighwayHashState();
         ProcessAll(data, seed1, seed2, seed3, seed4, ref state);
         return Finalize64(state);
@@ -73,6 +88,13 @@ public static class HighwayHash64
     /// <exception cref="ArgumentException"><paramref name="keys" /> has fewer than four elements.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong[] keys)
     {
+        ValidateKeys(keys);
+
+#if NET8_0_OR_GREATER
+        if (HighwayHashAvx2.IsSupported)
+            return HighwayHashAvx2.Hash(data, keys[0], keys[1], keys[2], keys[3]);
+#endif
+
         HighwayHashState state = new HighwayHashState();
         ProcessAll(data, keys, ref state);
         return Finalize64(state);

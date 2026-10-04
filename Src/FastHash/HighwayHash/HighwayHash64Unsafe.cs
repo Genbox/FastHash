@@ -28,6 +28,11 @@ public static class HighwayHash64Unsafe
         if (size < 0)
             throw new ArgumentOutOfRangeException(nameof(size));
 
+#if NET8_0_OR_GREATER
+        if (HighwayHashAvx2.IsSupported)
+            return HighwayHashAvx2.Hash(ref *data, size, seed1, seed2, seed3, seed4);
+#endif
+
         HighwayHashState state = new HighwayHashState();
         ProcessAll(data, (uint)size, seed1, seed2, seed3, seed4, ref state);
         return HighwayHashFinalize64(state);
@@ -46,6 +51,11 @@ public static class HighwayHash64Unsafe
         if (size < 0)
             throw new ArgumentOutOfRangeException(nameof(size));
         HighwayHash64.ValidateKeys(keys);
+
+#if NET8_0_OR_GREATER
+        if (HighwayHashAvx2.IsSupported)
+            return HighwayHashAvx2.Hash(ref *data, size, keys[0], keys[1], keys[2], keys[3]);
+#endif
 
         HighwayHashState state = new HighwayHashState();
         ProcessAll(data, (uint)size, keys, ref state);
