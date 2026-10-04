@@ -1,4 +1,5 @@
 #if NET8_0_OR_GREATER
+
 // C# port of ogxd/gxhash 3.5.0 (6438a7b). Copyright (c) 2023 Olivier Giniaux.
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;

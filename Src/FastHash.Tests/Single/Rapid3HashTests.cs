@@ -467,14 +467,6 @@ public class Rapid3HashTests
         Assert.NotEqual(nano0, nano1);
     }
 
-    private readonly record struct Vector(byte[] Data, ulong Seed, ulong Expected);
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly record struct UpstreamVector(int Length, ulong Seed, ulong Expected);
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly record struct UpstreamIndexVector(ulong Input, ulong Seed, ulong Expected);
-
     private static byte[] CreateData(int length)
     {
         byte[] data = new byte[length];
@@ -484,4 +476,12 @@ public class Rapid3HashTests
 
         return data;
     }
+
+    private readonly record struct Vector(byte[] Data, ulong Seed, ulong Expected);
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly record struct UpstreamVector(int Length, ulong Seed, ulong Expected);
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly record struct UpstreamIndexVector(ulong Input, ulong Seed, ulong Expected);
 }

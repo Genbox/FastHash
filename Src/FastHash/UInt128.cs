@@ -1,4 +1,5 @@
 #if !NET7_0_OR_GREATER
+
 // .NET 7+ consumers get System.UInt128 instead; defining this type there would make every
 // 'UInt128' reference ambiguous for consumers that import both System and Genbox.FastHash.
 using System.Runtime.InteropServices;

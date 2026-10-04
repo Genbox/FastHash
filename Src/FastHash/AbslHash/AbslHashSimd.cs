@@ -1,4 +1,5 @@
 #if NET8_0_OR_GREATER
+
 // C# port of the Abseil low-level hash from abseil/abseil-cpp (ddbc605). Copyright 2018 The Abseil Authors.
 // Distributed under the Apache License 2.0; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
