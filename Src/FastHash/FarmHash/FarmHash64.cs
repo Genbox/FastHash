@@ -168,7 +168,7 @@ public static class FarmHash64
         a += x;
         a += y;
         b += RotateRight(a, 44);
-        return new UInt128(a + z, b + c);
+        return new UInt128(b + c, a + z);
     }
 
     private static UInt128 WeakHashLen32WithSeeds(ReadOnlySpan<byte> data, uint offset, ulong a, ulong b) => WeakHashLen32WithSeeds(Read64(data, offset),
@@ -188,7 +188,7 @@ public static class FarmHash64
         ulong x = seed0;
         ulong y = (seed1 * K2) + 113;
         ulong z = ShiftMix(y * K2) * K2;
-        UInt128 v = new UInt128(seed0, seed1);
+        UInt128 v = new UInt128(seed1, seed0);
         UInt128 w = new UInt128(0, 0);
         ulong u = x - z;
         x *= K2;
@@ -212,32 +212,32 @@ public static class FarmHash64
             x += a0 + a1;
             y += a2;
             z += a3;
-            v = new UInt128(v.Low + a4, v.High + a5 + a1);
-            w = new UInt128(w.Low + a6, w.High + a7);
+            v = new UInt128(v.High + a5 + a1, v.Low + a4);
+            w = new UInt128(w.High + a7, w.Low + a6);
 
             x = RotateRight(x, 26);
             x *= 9;
             y = RotateRight(y, 29);
             z *= mul;
-            v = new UInt128(RotateRight(v.Low, 33), RotateRight(v.High, 30));
-            w = new UInt128((w.Low ^ x) * 9, w.High);
+            v = new UInt128(RotateRight(v.High, 30), RotateRight(v.Low, 33));
+            w = new UInt128(w.High, (w.Low ^ x) * 9);
             z = RotateRight(z, 32);
             z += w.High;
-            w = new UInt128(w.Low, w.High + z);
+            w = new UInt128(w.High + z, w.Low);
             z *= 9;
             Swap(ref u, ref y);
 
             z += a0 + a6;
-            v = new UInt128(v.Low + a2, v.High + a3);
-            w = new UInt128(w.Low + a4, w.High + a5 + a6);
+            v = new UInt128(v.High + a3, v.Low + a2);
+            w = new UInt128(w.High + a5 + a6, w.Low + a4);
             x += a1;
             y += a7;
 
             y += v.Low;
-            v = new UInt128((v.Low + x) - y, v.High + w.Low);
-            w = new UInt128(w.Low + v.High, (w.High + x) - y);
+            v = new UInt128(v.High + w.Low, (v.Low + x) - y);
+            w = new UInt128((w.High + x) - y, w.Low + v.High);
             x += w.High;
-            w = new UInt128(w.Low, RotateRight(w.High, 34));
+            w = new UInt128(RotateRight(w.High, 34), w.Low);
             Swap(ref u, ref z);
             index += 64;
         } while (index != end);
@@ -245,8 +245,8 @@ public static class FarmHash64
         // Make s point to the last 64 bytes of input.
         index = last64;
         u *= 9;
-        v = new UInt128(RotateRight(v.Low, 20), RotateRight(v.High, 28));
-        w = new UInt128(w.Low + ((len - 1) & 63), w.High);
+        v = new UInt128(RotateRight(v.High, 28), RotateRight(v.Low, 20));
+        w = new UInt128(w.High, w.Low + ((len - 1) & 63));
         u += y;
         y += u;
         x = RotateRight((y - x) + v.Low + Read64(s, index + 8), 37) * mul;
@@ -324,9 +324,9 @@ public static class FarmHash64
 
         // Make s point to the last 64 bytes of input.
         index = last64;
-        w = new UInt128(w.Low + ((len - 1) & 63), w.High);
-        v = new UInt128(v.Low + w.Low, v.High);
-        w = new UInt128(w.Low + v.Low, w.High);
+        w = new UInt128(w.High, w.Low + ((len - 1) & 63));
+        v = new UInt128(v.High, v.Low + w.Low);
+        w = new UInt128(w.High, w.Low + v.Low);
         x = RotateRight(x + y + v.Low + Read64(s, index + 8), 37) * mul;
         y = RotateRight(y + v.High + Read64(s, index + 48), 42) * mul;
         x ^= w.High * 9;

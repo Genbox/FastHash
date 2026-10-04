@@ -28,13 +28,13 @@ public class SmhasherVerificationTests
     public void CityHash64Verification() => Verify64(static (data, seed) => CityHash64.ComputeHash(data, seed), 0x5FABC5C5U);
 
     [Fact]
-    public void CityHash128Verification() => Verify128(static (data, seed) => CityHash128.ComputeHash(data, new UInt128(seed, 0)), 0x305C0D9AU);
+    public void CityHash128Verification() => Verify128(static (data, seed) => CityHash128.ComputeHash(data, new UInt128(0, seed)), 0x305C0D9AU);
 
     [Fact]
     public void FarmHash64Verification() => Verify64(static (data, seed) => FarmHash64.ComputeHash(data, seed), 0xEBC4A679U);
 
     [Fact]
-    public void FarmHash128Verification() => Verify128(static (data, seed) => FarmHash128.ComputeHash(data, new UInt128(seed, 0)), 0x305C0D9AU);
+    public void FarmHash128Verification() => Verify128(static (data, seed) => FarmHash128.ComputeHash(data, new UInt128(0, seed)), 0x305C0D9AU);
 
     [Fact]
     public void FarshHash32Verification() => Verify32(static (data, seed) => FarshHash32.ComputeHash(data, seed), 0xBCDE332CU);

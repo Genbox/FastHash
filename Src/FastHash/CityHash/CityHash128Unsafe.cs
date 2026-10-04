@@ -23,11 +23,11 @@ public static class CityHash128Unsafe
 
         if (len >= 16)
         {
-            UInt128 seed = new UInt128(Read64(data), Read64(data + 8) + K0);
+            UInt128 seed = new UInt128(Read64(data + 8) + K0, Read64(data));
             return CityHash128WithSeed(data + 16, len - 16, seed);
         }
 
-        return CityHash128WithSeed(data, len, new UInt128(K0, K1));
+        return CityHash128WithSeed(data, len, new UInt128(K1, K0));
     }
 
     /// <summary>Computes the hash of a memory region with a seed.</summary>
@@ -82,7 +82,7 @@ public static class CityHash128Unsafe
 
         a = HashLen16(a, c);
         b = HashLen16(d, b);
-        return new UInt128(a ^ b, HashLen16(b, a));
+        return new UInt128(HashLen16(b, a), a ^ b);
     }
 
     private static unsafe UInt128 CityHash128WithSeed(byte* s, uint len, UInt128 seed)
@@ -96,8 +96,8 @@ public static class CityHash128Unsafe
         ulong y = seed.High;
         ulong z = len * K1;
         ulong vLow = (RotateRight(y ^ K1, 49) * K1) + Read64(s);
-        UInt128 v = new UInt128(vLow, (RotateRight(vLow, 42) * K1) + Read64(s + 8));
-        UInt128 w = new UInt128((RotateRight(y + z, 35) * K1) + x, RotateRight(x + Read64(s + 88), 53) * K1);
+        UInt128 v = new UInt128((RotateRight(vLow, 42) * K1) + Read64(s + 8), vLow);
+        UInt128 w = new UInt128(RotateRight(x + Read64(s + 88), 53) * K1, (RotateRight(y + z, 35) * K1) + x);
 
         // This is the same inner loop as CityHash64(), manually unrolled.
         do
@@ -126,20 +126,20 @@ public static class CityHash128Unsafe
         x += RotateRight(v.Low + z, 49) * K0;
         y = (y * K0) + RotateRight(w.High, 37);
         z = (z * K0) + RotateRight(w.Low, 27);
-        w = new UInt128(w.Low * 9, w.High);
-        v = new UInt128(v.Low * K0, v.High);
+        w = new UInt128(w.High, w.Low * 9);
+        v = new UInt128(v.High, v.Low * K0);
 
         // If 0 < len < 128, hash up to 4 chunks of 32 bytes each from the end of s.
         for (uint tail_done = 0; tail_done < len;)
         {
             tail_done += 32;
             y = (RotateRight(x + y, 42) * K0) + v.High;
-            w = new UInt128(w.Low + Read64(((s + len) - tail_done) + 16), w.High);
+            w = new UInt128(w.High, w.Low + Read64(((s + len) - tail_done) + 16));
             x = (x * K0) + w.Low;
             z += w.High + Read64((s + len) - tail_done);
-            w = new UInt128(w.Low, w.High + v.Low);
+            w = new UInt128(w.High + v.Low, w.Low);
             v = WeakHashLen32WithSeeds((s + len) - tail_done, v.Low + z, v.High);
-            v = new UInt128(v.Low * K0, v.High);
+            v = new UInt128(v.High, v.Low * K0);
         }
 
         // At this point our 56 bytes of state should contain more than
@@ -147,6 +147,6 @@ public static class CityHash128Unsafe
         // different 56-byte-to-8-byte hashes to get a 16-byte final result.
         x = HashLen16(x, v.Low);
         y = HashLen16(y + z, w.Low);
-        return new UInt128(HashLen16(x + v.High, w.High) + y, HashLen16(x + w.High, y + v.High));
+        return new UInt128(HashLen16(x + w.High, y + v.High), HashLen16(x + v.High, w.High) + y);
     }
 }

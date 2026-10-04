@@ -42,7 +42,7 @@ public static class Murmur3Hash128
         h1 += h2;
         h2 += h1;
 
-        return new UInt128(h1, h2);
+        return new UInt128(h2, h1);
     }
 
     /// <summary>Computes the hash of a byte sequence using a zero seed.</summary>
@@ -169,6 +169,6 @@ public static class Murmur3Hash128
         h1 += h2;
         h2 += h1;
 
-        return new UInt128(h1, h2);
+        return new UInt128(h2, h1);
     }
 }

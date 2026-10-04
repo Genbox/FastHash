@@ -54,7 +54,7 @@ public static class CityHashCrc128Unsafe
 
         ulong* result = stackalloc ulong[4];
         CityHashCrc256Unsafe.ComputeHashInternal(data, length, result);
-        return new UInt128(result[2], result[3]);
+        return new UInt128(result[3], result[2]);
     }
 
     internal static unsafe UInt128 ComputeHashInternal(byte* data, uint length, UInt128 seed)
@@ -66,7 +66,7 @@ public static class CityHashCrc128Unsafe
         CityHashCrc256Unsafe.ComputeHashInternal(data, length, result);
         ulong u = seed.High + result[0];
         ulong v = seed.Low + result[1];
-        return new UInt128(HashLen16(u, v + result[2]), HashLen16(RotateRight(v, 32), (u * K0) + result[3]));
+        return new UInt128(HashLen16(RotateRight(v, 32), (u * K0) + result[3]), HashLen16(u, v + result[2]));
     }
 }
 #endif

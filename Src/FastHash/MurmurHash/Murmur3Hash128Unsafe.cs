@@ -142,6 +142,6 @@ public static class Murmur3Hash128Unsafe
         h1 += h2;
         h2 += h1;
 
-        return new UInt128(h1, h2);
+        return new UInt128(h2, h1);
     }
 }

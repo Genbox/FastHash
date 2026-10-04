@@ -8,7 +8,7 @@ internal static class Shared
     internal static UInt128 Multiply64To128(ulong a, ulong b)
     {
         ulong high = BigMul(a, b, out ulong low);
-        return new UInt128(low, high);
+        return new UInt128(high, low);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

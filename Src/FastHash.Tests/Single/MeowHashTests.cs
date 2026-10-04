@@ -77,7 +77,7 @@ public class MeowHashTests
         uint v0 = uint.Parse(parts[3], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
         ulong low = ((ulong)v1 << 32) | v0;
         ulong high = ((ulong)v3 << 32) | v2;
-        return new UInt128(low, high);
+        return new UInt128(high, low);
     }
 
     private static byte[] CreateSequence256()

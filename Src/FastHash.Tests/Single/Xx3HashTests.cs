@@ -43,33 +43,33 @@ public class Xx3HashTests
 
     private static readonly (int, ulong, UInt128)[] _testVectors128 =
     [
-        (0, 0, new UInt128(0x6001C324468D497FUL, 0x99AA06D3014798D8UL)), /* empty string */
-        (0, PRIME32, new UInt128(0x5444F7869C671AB0UL, 0x92220AE55E14AB50UL)), /* empty string */
-        (1, 0, new UInt128(0xC44BDFF4074EECDBUL, 0xA6CD5E9392000F6AUL)), /*  1 -  3 */
-        (1, PRIME32, new UInt128(0xB53D5557E7F76F8DUL, 0x89B99554BA22467CUL)), /*  1 -  3 */
-        (6, 0, new UInt128(0x3E7039BDDA43CFC6UL, 0x082AFE0B8162D12AUL)), /*  4 -  8 */
-        (6, PRIME32, new UInt128(0x269D8F70BE98856EUL, 0x5A865B5389ABD2B1UL)), /*  4 -  8 */
-        (12, 0, new UInt128(0x061A192713F69AD9UL, 0x6E3EFD8FC7802B18UL)), /*  9 - 16 */
-        (12, PRIME32, new UInt128(0x9BE9F9A67F3C7DFBUL, 0xD7E09D518A3405D3UL)), /*  9 - 16 */
-        (24, 0, new UInt128(0x1E7044D28B1B901DUL, 0x0CE966E4678D3761UL)), /* 17 - 32 */
-        (24, PRIME32, new UInt128(0xD7304C54EBAD40A9UL, 0x3162026714A6A243UL)), /* 17 - 32 */
-        (48, 0, new UInt128(0xF942219AED80F67BUL, 0xA002AC4E5478227EUL)), /* 33 - 64 */
-        (48, PRIME32, new UInt128(0x7BA3C3E453A1934EUL, 0x163ADDE36C072295UL)), /* 33 - 64 */
-        (81, 0, new UInt128(0x5E8BAFB9F95FB803UL, 0x4952F58181AB0042UL)), /* 65 - 96 */
-        (81, PRIME32, new UInt128(0x703FBB3D7A5F755CUL, 0x2724EC7ADC750FB6UL)), /* 65 - 96 */
-        (222, 0, new UInt128(0xF1AEBD597CEC6B3AUL, 0x337E09641B948717UL)), /* 129-240 */
-        (222, PRIME32, new UInt128(0xAE995BB8AF917A8DUL, 0x91820016621E97F1UL)), /* 129-240 */
+        (0, 0, new UInt128(0x99AA06D3014798D8UL, 0x6001C324468D497FUL)), /* empty string */
+        (0, PRIME32, new UInt128(0x92220AE55E14AB50UL, 0x5444F7869C671AB0UL)), /* empty string */
+        (1, 0, new UInt128(0xA6CD5E9392000F6AUL, 0xC44BDFF4074EECDBUL)), /*  1 -  3 */
+        (1, PRIME32, new UInt128(0x89B99554BA22467CUL, 0xB53D5557E7F76F8DUL)), /*  1 -  3 */
+        (6, 0, new UInt128(0x082AFE0B8162D12AUL, 0x3E7039BDDA43CFC6UL)), /*  4 -  8 */
+        (6, PRIME32, new UInt128(0x5A865B5389ABD2B1UL, 0x269D8F70BE98856EUL)), /*  4 -  8 */
+        (12, 0, new UInt128(0x6E3EFD8FC7802B18UL, 0x061A192713F69AD9UL)), /*  9 - 16 */
+        (12, PRIME32, new UInt128(0xD7E09D518A3405D3UL, 0x9BE9F9A67F3C7DFBUL)), /*  9 - 16 */
+        (24, 0, new UInt128(0x0CE966E4678D3761UL, 0x1E7044D28B1B901DUL)), /* 17 - 32 */
+        (24, PRIME32, new UInt128(0x3162026714A6A243UL, 0xD7304C54EBAD40A9UL)), /* 17 - 32 */
+        (48, 0, new UInt128(0xA002AC4E5478227EUL, 0xF942219AED80F67BUL)), /* 33 - 64 */
+        (48, PRIME32, new UInt128(0x163ADDE36C072295UL, 0x7BA3C3E453A1934EUL)), /* 33 - 64 */
+        (81, 0, new UInt128(0x4952F58181AB0042UL, 0x5E8BAFB9F95FB803UL)), /* 65 - 96 */
+        (81, PRIME32, new UInt128(0x2724EC7ADC750FB6UL, 0x703FBB3D7A5F755CUL)), /* 65 - 96 */
+        (222, 0, new UInt128(0x337E09641B948717UL, 0xF1AEBD597CEC6B3AUL)), /* 129-240 */
+        (222, PRIME32, new UInt128(0x91820016621E97F1UL, 0xAE995BB8AF917A8DUL)), /* 129-240 */
 
-        (403, 0, new UInt128(0xCDEB804D65C6DEA4UL, 0x1B6DE21E332DD73DUL)), /* one block, last stripe is overlapping */
-        (403, PRIME64, new UInt128(0x6259F6ECFD6443FDUL, 0xBED311971E0BE8F2UL)), /* one block, last stripe is overlapping */
-        (512, 0, new UInt128(0x617E49599013CB6BUL, 0x18D2D110DCC9BCA1UL)), /* one block, finishing at stripe boundary */
-        (512, PRIME64, new UInt128(0x3CE457DE14C27708UL, 0x925D06B8EC5B8040UL)), /* one block, finishing at stripe boundary */
-        (2048, 0, new UInt128(0xDD59E2C3A5F038E0UL, 0xF736557FD47073A5UL)), /* 2 blocks, finishing at block boundary */
-        (2048, PRIME32, new UInt128(0x230D43F30206260BUL, 0x7FB03F7E7186C3EAUL)), /* 2 blocks, finishing at block boundary */
-        (2240, 0, new UInt128(0x6E73A90539CF2948UL, 0xCCB134FBFA7CE49DUL)), /* 3 blocks, finishing at stripe boundary */
-        (2240, PRIME32, new UInt128(0xED385111126FBA6FUL, 0x50A1FE17B338995FUL)), /* 3 blocks, finishing at stripe boundary */
-        (2367, 0, new UInt128(0xCB37AEB9E5D361EDUL, 0xE89C0F6FF369B427UL)), /* 3 blocks, last stripe is overlapping */
-        (2367, PRIME32, new UInt128(0x6F5360AE69C2F406UL, 0xD23AAE4B76C31ECBUL)) /* 3 blocks, last stripe is overlapping */
+        (403, 0, new UInt128(0x1B6DE21E332DD73DUL, 0xCDEB804D65C6DEA4UL)), /* one block, last stripe is overlapping */
+        (403, PRIME64, new UInt128(0xBED311971E0BE8F2UL, 0x6259F6ECFD6443FDUL)), /* one block, last stripe is overlapping */
+        (512, 0, new UInt128(0x18D2D110DCC9BCA1UL, 0x617E49599013CB6BUL)), /* one block, finishing at stripe boundary */
+        (512, PRIME64, new UInt128(0x925D06B8EC5B8040UL, 0x3CE457DE14C27708UL)), /* one block, finishing at stripe boundary */
+        (2048, 0, new UInt128(0xF736557FD47073A5UL, 0xDD59E2C3A5F038E0UL)), /* 2 blocks, finishing at block boundary */
+        (2048, PRIME32, new UInt128(0x7FB03F7E7186C3EAUL, 0x230D43F30206260BUL)), /* 2 blocks, finishing at block boundary */
+        (2240, 0, new UInt128(0xCCB134FBFA7CE49DUL, 0x6E73A90539CF2948UL)), /* 3 blocks, finishing at stripe boundary */
+        (2240, PRIME32, new UInt128(0x50A1FE17B338995FUL, 0xED385111126FBA6FUL)), /* 3 blocks, finishing at stripe boundary */
+        (2367, 0, new UInt128(0xE89C0F6FF369B427UL, 0xCB37AEB9E5D361EDUL)), /* 3 blocks, last stripe is overlapping */
+        (2367, PRIME32, new UInt128(0xD23AAE4B76C31ECBUL, 0x6F5360AE69C2F406UL)) /* 3 blocks, last stripe is overlapping */
     ];
     private readonly byte[] _sanityBuffer;
 
@@ -135,7 +135,7 @@ public class Xx3HashTests
         byte[] bytes = new byte[1024];
         new Random(42).NextBytes(bytes);
 
-        UInt128 val = new UInt128(4085474917644329103, 9749042676328415322);
+        UInt128 val = new UInt128(9749042676328415322, 4085474917644329103);
         UInt128 actual = Xx3Hash128.ComputeHash(bytes);
         Assert.Equal(val, actual);
     }

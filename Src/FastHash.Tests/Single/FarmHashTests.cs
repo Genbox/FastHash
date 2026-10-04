@@ -93,7 +93,7 @@ public class FarmHashTests
     {
         ulong low = ToUInt64(_expected32[index], _expected32[index + 1]);
         ulong high = ToUInt64(_expected32[index + 2], _expected32[index + 3]);
-        return new UInt128(low, high);
+        return new UInt128(high, low);
     }
 
     private static ulong ToUInt64(uint high, uint low) => ((ulong)high << 32) | low;
@@ -155,7 +155,7 @@ public class FarmHashTests
                 int offset = i * i;
                 int len = i;
                 int index = i * 10;
-                UInt128 seed = new UInt128(CreateSeed(offset, 0), CreateSeed(offset, 1));
+                UInt128 seed = new UInt128(CreateSeed(offset, 1), CreateSeed(offset, 0));
 
                 Assert.Equal(CreateExpected128(index + 2), FarmHash128Unsafe.ComputeHash(data + offset, len));
                 Assert.Equal(CreateExpected128(index + 2), FarmHash128.ComputeHash(_data.AsSpan(offset, len)));

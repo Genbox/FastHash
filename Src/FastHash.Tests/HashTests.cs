@@ -80,7 +80,7 @@ public class HashTests
 
     private static void Assert128(byte[] expected, UInt128 actual)
     {
-        UInt128 expectedVal = new UInt128(BitConverter.ToUInt64(expected), BitConverter.ToUInt64(expected, 8));
+        UInt128 expectedVal = new UInt128(BitConverter.ToUInt64(expected, 8), BitConverter.ToUInt64(expected));
         Assert.Equal(expectedVal, actual);
     }
 

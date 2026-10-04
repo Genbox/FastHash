@@ -74,7 +74,7 @@ internal static class CityHashShared
         a += x;
         a += y;
         b += RotateRight(a, 44);
-        return new UInt128(a + z, b + c);
+        return new UInt128(b + c, a + z);
     }
 
     internal static void Permute3<T>(ref T a, ref T b, ref T c)

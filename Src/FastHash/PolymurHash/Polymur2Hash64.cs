@@ -129,7 +129,7 @@ public static class Polymur2Hash64
     private static UInt128 polymur_add128(UInt128 a, UInt128 b)
     {
         ulong low = a.Low + b.Low;
-        return new UInt128(low, a.High + b.High + (low < b.Low ? 1UL : 0UL));
+        return new UInt128(a.High + b.High + (low < b.Low ? 1UL : 0UL), low);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

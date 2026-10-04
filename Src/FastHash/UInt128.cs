@@ -1,3 +1,6 @@
+#if !NET7_0_OR_GREATER
+// .NET 7+ consumers get System.UInt128 instead; defining this type there would make every
+// 'UInt128' reference ambiguous for consumers that import both System and Genbox.FastHash.
 using System.Runtime.InteropServices;
 
 namespace Genbox.FastHash;
@@ -6,13 +9,13 @@ namespace Genbox.FastHash;
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct UInt128 : IEquatable<UInt128>
 {
-    /// <summary>Initializes a 128-bit value from its low and high words.</summary>
-    /// <param name="low">The low 64 bits.</param>
-    /// <param name="high">The high 64 bits.</param>
-    public UInt128(ulong low, ulong high)
+    /// <summary>Initializes a 128-bit value from its upper and lower words, in the same order as System.UInt128.</summary>
+    /// <param name="upper">The upper (high) 64 bits.</param>
+    /// <param name="lower">The lower (low) 64 bits.</param>
+    public UInt128(ulong upper, ulong lower)
     {
-        Low = low;
-        High = high;
+        Low = lower;
+        High = upper;
     }
 
     /// <summary>Gets the low 64 bits of the value.</summary>
@@ -50,3 +53,4 @@ public readonly struct UInt128 : IEquatable<UInt128>
     /// <returns>A string representation of this value.</returns>
     public override string ToString() => Low + "," + High;
 }
+#endif
