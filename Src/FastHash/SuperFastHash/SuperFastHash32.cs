@@ -85,7 +85,7 @@ public static class SuperFastHash32
             case 3:
                 hash += Read16(data, index);
                 hash ^= hash << 16;
-                hash ^= (uint)(data[index + sizeof(ushort)] << 18);
+                hash ^= unchecked((uint)((sbyte)data[index + sizeof(ushort)] << 18)); // upstream reads tail bytes as signed char
                 hash += hash >> 11;
                 break;
             case 2:
@@ -94,7 +94,7 @@ public static class SuperFastHash32
                 hash += hash >> 17;
                 break;
             case 1:
-                hash += data[index];
+                hash += unchecked((uint)(sbyte)data[index]);
                 hash ^= hash << 10;
                 hash += hash >> 1;
                 break;

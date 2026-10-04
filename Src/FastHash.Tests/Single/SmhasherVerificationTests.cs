@@ -51,8 +51,10 @@ public class SmhasherVerificationTests
     [Fact]
     public void SipHash64Verification() => Verify64(static (data, seed) => data.IsEmpty ? 0 : SipHash64.ComputeHash(data, seed), 0xC58D7F9CU);
 
+    // rurban/smhasher lists 0x0C80403A for builds where char is signed (as in Paul Hsieh's original, which casts tail
+    // bytes to signed char) and 0x6306A6FE where char is unsigned.
     [Fact]
-    public void SuperFastHash32Verification() => Verify32(SuperFastHash32.ComputeHash, 0x6306A6FEU);
+    public void SuperFastHash32Verification() => Verify32(SuperFastHash32.ComputeHash, 0x0C80403AU);
 
     [Fact]
     public void AesniHash64Verification()
