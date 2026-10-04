@@ -472,7 +472,7 @@ public class Rapid3HashTests
         byte[] data = new byte[length];
 
         for (int i = 0; i < data.Length; i++)
-            data[i] = (byte)((i * 7) + 3);
+            data[i] = unchecked((byte)((i * 7) + 3));
 
         return data;
     }

@@ -9,4 +9,8 @@
     <ProjectReference Include="..\FastHash.TestShared\FastHash.TestShared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Upstream\Vectors\*.txt" />
+  </ItemGroup>
+
 </Project>
