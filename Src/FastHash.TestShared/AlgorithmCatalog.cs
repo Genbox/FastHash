@@ -13,6 +13,7 @@ using Genbox.FastHash.MarvinHash;
 using Genbox.FastHash.MeowHash;
 using Genbox.FastHash.MurmurHash;
 using Genbox.FastHash.PolymurHash;
+using Genbox.FastHash.PolyXorHash;
 using Genbox.FastHash.RapidHash;
 using Genbox.FastHash.SipHash;
 using Genbox.FastHash.SuperFastHash;
@@ -82,6 +83,7 @@ public static unsafe class AlgorithmCatalog
         new Hash128Algorithm(nameof(Gx2Hash128), static data => Gx2Hash128.ComputeHash(data), null, [0xC3, 0x3A, 0xB7, 0x2A, 0x79, 0xCC, 0xEB, 0xB5, 0x87, 0xB9, 0x69, 0x4B, 0xD1, 0x2D, 0xDB, 0xE4]),
         new Hash128Algorithm(nameof(MeowHash128Unsafe), null, static (data, length) => MeowHash128Unsafe.ComputeHash(data, length), [0xCE, 0xF5, 0xCC, 0xAB, 0xBD, 0xC1, 0x2E, 0x9E, 0xE7, 0xDE, 0x17, 0xC5, 0x40, 0x68, 0x4E, 0xAF]),
         new Hash128Algorithm(nameof(Murmur3Hash128), static data => Murmur3Hash128.ComputeHash(data), static (data, length) => Murmur3Hash128Unsafe.ComputeHash(data, length), [0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67]),
+        new Hash128Algorithm(nameof(PolyXorHash128), static data => PolyXorHash128.ComputeHash(data), static (data, length) => PolyXorHash128Unsafe.ComputeHash(data, length), [0x51, 0x66, 0xD2, 0x79, 0x06, 0x6D, 0x98, 0x43, 0xF1, 0xB0, 0xB2, 0xB5, 0x57, 0x25, 0x8E, 0x39]),
         new Hash128Algorithm(nameof(Xx3Hash128), static data => Xx3Hash128.ComputeHash(data), static (data, length) => Xx3Hash128Unsafe.ComputeHash(data, length), [0x6A, 0xD7, 0x7C, 0x14, 0x0F, 0x09, 0x6F, 0xC0, 0xDF, 0xAC, 0x6C, 0x5C, 0x35, 0x9B, 0x2F, 0x13])
     ];
 
@@ -139,6 +141,7 @@ public static unsafe class AlgorithmCatalog
         new Index128Algorithm(nameof(Gx2Hash128), static input => Gx2Hash128.ComputeIndex(input), static data => Gx2Hash128.ComputeHash(data)),
         new Index128Algorithm(nameof(MeowHash128), MeowHash128.ComputeIndex, MeowHash128.ComputeHash),
         new Index128Algorithm(nameof(Murmur3Hash128), static input => Murmur3Hash128.ComputeIndex(input), static data => Murmur3Hash128.ComputeHash(data)),
+        new Index128Algorithm(nameof(PolyXorHash128), static input => PolyXorHash128.ComputeIndex(input), static data => PolyXorHash128.ComputeHash(data)),
         new Index128Algorithm(nameof(Xx3Hash128), static input => Xx3Hash128.ComputeIndex(input), static data => Xx3Hash128.ComputeHash(data))
     ];
 

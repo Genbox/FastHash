@@ -5,6 +5,7 @@ using Genbox.FastHash.FarmHash;
 using Genbox.FastHash.GxHash;
 using Genbox.FastHash.MeowHash;
 using Genbox.FastHash.MurmurHash;
+using Genbox.FastHash.PolyXorHash;
 using Genbox.FastHash.XxHash;
 
 namespace Genbox.FastHash.Benchmarks;
@@ -31,6 +32,9 @@ public class Index128Benchmarks
 
     [Benchmark]
     public UInt128 Murmur3Hash128Test() => Murmur3Hash128.ComputeIndex(_value);
+
+    [Benchmark]
+    public UInt128 PolyXorHash128Test() => PolyXorHash128.ComputeIndex(_value);
 
     [Benchmark]
     public UInt128 Xx3Hash128Test() => Xx3Hash128.ComputeIndex(_value);

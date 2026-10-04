@@ -31,6 +31,7 @@ These hash functions are included in the library.
 | [MeowHash](https://github.com/cmuratori/meow_hash)                                                                                                      |        0.5/calico (`b080caa`)        | Molly Rocket, Inc.                                              | Zlib                    |
 | [MurmurHash](https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp)                                                                      |          3.0.0 (`92cf370`)           | Austin Appleby                                                  | Public domain           |
 | [PolymurHash](https://github.com/orlp/polymur-hash)                                                                                                     |          2.0.0 (`c6cc688`)           | Orson Peters                                                    | Zlib                    |
+| [PolyXorHash](https://github.com/orlp/polyxor)                                                                                                         |          0.1.0 (`3123eb6`)           | Orson Peters                                                    | Zlib                    |
 | [RapidHash](https://github.com/Nicoshev/rapidhash)                                                                                                      |          3.0.0 (`bc4b4ba`)           | Nicolas De Carli                                                | MIT                     |
 | [SipHash](https://github.com/veorq/SipHash)                                                                                                             |          1.0.0 (`dfaa38e`)           | Jean-Philippe Aumasson, Daniel J. Bernstein                     | MIT                     |
 | [SuperFastHash](http://www.azillionmonkeys.com/qed/hash.html)                                                                                           |                  -                   | Paul Hsieh                                                      | Paul Hsieh derivative   |
@@ -65,6 +66,7 @@ The table below gives an overview of the implementations.
 | MeowHash      |         |   x    |       |   x   |   x    |   x   |        |        |          |
 | MurmurHash    |    x    |   x    |   x   |       |   x    |   x   |   x    |        |    -     |
 | PolymurHash   |    x    |        |       |   x   |        |   x   |   x    |        |          |
+| PolyXorHash   |    x    |   x    |       |       |   x    |   x   |   x    |   x    |    x     |
 | RapidHash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
 | SipHash       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
 | SuperFastHash |    x    |   x    |   x   |       |        |   x   |   x    |        |          |
