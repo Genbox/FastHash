@@ -71,6 +71,7 @@ The table below gives an overview of the implementations.
 | SipHash       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
 | SuperFastHash |    x    |   x    |   x   |       |        |   x   |   x    |        |          |
 | T1ha2Hash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
+| WyHash2       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
 | WyHash3       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
 | WyHash4       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
 | xxHash        |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    x     |
@@ -102,13 +103,13 @@ Measured on 32 KiB data. The unsafe versions are implemented using C# unsafe cod
 | MeowHash64Unsafe      |    531.5 ns |   2.39 ns |   1.58 ns |  58,799 |
 | FoldHashQuality64     |    785.1 ns |   0.95 ns |   0.50 ns |  39,805 |
 | FoldHash64            |    787.6 ns |   3.62 ns |   2.39 ns |  39,680 |
-| Wy3Hash64Unsafe       |    888.4 ns |   2.24 ns |   1.48 ns |  35,176 |
+| Wy2Hash64Unsafe       |    888.4 ns |   2.24 ns |   1.48 ns |  35,176 |
 | AesniHash64           |    956.9 ns |   9.70 ns |   6.41 ns |  32,656 |
 | AesniHash128          |    957.9 ns |  10.05 ns |   5.98 ns |  32,624 |
 | Rapid3HashMicro64     |  1,023.7 ns |   3.61 ns |   2.39 ns |  30,527 |
 | Rapid3HashNano64      |  1,027.4 ns |   2.32 ns |   1.22 ns |  30,415 |
 | Rapid3Hash64          |  1,034.5 ns |  15.90 ns |   9.46 ns |  30,208 |
-| Wy3Hash64             |  1,113.5 ns |   7.36 ns |   4.38 ns |  28,065 |
+| Wy2Hash64             |  1,113.5 ns |   7.36 ns |   4.38 ns |  28,065 |
 | FarmHash64Unsafe      |  1,264.9 ns |   2.77 ns |   1.65 ns |  24,706 |
 | FarmHash64            |  1,265.0 ns |   1.02 ns |   0.53 ns |  24,704 |
 | CityHash128           |  1,554.8 ns |   5.24 ns |   2.74 ns |  20,099 |
@@ -161,7 +162,7 @@ Measured on 32 KiB data. The unsafe versions are implemented using C# unsafe cod
 | Djb2Hash32          |  0.1886 ns | 0.0065 ns | 0.0034 ns |
 | Gx2Hash32           |  0.1997 ns | 0.0149 ns | 0.0078 ns |
 | CityHash64          |  0.3420 ns | 0.0210 ns | 0.0125 ns |
-| Wy3Hash64           |  0.3537 ns | 0.0048 ns | 0.0029 ns |
+| Wy2Hash64           |  0.3537 ns | 0.0048 ns | 0.0029 ns |
 | Xx3Hash64           |  0.3700 ns | 0.0167 ns | 0.0099 ns |
 | SuperFastHash32     |  0.3980 ns | 0.0073 ns | 0.0044 ns |
 | FoldHashQuality64   |  0.4183 ns | 0.0319 ns | 0.0231 ns |

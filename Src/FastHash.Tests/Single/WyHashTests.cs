@@ -17,9 +17,9 @@ public class WyHashTests
     [InlineData(4, "abcdefghijklmnopqrstuvwxyz", 0x9a64e42e897195b9)]
     [InlineData(5, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 0x9199383239c32554)]
     [InlineData(6, "12345678901234567890123456789012345678901234567890123456789012345678901234567890", 0x7c1ccf6bba30f5a5)]
-    public void Wy3Hash64TestVectors(int seed, string value, ulong hash)
+    public void Wy2Hash64TestVectors(int seed, string value, ulong hash)
     {
-        ulong h = Wy3Hash64.ComputeHash(Encoding.ASCII.GetBytes(value), (ulong)seed);
+        ulong h = Wy2Hash64.ComputeHash(Encoding.ASCII.GetBytes(value), (ulong)seed);
         Assert.Equal(hash, h);
     }
 
@@ -56,10 +56,10 @@ public class WyHashTests
     [InlineData(255, 0x71b66f77e4a7a006)]
     [InlineData(256, 0x218464befa2a3270)]
     [InlineData(257, 0x08216378a0488085)]
-    public void Wy3Hash64BoundaryVectors(int length, ulong hash)
+    public void Wy2Hash64BoundaryVectors(int length, ulong hash)
     {
         byte[] data = CreateTestData(length);
-        Assert.Equal(hash, Wy3Hash64.ComputeHash(data, 123));
+        Assert.Equal(hash, Wy2Hash64.ComputeHash(data, 123));
     }
 
     [Theory]
@@ -95,7 +95,7 @@ public class WyHashTests
     [InlineData(16, 0x2ed87bcc1c57e97a)]
     [InlineData(48, 0x1f4742a4b9460fce)]
     [InlineData(97, 0x65f43dd1c27cadf1)]
-    public void Wy3Hash64CustomSecretVectors(int length, ulong hash) => Assert.Equal(hash, Wy3Hash64.ComputeHash(CreateTestData(length), 123, [1, 2, 3, 4]));
+    public void Wy2Hash64CustomSecretVectors(int length, ulong hash) => Assert.Equal(hash, Wy2Hash64.ComputeHash(CreateTestData(length), 123, [1, 2, 3, 4]));
 
     [Theory]
     [InlineData(0, 0x000000000000023e)]
@@ -112,8 +112,8 @@ public class WyHashTests
     [Fact]
     public void CustomSecretLengthsAreValidated()
     {
-        Assert.Throws<ArgumentException>(() => Wy3Hash64.ComputeHash([], []));
-        Assert.Equal(Wy3Hash64.ComputeHash([], [1, 2, 3, 4]), Wy3Hash64.ComputeHash([], [1, 2, 3, 4, 5]));
+        Assert.Throws<ArgumentException>(() => Wy2Hash64.ComputeHash([], []));
+        Assert.Equal(Wy2Hash64.ComputeHash([], [1, 2, 3, 4]), Wy2Hash64.ComputeHash([], [1, 2, 3, 4, 5]));
         Assert.Throws<ArgumentException>(() => Wy4Hash64.ComputeHash([], []));
         Assert.Equal(Wy4Hash64.ComputeHash([], [1, 2, 3, 4]), Wy4Hash64.ComputeHash([], [1, 2, 3, 4, 5]));
     }
@@ -124,30 +124,30 @@ public class WyHashTests
     {
         byte[] pattern = CreateTestData(97);
 
-        Assert.Equal(0xE6C763C9230F5746UL, Wy3Hash64.ComputeHash([]));
-        Assert.Equal(0xE81BB997CC2CC450UL, Wy3Hash64.ComputeHash("abc"u8, 2));
-        Assert.Equal(0xCE608CE57D9F025EUL, Wy3Hash64.ComputeHash(pattern, 123));
+        Assert.Equal(0xE6C763C9230F5746UL, Wy2Hash64.ComputeHash([]));
+        Assert.Equal(0xE81BB997CC2CC450UL, Wy2Hash64.ComputeHash("abc"u8, 2));
+        Assert.Equal(0xCE608CE57D9F025EUL, Wy2Hash64.ComputeHash(pattern, 123));
         Assert.Equal(0x4C91B2FDB699FF5FUL, Wy4Hash64.ComputeHash([]));
         Assert.Equal(0xBA31EE45A25CB04FUL, Wy4Hash64.ComputeHash("abc"u8, 2));
         Assert.Equal(0x919140C75D7ADBCEUL, Wy4Hash64.ComputeHash(pattern, 123));
 
         fixed (byte* ptr = pattern)
         {
-            Assert.Equal(0xCE608CE57D9F025EUL, Wy3Hash64Unsafe.ComputeHash(ptr, pattern.Length, 123));
+            Assert.Equal(0xCE608CE57D9F025EUL, Wy2Hash64Unsafe.ComputeHash(ptr, pattern.Length, 123));
             Assert.Equal(0x919140C75D7ADBCEUL, Wy4Hash64Unsafe.ComputeHash(ptr, pattern.Length, 123));
         }
     }
 #endif
 
     [Fact]
-    public void Wy3Hash64IndexTest()
+    public void Wy2Hash64IndexTest()
     {
         ulong val = 1ul;
 
         for (int i = 1; i <= 64; i++)
         {
-            ulong h1 = Wy3Hash64.ComputeHash(BitConverter.GetBytes(val));
-            ulong h2 = Wy3Hash64.ComputeIndex(val);
+            ulong h1 = Wy2Hash64.ComputeHash(BitConverter.GetBytes(val));
+            ulong h2 = Wy2Hash64.ComputeIndex(val);
             Assert.Equal(h1, h2);
 
             val <<= 1;
@@ -194,7 +194,7 @@ public class WyHashTests
     }
 
     [Fact]
-    public unsafe void Wy3Hash64UnsafeMatchesManaged()
+    public unsafe void Wy2Hash64UnsafeMatchesManaged()
     {
         byte[] data = new byte[257];
         for (int i = 0; i < data.Length; i++)
@@ -204,8 +204,8 @@ public class WyHashTests
         {
             for (int i = 0; i <= data.Length; i++)
             {
-                Assert.Equal(Wy3Hash64.ComputeHash(data.AsSpan(0, i)), Wy3Hash64Unsafe.ComputeHash(ptr, i));
-                Assert.Equal(Wy3Hash64.ComputeHash(data.AsSpan(0, i), 123), Wy3Hash64Unsafe.ComputeHash(ptr, i, 123));
+                Assert.Equal(Wy2Hash64.ComputeHash(data.AsSpan(0, i)), Wy2Hash64Unsafe.ComputeHash(ptr, i));
+                Assert.Equal(Wy2Hash64.ComputeHash(data.AsSpan(0, i), 123), Wy2Hash64Unsafe.ComputeHash(ptr, i, 123));
             }
         }
     }

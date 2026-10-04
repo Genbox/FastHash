@@ -77,6 +77,8 @@ public class UnsafeHashNegativeLengthTests
         Assert.Throws<ArgumentOutOfRangeException>(() => SuperFastHash32Unsafe.ComputeHash(data, -1));
         Assert.Throws<ArgumentOutOfRangeException>(() => SuperFastHash32Unsafe.ComputeHash(data, -1, 1));
 
+        Assert.Throws<ArgumentOutOfRangeException>(() => Wy2Hash64Unsafe.ComputeHash(data, -1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Wy2Hash64Unsafe.ComputeHash(data, -1, 1));
         Assert.Throws<ArgumentOutOfRangeException>(() => Wy3Hash64Unsafe.ComputeHash(data, -1));
         Assert.Throws<ArgumentOutOfRangeException>(() => Wy3Hash64Unsafe.ComputeHash(data, -1, 1));
         Assert.Throws<ArgumentOutOfRangeException>(() => Wy4Hash64Unsafe.ComputeHash(data, -1));

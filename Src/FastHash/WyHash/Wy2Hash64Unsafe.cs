@@ -1,4 +1,4 @@
-// C# port of wangyi-fudan/wyhash final version 3 (991aa3d) by Wang Yi.
+// C# port of wangyi-fudan/wyhash final version 2 (59aacba) by Wang Yi.
 // Distributed under the Unlicense; see THIRD-PARTY-NOTICES.txt at the repository root.
 //#define WYHASH_CONDOM
 
@@ -11,9 +11,9 @@ using static Genbox.FastHash.WyHash.WyHashConstants;
 
 namespace Genbox.FastHash.WyHash;
 
-/// <summary>Computes 64-bit wyhash final version 3 hashes from unmanaged memory.</summary>
+/// <summary>Computes 64-bit wyhash final version 2 hashes from unmanaged memory.</summary>
 /// <remarks>Define <c>WYHASH_CONDOM</c> at build time to select upstream mode 2 (blind multiplication); otherwise upstream mode 1 is used.</remarks>
-public static class Wy3Hash64Unsafe
+public static class Wy2Hash64Unsafe
 {
     /// <summary>Computes a hash using the default secret and a zero seed.</summary>
     /// <param name="data">A pointer to at least <paramref name="length" /> readable bytes; it may be null only when <paramref name="length" /> is zero.</param>
@@ -39,7 +39,7 @@ public static class Wy3Hash64Unsafe
         if (length < 0)
             throw new ArgumentOutOfRangeException(nameof(length));
 
-        fixed (ulong* secret = V3DefaultSecret)
+        fixed (ulong* secret = V2DefaultSecret)
         {
             uint len = (uint)length;
             seed ^= secret[0];
@@ -47,21 +47,28 @@ public static class Wy3Hash64Unsafe
 
             if (len <= 16)
             {
-                if (len >= 4)
+                if (len <= 8)
                 {
-                    uint quarter = (len >> 3) << 2;
-                    a = ((ulong)Read32(data) << 32) | Read32(data + quarter);
-                    b = ((ulong)Read32((data + len) - 4) << 32) | Read32((data + len) - 4 - quarter);
-                }
-                else if (len > 0)
-                {
-                    a = _wyr3(data, len);
-                    b = 0;
+                    if (len >= 4)
+                    {
+                        a = Read32(data);
+                        b = Read32((data + len) - 4);
+                    }
+                    else if (len > 0)
+                    {
+                        a = _wyr3(data, len);
+                        b = 0;
+                    }
+                    else
+                    {
+                        a = 0;
+                        b = 0;
+                    }
                 }
                 else
                 {
-                    a = 0;
-                    b = 0;
+                    a = Read64(data);
+                    b = Read64((data + len) - 8);
                 }
             }
             else
@@ -100,12 +107,13 @@ public static class Wy3Hash64Unsafe
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe ulong _wyr3(byte* data, uint k) => ((ulong)data[0] << 16) | ((ulong)data[k >> 1] << 8) | data[k - 1];
+    private static unsafe ulong _wyr3(byte* data, uint offset = 0) => ((ulong)data[0] << 16) | ((ulong)data[offset >> 1] << 8) | data[offset - 1];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe void _wymum(ulong* A, ulong* B)
     {
-        ulong high = BigMul(*A, *B, out ulong low);
+        ulong low;
+        ulong high = BigMul(*A, *B, out low);
 
 #if WYHASH_CONDOM
         *A ^= low;

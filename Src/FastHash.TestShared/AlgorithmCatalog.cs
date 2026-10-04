@@ -64,10 +64,12 @@ public static unsafe class AlgorithmCatalog
         new Hash64Algorithm(nameof(SipHash64), static data => SipHash64.ComputeHash(data), static (data, length) => SipHash64Unsafe.ComputeHash(data, length), [0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97]),
         new Hash64Algorithm(nameof(T1ha2Hash64), static data => T1ha2Hash64.ComputeHash(data), null, [0xC6, 0x87, 0xF0, 0xA7, 0x0E, 0x1B, 0x29, 0xD7]),
 #if WYHASH_CONDOM
-        new(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), [0x18, 0x9E, 0xBE, 0x26, 0x2D, 0x21, 0xA9, 0xDE]),
+        new(nameof(Wy2Hash64), static data => Wy2Hash64.ComputeHash(data), static (data, length) => Wy2Hash64Unsafe.ComputeHash(data, length), [0x18, 0x9E, 0xBE, 0x26, 0x2D, 0x21, 0xA9, 0xDE]),
+        new(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), [0xF1, 0x0C, 0xBB, 0x48, 0x75, 0xCF, 0x7D, 0x59]),
         new(nameof(Wy4Hash64), static data => Wy4Hash64.ComputeHash(data), static (data, length) => Wy4Hash64Unsafe.ComputeHash(data, length), [0xAB, 0x41, 0xEE, 0xF3, 0xA1, 0x88, 0x05, 0x72]),
 #else
-        new Hash64Algorithm(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), [0x96, 0x99, 0x78, 0xA4, 0x3B, 0x3F, 0x80, 0x76]),
+        new Hash64Algorithm(nameof(Wy2Hash64), static data => Wy2Hash64.ComputeHash(data), static (data, length) => Wy2Hash64Unsafe.ComputeHash(data, length), [0x96, 0x99, 0x78, 0xA4, 0x3B, 0x3F, 0x80, 0x76]),
+        new Hash64Algorithm(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), [0x3F, 0xA2, 0x72, 0x2A, 0x57, 0x74, 0x52, 0xC2]),
         new Hash64Algorithm(nameof(Wy4Hash64), static data => Wy4Hash64.ComputeHash(data), static (data, length) => Wy4Hash64Unsafe.ComputeHash(data, length), [0xB5, 0xE9, 0x6F, 0x43, 0xBE, 0x0A, 0x9C, 0x40]),
 #endif
         new Hash64Algorithm(nameof(XxHash64), static data => XxHash64.ComputeHash(data), static (data, length) => XxHash64Unsafe.ComputeHash(data, length), [0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE]),
@@ -127,6 +129,7 @@ public static unsafe class AlgorithmCatalog
         new Index64Algorithm(nameof(Rapid3HashMicro64), static input => Rapid3HashMicro64.ComputeIndex(input), static data => Rapid3HashMicro64.ComputeHash(data)),
         new Index64Algorithm(nameof(Rapid3HashNano64), static input => Rapid3HashNano64.ComputeIndex(input), static data => Rapid3HashNano64.ComputeHash(data)),
         new Index64Algorithm(nameof(SipHash64), static input => SipHash64.ComputeIndex(input), static data => SipHash64.ComputeHash(data)),
+        new Index64Algorithm(nameof(Wy2Hash64), Wy2Hash64.ComputeIndex, static data => Wy2Hash64.ComputeHash(data)),
         new Index64Algorithm(nameof(Wy3Hash64), Wy3Hash64.ComputeIndex, static data => Wy3Hash64.ComputeHash(data)),
         new Index64Algorithm(nameof(Wy4Hash64), static input => Wy4Hash64.ComputeIndex(input), static data => Wy4Hash64.ComputeHash(data)),
         new Index64Algorithm(nameof(XxHash64), XxHash64.ComputeIndex, static data => XxHash64.ComputeHash(data)),

@@ -1,4 +1,4 @@
-// C# port of wangyi-fudan/wyhash final version 3 (991aa3d) by Wang Yi.
+// C# port of wangyi-fudan/wyhash final version 2 (59aacba) by Wang Yi.
 // Distributed under the Unlicense; see THIRD-PARTY-NOTICES.txt at the repository root.
 //#define WYHASH_CONDOM
 
@@ -11,9 +11,9 @@ using static Genbox.FastHash.WyHash.WyHashConstants;
 
 namespace Genbox.FastHash.WyHash;
 
-/// <summary>Computes 64-bit wyhash final version 3 hashes.</summary>
+/// <summary>Computes 64-bit wyhash final version 2 hashes.</summary>
 /// <remarks>Define <c>WYHASH_CONDOM</c> at build time to select upstream mode 2 (blind multiplication); otherwise upstream mode 1 is used.</remarks>
-public static class Wy3Hash64
+public static class Wy2Hash64
 {
     /// <summary>Computes a hash for a 64-bit index.</summary>
     /// <param name="input">The index to hash.</param>
@@ -21,12 +21,8 @@ public static class Wy3Hash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeIndex(ulong input)
     {
-        // Same as hashing the 8 little-endian bytes of input with a zero seed.
-        ulong low = (uint)input;
-        ulong high = input >> 32;
-        ulong a = (low << 32) | high;
-        ulong b = (high << 32) | low;
-        return _wymix(V3DefaultSecret[1] ^ 8, _wymix(a ^ V3DefaultSecret[1], b ^ V3DefaultSecret[0]));
+        ulong seed = V2DefaultSecret[0];
+        return _wymix(V2DefaultSecret[1] ^ 8, _wymix((uint)input ^ V2DefaultSecret[1], (uint)(input >> 32) ^ seed));
     }
 
     /// <summary>Computes a hash for the supplied data using the default secret and a zero seed.</summary>
@@ -55,7 +51,7 @@ public static class Wy3Hash64
     /// <exception cref="ArgumentException"><paramref name="secret" /> contains fewer than four words.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed, ulong[]? secret)
     {
-        secret ??= V3DefaultSecret;
+        secret ??= V2DefaultSecret;
         if (secret.Length < 4)
             throw new ArgumentException("The secret must contain at least four words.", nameof(secret));
 
@@ -65,21 +61,28 @@ public static class Wy3Hash64
 
         if (len <= 16)
         {
-            if (len >= 4)
+            if (len <= 8)
             {
-                int quarter = (len >> 3) << 2;
-                a = ((ulong)Read32(data) << 32) | Read32(data, quarter);
-                b = ((ulong)Read32(data, len - 4) << 32) | Read32(data, len - 4 - quarter);
-            }
-            else if (len > 0)
-            {
-                a = _wyr3(data, len);
-                b = 0;
+                if (len >= 4)
+                {
+                    a = Read32(data);
+                    b = Read32(data, len - 4);
+                }
+                else if (len > 0)
+                {
+                    a = _wyr3(data, len);
+                    b = 0;
+                }
+                else
+                {
+                    a = 0;
+                    b = 0;
+                }
             }
             else
             {
-                a = 0;
-                b = 0;
+                a = Read64(data);
+                b = Read64(data, len - 8);
             }
         }
         else
@@ -105,7 +108,8 @@ public static class Wy3Hash64
 
             while (i > 16)
             {
-                seed = _wymix(Read64(data, offset) ^ secret[1], Read64(data, offset + 8) ^ seed);
+                uint offset1 = offset + 8;
+                seed = _wymix(Read64(data, offset) ^ secret[1], Read64(data, offset1) ^ seed);
                 i -= 16;
                 offset += 16;
             }
@@ -118,7 +122,7 @@ public static class Wy3Hash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong _wyr3(ReadOnlySpan<byte> data, int k) => ((ulong)data[0] << 16) | ((ulong)data[k >> 1] << 8) | data[k - 1];
+    private static ulong _wyr3(ReadOnlySpan<byte> data, int offset = 0) => ((ulong)data[0] << 16) | ((ulong)data[offset >> 1] << 8) | data[offset - 1];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void _wymum(ref ulong A, ref ulong B)
