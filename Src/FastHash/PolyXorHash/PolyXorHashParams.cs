@@ -69,7 +69,7 @@ public sealed class PolyXorHashParams
         PolyY = Load(entropy[32..]);
         AvalancheMul = Nonzero(Load(entropy[48..]));
         BlockKey = entropy[64..].ToArray();
-        PolyXorHashShared.PrepareIndex(this, out IndexH0, out IndexH1, out IndexMultipliers);
+        PolyXorHash128.PrepareIndex(this, out IndexH0, out IndexH1, out IndexMultipliers);
     }
 
     private PolyXorHashParams(ReadOnlySpan<byte> entropy)
@@ -82,7 +82,7 @@ public sealed class PolyXorHashParams
         PolyY = Load(entropy[32..]);
         AvalancheMul = Nonzero(Load(entropy[48..]));
         BlockKey = entropy.Slice(64, 4096).ToArray();
-        PolyXorHashShared.PrepareIndex(this, out IndexH0, out IndexH1, out IndexMultipliers);
+        PolyXorHash128.PrepareIndex(this, out IndexH0, out IndexH1, out IndexMultipliers);
     }
 
     /// <summary>Creates parameters from uniformly random bytes. These parameters cannot produce MACs.</summary>
@@ -108,7 +108,7 @@ public sealed class PolyXorHashParams
         Vector128<byte> a = (n & mask).AsByte();
         Vector128<byte> b = (((raw ^ n) & mask) | Vector128.Create(0UL, 1UL << 62)).AsByte();
         EncryptPair(ref a, ref b);
-        return PolyXorHashShared.ToUInt128((a ^ b).AsUInt64());
+        return PolyXorHash128.ToUInt128((a ^ b).AsUInt64());
     }
 
     private void EncryptPair(ref Vector128<byte> a, ref Vector128<byte> b)

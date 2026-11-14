@@ -134,7 +134,7 @@ public class PolyXorHashTests
             {
                 BinaryPrimitives.WriteUInt64LittleEndian(message, input);
                 UInt128 raw = PolyXorReference.Raw(message, parameters[i]);
-                Assert.Equal(raw, PolyXorHashShared.ToUInt128(PolyXorHashShared.HashIndexRaw(input, parameters[i])));
+                Assert.Equal(raw, PolyXorHash128.ToUInt128(PolyXorHash128.HashIndexRaw(input, parameters[i])));
 
                 foreach (ulong tweak in new[] { 0UL, Tweak, ulong.MaxValue })
                 {
@@ -297,7 +297,7 @@ public class PolyXorHashTests
         UInt128 expected = Parse("7eb7e5f56c86b7e5fa1961847bb4a3f7");
         Assert.Equal(expected, PolyXorReference.Multiply(PolyXorReference.Multiply(x1, h) ^ x2, h));
         if (PolyXorHash128.IsSupported)
-            Assert.Equal(expected, PolyXorHashShared.ToUInt128(PolyXorHashShared.Multiply(PolyXorHashShared.Multiply(Vector(x1), Vector(h)) ^ Vector(x2), Vector(h))));
+            Assert.Equal(expected, PolyXorHash128.ToUInt128(PolyXorHash128.Multiply(PolyXorHash128.Multiply(Vector(x1), Vector(h)) ^ Vector(x2), Vector(h))));
     }
 
     [Fact]
@@ -312,7 +312,7 @@ public class PolyXorHashTests
             {
                 UInt128 a = PolyXorReference.Load(bytes.AsSpan(i * 16));
                 UInt128 b = PolyXorReference.Load(bytes.AsSpan(j * 16));
-                Assert.Equal(PolyXorReference.Multiply(a, b), PolyXorHashShared.ToUInt128(PolyXorHashShared.Multiply(Vector(a), Vector(b))));
+                Assert.Equal(PolyXorReference.Multiply(a, b), PolyXorHash128.ToUInt128(PolyXorHash128.Multiply(Vector(a), Vector(b))));
             }
         }
     }
@@ -334,12 +334,12 @@ public class PolyXorHashTests
             UInt128 initial = ((UInt128)accum.GetElement(1) << 64) | accum.GetElement(0);
             UInt128 expected = PolyXorReference.HashBlocks(data, parameters, initial);
             if (width == 512)
-                PolyXorHashX86Shared.Hash512(data, parameters, ref accum);
+                PolyXorHash128.X86.Hash512(data, parameters, ref accum);
             else if (width == 256)
-                PolyXorHashX86Shared.Hash256(data, parameters, ref accum);
+                PolyXorHash128.X86.Hash256(data, parameters, ref accum);
             else
-                PolyXorHashShared.Hash128(data, parameters, ref accum);
-            Assert.Equal(expected, PolyXorHashShared.ToUInt128(accum));
+                PolyXorHash128.Hash128(data, parameters, ref accum);
+            Assert.Equal(expected, PolyXorHash128.ToUInt128(accum));
         }
     }
 

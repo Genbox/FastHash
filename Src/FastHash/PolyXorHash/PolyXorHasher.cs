@@ -20,7 +20,7 @@ public sealed class PolyXorHasher
     public PolyXorHasher(PolyXorHashParams parameters)
     {
         ArgumentNullException.ThrowIfNull(parameters);
-        PolyXorHashShared.RequireSupported();
+        PolyXorHash128.RequireSupported();
         _parameters = parameters;
         _accum = parameters.PolyZ;
     }
@@ -41,7 +41,7 @@ public sealed class PolyXorHasher
             Count += (ulong)absorb;
             if (buffered + absorb < 4096)
                 return;
-            PolyXorHashShared.HashBlocks(_sponge, _parameters, ref _accum);
+            PolyXorHash128.HashBlocks(_sponge, _parameters, ref _accum);
             data = data[absorb..];
         }
 
@@ -49,7 +49,7 @@ public sealed class PolyXorHasher
 
         if (whole != 0)
         {
-            PolyXorHashShared.HashBlocks(data[..whole], _parameters, ref _accum);
+            PolyXorHash128.HashBlocks(data[..whole], _parameters, ref _accum);
             Count += (ulong)whole;
             data = data[whole..];
         }
@@ -60,13 +60,13 @@ public sealed class PolyXorHasher
 
     /// <summary>Returns the raw hash without consuming the state.</summary>
     /// <returns>The 128-bit universal hash.</returns>
-    public UInt128 FinalizeRaw() => PolyXorHashShared.ToUInt128(Raw());
+    public UInt128 FinalizeRaw() => PolyXorHash128.ToUInt128(Raw());
 
     /// <summary>Returns an avalanched hash without consuming the state.</summary>
     /// <param name="tweak">An optional 64-bit avalanche tweak.</param>
     /// <returns>The avalanched 128-bit hash.</returns>
     public UInt128 FinalizeAvalanche(ulong tweak = 0) =>
-        PolyXorHashShared.ToUInt128(PolyXorHashShared.Avalanche(Raw(), _parameters, tweak));
+        PolyXorHash128.ToUInt128(PolyXorHash128.Avalanche(Raw(), _parameters, tweak));
 
     /// <summary>Returns a MAC without consuming the state.</summary>
     /// <param name="nonce">The nonce; the top two bits are ignored.</param>
@@ -102,17 +102,17 @@ public sealed class PolyXorHasher
             {
                 // Use the same output-equivalent shortcut as one-shot hashing,
                 // including short tails after full chunks. Upstream pads a real block.
-                accum = PolyXorHashShared.AbsorbShort(PolyXorHashShared.ReadShort(_sponge.AsSpan(0, buffered)), accum, _parameters);
+                accum = PolyXorHash128.AbsorbShort(PolyXorHash128.ReadShort(_sponge.AsSpan(0, buffered)), accum, _parameters);
             }
             else
             {
                 int padded = (buffered + 127) & ~127;
                 _sponge.AsSpan(buffered, padded - buffered).Clear();
-                PolyXorHashShared.HashBlocks(_sponge.AsSpan(0, padded), _parameters, ref accum);
+                PolyXorHash128.HashBlocks(_sponge.AsSpan(0, padded), _parameters, ref accum);
             }
         }
 
-        return PolyXorHashShared.Multiply(accum ^ _parameters.PolyU, Vector128.Create(Count, 0UL) ^ _parameters.PolyY);
+        return PolyXorHash128.Multiply(accum ^ _parameters.PolyU, Vector128.Create(Count, 0UL) ^ _parameters.PolyY);
     }
 }
 #endif

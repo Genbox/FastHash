@@ -2,7 +2,7 @@
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.FarshHash.FarshHashConstants;
-using static Genbox.FastHash.FarshHash.FarshHashShared;
+using static Genbox.FastHash.FarshHash.FarshHash32;
 
 namespace Genbox.FastHash.FarshHash;
 

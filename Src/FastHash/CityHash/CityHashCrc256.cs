@@ -5,7 +5,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.X86;
 using static Genbox.FastHash.CityHash.CityHashConstants;
-using static Genbox.FastHash.CityHash.CityHashShared;
+using static Genbox.FastHash.CityHash.CityHash64;
 
 namespace Genbox.FastHash.CityHash;
 

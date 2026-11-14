@@ -6,7 +6,7 @@
 //2: extra protection against entropy loss (probability=2^-63), aka. "blind multiplication"
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.WyHash.WyHashConstants;
-using static Genbox.FastHash.WyHash.WyHashShared;
+using static Genbox.FastHash.WyHash.Wy4Hash64;
 
 namespace Genbox.FastHash.WyHash;
 

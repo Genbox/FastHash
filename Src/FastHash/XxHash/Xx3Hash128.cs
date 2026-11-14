@@ -2,7 +2,9 @@
 // Distributed under the BSD 2-Clause license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
-using static Genbox.FastHash.XxHash.XxHashShared;
+using static Genbox.FastHash.XxHash.Xx3Hash64;
+
+using System.Runtime.InteropServices;
 
 namespace Genbox.FastHash.XxHash;
 
@@ -236,5 +238,18 @@ public static class Xx3Hash128
         low ^= Read64(input, offset2) + Read64(input, offset2 + 8);
         high += XXH3_mix16B(input, offset2, secret2, secret3, seed);
         high ^= Read64(input, offset1) + Read64(input, offset1 + 8);
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private readonly struct Xx3Hash128Result
+    {
+        internal readonly ulong Low;
+        internal readonly ulong High;
+
+        internal Xx3Hash128Result(ulong high, ulong low)
+        {
+            Low = low;
+            High = high;
+        }
     }
 }

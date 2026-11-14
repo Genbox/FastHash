@@ -4,7 +4,7 @@
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.CityHash.CityHashConstants;
-using static Genbox.FastHash.CityHash.CityHashShared;
+using static Genbox.FastHash.CityHash.CityHash64;
 
 namespace Genbox.FastHash.CityHash;
 

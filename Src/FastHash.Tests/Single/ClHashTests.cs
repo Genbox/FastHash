@@ -98,12 +98,12 @@ public class ClHashTests
         for (ulong seed = 1; seed <= 1_000; seed++)
         {
             ulong[] key = ClHash64.CreateKey(seed, seed + 1);
-            Assert.False(ClHashShared.IsInvalidPolynomial(key[128], key[129]));
+            Assert.False(ClHash64.IsInvalidPolynomial(key[128], key[129]));
         }
 
-        Assert.True(ClHashShared.IsInvalidPolynomial(0, 0));
-        Assert.True(ClHashShared.IsInvalidPolynomial(0, 1));
-        Assert.True(ClHashShared.IsInvalidPolynomial(0, 1UL << 62));
+        Assert.True(ClHash64.IsInvalidPolynomial(0, 0));
+        Assert.True(ClHash64.IsInvalidPolynomial(0, 1));
+        Assert.True(ClHash64.IsInvalidPolynomial(0, 1UL << 62));
     }
 
     [Fact]
