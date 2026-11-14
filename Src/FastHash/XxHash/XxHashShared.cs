@@ -3,6 +3,12 @@
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 
+#if NET8_0_OR_GREATER
+using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+#endif
+
 namespace Genbox.FastHash.XxHash;
 
 internal static class XxHashShared
@@ -36,7 +42,22 @@ internal static class XxHashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void XXH3_hashLong_internal_loop(Span<ulong> acc, ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize) => XXH3_hashLong_internal_loop_scalar(acc, input, len, secret, secretSize);
+    internal static void XXH3_hashLong_internal_loop(Span<ulong> acc, ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize)
+    {
+#if NET8_0_OR_GREATER
+        if (Avx2.IsSupported)
+        {
+            XXH3_hashLong_internal_loop_avx2(acc, input, len, secret, secretSize);
+            return;
+        }
+        if (Sse2.IsSupported)
+        {
+            XXH3_hashLong_internal_loop_sse2(acc, input, len, secret, secretSize);
+            return;
+        }
+#endif
+        XXH3_hashLong_internal_loop_scalar(acc, input, len, secret, secretSize);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void XXH3_hashLong_internal_loop_scalar(Span<ulong> acc, ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize)
@@ -136,4 +157,166 @@ internal static class XxHashShared
             Write64(customSecret, (16 * i) + 8, hi);
         }
     }
+
+#if NET8_0_OR_GREATER
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void XXH3_hashLong_internal_loop_avx2(Span<ulong> acc, ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize)
+    {
+        int nbStripesPerBlock = (secretSize - STRIPE_LEN) / SECRET_CONSUME_RATE;
+        int block_len = STRIPE_LEN * nbStripesPerBlock;
+        int nb_blocks = (len - 1) / block_len;
+
+        // Keep the accumulators in registers across stripes and block scrambles.
+        Vector256<ulong> acc0 = Vector256.LoadUnsafe(ref MemoryMarshal.GetReference(acc), (nuint)0);
+        Vector256<ulong> acc1 = Vector256.LoadUnsafe(ref MemoryMarshal.GetReference(acc), (nuint)4);
+
+        ref byte current = ref MemoryMarshal.GetReference(input);
+        ref byte scrambleSecret = ref Unsafe.Add(ref MemoryMarshal.GetReference(secret), secretSize - STRIPE_LEN);
+
+        for (int n = 0; n < nb_blocks; n++)
+        {
+            ref byte stripeSecret = ref MemoryMarshal.GetReference(secret);
+
+            for (int stripe = 0; stripe < nbStripesPerBlock; stripe++)
+            {
+                acc0 = XXH3_accumulate_256(acc0, ref current, ref stripeSecret);
+                acc1 = XXH3_accumulate_256(acc1, ref Unsafe.Add(ref current, 32), ref Unsafe.Add(ref stripeSecret, 32));
+
+                current = ref Unsafe.Add(ref current, STRIPE_LEN);
+                stripeSecret = ref Unsafe.Add(ref stripeSecret, SECRET_CONSUME_RATE);
+            }
+
+            acc0 = XXH3_scrambleAcc_256(acc0, ref scrambleSecret);
+            acc1 = XXH3_scrambleAcc_256(acc1, ref Unsafe.Add(ref scrambleSecret, 32));
+        }
+
+        int nbStripes = (len - 1 - (block_len * nb_blocks)) / STRIPE_LEN;
+        ref byte remainingSecret = ref MemoryMarshal.GetReference(secret);
+
+        for (int stripe = 0; stripe < nbStripes; stripe++)
+        {
+            acc0 = XXH3_accumulate_256(acc0, ref current, ref remainingSecret);
+            acc1 = XXH3_accumulate_256(acc1, ref Unsafe.Add(ref current, 32), ref Unsafe.Add(ref remainingSecret, 32));
+
+            current = ref Unsafe.Add(ref current, STRIPE_LEN);
+            remainingSecret = ref Unsafe.Add(ref remainingSecret, SECRET_CONSUME_RATE);
+        }
+
+        current = ref Unsafe.Add(ref MemoryMarshal.GetReference(input), len - STRIPE_LEN);
+        ref byte lastSecret = ref Unsafe.Add(ref scrambleSecret, -SECRET_LASTACC_START);
+        acc0 = XXH3_accumulate_256(acc0, ref current, ref lastSecret);
+        acc1 = XXH3_accumulate_256(acc1, ref Unsafe.Add(ref current, 32), ref Unsafe.Add(ref lastSecret, 32));
+
+        acc0.StoreUnsafe(ref MemoryMarshal.GetReference(acc), (nuint)0);
+        acc1.StoreUnsafe(ref MemoryMarshal.GetReference(acc), (nuint)4);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void XXH3_hashLong_internal_loop_sse2(Span<ulong> acc, ReadOnlySpan<byte> input, int len, ReadOnlySpan<byte> secret, int secretSize)
+    {
+        int nbStripesPerBlock = (secretSize - STRIPE_LEN) / SECRET_CONSUME_RATE;
+        int block_len = STRIPE_LEN * nbStripesPerBlock;
+        int nb_blocks = (len - 1) / block_len;
+
+        // Keep the accumulators in registers across stripes and block scrambles.
+        Vector128<ulong> acc0 = Vector128.LoadUnsafe(ref MemoryMarshal.GetReference(acc), (nuint)0);
+        Vector128<ulong> acc1 = Vector128.LoadUnsafe(ref MemoryMarshal.GetReference(acc), (nuint)2);
+        Vector128<ulong> acc2 = Vector128.LoadUnsafe(ref MemoryMarshal.GetReference(acc), (nuint)4);
+        Vector128<ulong> acc3 = Vector128.LoadUnsafe(ref MemoryMarshal.GetReference(acc), (nuint)6);
+
+        ref byte current = ref MemoryMarshal.GetReference(input);
+        ref byte scrambleSecret = ref Unsafe.Add(ref MemoryMarshal.GetReference(secret), secretSize - STRIPE_LEN);
+
+        for (int n = 0; n < nb_blocks; n++)
+        {
+            ref byte stripeSecret = ref MemoryMarshal.GetReference(secret);
+
+            for (int stripe = 0; stripe < nbStripesPerBlock; stripe++)
+            {
+                acc0 = XXH3_accumulate_128(acc0, ref current, ref stripeSecret);
+                acc1 = XXH3_accumulate_128(acc1, ref Unsafe.Add(ref current, 16), ref Unsafe.Add(ref stripeSecret, 16));
+                acc2 = XXH3_accumulate_128(acc2, ref Unsafe.Add(ref current, 32), ref Unsafe.Add(ref stripeSecret, 32));
+                acc3 = XXH3_accumulate_128(acc3, ref Unsafe.Add(ref current, 48), ref Unsafe.Add(ref stripeSecret, 48));
+
+                current = ref Unsafe.Add(ref current, STRIPE_LEN);
+                stripeSecret = ref Unsafe.Add(ref stripeSecret, SECRET_CONSUME_RATE);
+            }
+
+            acc0 = XXH3_scrambleAcc_128(acc0, ref scrambleSecret);
+            acc1 = XXH3_scrambleAcc_128(acc1, ref Unsafe.Add(ref scrambleSecret, 16));
+            acc2 = XXH3_scrambleAcc_128(acc2, ref Unsafe.Add(ref scrambleSecret, 32));
+            acc3 = XXH3_scrambleAcc_128(acc3, ref Unsafe.Add(ref scrambleSecret, 48));
+        }
+
+        int nbStripes = (len - 1 - (block_len * nb_blocks)) / STRIPE_LEN;
+        ref byte remainingSecret = ref MemoryMarshal.GetReference(secret);
+
+        for (int stripe = 0; stripe < nbStripes; stripe++)
+        {
+            acc0 = XXH3_accumulate_128(acc0, ref current, ref remainingSecret);
+            acc1 = XXH3_accumulate_128(acc1, ref Unsafe.Add(ref current, 16), ref Unsafe.Add(ref remainingSecret, 16));
+            acc2 = XXH3_accumulate_128(acc2, ref Unsafe.Add(ref current, 32), ref Unsafe.Add(ref remainingSecret, 32));
+            acc3 = XXH3_accumulate_128(acc3, ref Unsafe.Add(ref current, 48), ref Unsafe.Add(ref remainingSecret, 48));
+
+            current = ref Unsafe.Add(ref current, STRIPE_LEN);
+            remainingSecret = ref Unsafe.Add(ref remainingSecret, SECRET_CONSUME_RATE);
+        }
+
+        current = ref Unsafe.Add(ref MemoryMarshal.GetReference(input), len - STRIPE_LEN);
+        ref byte lastSecret = ref Unsafe.Add(ref scrambleSecret, -SECRET_LASTACC_START);
+        acc0 = XXH3_accumulate_128(acc0, ref current, ref lastSecret);
+        acc1 = XXH3_accumulate_128(acc1, ref Unsafe.Add(ref current, 16), ref Unsafe.Add(ref lastSecret, 16));
+        acc2 = XXH3_accumulate_128(acc2, ref Unsafe.Add(ref current, 32), ref Unsafe.Add(ref lastSecret, 32));
+        acc3 = XXH3_accumulate_128(acc3, ref Unsafe.Add(ref current, 48), ref Unsafe.Add(ref lastSecret, 48));
+
+        acc0.StoreUnsafe(ref MemoryMarshal.GetReference(acc), (nuint)0);
+        acc1.StoreUnsafe(ref MemoryMarshal.GetReference(acc), (nuint)2);
+        acc2.StoreUnsafe(ref MemoryMarshal.GetReference(acc), (nuint)4);
+        acc3.StoreUnsafe(ref MemoryMarshal.GetReference(acc), (nuint)6);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector256<ulong> XXH3_accumulate_256(Vector256<ulong> acc, ref byte input, ref byte secret)
+    {
+        Vector256<uint> data = Unsafe.ReadUnaligned<Vector256<uint>>(ref input);
+        Vector256<uint> key = Unsafe.ReadUnaligned<Vector256<uint>>(ref secret);
+        Vector256<uint> dataKey = Avx2.Xor(data, key);
+        Vector256<ulong> product = Avx2.Multiply(dataKey, Avx2.Shuffle(dataKey, MM_SHUFFLE_0_3_0_1));
+        Vector256<ulong> dataSwap = Avx2.Shuffle(data, MM_SHUFFLE_1_0_3_2).AsUInt64();
+        return Avx2.Add(Avx2.Add(acc, dataSwap), product);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector256<ulong> XXH3_scrambleAcc_256(Vector256<ulong> acc, ref byte secret)
+    {
+        Vector256<uint> prime32 = Vector256.Create(PRIME32_1);
+        Vector256<ulong> data = Avx2.Xor(acc, Avx2.ShiftRightLogical(acc, 47));
+        Vector256<uint> dataKey = Avx2.Xor(data, Unsafe.ReadUnaligned<Vector256<ulong>>(ref secret)).AsUInt32();
+        Vector256<ulong> productLow = Avx2.Multiply(dataKey, prime32);
+        Vector256<ulong> productHigh = Avx2.Multiply(Avx2.ShiftRightLogical(dataKey.AsUInt64(), 32).AsUInt32(), prime32);
+        return Avx2.Add(productLow, Avx2.ShiftLeftLogical(productHigh, 32));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector128<ulong> XXH3_accumulate_128(Vector128<ulong> acc, ref byte input, ref byte secret)
+    {
+        Vector128<uint> data = Unsafe.ReadUnaligned<Vector128<uint>>(ref input);
+        Vector128<uint> key = Unsafe.ReadUnaligned<Vector128<uint>>(ref secret);
+        Vector128<uint> dataKey = Sse2.Xor(data, key);
+        Vector128<ulong> product = Sse2.Multiply(dataKey, Sse2.Shuffle(dataKey, MM_SHUFFLE_0_3_0_1));
+        Vector128<ulong> dataSwap = Sse2.Shuffle(data, MM_SHUFFLE_1_0_3_2).AsUInt64();
+        return Sse2.Add(Sse2.Add(acc, dataSwap), product);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector128<ulong> XXH3_scrambleAcc_128(Vector128<ulong> acc, ref byte secret)
+    {
+        Vector128<uint> prime32 = Vector128.Create(PRIME32_1);
+        Vector128<ulong> data = Sse2.Xor(acc, Sse2.ShiftRightLogical(acc, 47));
+        Vector128<uint> dataKey = Sse2.Xor(data, Unsafe.ReadUnaligned<Vector128<ulong>>(ref secret)).AsUInt32();
+        Vector128<ulong> productLow = Sse2.Multiply(dataKey, prime32);
+        Vector128<ulong> productHigh = Sse2.Multiply(Sse2.ShiftRightLogical(dataKey.AsUInt64(), 32).AsUInt32(), prime32);
+        return Sse2.Add(productLow, Sse2.ShiftLeftLogical(productHigh, 32));
+    }
+#endif
 }

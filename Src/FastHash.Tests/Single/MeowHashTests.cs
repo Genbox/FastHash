@@ -19,49 +19,15 @@ public class MeowHashTests
     ];
 
     [Fact]
-    public unsafe void TestVectors()
+    public void TestVectors()
     {
         Assert.SkipWhen(!MeowHash128.IsSupported, "Required CPU intrinsics are unavailable.");
 
         foreach (Vector vector in Vectors)
         {
-            byte[] buffer = vector.Data.Length == 0 ? new byte[1] : vector.Data;
-
-            fixed (byte* ptr = buffer)
-            {
-                UInt128 hash = MeowHash128Unsafe.ComputeHash(ptr, vector.Data.Length);
-                Assert.Equal(ParseMeowHash(vector.Expected), hash);
-            }
-
             UInt128 managedHash = MeowHash128.ComputeHash(vector.Data);
             Assert.Equal(ParseMeowHash(vector.Expected), managedHash);
             Assert.Equal(managedHash.Low, MeowHash64.ComputeHash(vector.Data));
-        }
-    }
-
-    [Fact]
-    public unsafe void TestRemainderAndBlockBoundaries()
-    {
-        Assert.SkipWhen(!MeowHash128.IsSupported, "Required CPU intrinsics are unavailable.");
-
-        byte[] data = CreateSequence256();
-
-        for (int length = 0; length <= 33; length++)
-        {
-            fixed (byte* ptr = data)
-            {
-                UInt128 unsafeHash = MeowHash128Unsafe.ComputeHash(ptr, length);
-                Assert.Equal(unsafeHash, MeowHash128.ComputeHash(data.AsSpan(0, length)));
-            }
-        }
-
-        foreach (int length in new[] { 255, 256 })
-        {
-            fixed (byte* ptr = data)
-            {
-                UInt128 unsafeHash = MeowHash128Unsafe.ComputeHash(ptr, length);
-                Assert.Equal(unsafeHash, MeowHash128.ComputeHash(data.AsSpan(0, length)));
-            }
         }
     }
 

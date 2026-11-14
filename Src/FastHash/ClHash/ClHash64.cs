@@ -17,7 +17,7 @@ public static class ClHash64
     private static readonly ulong[] _defaultKey = CreateKey(DefaultSeed1, DefaultSeed2);
 
     /// <summary>Gets whether the required CPU intrinsics are available.</summary>
-    public static bool IsSupported => ClHash64Unsafe.IsSupported;
+    public static bool IsSupported => Pclmulqdq.IsSupported && Sse2.IsSupported && Ssse3.IsSupported;
 
     /// <summary>Creates a CLHash key from two seeds.</summary>
     /// <param name="seed1">The first key seed.</param>

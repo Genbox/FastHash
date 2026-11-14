@@ -51,30 +51,14 @@ public static class Xx3Hash64
     /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
-#if NET8_0_OR_GREATER
-        unsafe
-        {
-            fixed (byte* ptr = &MemoryMarshal.GetReference(data))
-                return Xx3Hash64Unsafe.ComputeHashCore(ptr, data.Length, seed);
-        }
-#else
         int length = data.Length;
-
         if (length <= 16)
-        {
-            unsafe
-            {
-                fixed (byte* ptr = &MemoryMarshal.GetReference(data))
-                    return Xx3Hash64Unsafe.XXH3_len_0to16_64b(ptr, (uint)length, seed);
-            }
-        }
-
+            return XXH3_len_0to16_64b(data, length, seed);
         if (length <= 128)
             return XXH3_len_17to128_64b(data, length, seed);
         if (length <= MIDSIZE_MAX)
             return XXH3_len_129to240_64b(data, length, seed);
         return XXH3_hashLong_64b_withSeed(data, length, seed);
-#endif
     }
 
     private static ulong XXH3_hashLong_64b_withSeed(ReadOnlySpan<byte> input, int len, ulong seed)
@@ -184,5 +168,64 @@ public static class Xx3Hash64
 
         acc += XXH3_mix16B(input, len - 16, SECRET64_119, SECRET64_127, seed);
         return XXH3_avalanche(acc);
+    }
+
+
+    private static ulong XXH3_len_0to16_64b(ReadOnlySpan<byte> input, int len, ulong seed)
+    {
+        // XXH_ASSERT(len <= 16);
+
+        if (len > 8)
+            return XXH3_len_9to16_64b(input, len, seed);
+        if (len >= 4)
+            return XXH3_len_4to8_64b(input, len, seed);
+        if (len > 0)
+            return XXH3_len_1to3_64b(input, len, seed);
+
+        return YC_xmxmx_XXH_64(seed ^ SECRET64_056 ^ SECRET64_064);
+    }
+
+    private static ulong XXH3_len_9to16_64b(ReadOnlySpan<byte> input, int len, ulong seed)
+    {
+        // XXH_ASSERT(input != NULL);
+        // XXH_ASSERT(9 <= len && len <= 16);
+
+        ulong bitflip1 = (SECRET64_024 ^ SECRET64_032) + seed;
+        ulong bitflip2 = (SECRET64_040 ^ SECRET64_048) - seed;
+        ulong input_lo = Read64(input) ^ bitflip1;
+        ulong input_hi = Read64(input, len - 8) ^ bitflip2;
+        ulong acc = (ulong)len
+                    + ByteSwap(input_lo) + input_hi
+                    + XXH3_mul128_fold64(input_lo, input_hi);
+        return XXH3_avalanche(acc);
+    }
+
+    private static ulong XXH3_len_4to8_64b(ReadOnlySpan<byte> input, int len, ulong seed)
+    {
+        // XXH_ASSERT(input != NULL);
+        // XXH_ASSERT(4 <= len && len <= 8);
+
+        seed ^= (ulong)ByteSwap((uint)seed) << 32;
+
+        uint input1 = Read32(input);
+        uint input2 = Read32(input, len - 4);
+        ulong bitflip = (SECRET64_008 ^ SECRET64_016) - seed;
+        ulong input64 = input2 + ((ulong)input1 << 32);
+        ulong keyed = input64 ^ bitflip;
+        return XXH3_rrmxmx(keyed, len);
+    }
+
+    private static ulong XXH3_len_1to3_64b(ReadOnlySpan<byte> input, int len, ulong seed)
+    {
+        // XXH_ASSERT(input != NULL);
+        // XXH_ASSERT(1 <= len && len <= 3);
+
+        byte c1 = input[0];
+        byte c2 = input[len >> 1];
+        byte c3 = input[len - 1];
+        uint combined = ((uint)c1 << 16) | ((uint)c2 << 24) | ((uint)c3 << 0) | ((uint)len << 8);
+        ulong bitflip = (SECRET32_000 ^ SECRET32_004) + seed;
+        ulong keyed = combined ^ bitflip;
+        return YC_xmxmx_XXH_64(keyed);
     }
 }

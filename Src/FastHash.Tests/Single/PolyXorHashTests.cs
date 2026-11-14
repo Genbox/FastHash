@@ -16,7 +16,7 @@ public class PolyXorHashTests
     private static readonly UInt128 Key = new UInt128(0x0123456789abcdef, 0xfedcba9876543210);
 
     [Fact]
-    public unsafe void ComputeHash_EntropyParameters_MatchesUpstreamVectors()
+    public void ComputeHash_EntropyParameters_MatchesUpstreamVectors()
     {
         byte[] entropy = new byte[PolyXorHashParams.EntropyNeeded];
         for (int i = 0; i < entropy.Length; i++)
@@ -45,13 +45,12 @@ public class PolyXorHashTests
             Assert.Equal(Parse(c.Tweaked), hasher.FinalizeAvalanche(Tweak));
             Assert.Equal(Parse(c.Raw), PolyXorHash128.ComputeHashRaw(c.Message, parameters));
             Assert.Equal(Parse(c.Avalanche), PolyXorHash128.ComputeHash(c.Message, parameters));
-            fixed (byte* ptr = c.Message)
-                Assert.Equal(Parse(c.Tweaked), PolyXorHash128Unsafe.ComputeHash(ptr, c.Message.Length, parameters, Tweak));
+
         }
     }
 
     [Fact]
-    public unsafe void ComputeHash_AesKey_MatchesUpstreamVectors()
+    public void ComputeHash_AesKey_MatchesUpstreamVectors()
     {
         PolyXorHashParams parameters = new PolyXorHashParams(Key);
         (byte[] Message, string Raw, string Mac)[] cases =
@@ -77,12 +76,6 @@ public class PolyXorHashTests
             UInt128 tweaked = PolyXorReference.Avalanche(raw, parameters, Tweak);
             Assert.Equal(avalanche, PolyXorHash128.ComputeHash(c.Message, Key));
             Assert.Equal(tweaked, PolyXorHash128.ComputeHash(c.Message, Key, Tweak));
-
-            fixed (byte* ptr = c.Message)
-            {
-                Assert.Equal(avalanche, PolyXorHash128Unsafe.ComputeHash(ptr, c.Message.Length, Key));
-                Assert.Equal(tweaked, PolyXorHash128Unsafe.ComputeHash(ptr, c.Message.Length, Key, Tweak));
-            }
 
             if (System.Runtime.Intrinsics.X86.Aes.IsSupported || ArmAes.IsSupported)
             {
@@ -191,7 +184,7 @@ public class PolyXorHashTests
     [InlineData(7)]
     [InlineData(8)]
     [InlineData(9)]
-    public unsafe void ComputeHash_ShortSpans_MatchesReferenceAndStreaming(int length)
+    public void ComputeHash_ShortSpans_MatchesReferenceAndStreaming(int length)
     {
         Assert.SkipWhen(!PolyXorHash128.IsSupported, "Required CPU intrinsics are unavailable.");
 
@@ -234,8 +227,7 @@ public class PolyXorHashTests
                     Assert.Equal(expectedRaw, PolyXorHash128.ComputeHashRaw(data, p));
                     Assert.Equal(expected, PolyXorHash128.ComputeHash(data, p));
                     Assert.Equal(tweaked, PolyXorHash128.ComputeHash(data, p, Tweak));
-                    fixed (byte* ptr = buffer)
-                        Assert.Equal(tweaked, PolyXorHash128Unsafe.ComputeHash(ptr + offset, length, p, Tweak));
+
                 }
 
                 hasher.Reset();
@@ -369,7 +361,7 @@ public class PolyXorHashTests
     [InlineData(4104)]
     [InlineData(8200)]
     [InlineData(12417)]
-    public unsafe void Update_BoundaryChunkSizes_MatchesReferenceAndOneShot(int length)
+    public void Update_BoundaryChunkSizes_MatchesReferenceAndOneShot(int length)
     {
         Assert.SkipWhen(!PolyXorHash128.IsSupported, "Required CPU intrinsics are unavailable.");
         PolyXorHashParams parameters = new PolyXorHashParams(Key);
@@ -378,8 +370,6 @@ public class PolyXorHashTests
         UInt128 raw = PolyXorReference.Raw(message, parameters);
         UInt128 expected = PolyXorReference.Avalanche(raw, parameters, Tweak);
         Assert.Equal(expected, PolyXorHash128.ComputeHash(message, parameters, Tweak));
-        fixed (byte* ptr = data)
-            Assert.Equal(expected, PolyXorHash128Unsafe.ComputeHash(ptr + 1, length, parameters, Tweak));
 
         foreach (int chunk in new[] { 1, 127, 128, 129, 4095, 4096, 4097 })
         {

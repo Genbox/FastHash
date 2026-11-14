@@ -51,7 +51,7 @@ public class ClHashTests
     ];
 
     [Fact]
-    public unsafe void TestVectors()
+    public void TestVectors()
     {
         Assert.SkipWhen(!ClHash64.IsSupported, "Required CPU intrinsics are unavailable.");
 
@@ -65,18 +65,11 @@ public class ClHashTests
             Assert.Equal(vector.Expected, ClHash64.ComputeHash(data, vector.Seed1, vector.Seed2));
             Assert.Equal(vector.Expected, ClHash64.ComputeHash(data, key));
 
-            byte[] buffer = data.Length == 0 ? new byte[1] : data;
-
-            fixed (byte* ptr = buffer)
-            {
-                Assert.Equal(vector.Expected, ClHash64Unsafe.ComputeHash(ptr, vector.Length, vector.Seed1, vector.Seed2));
-                Assert.Equal(vector.Expected, ClHash64Unsafe.ComputeHash(ptr, vector.Length, key));
-            }
         }
     }
 
     [Fact]
-    public unsafe void GeneratedKeyCanBeReused()
+    public void GeneratedKeyCanBeReused()
     {
         Assert.SkipWhen(!ClHash64.IsSupported, "Required CPU intrinsics are unavailable.");
 
@@ -88,9 +81,6 @@ public class ClHashTests
         Assert.Equal(key1, key2);
         Assert.Equal(ClHash64.ComputeHash(data, key1), ClHash64.ComputeHash(data, key2));
         Assert.NotEqual(ClHash64.ComputeHash(data, key1), ClHash64.ComputeHash("my cat"u8, key1));
-
-        fixed (byte* dataPtr = data)
-            Assert.Equal(ClHash64.ComputeHash(data, key1), ClHash64Unsafe.ComputeHash(dataPtr, data.Length, key1));
     }
 
     [Fact]
@@ -129,12 +119,6 @@ public class ClHashTests
 
         Assert.Throws<ArgumentException>(() => ClHash64.ComputeHash("data"u8, allZeroKey));
         Assert.Throws<ArgumentException>(() => ClHash64.ComputeHash("data"u8, unitPolynomial));
-
-        if (ClHash64Unsafe.IsSupported)
-        {
-            byte[] data = "data"u8.ToArray();
-            Assert.Throws<ArgumentException>(() => ComputeUnsafe(data, allZeroKey));
-        }
     }
 
     [Fact]
@@ -261,13 +245,6 @@ public class ClHashTests
     }
 
     private static void FlipBit(byte[] data, int bit) => data[bit >> 3] ^= (byte)(1 << (bit & 7));
-
-    private static unsafe ulong ComputeUnsafe(byte[] data, ulong[] key)
-    {
-        fixed (byte* dataPtr = data)
-        fixed (ulong* keyPtr = key)
-            return ClHash64Unsafe.ComputeHash(dataPtr, data.Length, keyPtr);
-    }
 
     private readonly record struct Vector(ulong Seed1, ulong Seed2, byte[]? Data, int Length, ulong Expected);
 }

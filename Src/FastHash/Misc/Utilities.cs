@@ -119,37 +119,5 @@ internal static class Utilities
         }
     }
 
-    #region Unsafe read/write
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe ushort Read16(byte* ptr)
-    {
-        ushort value = Unsafe.ReadUnaligned<ushort>(ptr);
-        return BitConverter.IsLittleEndian ? value : BinaryPrimitives.ReverseEndianness(value);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe uint Read32(byte* ptr)
-    {
-        uint value = Unsafe.ReadUnaligned<uint>(ptr);
-        return BitConverter.IsLittleEndian ? value : BinaryPrimitives.ReverseEndianness(value);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe ulong Read64(byte* ptr)
-    {
-        ulong value = Unsafe.ReadUnaligned<ulong>(ptr);
-        return BitConverter.IsLittleEndian ? value : BinaryPrimitives.ReverseEndianness(value);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe void Write64(byte* ptr, ulong value)
-    {
-        if (!BitConverter.IsLittleEndian)
-            value = BinaryPrimitives.ReverseEndianness(value);
-
-        Unsafe.WriteUnaligned(ptr, value);
-    }
-
-    #endregion
 }

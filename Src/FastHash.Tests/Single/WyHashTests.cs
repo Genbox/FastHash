@@ -120,7 +120,7 @@ public class WyHashTests
 
 #if WYHASH_CONDOM
     [Fact]
-    public unsafe void WyHashCondom2Vectors()
+    public void WyHashCondom2Vectors()
     {
         byte[] pattern = CreateTestData(97);
 
@@ -130,12 +130,6 @@ public class WyHashTests
         Assert.Equal(0x4C91B2FDB699FF5FUL, Wy4Hash64.ComputeHash([]));
         Assert.Equal(0xBA31EE45A25CB04FUL, Wy4Hash64.ComputeHash("abc"u8, 2));
         Assert.Equal(0x919140C75D7ADBCEUL, Wy4Hash64.ComputeHash(pattern, 123));
-
-        fixed (byte* ptr = pattern)
-        {
-            Assert.Equal(0xCE608CE57D9F025EUL, Wy2Hash64Unsafe.ComputeHash(ptr, pattern.Length, 123));
-            Assert.Equal(0x919140C75D7ADBCEUL, Wy4Hash64Unsafe.ComputeHash(ptr, pattern.Length, 123));
-        }
     }
 #endif
 
@@ -158,40 +152,6 @@ public class WyHashTests
 
             Assert.Equal(Wy4Hash64.ComputeHash(data), Wy4Hash64.ComputeIndex(input));
             Assert.Equal(Wy4Hash64.ComputeHash(data, 123), Wy4Hash64.ComputeIndex(input, 123));
-        }
-    }
-
-    [Fact]
-    public unsafe void Wy4Hash64UnsafeMatchesManaged()
-    {
-        byte[] data = new byte[256];
-        for (int i = 0; i < data.Length; i++)
-            data[i] = unchecked((byte)i);
-
-        fixed (byte* ptr = data)
-        {
-            for (int i = 0; i <= data.Length; i++)
-            {
-                Assert.Equal(Wy4Hash64.ComputeHash(data.AsSpan(0, i)), Wy4Hash64Unsafe.ComputeHash(ptr, i));
-                Assert.Equal(Wy4Hash64.ComputeHash(data.AsSpan(0, i), 123), Wy4Hash64Unsafe.ComputeHash(ptr, i, 123));
-            }
-        }
-    }
-
-    [Fact]
-    public unsafe void Wy2Hash64UnsafeMatchesManaged()
-    {
-        byte[] data = new byte[257];
-        for (int i = 0; i < data.Length; i++)
-            data[i] = unchecked((byte)i);
-
-        fixed (byte* ptr = data)
-        {
-            for (int i = 0; i <= data.Length; i++)
-            {
-                Assert.Equal(Wy2Hash64.ComputeHash(data.AsSpan(0, i)), Wy2Hash64Unsafe.ComputeHash(ptr, i));
-                Assert.Equal(Wy2Hash64.ComputeHash(data.AsSpan(0, i), 123), Wy2Hash64Unsafe.ComputeHash(ptr, i, 123));
-            }
         }
     }
 

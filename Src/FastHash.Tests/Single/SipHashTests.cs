@@ -93,24 +93,4 @@ public class SipHashTests
         }
     }
 
-    [Fact]
-    public void TestVectorsUnsafe()
-    {
-        for (int i = 0; i < MaxLength; ++i)
-        {
-            byte[] data = new byte[i];
-            for (int j = 0; j < i; j++)
-                data[j] = (byte)j;
-
-            unsafe
-            {
-                fixed (byte* ptr = data)
-                {
-                    ulong result = SipHash64Unsafe.ComputeHash(ptr, data.Length, Key0, Key1);
-                    ulong expected = BinaryPrimitives.ReadUInt64LittleEndian(_vectors[i]);
-                    Assert.Equal(expected, result);
-                }
-            }
-        }
-    }
 }

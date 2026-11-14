@@ -79,69 +79,53 @@ public class FarmHashTests
     private static ulong ToUInt64(uint high, uint low) => ((ulong)high << 32) | low;
 
     [Fact]
-    public unsafe void FarmHash32Test()
+    public void FarmHash32Test()
     {
-        fixed (byte* data = _data)
+        int i = 0;
+
+        for (; i < TestSize - 1; i++)
         {
-            int i = 0;
+            int offset = i * i;
+            int len = i;
+            int index = i * 10;
 
-            for (; i < TestSize - 1; i++)
-            {
-                int offset = i * i;
-                int len = i;
-                int index = i * 10;
+            uint seed = CreateSeed(offset, -1);
 
-                uint seed = CreateSeed(offset, -1);
-
-                Assert.Equal(_expected32[index], FarmHash32Unsafe.ComputeHash(data + offset, len, seed));
-                Assert.Equal(_expected32[index], FarmHash32.ComputeHash(_data.AsSpan(offset, len), seed));
-                Assert.Equal(_expected32[index + 1], FarmHash32Unsafe.ComputeHash(data + offset, len));
-                Assert.Equal(_expected32[index + 1], FarmHash32.ComputeHash(_data.AsSpan(offset, len)));
-            }
+            Assert.Equal(_expected32[index], FarmHash32.ComputeHash(_data.AsSpan(offset, len), seed));
+            Assert.Equal(_expected32[index + 1], FarmHash32.ComputeHash(_data.AsSpan(offset, len)));
         }
     }
 
     [Fact]
-    public unsafe void FarmHash64Test()
+    public void FarmHash64Test()
     {
-        fixed (byte* data = _data)
+        foreach ((int offset, int len, uint seedsHigh, uint seedsLow, uint seedHigh, uint seedLow, uint hashHigh, uint hashLow) in _expected64)
         {
-            foreach ((int offset, int len, uint seedsHigh, uint seedsLow, uint seedHigh, uint seedLow, uint hashHigh, uint hashLow) in _expected64)
-            {
-                ulong seed0 = CreateSeed(offset, 0);
-                ulong seed1 = CreateSeed(offset, 1);
-                ulong seed = CreateSeed(offset, -1);
-                ReadOnlySpan<byte> span = _data.AsSpan(offset, len);
+            ulong seed0 = CreateSeed(offset, 0);
+            ulong seed1 = CreateSeed(offset, 1);
+            ulong seed = CreateSeed(offset, -1);
+            ReadOnlySpan<byte> span = _data.AsSpan(offset, len);
 
-                Assert.Equal(ToUInt64(seedsHigh, seedsLow), FarmHash64Unsafe.ComputeHash(data + offset, len, seed0, seed1));
-                Assert.Equal(ToUInt64(seedsHigh, seedsLow), FarmHash64.ComputeHash(span, seed0, seed1));
-                Assert.Equal(ToUInt64(seedHigh, seedLow), FarmHash64Unsafe.ComputeHash(data + offset, len, seed));
-                Assert.Equal(ToUInt64(seedHigh, seedLow), FarmHash64.ComputeHash(span, seed));
-                Assert.Equal(ToUInt64(hashHigh, hashLow), FarmHash64Unsafe.ComputeHash(data + offset, len));
-                Assert.Equal(ToUInt64(hashHigh, hashLow), FarmHash64.ComputeHash(span));
-            }
+            Assert.Equal(ToUInt64(seedsHigh, seedsLow), FarmHash64.ComputeHash(span, seed0, seed1));
+            Assert.Equal(ToUInt64(seedHigh, seedLow), FarmHash64.ComputeHash(span, seed));
+            Assert.Equal(ToUInt64(hashHigh, hashLow), FarmHash64.ComputeHash(span));
         }
     }
 
     [Fact]
-    public unsafe void FarmHash128Test()
+    public void FarmHash128Test()
     {
-        fixed (byte* data = _data)
+        int i = 0;
+
+        for (; i < TestSize - 1; i++)
         {
-            int i = 0;
+            int offset = i * i;
+            int len = i;
+            int index = i * 10;
+            UInt128 seed = new UInt128(CreateSeed(offset, 1), CreateSeed(offset, 0));
 
-            for (; i < TestSize - 1; i++)
-            {
-                int offset = i * i;
-                int len = i;
-                int index = i * 10;
-                UInt128 seed = new UInt128(CreateSeed(offset, 1), CreateSeed(offset, 0));
-
-                Assert.Equal(CreateExpected128(index + 2), FarmHash128Unsafe.ComputeHash(data + offset, len));
-                Assert.Equal(CreateExpected128(index + 2), FarmHash128.ComputeHash(_data.AsSpan(offset, len)));
-                Assert.Equal(CreateExpected128(index + 6), FarmHash128Unsafe.ComputeHash(data + offset, len, seed));
-                Assert.Equal(CreateExpected128(index + 6), FarmHash128.ComputeHash(_data.AsSpan(offset, len), seed));
-            }
+            Assert.Equal(CreateExpected128(index + 2), FarmHash128.ComputeHash(_data.AsSpan(offset, len)));
+            Assert.Equal(CreateExpected128(index + 6), FarmHash128.ComputeHash(_data.AsSpan(offset, len), seed));
         }
     }
 }

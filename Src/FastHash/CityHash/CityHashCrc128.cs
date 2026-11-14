@@ -3,6 +3,8 @@
 // C# port of google/cityhash 1.1.1 (4726e30). Copyright (c) 2011 Google, Inc.
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using static Genbox.FastHash.CityHash.CityHashConstants;
+using static Genbox.FastHash.CityHash.CityHashShared;
 
 namespace Genbox.FastHash.CityHash;
 
@@ -10,7 +12,7 @@ namespace Genbox.FastHash.CityHash;
 public static class CityHashCrc128
 {
     /// <summary>Gets whether the required CPU intrinsics are available.</summary>
-    public static bool IsSupported => CityHashCrc128Unsafe.IsSupported;
+    public static bool IsSupported => CityHashCrc256.IsSupported;
 
     /// <summary>Computes the hash of a 64-bit value.</summary>
     /// <param name="input">The value to hash.</param>
@@ -29,13 +31,17 @@ public static class CityHashCrc128
     /// <param name="data">The data to hash.</param>
     /// <returns>The 128-bit hash.</returns>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
-    public static unsafe UInt128 ComputeHash(ReadOnlySpan<byte> data)
+    public static UInt128 ComputeHash(ReadOnlySpan<byte> data)
     {
         if (!IsSupported)
             throw new PlatformNotSupportedException("CityHashCrc requires SSE4.2 x64 intrinsics.");
 
-        fixed (byte* ptr = data)
-            return CityHashCrc128Unsafe.ComputeHashInternal(ptr, (uint)data.Length);
+        if (data.Length <= 900)
+            return CityHash128.ComputeHash(data);
+
+        Span<ulong> result = stackalloc ulong[4];
+        CityHashCrc256.ComputeHashCore(data, result);
+        return new UInt128(result[3], result[2]);
     }
 
     /// <summary>Computes the hash of data with a seed.</summary>
@@ -43,13 +49,19 @@ public static class CityHashCrc128
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 128-bit hash.</returns>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
-    public static unsafe UInt128 ComputeHash(ReadOnlySpan<byte> data, UInt128 seed)
+    public static UInt128 ComputeHash(ReadOnlySpan<byte> data, UInt128 seed)
     {
         if (!IsSupported)
             throw new PlatformNotSupportedException("CityHashCrc requires SSE4.2 x64 intrinsics.");
 
-        fixed (byte* ptr = data)
-            return CityHashCrc128Unsafe.ComputeHashInternal(ptr, (uint)data.Length, seed);
+        if (data.Length <= 900)
+            return CityHash128.ComputeHash(data, seed);
+
+        Span<ulong> result = stackalloc ulong[4];
+        CityHashCrc256.ComputeHashCore(data, result);
+        ulong u = seed.High + result[0];
+        ulong v = seed.Low + result[1];
+        return new UInt128(HashLen16(RotateRight(v, 32), (u * K0) + result[3]), HashLen16(u, v + result[2]));
     }
 }
 #endif

@@ -12,13 +12,9 @@ public class GeneralTests
         ArgumentNullException.ThrowIfNull(type);
 
         Assert.True(type.Name.EndsWith("32", StringComparison.Ordinal) ||
-                    type.Name.EndsWith("32Unsafe", StringComparison.Ordinal) ||
                     type.Name.EndsWith("64", StringComparison.Ordinal) ||
-                    type.Name.EndsWith("64Unsafe", StringComparison.Ordinal) ||
                     type.Name.EndsWith("128", StringComparison.Ordinal) ||
-                    type.Name.EndsWith("128Unsafe", StringComparison.Ordinal) ||
-                    type.Name.EndsWith("256", StringComparison.Ordinal) ||
-                    type.Name.EndsWith("256Unsafe", StringComparison.Ordinal));
+                    type.Name.EndsWith("256", StringComparison.Ordinal));
     }
 
     public static TheoryData<Type> GetAllTypesOf()

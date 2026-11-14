@@ -74,20 +74,18 @@ public class Xx3HashTests
     private static readonly byte[] _sanityBuffer = TestData.XxSanity;
 
     [Fact]
-    public unsafe void Xx3Hash64TestVectors()
+    public void Xx3Hash64TestVectors()
     {
         for (int i = 0; i < _testVectors64.Length; i++)
         {
             (int len, ulong seed, ulong result) = _testVectors64[i];
             Assert.Equal(result, Xx3Hash64.ComputeHash(_sanityBuffer.AsSpan(0, len), seed));
 
-            fixed (byte* ptr = _sanityBuffer)
-                Assert.Equal(result, Xx3Hash64Unsafe.ComputeHash(ptr, len, seed));
         }
     }
 
     [Fact]
-    public unsafe void Xx3Hash128TestVectors()
+    public void Xx3Hash128TestVectors()
     {
         for (int i = 0; i < _testVectors128.Length; i++)
         {
@@ -96,11 +94,6 @@ public class Xx3HashTests
             UInt128 res = Xx3Hash128.ComputeHash(_sanityBuffer.AsSpan(0, len), seed);
             Assert.Equal(expected, res);
 
-            fixed (byte* ptr = _sanityBuffer)
-            {
-                UInt128 res2 = Xx3Hash128Unsafe.ComputeHash(ptr, len, seed);
-                Assert.Equal(expected, res2);
-            }
         }
     }
 

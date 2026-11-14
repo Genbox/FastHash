@@ -61,26 +61,7 @@ public class FarshHashTests
     }
 
     [Fact]
-    public void TestVectorsUnsafe()
-    {
-        for (int i = 1; i < 2048; ++i)
-        {
-            byte[] data = new byte[i];
-            data.AsSpan().Fill((byte)'a');
-
-            unsafe
-            {
-                fixed (byte* ptr = data)
-                {
-                    uint value = FarshHash32Unsafe.ComputeHash(ptr, data.Length);
-                    Assert.Equal(_vectors[i - 1], value);
-                }
-            }
-        }
-    }
-
-    [Fact]
-    public unsafe void TestVectors64()
+    public void TestVectors64()
     {
         foreach ((int length, ulong expected) in _vectors64)
         {
@@ -91,28 +72,6 @@ public class FarshHashTests
             Assert.Equal(expected, value);
             Assert.Equal(FarshHash32.ComputeHash(data), unchecked((uint)value));
 
-            fixed (byte* ptr = data)
-                Assert.Equal(expected, FarshHash64Unsafe.ComputeHash(ptr, data.Length));
-        }
-    }
-
-    [Fact]
-    public unsafe void SeededManagedAndUnsafeHashesMatch()
-    {
-        byte[] data = new byte[1025];
-        for (int i = 0; i < data.Length; i++)
-            data[i] = unchecked((byte)i);
-
-        const ulong seed = 0x0123456789ABCDEFUL;
-        int[] lengths = [0, 1, 4, 7, 8, 255, 256, 1023, 1024, 1025];
-
-        fixed (byte* ptr = data)
-        {
-            foreach (int length in lengths)
-            {
-                Assert.Equal(FarshHash32.ComputeHash(data.AsSpan(0, length), seed), FarshHash32Unsafe.ComputeHash(ptr, length, seed));
-                Assert.Equal(FarshHash64.ComputeHash(data.AsSpan(0, length), seed), FarshHash64Unsafe.ComputeHash(ptr, length, seed));
-            }
         }
     }
 

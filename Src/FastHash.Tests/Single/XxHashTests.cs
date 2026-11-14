@@ -34,28 +34,24 @@ public class XxHashTests
     private static readonly byte[] _sanityBuffer = TestData.XxSanity;
 
     [Fact]
-    public unsafe void XxHash32TestVectors()
+    public void XxHash32TestVectors()
     {
         for (int i = 0; i < _testVectors32.Length; i++)
         {
             (int len, uint seed, uint result) = _testVectors32[i];
             Assert.Equal(result, XxHash32.ComputeHash(_sanityBuffer.AsSpan(0, len), seed));
 
-            fixed (byte* ptr = _sanityBuffer)
-                Assert.Equal(result, XxHash32Unsafe.ComputeHash(ptr, len, seed));
         }
     }
 
     [Fact]
-    public unsafe void XxHash64TestVectors()
+    public void XxHash64TestVectors()
     {
         for (int i = 0; i < _testVectors64.Length; i++)
         {
             (int len, uint seed, ulong result) = _testVectors64[i];
             Assert.Equal(XxHash64.ComputeHash(_sanityBuffer.AsSpan(0, len), seed), result);
 
-            fixed (byte* ptr = _sanityBuffer)
-                Assert.Equal(XxHash64Unsafe.ComputeHash(ptr, len, seed), result);
         }
     }
 }

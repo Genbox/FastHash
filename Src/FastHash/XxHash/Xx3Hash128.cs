@@ -62,19 +62,8 @@ public static class Xx3Hash128
     /// <returns>The 128-bit hash.</returns>
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
-#if NET8_0_OR_GREATER
-        unsafe
-        {
-            fixed (byte* ptr = data)
-            {
-                Xx3Hash128Result result = Xx3Hash128Unsafe.ComputeHashResult(ptr, data.Length, seed);
-                return new UInt128(result.High, result.Low);
-            }
-        }
-#else
         Xx3Hash128Result result = ComputeHashResult(data, seed);
         return new UInt128(result.High, result.Low);
-#endif
     }
 
     private static Xx3Hash128Result ComputeHashResult(ReadOnlySpan<byte> data, ulong seed)

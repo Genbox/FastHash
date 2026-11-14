@@ -5,7 +5,6 @@
 ### Features
 
 * API supports [ReadOnlySpan](https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1) for optimal performance and flexibility
-* Unsafe API that takes [byte*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/unsafe-code) as input. Use this when performance is important.
 * Most of the hashes are verified with test vectors from the original author
 * High-performance zero-allocation implementations
 * Index variants of each hash function that give the same output as if using the hash function, but takes in a 32bit/64bit integer.
@@ -49,36 +48,35 @@ The hash functions are ports of the projects listed above and remain subject to 
 
 The table below gives an overview of the implementations.
 
-| Name          | Managed | Unsafe | 32bit | 64bit | 128bit | Index | Seeded | Secret | Verified |
-|---------------|:-------:|:------:|:-----:|:-----:|:------:|:-----:|:------:|:------:|:--------:|
-| AbslHash      |    x    |   x    |       |   x   |        |       |   x    |        |    x     |
-| AesniHash     |    x    |        |       |   x   |   x    |   x   |   x    |        |    x     |
-| CityHash      |    x    |   x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
-| CLHash        |    x    |   x    |       |   x   |        |       |   x    |   x    |    x     |
-| DJBHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |    x     |
-| FarmHash      |    x    |   x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
-| FarshHash     |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    x     |
-| FNVHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |    x     |
-| FoldHash      |    x    |        |       |   x   |        |   x   |   x    |   x    |    x     |
-| Gx2Hash       |    x    |        |   x   |   x   |   x    |   x   |   x    |        |    x     |
-| HighwayHash   |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
-| MarvinHash    |    x    |        |   x   |   x   |        |   x   |   x    |        |    x     |
-| MeowHash      |    x    |   x    |       |   x   |   x    |   x   |        |        |    x     |
-| MurmurHash    |    x    |   x    |   x   |       |   x    |   x   |   x    |        |    x     |
-| PolymurHash   |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
-| PolyXorHash   |    x    |   x    |       |       |   x    |   x   |   x    |   x    |    x     |
-| RapidHash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
-| SipHash       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
-| SuperFastHash |    x    |   x    |   x   |       |        |   x   |   x    |        |    x     |
-| T1ha2Hash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
-| WyHash2       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
-| WyHash3       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
-| WyHash4       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
-| xxHash        |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    x     |
-| xxHash3       |    x    |   x    |       |   x   |   x    |   x   |   x    |        |    x     |
+| Name          | Managed | 32bit | 64bit | 128bit | Index | Seeded | Secret | Verified |
+|---------------|:-------:|:-----:|:-----:|:------:|:-----:|:------:|:------:|:--------:|
+| AbslHash      |    x    |       |   x   |        |       |   x    |        |    x     |
+| AesniHash     |    x    |       |   x   |   x    |   x   |   x    |        |    x     |
+| CityHash      |    x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
+| CLHash        |    x    |       |   x   |        |       |   x    |   x    |    x     |
+| DJBHash       |    x    |   x   |   x   |        |   x   |        |        |    x     |
+| FarmHash      |    x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
+| FarshHash     |    x    |   x   |   x   |        |   x   |   x    |        |    x     |
+| FNVHash       |    x    |   x   |   x   |        |   x   |        |        |    x     |
+| FoldHash      |    x    |       |   x   |        |   x   |   x    |   x    |    x     |
+| Gx2Hash       |    x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
+| HighwayHash   |    x    |       |   x   |        |   x   |   x    |   x    |    x     |
+| MarvinHash    |    x    |   x   |   x   |        |   x   |   x    |        |    x     |
+| MeowHash      |    x    |       |   x   |   x    |   x   |        |        |    x     |
+| MurmurHash    |    x    |   x   |       |   x    |   x   |   x    |        |    x     |
+| PolymurHash   |    x    |       |   x   |        |   x   |   x    |        |    x     |
+| PolyXorHash   |    x    |       |       |   x    |   x   |   x    |   x    |    x     |
+| RapidHash     |    x    |       |   x   |        |   x   |   x    |        |    x     |
+| SipHash       |    x    |       |   x   |        |   x   |   x    |   x    |    x     |
+| SuperFastHash |    x    |   x   |       |        |   x   |   x    |        |    x     |
+| T1ha2Hash     |    x    |       |   x   |        |   x   |   x    |        |    x     |
+| WyHash2       |    x    |       |   x   |        |   x   |   x    |   x    |    x     |
+| WyHash3       |    x    |       |   x   |        |   x   |   x    |   x    |    x     |
+| WyHash4       |    x    |       |   x   |        |   x   |   x    |   x    |    x     |
+| xxHash        |    x    |   x   |   x   |        |   x   |   x    |        |    x     |
+| xxHash3       |    x    |       |   x   |   x    |   x   |   x    |        |    x     |
 
 * **Managed:** Fully managed C# implementation.
-* **Unsafe:** Pointer-based implementation.
 * **Bits:** Output widths exposed by the implementation.
 * **Index:** Hashes a 32-bit or 64-bit integer directly.
 * **Seeded:** Accepts an input seed to vary hash results.
@@ -90,7 +88,7 @@ The table below gives an overview of the implementations.
 
 #### Hash functions
 
-Measured on 32 KiB data. The unsafe versions are implemented using C# unsafe code.
+Measured on 32 KiB data using the span APIs.
 
 **Note:** Speed is not everything. The quality of a hash is just as important, but much more difficult to measure. [See SMHasher](https://github.com/rurban/smhasher) for more details on hash quality.
 
@@ -99,54 +97,33 @@ Measured on 32 KiB data. The unsafe versions are implemented using C# unsafe cod
 | Gx2Hash32             |    273.3 ns |   2.00 ns |   1.32 ns | 114,346 |
 | Gx2Hash128            |    273.8 ns |   2.78 ns |   1.84 ns | 114,123 |
 | Gx2Hash64             |    274.4 ns |   5.37 ns |   3.88 ns | 113,885 |
-| MeowHash128Unsafe     |    530.1 ns |   0.37 ns |   0.19 ns |  58,953 |
-| MeowHash64Unsafe      |    531.5 ns |   2.39 ns |   1.58 ns |  58,799 |
 | FoldHashQuality64     |    785.1 ns |   0.95 ns |   0.50 ns |  39,805 |
 | FoldHash64            |    787.6 ns |   3.62 ns |   2.39 ns |  39,680 |
-| Wy2Hash64Unsafe       |    888.4 ns |   2.24 ns |   1.48 ns |  35,176 |
 | AesniHash64           |    956.9 ns |   9.70 ns |   6.41 ns |  32,656 |
 | AesniHash128          |    957.9 ns |  10.05 ns |   5.98 ns |  32,624 |
 | Rapid3HashMicro64     |  1,023.7 ns |   3.61 ns |   2.39 ns |  30,527 |
 | Rapid3HashNano64      |  1,027.4 ns |   2.32 ns |   1.22 ns |  30,415 |
 | Rapid3Hash64          |  1,034.5 ns |  15.90 ns |   9.46 ns |  30,208 |
 | Wy2Hash64             |  1,113.5 ns |   7.36 ns |   4.38 ns |  28,065 |
-| FarmHash64Unsafe      |  1,264.9 ns |   2.77 ns |   1.65 ns |  24,706 |
 | FarmHash64            |  1,265.0 ns |   1.02 ns |   0.53 ns |  24,704 |
 | CityHash128           |  1,554.8 ns |   5.24 ns |   2.74 ns |  20,099 |
-| CityHash128Unsafe     |  1,560.2 ns |   8.06 ns |   5.33 ns |  20,029 |
-| CityHash64Unsafe      |  1,573.0 ns |   1.81 ns |   1.08 ns |  19,866 |
 | CityHash64            |  1,622.3 ns |  31.70 ns |  32.56 ns |  19,262 |
-| XxHash64Unsafe        |  1,697.1 ns |  13.65 ns |   9.03 ns |  18,414 |
 | XxHash64              |  1,718.7 ns |  33.71 ns |  26.32 ns |  18,182 |
-| FarshHash64Unsafe     |  2,370.7 ns |  23.88 ns |  15.79 ns |  13,182 |
 | FarshHash64           |  2,927.0 ns |  21.70 ns |  12.91 ns |  10,677 |
-| XxHash32Unsafe        |  3,392.1 ns |  26.25 ns |  15.62 ns |   9,212 |
 | XxHash32              |  3,395.9 ns |  29.93 ns |  19.80 ns |   9,202 |
-| Murmur3Hash128Unsafe  |  3,713.3 ns |   2.30 ns |   1.37 ns |   8,416 |
 | Murmur3Hash128        |  3,804.6 ns |  14.37 ns |   9.51 ns |   8,214 |
-| CityHash32Unsafe      |  3,917.9 ns |  10.12 ns |   6.02 ns |   7,976 |
 | FarmHash32            |  3,942.2 ns |  10.61 ns |   7.01 ns |   7,927 |
 | CityHash32            |  3,956.8 ns |  16.46 ns |   9.80 ns |   7,898 |
-| FarmHash32Unsafe      |  3,964.4 ns |  42.80 ns |  25.47 ns |   7,883 |
-| Xx3Hash64Unsafe       |  4,109.6 ns |  16.47 ns |   9.80 ns |   7,604 |
-| Xx3Hash128Unsafe      |  4,112.9 ns |  25.21 ns |  13.19 ns |   7,598 |
 | Polymur2Hash64        |  4,159.1 ns |   8.17 ns |   4.86 ns |   7,514 |
 | MarvinHash64          |  8,552.2 ns |  38.51 ns |  25.47 ns |   3,654 |
 | MarvinHash32          |  8,586.4 ns |  60.45 ns |  39.98 ns |   3,639 |
-| Murmur3Hash32Unsafe   |  8,808.0 ns |   8.33 ns |   4.96 ns |   3,548 |
 | Murmur3Hash32         |  8,822.5 ns |  15.04 ns |   7.87 ns |   3,542 |
-| SuperFastHash32Unsafe | 10,088.7 ns |  25.39 ns |  15.11 ns |   3,098 |
 | SuperFastHash32       | 10,092.9 ns |  27.41 ns |  18.13 ns |   3,096 |
 | SipHash64             | 10,201.6 ns |  41.62 ns |  21.77 ns |   3,063 |
-| SipHash64Unsafe       | 10,377.6 ns |   2.38 ns |   1.25 ns |   3,011 |
-| Djb2Hash32Unsafe      | 20,187.0 ns |   8.72 ns |   4.56 ns |   1,548 |
 | Djb2Hash64            | 20,187.2 ns |  19.96 ns |  13.20 ns |   1,548 |
 | Djb2Hash32            | 20,195.8 ns |  33.28 ns |  22.01 ns |   1,547 |
-| Djb2Hash64Unsafe      | 20,197.7 ns |  26.61 ns |  15.84 ns |   1,547 |
 | Fnv1aHash32           | 26,892.0 ns |  22.45 ns |  14.85 ns |   1,162 |
-| Fnv1aHash32Unsafe     | 26,893.7 ns |  20.96 ns |  10.96 ns |   1,162 |
 | Fnv1aHash64           | 26,918.9 ns |  55.92 ns |  33.27 ns |   1,161 |
-| Fnv1aHash64Unsafe     | 27,149.7 ns | 247.35 ns | 147.20 ns |   1,151 |
 
 #### Index functions
 
@@ -179,8 +156,6 @@ Measured on 32 KiB data. The unsafe versions are implemented using C# unsafe cod
 | CityHash32          |  1.5003 ns | 0.0066 ns | 0.0040 ns |
 | Polymur2Hash64      |  1.8500 ns | 0.0177 ns | 0.0093 ns |
 | SipHash64           |  7.0921 ns | 0.0919 ns | 0.0608 ns |
-| MeowHash64Unsafe    | 39.4472 ns | 0.7643 ns | 0.6382 ns |
-| HighwayHash64Unsafe | 81.4736 ns | 1.5304 ns | 1.4315 ns |
 
 #### Mixer functions
 

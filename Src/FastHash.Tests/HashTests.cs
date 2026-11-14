@@ -18,18 +18,6 @@ public class HashTests
                                                                                  .Where(static x => x.Hash != null && x.Expected != null)
                                                                                  .Select(static x => new object[] { x.Name });
 
-    public static IEnumerable<object[]> CreateAlgorithmsUnsafe32() => AlgorithmCatalog.Hash32Algorithms
-                                                                                      .Where(static x => x.UnsafeHash != null && x.Expected != null)
-                                                                                      .Select(static x => new object[] { x.Name });
-
-    public static IEnumerable<object[]> CreateAlgorithmsUnsafe64() => AlgorithmCatalog.Hash64Algorithms
-                                                                                      .Where(static x => x.UnsafeHash != null && x.Expected != null)
-                                                                                      .Select(static x => new object[] { x.Name });
-
-    public static IEnumerable<object[]> CreateAlgorithmsUnsafe128() => AlgorithmCatalog.Hash128Algorithms
-                                                                                       .Where(static x => x.UnsafeHash != null && x.Expected != null)
-                                                                                       .Select(static x => new object[] { x.Name });
-
     [Theory]
     [MemberData(nameof(CreateAlgorithms32))]
     public void Check32(string name)
@@ -57,48 +45,4 @@ public class HashTests
         Assert.Equal(algorithm.Expected!.Value, algorithm.Hash!(_data));
     }
 
-    [Theory]
-    [MemberData(nameof(CreateAlgorithmsUnsafe32))]
-    public void CheckUnsafe32(string name)
-    {
-        Hash32Algorithm algorithm = AlgorithmCatalog.GetHash32(name);
-        Assert.SkipWhen(!algorithm.IsSupported, $"{name} is unavailable on this CPU.");
-        Assert.Equal(algorithm.Expected!.Value, HashUnsafe(algorithm.UnsafeHash!));
-    }
-
-    [Theory]
-    [MemberData(nameof(CreateAlgorithmsUnsafe64))]
-    public void CheckUnsafe64(string name)
-    {
-        Hash64Algorithm algorithm = AlgorithmCatalog.GetHash64(name);
-        Assert.SkipWhen(!algorithm.IsSupported, $"{name} is unavailable on this CPU.");
-        Assert.Equal(algorithm.Expected!.Value, HashUnsafe(algorithm.UnsafeHash!));
-    }
-
-    [Theory]
-    [MemberData(nameof(CreateAlgorithmsUnsafe128))]
-    public void CheckUnsafe128(string name)
-    {
-        Hash128Algorithm algorithm = AlgorithmCatalog.GetHash128(name);
-        Assert.SkipWhen(!algorithm.IsSupported, $"{name} is unavailable on this CPU.");
-        Assert.Equal(algorithm.Expected!.Value, HashUnsafe(algorithm.UnsafeHash!));
-    }
-
-    private static unsafe uint HashUnsafe(Hash32Unsafe hash)
-    {
-        fixed (byte* ptr = _data)
-            return hash(ptr, _data.Length);
-    }
-
-    private static unsafe ulong HashUnsafe(Hash64Unsafe hash)
-    {
-        fixed (byte* ptr = _data)
-            return hash(ptr, _data.Length);
-    }
-
-    private static unsafe UInt128 HashUnsafe(Hash128Unsafe hash)
-    {
-        fixed (byte* ptr = _data)
-            return hash(ptr, _data.Length);
-    }
 }
