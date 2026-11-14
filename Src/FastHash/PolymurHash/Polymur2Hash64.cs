@@ -9,6 +9,7 @@ namespace Genbox.FastHash.PolymurHash;
 /// <summary>Provides 64-bit Polymur hash computations.</summary>
 public static class Polymur2Hash64
 {
+    private static readonly ulong[] _powers = CreatePowers();
     private static readonly Parameters _params = CreateParams(0);
 
     /// <summary>Computes a hash index for <paramref name="input" /> using the default seed.</summary>
@@ -98,6 +99,21 @@ public static class Polymur2Hash64
         return polymur_hash(data, data.Length, in parameters.Parameters, tweak);
     }
 
+    private static ulong[] CreatePowers()
+    {
+        ulong[] powers = new ulong[64];
+        powers[0] = 37;
+        powers[32] = 559096694736811184UL;
+
+        for (int i = 0; i < 31; ++i)
+        {
+            powers[i + 1] = polymur_extrared611(polymur_red611(polymur_mul128(powers[i], powers[i])));
+            powers[i + 33] = polymur_extrared611(polymur_red611(polymur_mul128(powers[i + 32], powers[i + 32])));
+        }
+
+        return powers;
+    }
+
     internal static Parameters CreateParams(ulong seed) => polymur_init_params_from_seed(seed);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -148,19 +164,6 @@ public static class Polymur2Hash64
     {
         ulong s = s_seed ^ POLYMUR_ARBITRARY1; // People love to pass zero.
 
-        // POLYMUR_POW37[i] = 37^(2^i) mod (2^61 - 1)
-        // Could be replaced by a 512 byte LUT, costs ~400 byte overhead but 2x
-        // faster seeding. However, seeding is rather rare, so I chose not to.
-        Span<ulong> POLYMUR_POW37 = stackalloc ulong[64];
-        POLYMUR_POW37[0] = 37;
-        POLYMUR_POW37[32] = 559096694736811184UL;
-
-        for (int i = 0; i < 31; ++i)
-        {
-            POLYMUR_POW37[i + 1] = polymur_extrared611(polymur_red611(polymur_mul128(POLYMUR_POW37[i], POLYMUR_POW37[i])));
-            POLYMUR_POW37[i + 33] = polymur_extrared611(polymur_red611(polymur_mul128(POLYMUR_POW37[i + 32], POLYMUR_POW37[i + 32])));
-        }
-
         while (true)
         {
             // Choose a random exponent coprime to 2^61 - 2. ~35.3% success rate.
@@ -178,8 +181,8 @@ public static class Polymur2Hash64
 
             for (int i = 0; e != 0; i += 2, e >>= 2)
             {
-                if ((e & 1) != 0) ka = polymur_extrared611(polymur_red611(polymur_mul128(ka, POLYMUR_POW37[i])));
-                if ((e & 2) != 0) kb = polymur_extrared611(polymur_red611(polymur_mul128(kb, POLYMUR_POW37[i + 1])));
+                if ((e & 1) != 0) ka = polymur_extrared611(polymur_red611(polymur_mul128(ka, _powers[i])));
+                if ((e & 2) != 0) kb = polymur_extrared611(polymur_red611(polymur_mul128(kb, _powers[i + 1])));
             }
 
             ulong k = polymur_extrared611(polymur_red611(polymur_mul128(ka, kb)));
