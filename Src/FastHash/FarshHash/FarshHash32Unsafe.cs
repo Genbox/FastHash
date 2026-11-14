@@ -2,6 +2,7 @@
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.FarshHash.FarshHashConstants;
+using static Genbox.FastHash.FarshHash.FarshHashShared;
 
 namespace Genbox.FastHash.FarshHash;
 
@@ -125,26 +126,5 @@ public static class FarshHash32Unsafe
         void AddPartial(uint value1, uint value2) => sum += (value1 + FARSH_KEYS[i]) * (ulong)(value2 + FARSH_KEYS[i + 1]);
 
         return sum;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong farsh_combine(ulong sum, ulong h)
-    {
-        h *= PRIME64_2;
-        h += h >> 31;
-        h *= PRIME64_1;
-        sum ^= h;
-        sum = ((sum + (sum >> 27)) * PRIME64_1) + PRIME64_4;
-        return sum;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static uint farsh_final(ulong sum)
-    {
-        sum ^= sum >> 33;
-        sum *= PRIME64_2;
-        sum ^= sum >> 29;
-        sum *= PRIME64_3;
-        return (uint)sum ^ (uint)(sum >> 32);
     }
 }
