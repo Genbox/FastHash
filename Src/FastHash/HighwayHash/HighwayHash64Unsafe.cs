@@ -131,5 +131,4 @@ public static class HighwayHash64Unsafe
 
         HighwayHashUpdatePacket(packet, ref state);
     }
-
 }

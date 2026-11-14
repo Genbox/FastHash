@@ -118,5 +118,4 @@ public static class Wy3Hash64
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong _wyr3(ReadOnlySpan<byte> data, int k) => ((ulong)data[0] << 16) | ((ulong)data[k >> 1] << 8) | data[k - 1];
-
 }

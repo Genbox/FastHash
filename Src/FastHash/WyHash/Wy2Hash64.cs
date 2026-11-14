@@ -122,5 +122,4 @@ public static class Wy2Hash64
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong _wyr3(ReadOnlySpan<byte> data, int offset = 0) => ((ulong)data[0] << 16) | ((ulong)data[offset >> 1] << 8) | data[offset - 1];
-
 }

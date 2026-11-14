@@ -158,5 +158,4 @@ public static class HighwayHash64
 
         UpdatePacket(packet, 0, ref state);
     }
-
 }
