@@ -1,13 +1,12 @@
 // C# port of wangyi-fudan/wyhash final version 3 (991aa3d) by Wang Yi.
 // Distributed under the Unlicense; see THIRD-PARTY-NOTICES.txt at the repository root.
 //#define WYHASH_CONDOM
-
 //WYHASH_CONDOM protections produce different results:
 //1: normal valid behavior
 //2: extra protection against entropy loss (probability=2^-63), aka. "blind multiplication"
-
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.WyHash.WyHashConstants;
+using static Genbox.FastHash.WyHash.WyHashShared;
 
 namespace Genbox.FastHash.WyHash;
 
@@ -26,7 +25,7 @@ public static class Wy3Hash64
         ulong high = input >> 32;
         ulong a = (low << 32) | high;
         ulong b = (high << 32) | low;
-        return _wymix(V3DefaultSecret[1] ^ 8, _wymix(a ^ V3DefaultSecret[1], b ^ V3DefaultSecret[0]));
+        return Wymix(V3DefaultSecret[1] ^ 8, Wymix(a ^ V3DefaultSecret[1], b ^ V3DefaultSecret[0]));
     }
 
     /// <summary>Computes a hash for the supplied data using the default secret and a zero seed.</summary>
@@ -93,9 +92,9 @@ public static class Wy3Hash64
 
                 do
                 {
-                    seed = _wymix(Read64(data, offset) ^ secret[1], Read64(data, offset + 8) ^ seed);
-                    see1 = _wymix(Read64(data, offset + 16) ^ secret[2], Read64(data, offset + 24) ^ see1);
-                    see2 = _wymix(Read64(data, offset + 32) ^ secret[3], Read64(data, offset + 40) ^ see2);
+                    seed = Wymix(Read64(data, offset) ^ secret[1], Read64(data, offset + 8) ^ seed);
+                    see1 = Wymix(Read64(data, offset + 16) ^ secret[2], Read64(data, offset + 24) ^ see1);
+                    see2 = Wymix(Read64(data, offset + 32) ^ secret[3], Read64(data, offset + 40) ^ see2);
                     offset += 48;
                     i -= 48;
                 } while (i > 48);
@@ -105,7 +104,7 @@ public static class Wy3Hash64
 
             while (i > 16)
             {
-                seed = _wymix(Read64(data, offset) ^ secret[1], Read64(data, offset + 8) ^ seed);
+                seed = Wymix(Read64(data, offset) ^ secret[1], Read64(data, offset + 8) ^ seed);
                 i -= 16;
                 offset += 16;
             }
@@ -114,30 +113,10 @@ public static class Wy3Hash64
             b = Read64(data, (uint)((offset + i) - 8));
         }
 
-        return _wymix(secret[1] ^ (uint)len, _wymix(a ^ secret[1], b ^ seed));
+        return Wymix(secret[1] ^ (uint)len, Wymix(a ^ secret[1], b ^ seed));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong _wyr3(ReadOnlySpan<byte> data, int k) => ((ulong)data[0] << 16) | ((ulong)data[k >> 1] << 8) | data[k - 1];
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void _wymum(ref ulong A, ref ulong B)
-    {
-        ulong high = BigMul(A, B, out ulong low);
-
-#if WYHASH_CONDOM
-        A ^= low;
-        B ^= high;
-#else
-        A = low;
-        B = high;
-#endif
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong _wymix(ulong A, ulong B)
-    {
-        _wymum(ref A, ref B);
-        return A ^ B;
-    }
 }

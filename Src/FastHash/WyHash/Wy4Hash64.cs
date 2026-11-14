@@ -2,6 +2,7 @@
 // Distributed under the Unlicense; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.WyHash.WyHashConstants;
+using static Genbox.FastHash.WyHash.WyHashShared;
 
 namespace Genbox.FastHash.WyHash;
 
@@ -128,23 +129,4 @@ public static class Wy4Hash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong Wyr3(ReadOnlySpan<byte> data, int len) => ((ulong)data[0] << 16) | ((ulong)data[len >> 1] << 8) | data[len - 1];
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void Wymum(ref ulong a, ref ulong b)
-    {
-        ulong high = BigMul(a, b, out ulong low);
-#if WYHASH_CONDOM
-        a ^= low;
-        b ^= high;
-#else
-        a = low;
-        b = high;
-#endif
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong Wymix(ulong a, ulong b)
-    {
-        Wymum(ref a, ref b);
-        return a ^ b;
-    }
 }

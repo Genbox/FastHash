@@ -1,3 +1,4 @@
+using static Genbox.FastHash.WyHash.WyHashShared;
 // C# port of wangyi-fudan/wyhash final version 2 (59aacba) by Wang Yi.
 // Distributed under the Unlicense; see THIRD-PARTY-NOTICES.txt at the repository root.
 //#define WYHASH_CONDOM
@@ -81,9 +82,9 @@ public static class Wy2Hash64Unsafe
 
                     do
                     {
-                        seed = _wymix(Read64(data) ^ secret[1], Read64(data + 8) ^ seed);
-                        see1 = _wymix(Read64(data + 16) ^ secret[2], Read64(data + 24) ^ see1);
-                        see2 = _wymix(Read64(data + 32) ^ secret[3], Read64(data + 40) ^ see2);
+                        seed = Wymix(Read64(data) ^ secret[1], Read64(data + 8) ^ seed);
+                        see1 = Wymix(Read64(data + 16) ^ secret[2], Read64(data + 24) ^ see1);
+                        see2 = Wymix(Read64(data + 32) ^ secret[3], Read64(data + 40) ^ see2);
                         data += 48;
                         i -= 48;
                     } while (i > 48);
@@ -93,7 +94,7 @@ public static class Wy2Hash64Unsafe
 
                 while (i > 16)
                 {
-                    seed = _wymix(Read64(data) ^ secret[1], Read64(data + 8) ^ seed);
+                    seed = Wymix(Read64(data) ^ secret[1], Read64(data + 8) ^ seed);
                     i -= 16;
                     data += 16;
                 }
@@ -102,32 +103,11 @@ public static class Wy2Hash64Unsafe
                 b = Read64((data + i) - 8);
             }
 
-            return _wymix(secret[1] ^ len, _wymix(a ^ secret[1], b ^ seed));
+            return Wymix(secret[1] ^ len, Wymix(a ^ secret[1], b ^ seed));
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe ulong _wyr3(byte* data, uint offset = 0) => ((ulong)data[0] << 16) | ((ulong)data[offset >> 1] << 8) | data[offset - 1];
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void _wymum(ulong* A, ulong* B)
-    {
-        ulong low;
-        ulong high = BigMul(*A, *B, out low);
-
-#if WYHASH_CONDOM
-        *A ^= low;
-        *B ^= high;
-#else
-        *A = low;
-        *B = high;
-#endif
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe ulong _wymix(ulong A, ulong B)
-    {
-        _wymum(&A, &B);
-        return A ^ B;
-    }
 }

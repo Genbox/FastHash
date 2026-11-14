@@ -1,13 +1,12 @@
 // C# port of wangyi-fudan/wyhash final version 3 (991aa3d) by Wang Yi.
 // Distributed under the Unlicense; see THIRD-PARTY-NOTICES.txt at the repository root.
 //#define WYHASH_CONDOM
-
 //WYHASH_CONDOM protections produce different results:
 //1: normal valid behavior
 //2: extra protection against entropy loss (probability=2^-63), aka. "blind multiplication"
-
 using System.Runtime.CompilerServices;
 using static Genbox.FastHash.WyHash.WyHashConstants;
+using static Genbox.FastHash.WyHash.WyHashShared;
 
 namespace Genbox.FastHash.WyHash;
 
@@ -74,9 +73,9 @@ public static class Wy3Hash64Unsafe
 
                     do
                     {
-                        seed = _wymix(Read64(data) ^ secret[1], Read64(data + 8) ^ seed);
-                        see1 = _wymix(Read64(data + 16) ^ secret[2], Read64(data + 24) ^ see1);
-                        see2 = _wymix(Read64(data + 32) ^ secret[3], Read64(data + 40) ^ see2);
+                        seed = Wymix(Read64(data) ^ secret[1], Read64(data + 8) ^ seed);
+                        see1 = Wymix(Read64(data + 16) ^ secret[2], Read64(data + 24) ^ see1);
+                        see2 = Wymix(Read64(data + 32) ^ secret[3], Read64(data + 40) ^ see2);
                         data += 48;
                         i -= 48;
                     } while (i > 48);
@@ -86,7 +85,7 @@ public static class Wy3Hash64Unsafe
 
                 while (i > 16)
                 {
-                    seed = _wymix(Read64(data) ^ secret[1], Read64(data + 8) ^ seed);
+                    seed = Wymix(Read64(data) ^ secret[1], Read64(data + 8) ^ seed);
                     i -= 16;
                     data += 16;
                 }
@@ -95,31 +94,11 @@ public static class Wy3Hash64Unsafe
                 b = Read64((data + i) - 8);
             }
 
-            return _wymix(secret[1] ^ len, _wymix(a ^ secret[1], b ^ seed));
+            return Wymix(secret[1] ^ len, Wymix(a ^ secret[1], b ^ seed));
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe ulong _wyr3(byte* data, uint k) => ((ulong)data[0] << 16) | ((ulong)data[k >> 1] << 8) | data[k - 1];
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void _wymum(ulong* A, ulong* B)
-    {
-        ulong high = BigMul(*A, *B, out ulong low);
-
-#if WYHASH_CONDOM
-        *A ^= low;
-        *B ^= high;
-#else
-        *A = low;
-        *B = high;
-#endif
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe ulong _wymix(ulong A, ulong B)
-    {
-        _wymum(&A, &B);
-        return A ^ B;
-    }
 }
