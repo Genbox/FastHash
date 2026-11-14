@@ -41,8 +41,7 @@ public class HashBenchmarks
         _testData = BenchmarkHelper.GetRandomBytes(Size);
         _ptr = (byte*)NativeMemory.Alloc((nuint)Size);
 
-        for (int i = 0; i < _testData.Length; i++)
-            _ptr[i] = _testData[i];
+        _testData.AsSpan().CopyTo(new Span<byte>(_ptr, Size));
     }
 
     [GlobalCleanup]

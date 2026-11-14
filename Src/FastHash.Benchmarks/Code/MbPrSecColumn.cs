@@ -29,17 +29,8 @@ public class MbPrSecColumn : IColumn
         if (stats == null)
             return "?";
 
-        //Number of operations as determined by the Count parameter
-
-        int size = _size;
-
-        if (size == 0)
-            size = int.Parse(benchmarkCase.Parameters["Size"].ToString()!, NumberFormatInfo.InvariantInfo);
-
-        //Mean is in nanoseconds, which is 1.000.000.000x less than a second
-        double time = stats.Mean / 1000 / 1000 / 1000;
-
-        double opsPrSec = size / 1024f / 1024 / time;
+        int size = _size == 0 ? (int)benchmarkCase.Parameters["Size"] : _size;
+        double opsPrSec = (size * (1_000_000_000.0 / (1024 * 1024))) / stats.Mean;
         return opsPrSec.ToString("N0", NumberFormatInfo.InvariantInfo);
     }
 
@@ -52,6 +43,6 @@ public class MbPrSecColumn : IColumn
     public bool IsNumeric => true;
     public UnitType UnitType => UnitType.Dimensionless;
     public int PriorityInCategory => 1;
-    public string Legend => "Mibibytes pr. second";
+    public string Legend => "Mebibytes per second";
     public override string ToString() => ColumnName;
 }
