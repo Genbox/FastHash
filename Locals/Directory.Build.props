@@ -1,8 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <Description>TODO</Description>
-    <PackageTags>TODO</PackageTags>
+    <Description>High-performance non-cryptographic hash functions with span, pointer, and integer APIs.</Description>
+    <PackageTags>hash;hashing;non-cryptographic;performance</PackageTags>
   </PropertyGroup>
 
 </Project>
