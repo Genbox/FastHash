@@ -54,11 +54,7 @@ dotnet_diagnostic.S4136.severity = none
 dotnet_diagnostic.S4143.severity = none
 
 # BenchmarkDotNet discovers public types and writes Params properties via reflection.
-[FastHash.Benchmarks/**/*.cs]
-dotnet_diagnostic.CA1515.severity = none
-resharper_unused_auto_property_accessor_global_highlighting = none
-
-[FastHash.Benchmarks/*.cs]
+[FastHash.Benchmarks/**.cs]
 dotnet_diagnostic.CA1515.severity = none
 resharper_unused_auto_property_accessor_global_highlighting = none
 
