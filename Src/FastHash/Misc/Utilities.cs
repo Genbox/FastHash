@@ -122,9 +122,6 @@ internal static class Utilities
     #region Unsafe read/write
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static unsafe uint Read8(byte* ptr) => *ptr;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static unsafe ushort Read16(byte* ptr)
     {
         ushort value = Unsafe.ReadUnaligned<ushort>(ptr);

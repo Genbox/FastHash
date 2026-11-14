@@ -74,63 +74,6 @@ public static class MeowHash128Unsafe
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Vector128<byte> HashLen8(ulong input) => MeowHashLen8(input);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> MeowHashLen8(ulong input)
-    {
-        Vector128<byte> xmm0 = Vector128.Create(0x8d305a88a8f64332UL, 0x340737e0a2983131UL).AsByte();
-        Vector128<byte> xmm1 = Vector128.Create(0x1df399228293404aUL, 0xc8e6c48ea9ef8200UL).AsByte();
-        Vector128<byte> xmm2 = Vector128.Create(0x37018d631e825294UL, 0xc6904ef36c46e57bUL).AsByte();
-        Vector128<byte> xmm3 = Vector128.Create(0x0dc5977c9bc20accUL, 0x9170545b5b4df8d3UL).AsByte();
-        Vector128<byte> xmm4 = Vector128.Create(0xb19f97985d6d2179UL, 0x5afb8d69ba1013bdUL).AsByte();
-        Vector128<byte> xmm5 = Vector128.Create(0xfbad01bd2dd7ffc2UL, 0xe967a2d6fe1a8e7bUL).AsByte();
-        Vector128<byte> xmm6 = Vector128.Create(0xf9c7125f04c9a76bUL, 0xcf16397b94194a92UL).AsByte();
-        Vector128<byte> xmm7 = Vector128.Create(0xc1ef58282e1f8070UL, 0xe67415870d923666UL).AsByte();
-
-        Vector128<byte> xmm9 = Vector128.Create(input, 0UL).AsByte();
-        Vector128<byte> xmm11 = Vector128<byte>.Zero;
-
-        Vector128<byte> xmm8 = xmm9;
-        Vector128<byte> xmm10 = xmm9;
-        palignr(ref xmm8, xmm11, 15);
-        palignr(ref xmm10, xmm11, 1);
-
-        Vector128<byte> xmm12 = Vector128<byte>.Zero;
-        Vector128<byte> xmm13 = Vector128<byte>.Zero;
-        Vector128<byte> xmm14 = Vector128<byte>.Zero;
-        movq(out Vector128<byte> xmm15, 8UL);
-        palignr(ref xmm12, xmm15, 15);
-        palignr(ref xmm14, xmm15, 1);
-
-        MEOW_MIX_REG(ref xmm0, ref xmm4, ref xmm6, ref xmm1, ref xmm2, xmm8, xmm9, xmm10, xmm11);
-        MEOW_MIX_REG(ref xmm1, ref xmm5, ref xmm7, ref xmm2, ref xmm3, xmm12, xmm13, xmm14, xmm15);
-
-        MEOW_SHUFFLE(ref xmm0, ref xmm1, xmm2, ref xmm4, ref xmm5, xmm6);
-        MEOW_SHUFFLE(ref xmm1, ref xmm2, xmm3, ref xmm5, ref xmm6, xmm7);
-        MEOW_SHUFFLE(ref xmm2, ref xmm3, xmm4, ref xmm6, ref xmm7, xmm0);
-        MEOW_SHUFFLE(ref xmm3, ref xmm4, xmm5, ref xmm7, ref xmm0, xmm1);
-        MEOW_SHUFFLE(ref xmm4, ref xmm5, xmm6, ref xmm0, ref xmm1, xmm2);
-        MEOW_SHUFFLE(ref xmm5, ref xmm6, xmm7, ref xmm1, ref xmm2, xmm3);
-        MEOW_SHUFFLE(ref xmm6, ref xmm7, xmm0, ref xmm2, ref xmm3, xmm4);
-        MEOW_SHUFFLE(ref xmm7, ref xmm0, xmm1, ref xmm3, ref xmm4, xmm5);
-        MEOW_SHUFFLE(ref xmm0, ref xmm1, xmm2, ref xmm4, ref xmm5, xmm6);
-        MEOW_SHUFFLE(ref xmm1, ref xmm2, xmm3, ref xmm5, ref xmm6, xmm7);
-        MEOW_SHUFFLE(ref xmm2, ref xmm3, xmm4, ref xmm6, ref xmm7, xmm0);
-        MEOW_SHUFFLE(ref xmm3, ref xmm4, xmm5, ref xmm7, ref xmm0, xmm1);
-
-        paddq(ref xmm0, xmm2);
-        paddq(ref xmm1, xmm3);
-        paddq(ref xmm4, xmm6);
-        paddq(ref xmm5, xmm7);
-        pxor(ref xmm0, xmm1);
-        pxor(ref xmm4, xmm5);
-        paddq(ref xmm0, xmm4);
-
-        return xmm0;
-    }
-
     [SuppressMessage("Major Code Smell", "S907:\"goto\" statement should not be used")]
     internal static unsafe Vector128<byte> MeowHash(byte* seed128Init, int len, byte* sourceInit)
     {
