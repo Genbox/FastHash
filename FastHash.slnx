@@ -23,9 +23,6 @@
         <File Path="Src/Directory.Build.targets"/>
         <File Path="Src/Directory.Packages.props"/>
     </Folder>
-    <Folder Name="/_Imports/Managed/Packages/">
-        <File Path="Src/Directory.Packages.Analyzers.props"/>
-    </Folder>
     <Folder Name="/_Imports/Managed/Project/">
         <File Path="Imports/Analyzers.props"/>
         <File Path="Imports/Benchmarks.props"/>
