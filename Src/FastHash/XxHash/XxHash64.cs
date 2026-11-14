@@ -45,8 +45,7 @@ public static class XxHash64
 
         if (len >= 32)
         {
-            uint bEnd = len;
-            uint limit = bEnd - 31;
+            ReadOnlySpan<byte> remaining = data;
             ulong v1 = seed + PRIME64_1 + PRIME64_2;
             ulong v2 = seed + PRIME64_2;
             ulong v3 = seed + 0;
@@ -54,15 +53,14 @@ public static class XxHash64
 
             do
             {
-                v1 = Round(v1, Read64(data, offset));
-                offset += 8;
-                v2 = Round(v2, Read64(data, offset));
-                offset += 8;
-                v3 = Round(v3, Read64(data, offset));
-                offset += 8;
-                v4 = Round(v4, Read64(data, offset));
-                offset += 8;
-            } while (offset < limit);
+                v1 = Round(v1, Read64(remaining));
+                v2 = Round(v2, Read64(remaining, 8));
+                v3 = Round(v3, Read64(remaining, 16));
+                v4 = Round(v4, Read64(remaining, 24));
+                remaining = remaining.Slice(32);
+            } while (remaining.Length >= 32);
+
+            offset = data.Length - remaining.Length;
 
             h64 = RotateLeft(v1, 1) + RotateLeft(v2, 7) + RotateLeft(v3, 12) + RotateLeft(v4, 18);
             h64 = MergeRound(h64, v1);

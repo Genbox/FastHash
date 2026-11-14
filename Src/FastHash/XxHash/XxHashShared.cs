@@ -28,13 +28,11 @@ internal static class XxHashShared
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong XXH3_mul128_fold64(ulong lhs, ulong rhs) => Fold128To64(lhs, rhs);
 
-    internal static ulong XXH3_mix16B(ReadOnlySpan<byte> input, int offset, ReadOnlySpan<byte> secret, int secretOffset, ulong seed64)
+    internal static ulong XXH3_mix16B(ReadOnlySpan<byte> input, int offset, ulong secretLow, ulong secretHigh, ulong seed)
     {
-        ulong input_lo = Read64(input, offset);
-        ulong input_hi = Read64(input, offset + 8);
-
-        return XXH3_mul128_fold64(input_lo ^ (Read64(secret, secretOffset) + seed64),
-            input_hi ^ (Read64(secret, secretOffset + 8) - seed64));
+        ulong inputLow = Read64(input, offset) ^ (secretLow + seed);
+        ulong inputHigh = Read64(input, offset + 8) ^ (secretHigh - seed);
+        return XXH3_mul128_fold64(inputLow, inputHigh);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

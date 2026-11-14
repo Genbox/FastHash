@@ -44,8 +44,7 @@ public static class XxHash32
 
         if (len >= 16)
         {
-            uint bEnd = len;
-            uint limit = bEnd - 15;
+            ReadOnlySpan<byte> remaining = data;
             uint v1 = seed + PRIME32_1 + PRIME32_2;
             uint v2 = seed + PRIME32_2;
             uint v3 = seed + 0;
@@ -53,15 +52,14 @@ public static class XxHash32
 
             do
             {
-                v1 = Round(v1, Read32(data, offset));
-                offset += 4;
-                v2 = Round(v2, Read32(data, offset));
-                offset += 4;
-                v3 = Round(v3, Read32(data, offset));
-                offset += 4;
-                v4 = Round(v4, Read32(data, offset));
-                offset += 4;
-            } while (offset < limit);
+                v1 = Round(v1, Read32(remaining));
+                v2 = Round(v2, Read32(remaining, 4));
+                v3 = Round(v3, Read32(remaining, 8));
+                v4 = Round(v4, Read32(remaining, 12));
+                remaining = remaining.Slice(16);
+            } while (remaining.Length >= 16);
+
+            offset = data.Length - remaining.Length;
 
             h32 = RotateLeft(v1, 1) + RotateLeft(v2, 7) + RotateLeft(v3, 12) + RotateLeft(v4, 18);
         }

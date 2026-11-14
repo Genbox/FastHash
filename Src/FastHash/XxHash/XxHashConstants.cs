@@ -9,7 +9,6 @@ internal static class XxHashConstants
     internal const int MIDSIZE_LASTOFFSET = 17;
 
     internal const int ACC_SIZE = 64;
-    internal const int ACC_ALIGN = 8;
     internal const int ACC_NB = STRIPE_LEN / 8;
     internal const int STRIPE_LEN = 64;
 
@@ -42,6 +41,46 @@ internal static class XxHashConstants
     //
     // [FixedAddressValueType]
     // internal static readonly Vector128<uint> M128i_XXH_PRIME32_1 = Vector128.Create(PRIME32_1);
+
+    // Little-endian words of kSecret, named by byte offset, for the short and medium paths.
+    internal const ulong SECRET64_000 = 0xBE4BA423396CFEB8UL;
+    internal const ulong SECRET64_003 = 0x81017CBE4BA42339UL;
+    internal const ulong SECRET64_008 = 0x1CAD21F72C81017CUL;
+    internal const ulong SECRET64_011 = 0x6DD4DE1CAD21F72CUL;
+    internal const ulong SECRET64_016 = 0xDB979083E96DD4DEUL;
+    internal const ulong SECRET64_019 = 0xA44072DB979083E9UL;
+    internal const ulong SECRET64_024 = 0x1F67B3B7A4A44072UL;
+    internal const ulong SECRET64_027 = 0xE679CB1F67B3B7A4UL;
+    internal const ulong SECRET64_032 = 0x78E5C0CC4EE679CBUL;
+    internal const ulong SECRET64_035 = 0xD05A8278E5C0CC4EUL;
+    internal const ulong SECRET64_040 = 0x2172FFCC7DD05A82UL;
+    internal const ulong SECRET64_043 = 0x4608B82172FFCC7DUL;
+    internal const ulong SECRET64_048 = 0x8E2443F7744608B8UL;
+    internal const ulong SECRET64_051 = 0x9035E08E2443F774UL;
+    internal const ulong SECRET64_056 = 0x4C263A81E69035E0UL;
+    internal const ulong SECRET64_059 = 0x52283C4C263A81E6UL;
+    internal const ulong SECRET64_064 = 0xCB00C391BB52283CUL;
+    internal const ulong SECRET64_067 = 0x65D088CB00C391BBUL;
+    internal const ulong SECRET64_072 = 0xA32E531B8B65D088UL;
+    internal const ulong SECRET64_075 = 0x486471A32E531B8BUL;
+    internal const ulong SECRET64_080 = 0x4EF90DA297486471UL;
+    internal const ulong SECRET64_083 = 0xEF19384EF90DA297UL;
+    internal const ulong SECRET64_088 = 0xD8ACDEA946EF1938UL;
+    internal const ulong SECRET64_091 = 0x76FAA8D8ACDEA946UL;
+    internal const ulong SECRET64_096 = 0x3F349CE33F76FAA8UL;
+    internal const ulong SECRET64_099 = 0xBBDCF93F349CE33FUL;
+    internal const ulong SECRET64_103 = 0x4F0BC7C7BBDCF93FUL;
+    internal const ulong SECRET64_104 = 0x1D4F0BC7C7BBDCF9UL;
+    internal const ulong SECRET64_107 = 0xE0518A1D4F0BC7C7UL;
+    internal const ulong SECRET64_111 = 0x59B4CD4BE0518A1DUL;
+    internal const ulong SECRET64_112 = 0x3159B4CD4BE0518AUL;
+    internal const ulong SECRET64_119 = 0x7378D9C97E9FC831UL;
+    internal const ulong SECRET64_120 = 0x647378D9C97E9FC8UL;
+    internal const ulong SECRET64_127 = 0xEBD33483ACC5EA64UL;
+    internal const uint SECRET32_000 = 0x396CFEB8U;
+    internal const uint SECRET32_004 = 0xBE4BA423U;
+    internal const uint SECRET32_008 = 0x2C81017CU;
+    internal const uint SECRET32_012 = 0x1CAD21F7U;
 
     internal static readonly byte[] kSecret =
     [

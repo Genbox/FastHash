@@ -155,17 +155,12 @@ internal static class XxHashUnsafeShared
         }
     }
 
-    internal static unsafe ulong XXH3_mix16B(byte* input, byte* secret, ulong seed64)
+    internal static unsafe ulong XXH3_mix16B(byte* input, ulong secretLow, ulong secretHigh, ulong seed)
     {
-        ulong input_lo = Read64(input);
-        ulong input_hi = Read64(input + 8);
-
-        return XXH3_mul128_fold64(input_lo ^ (Read64(secret) + seed64),
-            input_hi ^ (Read64(secret + 8) - seed64));
+        ulong inputLow = Read64(input) ^ (secretLow + seed);
+        ulong inputHigh = Read64(input + 8) ^ (secretHigh - seed);
+        return XXH3_mul128_fold64(inputLow, inputHigh);
     }
-
-    internal unsafe delegate ulong XXH3_hashLong64_f_unsafe(byte* input, int len, ulong seed64, byte* secret, int secretLen);
-    internal unsafe delegate UInt128 XXH3_hashLong128_f_unsafe(byte* input, int len, ulong seed64, byte* secret, int secretLen);
 
 #if NET8_0_OR_GREATER
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -175,17 +170,49 @@ internal static class XxHashUnsafeShared
         int block_len = STRIPE_LEN * nbStripesPerBlock;
         int nb_blocks = (len - 1) / block_len;
 
+        // Keep the accumulators in registers across stripes and block scrambles.
+        Vector256<ulong> acc0 = Unsafe.ReadUnaligned<Vector256<ulong>>(acc + 0);
+        Vector256<ulong> acc1 = Unsafe.ReadUnaligned<Vector256<ulong>>(acc + 4);
+
+        byte* p = input;
+        byte* scrambleSecret = (secret + secretSize) - STRIPE_LEN;
+
         for (int n = 0; n < nb_blocks; n++)
         {
-            XXH3_accumulate_avx2(acc, input + (n * block_len), secret, nbStripesPerBlock);
-            XXH3_scrambleAcc_avx2(acc, (secret + secretSize) - STRIPE_LEN);
+            byte* stripeSecret = secret;
+
+            for (int stripe = 0; stripe < nbStripesPerBlock; stripe++)
+            {
+                acc0 = XXH3_accumulate_256(acc0, p, stripeSecret);
+                acc1 = XXH3_accumulate_256(acc1, p + 32, stripeSecret + 32);
+
+                p += STRIPE_LEN;
+                stripeSecret += SECRET_CONSUME_RATE;
+            }
+
+            acc0 = XXH3_scrambleAcc_256(acc0, scrambleSecret);
+            acc1 = XXH3_scrambleAcc_256(acc1, scrambleSecret + 32);
         }
 
         int nbStripes = (len - 1 - (block_len * nb_blocks)) / STRIPE_LEN;
-        XXH3_accumulate_avx2(acc, input + (nb_blocks * block_len), secret, nbStripes);
+        byte* remainingSecret = secret;
 
-        byte* p = (input + len) - STRIPE_LEN;
-        XXH3_accumulate_512_avx2(acc, p, (secret + secretSize) - STRIPE_LEN - SECRET_LASTACC_START);
+        for (int stripe = 0; stripe < nbStripes; stripe++)
+        {
+            acc0 = XXH3_accumulate_256(acc0, p, remainingSecret);
+            acc1 = XXH3_accumulate_256(acc1, p + 32, remainingSecret + 32);
+
+            p += STRIPE_LEN;
+            remainingSecret += SECRET_CONSUME_RATE;
+        }
+
+        p = (input + len) - STRIPE_LEN;
+        byte* lastSecret = scrambleSecret - SECRET_LASTACC_START;
+        acc0 = XXH3_accumulate_256(acc0, p, lastSecret);
+        acc1 = XXH3_accumulate_256(acc1, p + 32, lastSecret + 32);
+
+        Unsafe.WriteUnaligned(acc + 0, acc0);
+        Unsafe.WriteUnaligned(acc + 4, acc1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -195,89 +222,105 @@ internal static class XxHashUnsafeShared
         int block_len = STRIPE_LEN * nbStripesPerBlock;
         int nb_blocks = (len - 1) / block_len;
 
+        // Keep the accumulators in registers across stripes and block scrambles.
+        Vector128<ulong> acc0 = Unsafe.ReadUnaligned<Vector128<ulong>>(acc + 0);
+        Vector128<ulong> acc1 = Unsafe.ReadUnaligned<Vector128<ulong>>(acc + 2);
+        Vector128<ulong> acc2 = Unsafe.ReadUnaligned<Vector128<ulong>>(acc + 4);
+        Vector128<ulong> acc3 = Unsafe.ReadUnaligned<Vector128<ulong>>(acc + 6);
+
+        byte* p = input;
+        byte* scrambleSecret = (secret + secretSize) - STRIPE_LEN;
+
         for (int n = 0; n < nb_blocks; n++)
         {
-            XXH3_accumulate_sse2(acc, input + (n * block_len), secret, nbStripesPerBlock);
-            XXH3_scrambleAcc_sse2(acc, (secret + secretSize) - STRIPE_LEN);
+            byte* stripeSecret = secret;
+
+            for (int stripe = 0; stripe < nbStripesPerBlock; stripe++)
+            {
+                acc0 = XXH3_accumulate_128(acc0, p, stripeSecret);
+                acc1 = XXH3_accumulate_128(acc1, p + 16, stripeSecret + 16);
+                acc2 = XXH3_accumulate_128(acc2, p + 32, stripeSecret + 32);
+                acc3 = XXH3_accumulate_128(acc3, p + 48, stripeSecret + 48);
+
+                p += STRIPE_LEN;
+                stripeSecret += SECRET_CONSUME_RATE;
+            }
+
+            acc0 = XXH3_scrambleAcc_128(acc0, scrambleSecret);
+            acc1 = XXH3_scrambleAcc_128(acc1, scrambleSecret + 16);
+            acc2 = XXH3_scrambleAcc_128(acc2, scrambleSecret + 32);
+            acc3 = XXH3_scrambleAcc_128(acc3, scrambleSecret + 48);
         }
 
         int nbStripes = (len - 1 - (block_len * nb_blocks)) / STRIPE_LEN;
-        XXH3_accumulate_sse2(acc, input + (nb_blocks * block_len), secret, nbStripes);
+        byte* remainingSecret = secret;
 
-        byte* p = (input + len) - STRIPE_LEN;
-        XXH3_accumulate_512_sse2(acc, p, (secret + secretSize) - STRIPE_LEN - SECRET_LASTACC_START);
+        for (int stripe = 0; stripe < nbStripes; stripe++)
+        {
+            acc0 = XXH3_accumulate_128(acc0, p, remainingSecret);
+            acc1 = XXH3_accumulate_128(acc1, p + 16, remainingSecret + 16);
+            acc2 = XXH3_accumulate_128(acc2, p + 32, remainingSecret + 32);
+            acc3 = XXH3_accumulate_128(acc3, p + 48, remainingSecret + 48);
+
+            p += STRIPE_LEN;
+            remainingSecret += SECRET_CONSUME_RATE;
+        }
+
+        p = (input + len) - STRIPE_LEN;
+        byte* lastSecret = scrambleSecret - SECRET_LASTACC_START;
+        acc0 = XXH3_accumulate_128(acc0, p, lastSecret);
+        acc1 = XXH3_accumulate_128(acc1, p + 16, lastSecret + 16);
+        acc2 = XXH3_accumulate_128(acc2, p + 32, lastSecret + 32);
+        acc3 = XXH3_accumulate_128(acc3, p + 48, lastSecret + 48);
+
+        Unsafe.WriteUnaligned(acc + 0, acc0);
+        Unsafe.WriteUnaligned(acc + 2, acc1);
+        Unsafe.WriteUnaligned(acc + 4, acc2);
+        Unsafe.WriteUnaligned(acc + 6, acc3);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void XXH3_accumulate_avx2(ulong* acc, byte* input, byte* secret, int nbStripes)
+    private static unsafe Vector256<ulong> XXH3_accumulate_256(Vector256<ulong> acc, byte* input, byte* secret)
     {
-        for (int n = 0; n < nbStripes; n++)
-            XXH3_accumulate_512_avx2(acc, input + (n * STRIPE_LEN), secret + (n * SECRET_CONSUME_RATE));
+        Vector256<uint> data = Unsafe.ReadUnaligned<Vector256<uint>>(input);
+        Vector256<uint> key = Unsafe.ReadUnaligned<Vector256<uint>>(secret);
+        Vector256<uint> dataKey = Avx2.Xor(data, key);
+        Vector256<ulong> product = Avx2.Multiply(dataKey, Avx2.Shuffle(dataKey, MM_SHUFFLE_0_3_0_1));
+        Vector256<ulong> dataSwap = Avx2.Shuffle(data, MM_SHUFFLE_1_0_3_2).AsUInt64();
+        return Avx2.Add(Avx2.Add(acc, dataSwap), product);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void XXH3_accumulate_sse2(ulong* acc, byte* input, byte* secret, int nbStripes)
-    {
-        for (int n = 0; n < nbStripes; n++)
-            XXH3_accumulate_512_sse2(acc, input + (n * STRIPE_LEN), secret + (n * SECRET_CONSUME_RATE));
-    }
-#endif
-
-#if NET8_0_OR_GREATER
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void XXH3_scrambleAcc_avx2(ulong* acc, byte* secret)
+    private static unsafe Vector256<ulong> XXH3_scrambleAcc_256(Vector256<ulong> acc, byte* secret)
     {
         Vector256<uint> prime32 = Vector256.Create(PRIME32_1);
-
-        Vector256<ulong> acc_vec0 = Unsafe.ReadUnaligned<Vector256<ulong>>(acc + 0);
-        Vector256<ulong> acc_vec1 = Unsafe.ReadUnaligned<Vector256<ulong>>(acc + 4);
-
-        Vector256<ulong> data_vec0 = Avx2.Xor(acc_vec0, Avx2.ShiftRightLogical(acc_vec0, 47));
-        Vector256<ulong> data_vec1 = Avx2.Xor(acc_vec1, Avx2.ShiftRightLogical(acc_vec1, 47));
-
-        Vector256<ulong> key_vec0 = Unsafe.ReadUnaligned<Vector256<ulong>>((ulong*)secret + 0);
-        Vector256<ulong> key_vec1 = Unsafe.ReadUnaligned<Vector256<ulong>>((ulong*)secret + 4);
-
-        Vector256<uint> data_key0 = Avx2.Xor(data_vec0, key_vec0).AsUInt32();
-        Vector256<uint> data_key1 = Avx2.Xor(data_vec1, key_vec1).AsUInt32();
-
-        Vector256<ulong> prod_lo0 = Avx2.Multiply(data_key0, prime32);
-        Vector256<ulong> prod_lo1 = Avx2.Multiply(data_key1, prime32);
-        Vector256<ulong> prod_hi0 = Avx2.Multiply(Avx2.ShiftRightLogical(data_key0.AsUInt64(), 32).AsUInt32(), prime32);
-        Vector256<ulong> prod_hi1 = Avx2.Multiply(Avx2.ShiftRightLogical(data_key1.AsUInt64(), 32).AsUInt32(), prime32);
-
-        Unsafe.WriteUnaligned(acc + 0, Avx2.Add(prod_lo0, Avx2.ShiftLeftLogical(prod_hi0, 32)));
-        Unsafe.WriteUnaligned(acc + 4, Avx2.Add(prod_lo1, Avx2.ShiftLeftLogical(prod_hi1, 32)));
+        Vector256<ulong> data = Avx2.Xor(acc, Avx2.ShiftRightLogical(acc, 47));
+        Vector256<uint> dataKey = Avx2.Xor(data, Unsafe.ReadUnaligned<Vector256<ulong>>(secret)).AsUInt32();
+        Vector256<ulong> productLow = Avx2.Multiply(dataKey, prime32);
+        Vector256<ulong> productHigh = Avx2.Multiply(Avx2.ShiftRightLogical(dataKey.AsUInt64(), 32).AsUInt32(), prime32);
+        return Avx2.Add(productLow, Avx2.ShiftLeftLogical(productHigh, 32));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void XXH3_scrambleAcc_sse2(ulong* acc, byte* secret)
+    private static unsafe Vector128<ulong> XXH3_accumulate_128(Vector128<ulong> acc, byte* input, byte* secret)
+    {
+        Vector128<uint> data = Unsafe.ReadUnaligned<Vector128<uint>>(input);
+        Vector128<uint> key = Unsafe.ReadUnaligned<Vector128<uint>>(secret);
+        Vector128<uint> dataKey = Sse2.Xor(data, key);
+        Vector128<ulong> product = Sse2.Multiply(dataKey, Sse2.Shuffle(dataKey, MM_SHUFFLE_0_3_0_1));
+        Vector128<ulong> dataSwap = Sse2.Shuffle(data, MM_SHUFFLE_1_0_3_2).AsUInt64();
+        return Sse2.Add(Sse2.Add(acc, dataSwap), product);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static unsafe Vector128<ulong> XXH3_scrambleAcc_128(Vector128<ulong> acc, byte* secret)
     {
         Vector128<uint> prime32 = Vector128.Create(PRIME32_1);
-
-        Vector128<ulong> acc_vec0 = Unsafe.ReadUnaligned<Vector128<ulong>>(acc + 0);
-        Vector128<ulong> acc_vec1 = Unsafe.ReadUnaligned<Vector128<ulong>>(acc + 2);
-        Vector128<ulong> acc_vec2 = Unsafe.ReadUnaligned<Vector128<ulong>>(acc + 4);
-        Vector128<ulong> acc_vec3 = Unsafe.ReadUnaligned<Vector128<ulong>>(acc + 6);
-
-        Vector128<uint> data_key0 = Sse2.Xor(Sse2.Xor(acc_vec0, Sse2.ShiftRightLogical(acc_vec0, 47)), Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)secret + 0)).AsUInt32();
-        Vector128<uint> data_key1 = Sse2.Xor(Sse2.Xor(acc_vec1, Sse2.ShiftRightLogical(acc_vec1, 47)), Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)secret + 2)).AsUInt32();
-        Vector128<uint> data_key2 = Sse2.Xor(Sse2.Xor(acc_vec2, Sse2.ShiftRightLogical(acc_vec2, 47)), Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)secret + 4)).AsUInt32();
-        Vector128<uint> data_key3 = Sse2.Xor(Sse2.Xor(acc_vec3, Sse2.ShiftRightLogical(acc_vec3, 47)), Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)secret + 6)).AsUInt32();
-
-        Vector128<ulong> prod_lo0 = Sse2.Multiply(data_key0, prime32);
-        Vector128<ulong> prod_lo1 = Sse2.Multiply(data_key1, prime32);
-        Vector128<ulong> prod_lo2 = Sse2.Multiply(data_key2, prime32);
-        Vector128<ulong> prod_lo3 = Sse2.Multiply(data_key3, prime32);
-        Vector128<ulong> prod_hi0 = Sse2.Multiply(Sse2.ShiftRightLogical(data_key0.AsUInt64(), 32).AsUInt32(), prime32);
-        Vector128<ulong> prod_hi1 = Sse2.Multiply(Sse2.ShiftRightLogical(data_key1.AsUInt64(), 32).AsUInt32(), prime32);
-        Vector128<ulong> prod_hi2 = Sse2.Multiply(Sse2.ShiftRightLogical(data_key2.AsUInt64(), 32).AsUInt32(), prime32);
-        Vector128<ulong> prod_hi3 = Sse2.Multiply(Sse2.ShiftRightLogical(data_key3.AsUInt64(), 32).AsUInt32(), prime32);
-
-        Unsafe.WriteUnaligned(acc + 0, Sse2.Add(prod_lo0, Sse2.ShiftLeftLogical(prod_hi0, 32)));
-        Unsafe.WriteUnaligned(acc + 2, Sse2.Add(prod_lo1, Sse2.ShiftLeftLogical(prod_hi1, 32)));
-        Unsafe.WriteUnaligned(acc + 4, Sse2.Add(prod_lo2, Sse2.ShiftLeftLogical(prod_hi2, 32)));
-        Unsafe.WriteUnaligned(acc + 6, Sse2.Add(prod_lo3, Sse2.ShiftLeftLogical(prod_hi3, 32)));
+        Vector128<ulong> data = Sse2.Xor(acc, Sse2.ShiftRightLogical(acc, 47));
+        Vector128<uint> dataKey = Sse2.Xor(data, Unsafe.ReadUnaligned<Vector128<ulong>>(secret)).AsUInt32();
+        Vector128<ulong> productLow = Sse2.Multiply(dataKey, prime32);
+        Vector128<ulong> productHigh = Sse2.Multiply(Sse2.ShiftRightLogical(dataKey.AsUInt64(), 32).AsUInt32(), prime32);
+        return Sse2.Add(productLow, Sse2.ShiftLeftLogical(productHigh, 32));
     }
 #endif
 
@@ -310,95 +353,6 @@ internal static class XxHashUnsafeShared
                 Unsafe.WriteUnaligned((ulong*)customSecret + (i * 2), Sse2.Add(src, seed));
             }
         }
-    }
-#endif
-#if NET8_0_OR_GREATER
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void XXH3_accumulate_512_avx2(ulong* acc, byte* input, byte* secret)
-    {
-        Vector256<ulong> acc_vec0 = Unsafe.ReadUnaligned<Vector256<ulong>>(acc + 0);
-        Vector256<ulong> acc_vec1 = Unsafe.ReadUnaligned<Vector256<ulong>>(acc + 4);
-
-        Vector256<uint> data_vec0 = Unsafe.ReadUnaligned<Vector256<ulong>>((ulong*)input + 0).AsUInt32();
-        Vector256<uint> data_vec1 = Unsafe.ReadUnaligned<Vector256<ulong>>((ulong*)input + 4).AsUInt32();
-
-        Vector256<uint> key_vec0 = Unsafe.ReadUnaligned<Vector256<ulong>>((ulong*)secret + 0).AsUInt32();
-        Vector256<uint> key_vec1 = Unsafe.ReadUnaligned<Vector256<ulong>>((ulong*)secret + 4).AsUInt32();
-
-        Vector256<uint> data_key0 = Avx2.Xor(data_vec0, key_vec0);
-        Vector256<uint> data_key1 = Avx2.Xor(data_vec1, key_vec1);
-
-        Vector256<uint> data_key_lo0 = Avx2.Shuffle(data_key0, MM_SHUFFLE_0_3_0_1);
-        Vector256<uint> data_key_lo1 = Avx2.Shuffle(data_key1, MM_SHUFFLE_0_3_0_1);
-
-        Vector256<ulong> product0 = Avx2.Multiply(data_key0, data_key_lo0);
-        Vector256<ulong> product1 = Avx2.Multiply(data_key1, data_key_lo1);
-
-        Vector256<ulong> data_swap0 = Avx2.Shuffle(data_vec0, MM_SHUFFLE_1_0_3_2).AsUInt64();
-        Vector256<ulong> data_swap1 = Avx2.Shuffle(data_vec1, MM_SHUFFLE_1_0_3_2).AsUInt64();
-
-        Vector256<ulong> sum0 = Avx2.Add(acc_vec0, data_swap0);
-        Vector256<ulong> sum1 = Avx2.Add(acc_vec1, data_swap1);
-
-        Vector256<ulong> result0 = Avx2.Add(product0, sum0);
-        Vector256<ulong> result1 = Avx2.Add(product1, sum1);
-
-        Unsafe.WriteUnaligned(acc + 0, result0);
-        Unsafe.WriteUnaligned(acc + 4, result1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void XXH3_accumulate_512_sse2(ulong* acc, byte* input, byte* secret)
-    {
-        Vector128<ulong> acc_vec0 = Unsafe.ReadUnaligned<Vector128<ulong>>(acc + 0);
-        Vector128<ulong> acc_vec1 = Unsafe.ReadUnaligned<Vector128<ulong>>(acc + 2);
-        Vector128<ulong> acc_vec2 = Unsafe.ReadUnaligned<Vector128<ulong>>(acc + 4);
-        Vector128<ulong> acc_vec3 = Unsafe.ReadUnaligned<Vector128<ulong>>(acc + 6);
-
-        Vector128<uint> data_vec0 = Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)input + 0).AsUInt32();
-        Vector128<uint> data_vec1 = Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)input + 2).AsUInt32();
-        Vector128<uint> data_vec2 = Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)input + 4).AsUInt32();
-        Vector128<uint> data_vec3 = Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)input + 6).AsUInt32();
-
-        Vector128<uint> key_vec0 = Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)secret + 0).AsUInt32();
-        Vector128<uint> key_vec1 = Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)secret + 2).AsUInt32();
-        Vector128<uint> key_vec2 = Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)secret + 4).AsUInt32();
-        Vector128<uint> key_vec3 = Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)secret + 6).AsUInt32();
-
-        Vector128<uint> data_key0 = Sse2.Xor(data_vec0, key_vec0);
-        Vector128<uint> data_key1 = Sse2.Xor(data_vec1, key_vec1);
-        Vector128<uint> data_key2 = Sse2.Xor(data_vec2, key_vec2);
-        Vector128<uint> data_key3 = Sse2.Xor(data_vec3, key_vec3);
-
-        Vector128<uint> data_key_lo0 = Sse2.Shuffle(data_key0, MM_SHUFFLE_0_3_0_1);
-        Vector128<uint> data_key_lo1 = Sse2.Shuffle(data_key1, MM_SHUFFLE_0_3_0_1);
-        Vector128<uint> data_key_lo2 = Sse2.Shuffle(data_key2, MM_SHUFFLE_0_3_0_1);
-        Vector128<uint> data_key_lo3 = Sse2.Shuffle(data_key3, MM_SHUFFLE_0_3_0_1);
-
-        Vector128<ulong> product0 = Sse2.Multiply(data_key0, data_key_lo0);
-        Vector128<ulong> product1 = Sse2.Multiply(data_key1, data_key_lo1);
-        Vector128<ulong> product2 = Sse2.Multiply(data_key2, data_key_lo2);
-        Vector128<ulong> product3 = Sse2.Multiply(data_key3, data_key_lo3);
-
-        Vector128<ulong> data_swap0 = Sse2.Shuffle(data_vec0, MM_SHUFFLE_1_0_3_2).AsUInt64();
-        Vector128<ulong> data_swap1 = Sse2.Shuffle(data_vec1, MM_SHUFFLE_1_0_3_2).AsUInt64();
-        Vector128<ulong> data_swap2 = Sse2.Shuffle(data_vec2, MM_SHUFFLE_1_0_3_2).AsUInt64();
-        Vector128<ulong> data_swap3 = Sse2.Shuffle(data_vec3, MM_SHUFFLE_1_0_3_2).AsUInt64();
-
-        Vector128<ulong> sum0 = Sse2.Add(acc_vec0, data_swap0);
-        Vector128<ulong> sum1 = Sse2.Add(acc_vec1, data_swap1);
-        Vector128<ulong> sum2 = Sse2.Add(acc_vec2, data_swap2);
-        Vector128<ulong> sum3 = Sse2.Add(acc_vec3, data_swap3);
-
-        Vector128<ulong> result0 = Sse2.Add(product0, sum0);
-        Vector128<ulong> result1 = Sse2.Add(product1, sum1);
-        Vector128<ulong> result2 = Sse2.Add(product2, sum2);
-        Vector128<ulong> result3 = Sse2.Add(product3, sum3);
-
-        Unsafe.WriteUnaligned(acc + 0, result0);
-        Unsafe.WriteUnaligned(acc + 2, result1);
-        Unsafe.WriteUnaligned(acc + 4, result2);
-        Unsafe.WriteUnaligned(acc + 6, result3);
     }
 #endif
 }
