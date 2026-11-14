@@ -1,6 +1,5 @@
 #if NET8_0_OR_GREATER
 using System.Globalization;
-using System.Runtime.Intrinsics.X86;
 using Genbox.FastHash.MeowHash;
 
 namespace Genbox.FastHash.Tests.Single;
@@ -22,8 +21,7 @@ public class MeowHashTests
     [Fact]
     public unsafe void TestVectors()
     {
-        if (!Aes.IsSupported || !Sse2.IsSupported || !Ssse3.IsSupported)
-            return;
+        Assert.SkipWhen(!MeowHash128.IsSupported, "Required CPU intrinsics are unavailable.");
 
         foreach (Vector vector in Vectors)
         {
@@ -44,8 +42,7 @@ public class MeowHashTests
     [Fact]
     public unsafe void TestRemainderAndBlockBoundaries()
     {
-        if (!MeowHash128.IsSupported)
-            return;
+        Assert.SkipWhen(!MeowHash128.IsSupported, "Required CPU intrinsics are unavailable.");
 
         byte[] data = CreateSequence256();
 

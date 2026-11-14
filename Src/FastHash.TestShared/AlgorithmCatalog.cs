@@ -1,3 +1,4 @@
+using System.Runtime.Intrinsics.Arm;
 using Genbox.FastHash.AbslHash;
 using Genbox.FastHash.AesniHash;
 using Genbox.FastHash.CityHash;
@@ -20,6 +21,7 @@ using Genbox.FastHash.SuperFastHash;
 using Genbox.FastHash.T1haHash;
 using Genbox.FastHash.WyHash;
 using Genbox.FastHash.XxHash;
+using Aes = System.Runtime.Intrinsics.X86.Aes;
 
 namespace Genbox.FastHash.TestShared;
 
@@ -56,7 +58,7 @@ public static unsafe class AlgorithmCatalog
         new Hash64Algorithm(nameof(Gx2Hash64), static data => Gx2Hash64.ComputeHash(data), null, [0xC3, 0x3A, 0xB7, 0x2A, 0x79, 0xCC, 0xEB, 0xB5]),
         new Hash64Algorithm(nameof(HighwayHash64), static data => HighwayHash64.ComputeHash(data), static (data, length) => HighwayHash64Unsafe.ComputeHash(data, length), [0x63, 0x6C, 0x8E, 0x47, 0x06, 0x37, 0xCF, 0x16]),
         new Hash64Algorithm(nameof(MarvinHash64), static data => MarvinHash64.ComputeHash(data), null, [0x57, 0x44, 0xD2, 0xD9, 0xA0, 0x67, 0x18, 0xDA]),
-        new Hash64Algorithm(nameof(MeowHash64Unsafe), null, static (data, length) => MeowHash64Unsafe.ComputeHash(data, length), [0xCE, 0xF5, 0xCC, 0xAB, 0xBD, 0xC1, 0x2E, 0x9E]),
+        new Hash64Algorithm(nameof(MeowHash64), static data => MeowHash64.ComputeHash(data), static (data, length) => MeowHash64Unsafe.ComputeHash(data, length), [0xCE, 0xF5, 0xCC, 0xAB, 0xBD, 0xC1, 0x2E, 0x9E]),
         new Hash64Algorithm(nameof(Polymur2Hash64), static data => Polymur2Hash64.ComputeHash(data), null, [0xD8, 0x4B, 0xE5, 0xDB, 0x3C, 0x80, 0x53, 0x69]),
         new Hash64Algorithm(nameof(Rapid3Hash64), static data => Rapid3Hash64.ComputeHash(data), null, [0x9F, 0xF4, 0x50, 0x8C, 0x0E, 0xC2, 0xD5, 0x6A]),
         new Hash64Algorithm(nameof(Rapid3HashMicro64), static data => Rapid3HashMicro64.ComputeHash(data), null, [0x9F, 0xF4, 0x50, 0x8C, 0x0E, 0xC2, 0xD5, 0x6A]),
@@ -83,7 +85,7 @@ public static unsafe class AlgorithmCatalog
         new Hash128Algorithm(nameof(CityHashCrc128), static data => CityHashCrc128.ComputeHash(data), static (data, length) => CityHashCrc128Unsafe.ComputeHash(data, length), null),
         new Hash128Algorithm(nameof(FarmHash128), static data => FarmHash128.ComputeHash(data), static (data, length) => FarmHash128Unsafe.ComputeHash(data, length), [0x18, 0xFE, 0x91, 0x9D, 0xAA, 0xA8, 0xF0, 0x6B, 0x35, 0xDC, 0x63, 0xAF, 0x2D, 0xFA, 0xEA, 0x61]),
         new Hash128Algorithm(nameof(Gx2Hash128), static data => Gx2Hash128.ComputeHash(data), null, [0xC3, 0x3A, 0xB7, 0x2A, 0x79, 0xCC, 0xEB, 0xB5, 0x87, 0xB9, 0x69, 0x4B, 0xD1, 0x2D, 0xDB, 0xE4]),
-        new Hash128Algorithm(nameof(MeowHash128Unsafe), null, static (data, length) => MeowHash128Unsafe.ComputeHash(data, length), [0xCE, 0xF5, 0xCC, 0xAB, 0xBD, 0xC1, 0x2E, 0x9E, 0xE7, 0xDE, 0x17, 0xC5, 0x40, 0x68, 0x4E, 0xAF]),
+        new Hash128Algorithm(nameof(MeowHash128), static data => MeowHash128.ComputeHash(data), static (data, length) => MeowHash128Unsafe.ComputeHash(data, length), [0xCE, 0xF5, 0xCC, 0xAB, 0xBD, 0xC1, 0x2E, 0x9E, 0xE7, 0xDE, 0x17, 0xC5, 0x40, 0x68, 0x4E, 0xAF]),
         new Hash128Algorithm(nameof(Murmur3Hash128), static data => Murmur3Hash128.ComputeHash(data), static (data, length) => Murmur3Hash128Unsafe.ComputeHash(data, length), [0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67]),
         new Hash128Algorithm(nameof(PolyXorHash128), static data => PolyXorHash128.ComputeHash(data), static (data, length) => PolyXorHash128Unsafe.ComputeHash(data, length), [0x51, 0x66, 0xD2, 0x79, 0x06, 0x6D, 0x98, 0x43, 0xF1, 0xB0, 0xB2, 0xB5, 0x57, 0x25, 0x8E, 0x39]),
         new Hash128Algorithm(nameof(Xx3Hash128), static data => Xx3Hash128.ComputeHash(data), static (data, length) => Xx3Hash128Unsafe.ComputeHash(data, length), [0x6A, 0xD7, 0x7C, 0x14, 0x0F, 0x09, 0x6F, 0xC0, 0xDF, 0xAC, 0x6C, 0x5C, 0x35, 0x9B, 0x2F, 0x13])
@@ -147,6 +149,19 @@ public static unsafe class AlgorithmCatalog
         new Index128Algorithm(nameof(PolyXorHash128), static input => PolyXorHash128.ComputeIndex(input), static data => PolyXorHash128.ComputeHash(data)),
         new Index128Algorithm(nameof(Xx3Hash128), static input => Xx3Hash128.ComputeIndex(input), static data => Xx3Hash128.ComputeHash(data))
     ];
+
+    public static bool IsSupported(string name) => name switch
+    {
+        nameof(AesniHash64) or nameof(AesniHash128) => AesniHash128.IsSupported,
+        nameof(CityHashCrc128) or nameof(CityHashCrc256) => CityHashCrc256.IsSupported,
+        nameof(ClHash64) => ClHash64.IsSupported,
+        nameof(Gx2Hash32) or nameof(Gx2Hash64) or nameof(Gx2Hash128) =>
+            Aes.IsSupported ||
+            (System.Runtime.Intrinsics.Arm.Aes.IsSupported && AdvSimd.IsSupported),
+        nameof(MeowHash64) or nameof(MeowHash128) => MeowHash128.IsSupported,
+        nameof(PolyXorHash128) => PolyXorHash128.IsSupported,
+        _ => true
+    };
 
     public static Hash32Algorithm GetHash32(string name) => Hash32Algorithms.Single(x => x.Name == name);
     public static Hash64Algorithm GetHash64(string name) => Hash64Algorithms.Single(x => x.Name == name);

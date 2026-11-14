@@ -10,6 +10,7 @@ public class IndexTests
     public void Check32(string name)
     {
         Index32Algorithm algorithm = AlgorithmCatalog.GetIndex32(name);
+        Assert.SkipWhen(!algorithm.IsSupported, $"{name} is unavailable on this CPU.");
         byte[] valueBytes = new byte[4];
 
         uint[] values = [0u, uint.MaxValue, 0x5555_5555u, 0xAAAA_AAAAu, 0x0123_4567u, 0xFEDC_BA98u];
@@ -36,6 +37,7 @@ public class IndexTests
     public void Check64(string name)
     {
         Index64Algorithm algorithm = AlgorithmCatalog.GetIndex64(name);
+        Assert.SkipWhen(!algorithm.IsSupported, $"{name} is unavailable on this CPU.");
         byte[] valueBytes = new byte[8];
 
         ulong[] values = [0UL, ulong.MaxValue, 0x5555_5555_5555_5555UL, 0xAAAA_AAAA_AAAA_AAAAUL, 0x0123_4567_89AB_CDEFUL, 0xFEDC_BA98_7654_3210UL];
@@ -62,6 +64,7 @@ public class IndexTests
     public void Check128(string name)
     {
         Index128Algorithm algorithm = AlgorithmCatalog.GetIndex128(name);
+        Assert.SkipWhen(!algorithm.IsSupported, $"{name} is unavailable on this CPU.");
         byte[] valueBytes = new byte[8];
 
         ulong[] values = [0UL, ulong.MaxValue, 0x5555_5555_5555_5555UL, 0xAAAA_AAAA_AAAA_AAAAUL, 0x0123_4567_89AB_CDEFUL, 0xFEDC_BA98_7654_3210UL];

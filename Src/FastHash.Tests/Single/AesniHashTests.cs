@@ -127,8 +127,7 @@ public class AesniHashTests
     [Fact]
     public void MatchesUpstream128()
     {
-        if (!AesniHash128.IsSupported)
-            return;
+        Assert.SkipWhen(!AesniHash128.IsSupported, "Required CPU intrinsics are unavailable.");
 
         foreach (UpstreamVector vector in UpstreamVectors)
         {
@@ -141,8 +140,7 @@ public class AesniHashTests
     [Fact]
     public void MatchesUpstream64()
     {
-        if (!AesniHash64.IsSupported)
-            return;
+        Assert.SkipWhen(!AesniHash64.IsSupported, "Required CPU intrinsics are unavailable.");
 
         // Upstream's AESNI_Hash64 returns the low 64 bits of AESNI_Hash128.
         foreach (UpstreamVector vector in UpstreamVectors)
@@ -152,8 +150,7 @@ public class AesniHashTests
     [Fact]
     public void MatchesUpstreamIndex()
     {
-        if (!AesniHash128.IsSupported)
-            return;
+        Assert.SkipWhen(!AesniHash128.IsSupported, "Required CPU intrinsics are unavailable.");
 
         foreach (UpstreamIndexVector vector in UpstreamIndexVectors)
         {

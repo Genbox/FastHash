@@ -101,10 +101,13 @@ public class UpstreamVectorTests
     [MemberData(nameof(Variants))]
     public void MatchesUpstream(string variant)
     {
+#if WYHASH_CONDOM
+        Assert.SkipWhen(variant is "Wy2Hash64" or "Wy2Hash64Secret" or "Wy3Hash64" or "Wy3Hash64Secret" or "Wy4Hash64" or "Wy4Hash64Secret",
+            "These upstream vectors use WyHash mode 1; mode 2 has separate vectors in WyHashTests.");
+#endif
         Assert.True(Hashers.TryGetValue(variant, out Entry entry), $"No FastHash function is mapped to '{variant}'.");
 
-        if (!entry.IsSupported())
-            return;
+        Assert.SkipWhen(!entry.IsSupported(), $"{variant} is unavailable on this CPU.");
 
         ulong[] actual = new ulong[4];
 

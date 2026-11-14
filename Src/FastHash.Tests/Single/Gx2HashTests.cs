@@ -1,4 +1,5 @@
 using Genbox.FastHash.GxHash;
+using Genbox.FastHash.TestShared;
 
 namespace Genbox.FastHash.Tests.Single;
 
@@ -7,6 +8,8 @@ public class Gx2HashTests
     [Fact]
     public void ValuesTest()
     {
+        Assert.SkipWhen(!AlgorithmCatalog.IsSupported(nameof(Gx2Hash32)), "AES intrinsics are unavailable.");
+
         Assert.Equal(2533353535u, Gx2Hash32.ComputeHash(Array.Empty<byte>()));
         Assert.Equal(4243413987u, Gx2Hash32.ComputeHash(new byte[1]));
         Assert.Equal(2401749549u, Gx2Hash32.ComputeHash(new byte[1000]));
@@ -19,6 +22,8 @@ public class Gx2HashTests
     [Fact]
     public void SanityChecks()
     {
+        Assert.SkipWhen(!AlgorithmCatalog.IsSupported(nameof(Gx2Hash32)), "AES intrinsics are unavailable.");
+
         HashSet<ulong> hashes = [];
 
         // Check that zero filled inputs are hashes differently depending on their size
@@ -62,6 +67,8 @@ public class Gx2HashTests
     [Fact]
     public void AllBytesAreRead()
     {
+        Assert.SkipWhen(!AlgorithmCatalog.IsSupported(nameof(Gx2Hash32)), "AES intrinsics are unavailable.");
+
         for (int s = 0; s < 1200; s++)
         {
             byte[] bytes = new byte[s];
@@ -93,6 +100,8 @@ public class Gx2HashTests
     [InlineData(32, 64, 96)]
     public void BytesOrderMatters(int swapSize, int swapPositionA, int swapPositionB)
     {
+        Assert.SkipWhen(!AlgorithmCatalog.IsSupported(nameof(Gx2Hash32)), "AES intrinsics are unavailable.");
+
         Random rnd = new Random(123);
         byte[] bytes = new byte[255];
         rnd.NextBytes(bytes);

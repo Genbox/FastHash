@@ -53,8 +53,7 @@ public class ClHashTests
     [Fact]
     public unsafe void TestVectors()
     {
-        if (!ClHash64.IsSupported)
-            return;
+        Assert.SkipWhen(!ClHash64.IsSupported, "Required CPU intrinsics are unavailable.");
 
         byte[] pattern = CreatePattern(4096);
 
@@ -79,8 +78,7 @@ public class ClHashTests
     [Fact]
     public unsafe void GeneratedKeyCanBeReused()
     {
-        if (!ClHash64.IsSupported)
-            return;
+        Assert.SkipWhen(!ClHash64.IsSupported, "Required CPU intrinsics are unavailable.");
 
         byte[] data = "my dog"u8.ToArray();
         ulong[] key1 = ClHash64.CreateKey(0x23a23cf5033c3c81UL, 0xb3816f6a2c68e530UL);
@@ -121,6 +119,8 @@ public class ClHashTests
     [Fact]
     public void DegenerateCustomKeysAreRejected()
     {
+        Assert.SkipWhen(!ClHash64.IsSupported, "Required CPU intrinsics are unavailable.");
+
         ulong[] allZeroKey = new ulong[ClHashConstants.Random64BitWordsNeeded];
 
         ulong[] unitPolynomial = ClHash64.CreateKey(1, 2);
@@ -140,8 +140,7 @@ public class ClHashTests
     [Fact]
     public void CollisionRegression()
     {
-        if (!ClHash64.IsSupported)
-            return;
+        Assert.SkipWhen(!ClHash64.IsSupported, "Required CPU intrinsics are unavailable.");
 
         ulong[] key = CreateByteOffsetKey(0x63);
 
@@ -167,8 +166,7 @@ public class ClHashTests
     [Fact]
     public void FlipBitRegression()
     {
-        if (!ClHash64.IsSupported)
-            return;
+        Assert.SkipWhen(!ClHash64.IsSupported, "Required CPU intrinsics are unavailable.");
 
         ulong[] key = CreateByteOffsetKey(1, true);
 
@@ -192,8 +190,7 @@ public class ClHashTests
     [Fact]
     public void AvalancheSmokeTest()
     {
-        if (!ClHash64.IsSupported)
-            return;
+        Assert.SkipWhen(!ClHash64.IsSupported, "Required CPU intrinsics are unavailable.");
 
         ulong[] key = CreateQuadraticByteKey();
 

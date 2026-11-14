@@ -104,8 +104,7 @@ public class PolyXorHashTests
     [Fact]
     public void ComputeHash_UnsupportedHardware_RejectsHashAndIndexOperations()
     {
-        if (PolyXorHash128.IsSupported)
-            return;
+        Assert.SkipWhen(PolyXorHash128.IsSupported, "This case requires hardware without PolyXOR support.");
         PolyXorHashParams parameters = PolyXorHashParams.FromEntropy(new byte[PolyXorHashParams.EntropyNeeded]);
         Assert.Throws<PlatformNotSupportedException>(() => PolyXorHash128.ComputeHash("abc"u8, parameters));
         Assert.Throws<PlatformNotSupportedException>(() => PolyXorHash128.ComputeIndex(42, parameters));
@@ -115,8 +114,7 @@ public class PolyXorHashTests
     [Fact]
     public void ComputeIndex_KeysAndTweaks_MatchesReference()
     {
-        if (!PolyXorHash128.IsSupported)
-            return;
+        Assert.SkipWhen(!PolyXorHash128.IsSupported, "Required CPU intrinsics are unavailable.");
 
         UInt128[] keys = [default, Key, new UInt128(ulong.MaxValue, ulong.MaxValue)];
         PolyXorHashParams[] parameters =
@@ -195,8 +193,7 @@ public class PolyXorHashTests
     [InlineData(9)]
     public unsafe void ComputeHash_ShortSpans_MatchesReferenceAndStreaming(int length)
     {
-        if (!PolyXorHash128.IsSupported)
-            return;
+        Assert.SkipWhen(!PolyXorHash128.IsSupported, "Required CPU intrinsics are unavailable.");
 
         PolyXorHashParams[] parameters =
         [
@@ -273,8 +270,7 @@ public class PolyXorHashTests
     [InlineData(3)]
     public void ComputeHash_PaddedTailBoundaries_MatchesReference(int wholeChunks)
     {
-        if (!PolyXorHash128.IsSupported)
-            return;
+        Assert.SkipWhen(!PolyXorHash128.IsSupported, "Required CPU intrinsics are unavailable.");
 
         PolyXorHashParams parameters = PolyXorHashParams.FromEntropy(PolyXorReference.RandomBytes(PolyXorHashParams.EntropyNeeded, 13));
         byte[] buffer = PolyXorReference.RandomBytes(1 + ((wholeChunks + 1) * 4096), 17);
@@ -315,8 +311,7 @@ public class PolyXorHashTests
     [Fact]
     public void Multiply_DeterministicOperands_MatchesReference()
     {
-        if (!PolyXorHash128.IsSupported)
-            return;
+        Assert.SkipWhen(!PolyXorHash128.IsSupported, "Required CPU intrinsics are unavailable.");
         byte[] bytes = PolyXorReference.RandomBytes(16 * 64, 1);
 
         for (int i = 0; i < 64; i++)
@@ -376,8 +371,7 @@ public class PolyXorHashTests
     [InlineData(12417)]
     public unsafe void Update_BoundaryChunkSizes_MatchesReferenceAndOneShot(int length)
     {
-        if (!PolyXorHash128.IsSupported)
-            return;
+        Assert.SkipWhen(!PolyXorHash128.IsSupported, "Required CPU intrinsics are unavailable.");
         PolyXorHashParams parameters = new PolyXorHashParams(Key);
         byte[] data = PolyXorReference.RandomBytes(length + 1, 4);
         ReadOnlySpan<byte> message = data.AsSpan(1);
@@ -416,8 +410,7 @@ public class PolyXorHashTests
     [Fact]
     public void Clone_FinalizedPrefix_AllowsIndependentContinuation()
     {
-        if (!PolyXorHash128.IsSupported)
-            return;
+        Assert.SkipWhen(!PolyXorHash128.IsSupported, "Required CPU intrinsics are unavailable.");
         PolyXorHashParams parameters = new PolyXorHashParams(Key);
         PolyXorHasher hasher = parameters.CreateHasher();
         byte[] prefix = Pattern(4200);
@@ -434,8 +427,7 @@ public class PolyXorHashTests
     public void FinalizeMac_NonceDomainsAndEntropyParameters_MatchesUpstream()
     {
         Assert.Throws<ArgumentException>(() => PolyXorHashParams.FromEntropy(new byte[PolyXorHashParams.EntropyNeeded - 1]));
-        if (!PolyXorHash128.IsSupported)
-            return;
+        Assert.SkipWhen(!PolyXorHash128.IsSupported, "Required CPU intrinsics are unavailable.");
         PolyXorHashParams entropy = PolyXorHashParams.FromEntropy(new byte[PolyXorHashParams.EntropyNeeded]);
         Assert.Equal(Vector128.Create(1UL, 0UL), entropy.AvalancheMul);
         Assert.Throws<InvalidOperationException>(() => entropy.CreateHasher().FinalizeMac(default));

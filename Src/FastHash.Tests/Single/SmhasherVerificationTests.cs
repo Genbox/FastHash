@@ -59,8 +59,7 @@ public class SmhasherVerificationTests
     [Fact]
     public void AesniHash64Verification()
     {
-        if (!AesniHash64.IsSupported)
-            return;
+        Assert.SkipWhen(!AesniHash64.IsSupported, "Required CPU intrinsics are unavailable.");
 
         Verify64(AesniHash64.ComputeHash, 0x3AA1A480U);
     }
@@ -68,8 +67,7 @@ public class SmhasherVerificationTests
     [Fact]
     public void AesniHash128Verification()
     {
-        if (!AesniHash128.IsSupported)
-            return;
+        Assert.SkipWhen(!AesniHash128.IsSupported, "Required CPU intrinsics are unavailable.");
 
         Verify128(AesniHash128.ComputeHash, 0xF06DA1B1U);
     }

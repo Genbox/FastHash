@@ -430,8 +430,7 @@ public class CityHashTests
     [Fact]
     public unsafe void CityHashCrc128Test()
     {
-        if (!CityHashCrc128.IsSupported)
-            return;
+        Assert.SkipWhen(!CityHashCrc128.IsSupported, "Required CPU intrinsics are unavailable.");
 
         fixed (byte* data = _data)
         {
@@ -480,8 +479,7 @@ public class CityHashTests
     [Fact]
     public unsafe void CityHashCrc256Test()
     {
-        if (!CityHashCrc256.IsSupported)
-            return;
+        Assert.SkipWhen(!CityHashCrc256.IsSupported, "Required CPU intrinsics are unavailable.");
 
         fixed (byte* data = _data)
         {

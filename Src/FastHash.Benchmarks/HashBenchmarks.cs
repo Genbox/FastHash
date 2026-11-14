@@ -17,21 +17,21 @@ public class HashBenchmarks
     [Params(8, 64, 1024, 32 * 1024 * 1024)]
     public int Size { get; set; }
 
-    public static IEnumerable<Hash32Algorithm> ManagedHash32Algorithms() => AlgorithmCatalog.Hash32Algorithms.Where(static x => x.Hash != null);
+    public static IEnumerable<Hash32Algorithm> ManagedHash32Algorithms() => AlgorithmCatalog.Hash32Algorithms.Where(static x => x.IsSupported && x.Hash != null);
 
-    public static IEnumerable<Hash64Algorithm> ManagedHash64Algorithms() => AlgorithmCatalog.Hash64Algorithms.Where(static x => x.Hash != null);
+    public static IEnumerable<Hash64Algorithm> ManagedHash64Algorithms() => AlgorithmCatalog.Hash64Algorithms.Where(static x => x.IsSupported && x.Hash != null);
 
-    public static IEnumerable<Hash128Algorithm> ManagedHash128Algorithms() => AlgorithmCatalog.Hash128Algorithms.Where(static x => x.Hash != null);
+    public static IEnumerable<Hash128Algorithm> ManagedHash128Algorithms() => AlgorithmCatalog.Hash128Algorithms.Where(static x => x.IsSupported && x.Hash != null);
 
-    public static IEnumerable<Hash256Algorithm> ManagedHash256Algorithms() => AlgorithmCatalog.Hash256Algorithms.Where(static x => x.Hash != null);
+    public static IEnumerable<Hash256Algorithm> ManagedHash256Algorithms() => AlgorithmCatalog.Hash256Algorithms.Where(static x => x.IsSupported && x.Hash != null);
 
-    public static IEnumerable<Hash32Algorithm> UnsafeHash32Algorithms() => AlgorithmCatalog.Hash32Algorithms.Where(static x => x.UnsafeHash != null);
+    public static IEnumerable<Hash32Algorithm> UnsafeHash32Algorithms() => AlgorithmCatalog.Hash32Algorithms.Where(static x => x.IsSupported && x.UnsafeHash != null);
 
-    public static IEnumerable<Hash64Algorithm> UnsafeHash64Algorithms() => AlgorithmCatalog.Hash64Algorithms.Where(static x => x.UnsafeHash != null);
+    public static IEnumerable<Hash64Algorithm> UnsafeHash64Algorithms() => AlgorithmCatalog.Hash64Algorithms.Where(static x => x.IsSupported && x.UnsafeHash != null);
 
-    public static IEnumerable<Hash128Algorithm> UnsafeHash128Algorithms() => AlgorithmCatalog.Hash128Algorithms.Where(static x => x.UnsafeHash != null);
+    public static IEnumerable<Hash128Algorithm> UnsafeHash128Algorithms() => AlgorithmCatalog.Hash128Algorithms.Where(static x => x.IsSupported && x.UnsafeHash != null);
 
-    public static IEnumerable<Hash256Algorithm> UnsafeHash256Algorithms() => AlgorithmCatalog.Hash256Algorithms.Where(static x => x.UnsafeHash != null);
+    public static IEnumerable<Hash256Algorithm> UnsafeHash256Algorithms() => AlgorithmCatalog.Hash256Algorithms.Where(static x => x.IsSupported && x.UnsafeHash != null);
 
     [GlobalSetup]
     public unsafe void Setup()

@@ -1,3 +1,4 @@
+using System.Runtime.Intrinsics.X86;
 using Genbox.FastHash.Misc;
 using Genbox.FastHash.TestShared;
 
@@ -16,7 +17,11 @@ public class MultTests
     public void XxHashMul() => Assert.Equal(_result, Mult.XxHashMul(_valA, _valB));
 
     [Fact]
-    public void Bmi2Mul() => Assert.Equal(_result, Mult.Bmi2Mul(_valA, _valB));
+    public void Bmi2Mul()
+    {
+        Assert.SkipWhen(!Bmi2.X64.IsSupported, "BMI2 x64 is unavailable.");
+        Assert.Equal(_result, Mult.Bmi2Mul(_valA, _valB));
+    }
 
     [Fact]
     public void Scalar32Mul() => Assert.Equal(_result, Mult.Scalar32Mul(_valA, _valB));
