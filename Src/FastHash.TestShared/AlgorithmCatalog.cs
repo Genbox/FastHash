@@ -29,66 +29,66 @@ public static unsafe class AlgorithmCatalog
 {
     public static readonly Hash32Algorithm[] Hash32Algorithms =
     [
-        new Hash32Algorithm(nameof(CityHash32), static data => CityHash32.ComputeHash(data), static (data, length) => CityHash32Unsafe.ComputeHash(data, length), [0x2A, 0x81, 0x7A, 0xBF]),
-        new Hash32Algorithm(nameof(Djb2AltHash32), static data => Djb2AltHash32.ComputeHash(data), static (data, length) => Djb2AltHash32Unsafe.ComputeHash(data, length), [0xCE, 0xED, 0x14, 0x36]),
-        new Hash32Algorithm(nameof(Djb2Hash32), static data => Djb2Hash32.ComputeHash(data), static (data, length) => Djb2Hash32Unsafe.ComputeHash(data, length), [0x9C, 0x17, 0x3D, 0x75]),
-        new Hash32Algorithm(nameof(FarmHash32), static data => FarmHash32.ComputeHash(data), static (data, length) => FarmHash32Unsafe.ComputeHash(data, length), [0x2A, 0x81, 0x7A, 0xBF]),
-        new Hash32Algorithm(nameof(FarshHash32), static data => FarshHash32.ComputeHash(data), static (data, length) => FarshHash32Unsafe.ComputeHash(data, length), [0x81, 0x2D, 0x68, 0xB2]),
-        new Hash32Algorithm(nameof(Fnv1aHash32), static data => Fnv1aHash32.ComputeHash(data), static (data, length) => Fnv1aHash32Unsafe.ComputeHash(data, length), [0xF6, 0x7E, 0xE0, 0x23]),
-        new Hash32Algorithm(nameof(Gx2Hash32), static data => Gx2Hash32.ComputeHash(data), null, [0xC3, 0x3A, 0xB7, 0x2A]),
-        new Hash32Algorithm(nameof(MarvinHash32), static data => MarvinHash32.ComputeHash(data, 0x2A, 0x2B), null, [0xAD, 0x28, 0xBF, 0x22]),
-        new Hash32Algorithm(nameof(Murmur3Hash32), static data => Murmur3Hash32.ComputeHash(data), static (data, length) => Murmur3Hash32Unsafe.ComputeHash(data, length), [0xF6, 0x08, 0x79, 0x87]),
-        new Hash32Algorithm(nameof(SuperFastHash32), static data => SuperFastHash32.ComputeHash(data), static (data, length) => SuperFastHash32Unsafe.ComputeHash(data, length), [0x5E, 0xE8, 0x41, 0xB2]),
-        new Hash32Algorithm(nameof(XxHash32), static data => XxHash32.ComputeHash(data), static (data, length) => XxHash32Unsafe.ComputeHash(data, length), [0x2B, 0xC6, 0xC7, 0x94])
+        new Hash32Algorithm(nameof(CityHash32), static data => CityHash32.ComputeHash(data), static (data, length) => CityHash32Unsafe.ComputeHash(data, length), 0xbf7a812aU),
+        new Hash32Algorithm(nameof(Djb2AltHash32), static data => Djb2AltHash32.ComputeHash(data), static (data, length) => Djb2AltHash32Unsafe.ComputeHash(data, length), 0x3614edceU),
+        new Hash32Algorithm(nameof(Djb2Hash32), static data => Djb2Hash32.ComputeHash(data), static (data, length) => Djb2Hash32Unsafe.ComputeHash(data, length), 0x753d179cU),
+        new Hash32Algorithm(nameof(FarmHash32), static data => FarmHash32.ComputeHash(data), static (data, length) => FarmHash32Unsafe.ComputeHash(data, length), 0xbf7a812aU),
+        new Hash32Algorithm(nameof(FarshHash32), static data => FarshHash32.ComputeHash(data), static (data, length) => FarshHash32Unsafe.ComputeHash(data, length), 0xb2682d81U),
+        new Hash32Algorithm(nameof(Fnv1aHash32), static data => Fnv1aHash32.ComputeHash(data), static (data, length) => Fnv1aHash32Unsafe.ComputeHash(data, length), 0x23e07ef6U),
+        new Hash32Algorithm(nameof(Gx2Hash32), static data => Gx2Hash32.ComputeHash(data), null, 0x2ab73ac3U),
+        new Hash32Algorithm(nameof(MarvinHash32), static data => MarvinHash32.ComputeHash(data, 0x2A, 0x2B), null, 0x22bf28adU),
+        new Hash32Algorithm(nameof(Murmur3Hash32), static data => Murmur3Hash32.ComputeHash(data), static (data, length) => Murmur3Hash32Unsafe.ComputeHash(data, length), 0x877908f6U),
+        new Hash32Algorithm(nameof(SuperFastHash32), static data => SuperFastHash32.ComputeHash(data), static (data, length) => SuperFastHash32Unsafe.ComputeHash(data, length), 0xb241e85eU),
+        new Hash32Algorithm(nameof(XxHash32), static data => XxHash32.ComputeHash(data), static (data, length) => XxHash32Unsafe.ComputeHash(data, length), 0x94c7c62bU)
     ];
 
     public static readonly Hash64Algorithm[] Hash64Algorithms =
     [
-        new Hash64Algorithm(nameof(AbslHash64), static data => AbslHash64.ComputeHash(data), static (data, length) => AbslHash64Unsafe.ComputeHash(data, length), [0x77, 0xCF, 0x62, 0x40, 0x1B, 0xBB, 0x2B, 0x8B]),
-        new Hash64Algorithm(nameof(AesniHash64), static data => AesniHash64.ComputeHash(data), null, [0x28, 0x1C, 0x4A, 0x87, 0x26, 0x2B, 0x3E, 0xF6]),
-        new Hash64Algorithm(nameof(CityHash64), static data => CityHash64.ComputeHash(data), static (data, length) => CityHash64Unsafe.ComputeHash(data, length), [0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A]),
-        new Hash64Algorithm(nameof(ClHash64), static data => ClHash64.ComputeHash(data), static (data, length) => ClHash64Unsafe.ComputeHash(data, length), [0xB6, 0xA4, 0xCD, 0x9F, 0xCF, 0x43, 0x06, 0xBF]),
-        new Hash64Algorithm(nameof(Djb2AltHash64), static data => Djb2AltHash64.ComputeHash(data), static (data, length) => Djb2AltHash64Unsafe.ComputeHash(data, length), [0xCE, 0xED, 0x14, 0x36, 0xF9, 0x33, 0x6C, 0x8A]),
-        new Hash64Algorithm(nameof(Djb2Hash64), static data => Djb2Hash64.ComputeHash(data), static (data, length) => Djb2Hash64Unsafe.ComputeHash(data, length), [0x9C, 0x17, 0x3D, 0x75, 0xA9, 0x35, 0x63, 0x0E]),
-        new Hash64Algorithm(nameof(FarmHash64), static data => FarmHash64.ComputeHash(data), static (data, length) => FarmHash64Unsafe.ComputeHash(data, length), [0x17, 0xEC, 0x34, 0x98, 0x3A, 0xE1, 0xE1, 0x3A]),
-        new Hash64Algorithm(nameof(FarshHash64), static data => FarshHash64.ComputeHash(data), static (data, length) => FarshHash64Unsafe.ComputeHash(data, length), [0x81, 0x2D, 0x68, 0xB2, 0xE4, 0x17, 0xBE, 0x05]),
-        new Hash64Algorithm(nameof(Fnv1aHash64), static data => Fnv1aHash64.ComputeHash(data), static (data, length) => Fnv1aHash64Unsafe.ComputeHash(data, length), [0xD6, 0x35, 0xE0, 0x8E, 0x10, 0x08, 0x2F, 0x47]),
-        new Hash64Algorithm(nameof(FoldHash64), static data => FoldHash64.ComputeHash(data), null, [0xA5, 0x30, 0x7C, 0x35, 0x3C, 0x68, 0xA7, 0x89]),
-        new Hash64Algorithm(nameof(FoldHashQuality64), static data => FoldHashQuality64.ComputeHash(data), null, [0xF9, 0xAD, 0xBA, 0x70, 0x6F, 0x2C, 0x68, 0x4A]),
-        new Hash64Algorithm(nameof(Gx2Hash64), static data => Gx2Hash64.ComputeHash(data), null, [0xC3, 0x3A, 0xB7, 0x2A, 0x79, 0xCC, 0xEB, 0xB5]),
-        new Hash64Algorithm(nameof(HighwayHash64), static data => HighwayHash64.ComputeHash(data), static (data, length) => HighwayHash64Unsafe.ComputeHash(data, length), [0x63, 0x6C, 0x8E, 0x47, 0x06, 0x37, 0xCF, 0x16]),
-        new Hash64Algorithm(nameof(MarvinHash64), static data => MarvinHash64.ComputeHash(data), null, [0x57, 0x44, 0xD2, 0xD9, 0xA0, 0x67, 0x18, 0xDA]),
-        new Hash64Algorithm(nameof(MeowHash64), static data => MeowHash64.ComputeHash(data), static (data, length) => MeowHash64Unsafe.ComputeHash(data, length), [0xCE, 0xF5, 0xCC, 0xAB, 0xBD, 0xC1, 0x2E, 0x9E]),
-        new Hash64Algorithm(nameof(Polymur2Hash64), static data => Polymur2Hash64.ComputeHash(data), null, [0xD8, 0x4B, 0xE5, 0xDB, 0x3C, 0x80, 0x53, 0x69]),
-        new Hash64Algorithm(nameof(Rapid3Hash64), static data => Rapid3Hash64.ComputeHash(data), null, [0x9F, 0xF4, 0x50, 0x8C, 0x0E, 0xC2, 0xD5, 0x6A]),
-        new Hash64Algorithm(nameof(Rapid3HashMicro64), static data => Rapid3HashMicro64.ComputeHash(data), null, [0x9F, 0xF4, 0x50, 0x8C, 0x0E, 0xC2, 0xD5, 0x6A]),
-        new Hash64Algorithm(nameof(Rapid3HashNano64), static data => Rapid3HashNano64.ComputeHash(data), null, [0x9F, 0xF4, 0x50, 0x8C, 0x0E, 0xC2, 0xD5, 0x6A]),
-        new Hash64Algorithm(nameof(SipHash64), static data => SipHash64.ComputeHash(data), static (data, length) => SipHash64Unsafe.ComputeHash(data, length), [0xBA, 0xFD, 0x2E, 0x42, 0x7E, 0x63, 0x22, 0x97]),
-        new Hash64Algorithm(nameof(T1ha2Hash64), static data => T1ha2Hash64.ComputeHash(data), null, [0xC6, 0x87, 0xF0, 0xA7, 0x0E, 0x1B, 0x29, 0xD7]),
+        new Hash64Algorithm(nameof(AbslHash64), static data => AbslHash64.ComputeHash(data), static (data, length) => AbslHash64Unsafe.ComputeHash(data, length), 0x8b2bbb1b4062cf77UL),
+        new Hash64Algorithm(nameof(AesniHash64), static data => AesniHash64.ComputeHash(data), null, 0xf63e2b26874a1c28UL),
+        new Hash64Algorithm(nameof(CityHash64), static data => CityHash64.ComputeHash(data), static (data, length) => CityHash64Unsafe.ComputeHash(data, length), 0x3ae1e13a9834ec17UL),
+        new Hash64Algorithm(nameof(ClHash64), static data => ClHash64.ComputeHash(data), static (data, length) => ClHash64Unsafe.ComputeHash(data, length), 0xbf0643cf9fcda4b6UL),
+        new Hash64Algorithm(nameof(Djb2AltHash64), static data => Djb2AltHash64.ComputeHash(data), static (data, length) => Djb2AltHash64Unsafe.ComputeHash(data, length), 0x8a6c33f93614edceUL),
+        new Hash64Algorithm(nameof(Djb2Hash64), static data => Djb2Hash64.ComputeHash(data), static (data, length) => Djb2Hash64Unsafe.ComputeHash(data, length), 0xe6335a9753d179cUL),
+        new Hash64Algorithm(nameof(FarmHash64), static data => FarmHash64.ComputeHash(data), static (data, length) => FarmHash64Unsafe.ComputeHash(data, length), 0x3ae1e13a9834ec17UL),
+        new Hash64Algorithm(nameof(FarshHash64), static data => FarshHash64.ComputeHash(data), static (data, length) => FarshHash64Unsafe.ComputeHash(data, length), 0x5be17e4b2682d81UL),
+        new Hash64Algorithm(nameof(Fnv1aHash64), static data => Fnv1aHash64.ComputeHash(data), static (data, length) => Fnv1aHash64Unsafe.ComputeHash(data, length), 0x472f08108ee035d6UL),
+        new Hash64Algorithm(nameof(FoldHash64), static data => FoldHash64.ComputeHash(data), null, 0x89a7683c357c30a5UL),
+        new Hash64Algorithm(nameof(FoldHashQuality64), static data => FoldHashQuality64.ComputeHash(data), null, 0x4a682c6f70baadf9UL),
+        new Hash64Algorithm(nameof(Gx2Hash64), static data => Gx2Hash64.ComputeHash(data), null, 0xb5ebcc792ab73ac3UL),
+        new Hash64Algorithm(nameof(HighwayHash64), static data => HighwayHash64.ComputeHash(data), static (data, length) => HighwayHash64Unsafe.ComputeHash(data, length), 0x16cf3706478e6c63UL),
+        new Hash64Algorithm(nameof(MarvinHash64), static data => MarvinHash64.ComputeHash(data), null, 0xda1867a0d9d24457UL),
+        new Hash64Algorithm(nameof(MeowHash64), static data => MeowHash64.ComputeHash(data), static (data, length) => MeowHash64Unsafe.ComputeHash(data, length), 0x9e2ec1bdabccf5ceUL),
+        new Hash64Algorithm(nameof(Polymur2Hash64), static data => Polymur2Hash64.ComputeHash(data), null, 0x6953803cdbe54bd8UL),
+        new Hash64Algorithm(nameof(Rapid3Hash64), static data => Rapid3Hash64.ComputeHash(data), null, 0x6ad5c20e8c50f49fUL),
+        new Hash64Algorithm(nameof(Rapid3HashMicro64), static data => Rapid3HashMicro64.ComputeHash(data), null, 0x6ad5c20e8c50f49fUL),
+        new Hash64Algorithm(nameof(Rapid3HashNano64), static data => Rapid3HashNano64.ComputeHash(data), null, 0x6ad5c20e8c50f49fUL),
+        new Hash64Algorithm(nameof(SipHash64), static data => SipHash64.ComputeHash(data), static (data, length) => SipHash64Unsafe.ComputeHash(data, length), 0x9722637e422efdbaUL),
+        new Hash64Algorithm(nameof(T1ha2Hash64), static data => T1ha2Hash64.ComputeHash(data), null, 0xd7291b0ea7f087c6UL),
 #if WYHASH_CONDOM
-        new(nameof(Wy2Hash64), static data => Wy2Hash64.ComputeHash(data), static (data, length) => Wy2Hash64Unsafe.ComputeHash(data, length), [0x18, 0x9E, 0xBE, 0x26, 0x2D, 0x21, 0xA9, 0xDE]),
-        new(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), [0xF1, 0x0C, 0xBB, 0x48, 0x75, 0xCF, 0x7D, 0x59]),
-        new(nameof(Wy4Hash64), static data => Wy4Hash64.ComputeHash(data), static (data, length) => Wy4Hash64Unsafe.ComputeHash(data, length), [0xAB, 0x41, 0xEE, 0xF3, 0xA1, 0x88, 0x05, 0x72]),
+        new(nameof(Wy2Hash64), static data => Wy2Hash64.ComputeHash(data), static (data, length) => Wy2Hash64Unsafe.ComputeHash(data, length), 0xdea9212d26be9e18UL),
+        new(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), 0x597dcf7548bb0cf1UL),
+        new(nameof(Wy4Hash64), static data => Wy4Hash64.ComputeHash(data), static (data, length) => Wy4Hash64Unsafe.ComputeHash(data, length), 0x720588a1f3ee41abUL),
 #else
-        new Hash64Algorithm(nameof(Wy2Hash64), static data => Wy2Hash64.ComputeHash(data), static (data, length) => Wy2Hash64Unsafe.ComputeHash(data, length), [0x96, 0x99, 0x78, 0xA4, 0x3B, 0x3F, 0x80, 0x76]),
-        new Hash64Algorithm(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), [0x3F, 0xA2, 0x72, 0x2A, 0x57, 0x74, 0x52, 0xC2]),
-        new Hash64Algorithm(nameof(Wy4Hash64), static data => Wy4Hash64.ComputeHash(data), static (data, length) => Wy4Hash64Unsafe.ComputeHash(data, length), [0xB5, 0xE9, 0x6F, 0x43, 0xBE, 0x0A, 0x9C, 0x40]),
+        new Hash64Algorithm(nameof(Wy2Hash64), static data => Wy2Hash64.ComputeHash(data), static (data, length) => Wy2Hash64Unsafe.ComputeHash(data, length), 0x76803f3ba4789996UL),
+        new Hash64Algorithm(nameof(Wy3Hash64), static data => Wy3Hash64.ComputeHash(data), static (data, length) => Wy3Hash64Unsafe.ComputeHash(data, length), 0xc25274572a72a23fUL),
+        new Hash64Algorithm(nameof(Wy4Hash64), static data => Wy4Hash64.ComputeHash(data), static (data, length) => Wy4Hash64Unsafe.ComputeHash(data, length), 0x409c0abe436fe9b5UL),
 #endif
-        new Hash64Algorithm(nameof(XxHash64), static data => XxHash64.ComputeHash(data), static (data, length) => XxHash64Unsafe.ComputeHash(data, length), [0x75, 0xE4, 0xA8, 0xAF, 0x3C, 0x82, 0xBB, 0xDE]),
-        new Hash64Algorithm(nameof(Xx3Hash64), static data => Xx3Hash64.ComputeHash(data), static (data, length) => Xx3Hash64Unsafe.ComputeHash(data, length), [0xBF, 0x39, 0xFF, 0xB1, 0xB7, 0xF4, 0x3B, 0xC3])
+        new Hash64Algorithm(nameof(XxHash64), static data => XxHash64.ComputeHash(data), static (data, length) => XxHash64Unsafe.ComputeHash(data, length), 0xdebb823cafa8e475UL),
+        new Hash64Algorithm(nameof(Xx3Hash64), static data => Xx3Hash64.ComputeHash(data), static (data, length) => Xx3Hash64Unsafe.ComputeHash(data, length), 0xc33bf4b7b1ff39bfUL)
     ];
 
     public static readonly Hash128Algorithm[] Hash128Algorithms =
     [
-        new Hash128Algorithm(nameof(AesniHash128), static data => AesniHash128.ComputeHash(data), null, [0x28, 0x1C, 0x4A, 0x87, 0x26, 0x2B, 0x3E, 0xF6, 0xF6, 0x53, 0x23, 0xBE, 0xED, 0xAF, 0xB2, 0x2F]),
-        new Hash128Algorithm(nameof(CityHash128), static data => CityHash128.ComputeHash(data), static (data, length) => CityHash128Unsafe.ComputeHash(data, length), [0x18, 0xFE, 0x91, 0x9D, 0xAA, 0xA8, 0xF0, 0x6B, 0x35, 0xDC, 0x63, 0xAF, 0x2D, 0xFA, 0xEA, 0x61]),
+        new Hash128Algorithm(nameof(AesniHash128), static data => AesniHash128.ComputeHash(data), null, new UInt128(0x2fb2afedbe2353f6UL, 0xf63e2b26874a1c28UL)),
+        new Hash128Algorithm(nameof(CityHash128), static data => CityHash128.ComputeHash(data), static (data, length) => CityHash128Unsafe.ComputeHash(data, length), new UInt128(0x61eafa2daf63dc35UL, 0x6bf0a8aa9d91fe18UL)),
         new Hash128Algorithm(nameof(CityHashCrc128), static data => CityHashCrc128.ComputeHash(data), static (data, length) => CityHashCrc128Unsafe.ComputeHash(data, length), null),
-        new Hash128Algorithm(nameof(FarmHash128), static data => FarmHash128.ComputeHash(data), static (data, length) => FarmHash128Unsafe.ComputeHash(data, length), [0x18, 0xFE, 0x91, 0x9D, 0xAA, 0xA8, 0xF0, 0x6B, 0x35, 0xDC, 0x63, 0xAF, 0x2D, 0xFA, 0xEA, 0x61]),
-        new Hash128Algorithm(nameof(Gx2Hash128), static data => Gx2Hash128.ComputeHash(data), null, [0xC3, 0x3A, 0xB7, 0x2A, 0x79, 0xCC, 0xEB, 0xB5, 0x87, 0xB9, 0x69, 0x4B, 0xD1, 0x2D, 0xDB, 0xE4]),
-        new Hash128Algorithm(nameof(MeowHash128), static data => MeowHash128.ComputeHash(data), static (data, length) => MeowHash128Unsafe.ComputeHash(data, length), [0xCE, 0xF5, 0xCC, 0xAB, 0xBD, 0xC1, 0x2E, 0x9E, 0xE7, 0xDE, 0x17, 0xC5, 0x40, 0x68, 0x4E, 0xAF]),
-        new Hash128Algorithm(nameof(Murmur3Hash128), static data => Murmur3Hash128.ComputeHash(data), static (data, length) => Murmur3Hash128Unsafe.ComputeHash(data, length), [0x79, 0xD6, 0xD4, 0xB7, 0x14, 0x84, 0x73, 0x89, 0x08, 0x3D, 0x39, 0xFD, 0xB7, 0x53, 0xBF, 0x67]),
-        new Hash128Algorithm(nameof(PolyXorHash128), static data => PolyXorHash128.ComputeHash(data), static (data, length) => PolyXorHash128Unsafe.ComputeHash(data, length), [0x51, 0x66, 0xD2, 0x79, 0x06, 0x6D, 0x98, 0x43, 0xF1, 0xB0, 0xB2, 0xB5, 0x57, 0x25, 0x8E, 0x39]),
-        new Hash128Algorithm(nameof(Xx3Hash128), static data => Xx3Hash128.ComputeHash(data), static (data, length) => Xx3Hash128Unsafe.ComputeHash(data, length), [0x6A, 0xD7, 0x7C, 0x14, 0x0F, 0x09, 0x6F, 0xC0, 0xDF, 0xAC, 0x6C, 0x5C, 0x35, 0x9B, 0x2F, 0x13])
+        new Hash128Algorithm(nameof(FarmHash128), static data => FarmHash128.ComputeHash(data), static (data, length) => FarmHash128Unsafe.ComputeHash(data, length), new UInt128(0x61eafa2daf63dc35UL, 0x6bf0a8aa9d91fe18UL)),
+        new Hash128Algorithm(nameof(Gx2Hash128), static data => Gx2Hash128.ComputeHash(data), null, new UInt128(0xe4db2dd14b69b987UL, 0xb5ebcc792ab73ac3UL)),
+        new Hash128Algorithm(nameof(MeowHash128), static data => MeowHash128.ComputeHash(data), static (data, length) => MeowHash128Unsafe.ComputeHash(data, length), new UInt128(0xaf4e6840c517dee7UL, 0x9e2ec1bdabccf5ceUL)),
+        new Hash128Algorithm(nameof(Murmur3Hash128), static data => Murmur3Hash128.ComputeHash(data), static (data, length) => Murmur3Hash128Unsafe.ComputeHash(data, length), new UInt128(0x67bf53b7fd393d08UL, 0x89738414b7d4d679UL)),
+        new Hash128Algorithm(nameof(PolyXorHash128), static data => PolyXorHash128.ComputeHash(data), static (data, length) => PolyXorHash128Unsafe.ComputeHash(data, length), new UInt128(0x398e2557b5b2b0f1UL, 0x43986d0679d26651UL)),
+        new Hash128Algorithm(nameof(Xx3Hash128), static data => Xx3Hash128.ComputeHash(data), static (data, length) => Xx3Hash128Unsafe.ComputeHash(data, length), new UInt128(0x132f9b355c6cacdfUL, 0xc06f090f147cd76aUL))
     ];
 
     public static readonly Hash256Algorithm[] Hash256Algorithms =

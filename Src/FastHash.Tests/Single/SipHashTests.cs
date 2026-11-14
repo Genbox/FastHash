@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using Genbox.FastHash.SipHash;
 
 namespace Genbox.FastHash.Tests.Single;
@@ -5,6 +6,9 @@ namespace Genbox.FastHash.Tests.Single;
 public class SipHashTests
 {
     private const int MaxLength = 64;
+
+    private const ulong Key0 = 0x0706050403020100UL;
+    private const ulong Key1 = 0x0f0e0d0c0b0a0908UL;
 
     private static readonly byte[][] _vectors =
     [
@@ -74,8 +78,6 @@ public class SipHashTests
         [0x72, 0x45, 0x06, 0xeb, 0x4c, 0x32, 0x8a, 0x95]
     ];
 
-    private static readonly byte[] _key = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-
     [Fact]
     public void TestVectors()
     {
@@ -85,10 +87,8 @@ public class SipHashTests
             for (int j = 0; j < i; j++)
                 data[j] = (byte)j;
 
-            ToULongs(_key, out ulong k0, out ulong k1);
-
-            ulong result = SipHash64.ComputeHash(data, k0, k1);
-            ulong expected = BitConverter.ToUInt64(_vectors[i], 0);
+            ulong result = SipHash64.ComputeHash(data, Key0, Key1);
+            ulong expected = BinaryPrimitives.ReadUInt64LittleEndian(_vectors[i]);
             Assert.Equal(expected, result);
         }
     }
@@ -102,27 +102,15 @@ public class SipHashTests
             for (int j = 0; j < i; j++)
                 data[j] = (byte)j;
 
-            ToULongs(_key, out ulong k0, out ulong k1);
-
             unsafe
             {
                 fixed (byte* ptr = data)
                 {
-                    ulong result = SipHash64Unsafe.ComputeHash(ptr, data.Length, k0, k1);
-                    ulong expected = BitConverter.ToUInt64(_vectors[i], 0);
+                    ulong result = SipHash64Unsafe.ComputeHash(ptr, data.Length, Key0, Key1);
+                    ulong expected = BinaryPrimitives.ReadUInt64LittleEndian(_vectors[i]);
                     Assert.Equal(expected, result);
                 }
             }
-        }
-    }
-
-    private static unsafe void ToULongs(byte[] data, out ulong a, out ulong b)
-    {
-        fixed (byte* ptr = data)
-        {
-            ulong* ulPtr = (ulong*)ptr;
-            a = *ulPtr++;
-            b = *ulPtr;
         }
     }
 }

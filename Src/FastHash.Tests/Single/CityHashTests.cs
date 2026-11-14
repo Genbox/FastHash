@@ -9,7 +9,7 @@ public class CityHashTests
     private const ulong Seed0 = 1234567;
     private const ulong Seed1 = CityHashConstants.K0;
     private static readonly UInt128 Seed128 = new UInt128(Seed1, Seed0);
-    private readonly byte[] _data = new byte[DataSize];
+    private static readonly byte[] _data = TestData.CityFarm;
 
     private readonly ulong[][] _testData =
     [
@@ -314,25 +314,6 @@ public class CityHashTests
         [0x74c0b8a6821faafe, 0xabac39d7491370e7, 0xfaf0b2a48a4e6aed, 0x967e970df9673d2a, 0xd465247cffa415c0, 0x33a1df0ca1107722, 0x49fc2a10adce4a32, 0x967e970df9673d2a, 0xd465247cffa415c0, 0x33a1df0ca1107722, 0x49fc2a10adce4a32, 0xc5707e079a284308, 0x573028266635dda6, 0xf786f5eee6127fa0, 0xb30d79cebfb51266, 0xf6a9fbf8],
         [0x5fb5e48ac7b7fa4f, 0xa96170f08f5acbc7, 0xbbf5c63d4f52a1e5, 0x6cc09e60700563e9, 0xd18f23221e964791, 0xffc23eeef7af26eb, 0x693a954a3622a315, 0x815308a32a9b0daf, 0xefb2ab27bf6fd0bd, 0x9f1ffc0986111118, 0xf9a3aa1778ea3985, 0x698fe54b2b93933b, 0xdacc2b28404d0f10, 0x815308a32a9b0daf, 0xefb2ab27bf6fd0bd, 0x5398210c]
     ];
-
-    public CityHashTests()
-    {
-        unchecked
-        {
-            ulong a = 9;
-            ulong b = 777;
-
-            for (int i = 0; i < DataSize; i++)
-            {
-                a += b;
-                b += a;
-                a = (a ^ (a >> 41)) * CityHashConstants.K0;
-                b = ((b ^ (b >> 41)) * CityHashConstants.K0) + (ulong)i;
-                byte u = (byte)(b >> 37);
-                _data[i] = u;
-            }
-        }
-    }
 
     [Fact]
     public unsafe void CityHash32Test()

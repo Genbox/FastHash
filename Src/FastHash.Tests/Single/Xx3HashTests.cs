@@ -71,20 +71,7 @@ public class Xx3HashTests
         (2367, 0, new UInt128(0xE89C0F6FF369B427UL, 0xCB37AEB9E5D361EDUL)), /* 3 blocks, last stripe is overlapping */
         (2367, PRIME32, new UInt128(0xD23AAE4B76C31ECBUL, 0x6F5360AE69C2F406UL)) /* 3 blocks, last stripe is overlapping */
     ];
-    private readonly byte[] _sanityBuffer;
-
-    public Xx3HashTests()
-    {
-        _sanityBuffer = new byte[2367];
-
-        ulong byteGen = PRIME32;
-
-        for (int i = 0; i < _sanityBuffer.Length; i++)
-        {
-            _sanityBuffer[i] = (byte)(byteGen >> 56);
-            byteGen = unchecked(byteGen * PRIME64);
-        }
-    }
+    private static readonly byte[] _sanityBuffer = TestData.XxSanity;
 
     [Fact]
     public unsafe void Xx3Hash64TestVectors()
@@ -94,7 +81,7 @@ public class Xx3HashTests
             (int len, ulong seed, ulong result) = _testVectors64[i];
             Assert.Equal(result, Xx3Hash64.ComputeHash(_sanityBuffer.AsSpan(0, len), seed));
 
-            fixed (byte* ptr = _sanityBuffer[..len])
+            fixed (byte* ptr = _sanityBuffer)
                 Assert.Equal(result, Xx3Hash64Unsafe.ComputeHash(ptr, len, seed));
         }
     }
@@ -109,7 +96,7 @@ public class Xx3HashTests
             UInt128 res = Xx3Hash128.ComputeHash(_sanityBuffer.AsSpan(0, len), seed);
             Assert.Equal(expected, res);
 
-            fixed (byte* ptr = _sanityBuffer[..len])
+            fixed (byte* ptr = _sanityBuffer)
             {
                 UInt128 res2 = Xx3Hash128Unsafe.ComputeHash(ptr, len, seed);
                 Assert.Equal(expected, res2);

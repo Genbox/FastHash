@@ -131,7 +131,7 @@ public class AesniHashTests
 
         foreach (UpstreamVector vector in UpstreamVectors)
         {
-            UInt128 hash = AesniHash128.ComputeHash(CreateData(vector.Length), vector.Seed);
+            UInt128 hash = AesniHash128.ComputeHash(TestData.Pattern(vector.Length), vector.Seed);
             Assert.Equal(vector.Low, hash.Low);
             Assert.Equal(vector.High, hash.High);
         }
@@ -144,7 +144,7 @@ public class AesniHashTests
 
         // Upstream's AESNI_Hash64 returns the low 64 bits of AESNI_Hash128.
         foreach (UpstreamVector vector in UpstreamVectors)
-            Assert.Equal(vector.Low, AesniHash64.ComputeHash(CreateData(vector.Length), vector.Seed));
+            Assert.Equal(vector.Low, AesniHash64.ComputeHash(TestData.Pattern(vector.Length), vector.Seed));
     }
 
     [Fact]
@@ -165,16 +165,6 @@ public class AesniHashTests
                 Assert.Equal(vector.Low, AesniHash64.ComputeIndex(vector.Input));
             }
         }
-    }
-
-    private static byte[] CreateData(int length)
-    {
-        byte[] data = new byte[length];
-
-        for (int i = 0; i < data.Length; i++)
-            data[i] = unchecked((byte)((i * 7) + 3));
-
-        return data;
     }
 
     [StructLayout(LayoutKind.Auto)]

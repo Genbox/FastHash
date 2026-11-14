@@ -1,5 +1,4 @@
 using System.Buffers.Binary;
-using System.Text;
 using Genbox.FastHash.FarshHash;
 
 namespace Genbox.FastHash.Tests.Single;
@@ -52,9 +51,10 @@ public class FarshHashTests
     {
         for (int i = 1; i < 2048; ++i)
         {
-            string testData = new string('a', i);
+            byte[] data = new byte[i];
+            data.AsSpan().Fill((byte)'a');
 
-            uint value = FarshHash32.ComputeHash(Encoding.ASCII.GetBytes(testData));
+            uint value = FarshHash32.ComputeHash(data);
 
             Assert.Equal(_vectors[i - 1], value);
         }
@@ -65,8 +65,8 @@ public class FarshHashTests
     {
         for (int i = 1; i < 2048; ++i)
         {
-            string testData = new string('a', i);
-            byte[] data = Encoding.ASCII.GetBytes(testData);
+            byte[] data = new byte[i];
+            data.AsSpan().Fill((byte)'a');
 
             unsafe
             {
@@ -84,7 +84,8 @@ public class FarshHashTests
     {
         foreach ((int length, ulong expected) in _vectors64)
         {
-            byte[] data = Encoding.ASCII.GetBytes(new string('a', length));
+            byte[] data = new byte[length];
+            data.AsSpan().Fill((byte)'a');
             ulong value = FarshHash64.ComputeHash(data);
 
             Assert.Equal(expected, value);

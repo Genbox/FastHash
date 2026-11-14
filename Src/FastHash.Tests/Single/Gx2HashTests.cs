@@ -117,20 +117,8 @@ public class Gx2HashTests
 
     private static void SwapBytes(Span<byte> span, int pos1, int pos2, int n)
     {
-        ArgumentOutOfRangeException.ThrowIfNegative(pos1);
-        ArgumentOutOfRangeException.ThrowIfNegative(pos2);
-        ArgumentOutOfRangeException.ThrowIfNegative(n);
-
-        if (n > span.Length)
-            throw new ArgumentOutOfRangeException(nameof(n), "Length must be within the span's length.");
-
-        if (pos1 > span.Length - n)
-            throw new ArgumentOutOfRangeException(nameof(pos1), "Position and length must be within the span's length.");
-
-        if (pos2 > span.Length - n)
-            throw new ArgumentOutOfRangeException(nameof(pos2), "Position and length must be within the span's length.");
-
-        Span<byte> temp = stackalloc byte[n];
+        Span<byte> temp = stackalloc byte[32];
+        temp = temp[..n];
         span.Slice(pos1, n).CopyTo(temp);
         span.Slice(pos2, n).CopyTo(span.Slice(pos1, n));
         temp.CopyTo(span.Slice(pos2, n));

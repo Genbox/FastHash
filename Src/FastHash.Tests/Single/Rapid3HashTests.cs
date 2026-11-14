@@ -360,21 +360,21 @@ public class Rapid3HashTests
     public void MatchesUpstreamRapid()
     {
         foreach (UpstreamVector vector in UpstreamRapidVectors)
-            Assert.Equal(vector.Expected, Rapid3Hash64.ComputeHash(CreateData(vector.Length), vector.Seed));
+            Assert.Equal(vector.Expected, Rapid3Hash64.ComputeHash(TestData.Pattern(vector.Length), vector.Seed));
     }
 
     [Fact]
     public void MatchesUpstreamMicro()
     {
         foreach (UpstreamVector vector in UpstreamMicroVectors)
-            Assert.Equal(vector.Expected, Rapid3HashMicro64.ComputeHash(CreateData(vector.Length), vector.Seed));
+            Assert.Equal(vector.Expected, Rapid3HashMicro64.ComputeHash(TestData.Pattern(vector.Length), vector.Seed));
     }
 
     [Fact]
     public void MatchesUpstreamNano()
     {
         foreach (UpstreamVector vector in UpstreamNanoVectors)
-            Assert.Equal(vector.Expected, Rapid3HashNano64.ComputeHash(CreateData(vector.Length), vector.Seed));
+            Assert.Equal(vector.Expected, Rapid3HashNano64.ComputeHash(TestData.Pattern(vector.Length), vector.Seed));
     }
 
     [Fact]
@@ -465,16 +465,6 @@ public class Rapid3HashTests
 
         Assert.NotEqual(micro0, micro1);
         Assert.NotEqual(nano0, nano1);
-    }
-
-    private static byte[] CreateData(int length)
-    {
-        byte[] data = new byte[length];
-
-        for (int i = 0; i < data.Length; i++)
-            data[i] = unchecked((byte)((i * 7) + 3));
-
-        return data;
     }
 
     private readonly record struct Vector(byte[] Data, ulong Seed, ulong Expected);

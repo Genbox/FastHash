@@ -140,21 +140,6 @@ public class WyHashTests
 #endif
 
     [Fact]
-    public void Wy2Hash64IndexTest()
-    {
-        ulong val = 1ul;
-
-        for (int i = 1; i <= 64; i++)
-        {
-            ulong h1 = Wy2Hash64.ComputeHash(BitConverter.GetBytes(val));
-            ulong h2 = Wy2Hash64.ComputeIndex(val);
-            Assert.Equal(h1, h2);
-
-            val <<= 1;
-        }
-    }
-
-    [Fact]
     public void Wy4Hash64IndexTest()
     {
         ulong[] inputs =

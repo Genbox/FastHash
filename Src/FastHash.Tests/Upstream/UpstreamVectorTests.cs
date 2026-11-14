@@ -31,7 +31,7 @@ namespace Genbox.FastHash.Tests.Upstream;
 /// </summary>
 public class UpstreamVectorTests
 {
-    private static readonly byte[] Data = CreateData();
+    private static readonly byte[] Data = TestData.Pattern(4097);
     private static readonly Dictionary<string, List<Vector>> Vectors = LoadVectors();
 
     private static readonly Dictionary<string, Entry> Hashers = new Dictionary<string, Entry>(StringComparer.Ordinal)
@@ -93,8 +93,6 @@ public class UpstreamVectorTests
         ["Xx3Hash128"] = H128(static (d, v) => Xx3Hash128.ComputeHash(d, v.Seed1))
     };
 
-    private delegate void Hasher(ReadOnlySpan<byte> data, Vector vector, Span<ulong> result);
-
     public static TheoryData<string> Variants() => new TheoryData<string>(Vectors.Keys.Order(StringComparer.Ordinal));
 
     [Theory]
@@ -138,16 +136,6 @@ public class UpstreamVectorTests
 
     private static string Hex(params ulong[] words) => "[" + string.Join(", ", words.Select(static w => "0x" + w.ToString("x", CultureInfo.InvariantCulture))) + "]";
 
-    private static byte[] CreateData()
-    {
-        byte[] data = new byte[4097];
-
-        for (int i = 0; i < data.Length; i++)
-            data[i] = unchecked((byte)((i * 7) + 3));
-
-        return data;
-    }
-
     // Line format: "<variant> <length> <seed1> <seed2> <seed3> <seed4> <word0> <word1> <word2> <word3>" in hex (length in decimal),
     // or "secret <variant> <w0> <w1> <w2> <w3>". Lines starting with '#' are comments.
     private static Dictionary<string, List<Vector>> LoadVectors()
@@ -160,7 +148,7 @@ public class UpstreamVectorTests
         {
             using StreamReader reader = new StreamReader(assembly.GetManifestResourceStream(name)!);
 
-            while (reader.ReadLine() is { } line)
+            while (reader.ReadLine() is {} line)
             {
                 if (line.Length == 0 || line[0] == '#')
                     continue;
@@ -185,6 +173,8 @@ public class UpstreamVectorTests
     }
 
     private static ulong ParseHex(string value) => ulong.Parse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+
+    private delegate void Hasher(ReadOnlySpan<byte> data, Vector vector, Span<ulong> result);
 
     private readonly record struct Entry(Hasher Hash, Func<bool>? Supported)
     {

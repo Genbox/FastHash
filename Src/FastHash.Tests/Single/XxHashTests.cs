@@ -5,7 +5,6 @@ namespace Genbox.FastHash.Tests.Single;
 public class XxHashTests
 {
     private const uint PRIME32 = 2654435761U;
-    private const ulong PRIME64 = 11400714785074694797UL;
 
     //Source: https://github.com/Cyan4973/xxHash/blob/dev/cli/xsum_sanity_check.c#L99
     private static readonly (int len, uint seed, uint result)[] _testVectors32 =
@@ -32,20 +31,7 @@ public class XxHashTests
         (222, 0, 0xB641AE8CB691C174UL),
         (222, PRIME32, 0x20CB8AB7AE10C14AUL)
     ];
-    private readonly byte[] _sanityBuffer;
-
-    public XxHashTests()
-    {
-        _sanityBuffer = new byte[2367];
-
-        ulong byteGen = PRIME32;
-
-        for (int i = 0; i < _sanityBuffer.Length; i++)
-        {
-            _sanityBuffer[i] = (byte)(byteGen >> 56);
-            byteGen = unchecked(byteGen * PRIME64);
-        }
-    }
+    private static readonly byte[] _sanityBuffer = TestData.XxSanity;
 
     [Fact]
     public unsafe void XxHash32TestVectors()
@@ -70,21 +56,6 @@ public class XxHashTests
 
             fixed (byte* ptr = _sanityBuffer)
                 Assert.Equal(XxHash64Unsafe.ComputeHash(ptr, len, seed), result);
-        }
-    }
-
-    [Fact]
-    public void XxHashIndexTest()
-    {
-        ulong val = 1ul;
-
-        for (int i = 1; i <= 64; i++)
-        {
-            ulong h1 = XxHash64.ComputeHash(BitConverter.GetBytes(val));
-            ulong h2 = XxHash64.ComputeIndex(val);
-            Assert.Equal(h1, h2);
-
-            val <<= 1;
         }
     }
 }
