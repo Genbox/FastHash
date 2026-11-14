@@ -1,6 +1,7 @@
 // C# implementation of FNV-1a by Glenn Fowler, Landon Curt Noll and Kiem-Phong Vo, which is in the public domain.
 // See THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.FnvHash.FnvHashConstants;
 
 namespace Genbox.FastHash.FnvHash;
@@ -31,11 +32,12 @@ public static class Fnv1aHash64
     /// <returns>The 64-bit FNV-1a hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         ulong hash = FNV1_64_INIT;
 
         for (int i = 0; i < data.Length; i++)
         {
-            hash ^= data[i];
+            hash ^= Unsafe.Add(ref dataReference, i);
             hash *= FNV_64_PRIME;
         }
 

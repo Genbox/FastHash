@@ -1,6 +1,7 @@
 // C# implementation of the DJB2 hash by Daniel J. Bernstein, which is in the public domain.
 // See THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.DjbHash.DjbHashConstants;
 
 namespace Genbox.FastHash.DjbHash;
@@ -31,10 +32,11 @@ public static class Djb2AltHash64
     /// <returns>The 64-bit DJB2 XOR hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         ulong hash = InitHash;
 
         for (int i = 0; i < data.Length; i++)
-            hash = ((hash << 5) + hash) ^ data[i];
+            hash = ((hash << 5) + hash) ^ Unsafe.Add(ref dataReference, i);
 
         return hash;
     }

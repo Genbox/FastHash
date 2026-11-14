@@ -1,6 +1,7 @@
 // C# port of Nicoshev/rapidhash 3.0.0 (bc4b4ba). Copyright 2025 Nicolas De Carli.
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.RapidHash.RapidHashConstants;
 using static Genbox.FastHash.RapidHash.RapidHashShared;
 
@@ -23,6 +24,7 @@ public static class Rapid3HashMicro64
     /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0, ulong[]? secret = null)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         secret ??= DefaultSecret;
         ulong secret0 = secret[0];
         ulong secret1 = secret[1];
@@ -47,11 +49,11 @@ public static class Rapid3HashMicro64
 
                 while (i > 80)
                 {
-                    seed = RapidMix(Read64(data, offset) ^ secret0, Read64(data, offset + 8) ^ seed);
-                    see1 = RapidMix(Read64(data, offset + 16) ^ secret1, Read64(data, offset + 24) ^ see1);
-                    see2 = RapidMix(Read64(data, offset + 32) ^ secret2, Read64(data, offset + 40) ^ see2);
-                    see3 = RapidMix(Read64(data, offset + 48) ^ secret3, Read64(data, offset + 56) ^ see3);
-                    see4 = RapidMix(Read64(data, offset + 64) ^ secret4, Read64(data, offset + 72) ^ see4);
+                    seed = RapidMix(Read64(ref dataReference, offset) ^ secret0, Read64(ref dataReference, offset + 8) ^ seed);
+                    see1 = RapidMix(Read64(ref dataReference, offset + 16) ^ secret1, Read64(ref dataReference, offset + 24) ^ see1);
+                    see2 = RapidMix(Read64(ref dataReference, offset + 32) ^ secret2, Read64(ref dataReference, offset + 40) ^ see2);
+                    see3 = RapidMix(Read64(ref dataReference, offset + 48) ^ secret3, Read64(ref dataReference, offset + 56) ^ see3);
+                    see4 = RapidMix(Read64(ref dataReference, offset + 64) ^ secret4, Read64(ref dataReference, offset + 72) ^ see4);
 
                     offset += 80;
                     i -= 80;

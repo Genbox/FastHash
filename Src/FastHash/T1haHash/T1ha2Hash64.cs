@@ -1,6 +1,7 @@
 // C# port of erthink/t1ha 2.1.1 (0db5d6b). Copyright (c) 2016-2020 Positive Technologies; portions Copyright (c) 2010-2013 Leonid Yuriev.
 // Distributed under the zlib license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.T1haHash.T1haHashConstants;
 using static Genbox.FastHash.T1haHash.T1haHashShared;
 
@@ -39,6 +40,7 @@ public static class T1ha2Hash64
     /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         int length = data.Length;
         int offset = 0;
 
@@ -54,10 +56,10 @@ public static class T1ha2Hash64
 
             while (offset <= limit)
             {
-                ulong w0 = Read64(data, offset);
-                ulong w1 = Read64(data, offset + 8);
-                ulong w2 = Read64(data, offset + 16);
-                ulong w3 = Read64(data, offset + 24);
+                ulong w0 = Read64(ref dataReference, offset);
+                ulong w1 = Read64(ref dataReference, offset + 8);
+                ulong w2 = Read64(ref dataReference, offset + 16);
+                ulong w3 = Read64(ref dataReference, offset + 24);
                 offset += 32;
 
                 ulong d02 = w0 + RotateRight(w2 + d, 56);
@@ -77,21 +79,21 @@ public static class T1ha2Hash64
 
         if (tailLength > 24)
         {
-            MixUp(ref a, ref b, Read64(tail, 0), Prime4);
+            MixUp(ref a, ref b, Read64(ref MemoryMarshal.GetReference(tail), 0), Prime4);
             tail = tail.Slice(8);
             tailLength -= 8;
         }
 
         if (tailLength > 16)
         {
-            MixUp(ref b, ref a, Read64(tail, 0), Prime3);
+            MixUp(ref b, ref a, Read64(ref MemoryMarshal.GetReference(tail), 0), Prime3);
             tail = tail.Slice(8);
             tailLength -= 8;
         }
 
         if (tailLength > 8)
         {
-            MixUp(ref a, ref b, Read64(tail, 0), Prime2);
+            MixUp(ref a, ref b, Read64(ref MemoryMarshal.GetReference(tail), 0), Prime2);
             tail = tail.Slice(8);
             tailLength -= 8;
         }

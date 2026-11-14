@@ -3,6 +3,7 @@
 // C# port of google/cityhash 1.1.1 (4726e30). Copyright (c) 2011 Google, Inc.
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 using static Genbox.FastHash.CityHash.CityHash64;
@@ -45,12 +46,13 @@ public static class CityHashCrc256
     // Requires length >= 240.
     private static void CityHashCrc256Long(ReadOnlySpan<byte> s, uint length, uint seed, Span<ulong> result)
     {
+        ref byte sReference = ref MemoryMarshal.GetReference(s);
         int offset = 0;
-        ulong a = Read64(s, 56) + K0;
-        ulong b = Read64(s, 96) + K0;
+        ulong a = Read64(ref sReference, 56) + K0;
+        ulong b = Read64(ref sReference, 96) + K0;
         ulong c = result[0] = HashLen16(b, length);
-        ulong d = result[1] = (Read64(s, 120) * K0) + length;
-        ulong e = Read64(s, 184) + seed;
+        ulong d = result[1] = (Read64(ref sReference, 120) * K0) + length;
+        ulong e = Read64(ref sReference, 184) + seed;
         ulong f = 0;
         ulong g = 0;
         ulong h = c + d;
@@ -123,12 +125,13 @@ public static class CityHashCrc256
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void Chunk(byte r, ReadOnlySpan<byte> input, ref int position)
         {
+        ref byte inputReference = ref MemoryMarshal.GetReference(input);
             Permute3(ref x, ref z, ref y);
-            b += Read64(input, position);
-            c += Read64(input, position + 8);
-            d += Read64(input, position + 16);
-            e += Read64(input, position + 24);
-            f += Read64(input, position + 32);
+            b += Read64(ref inputReference, position);
+            c += Read64(ref inputReference, position + 8);
+            d += Read64(ref inputReference, position + 16);
+            e += Read64(ref inputReference, position + 24);
+            f += Read64(ref inputReference, position + 32);
             a += b;
             h += f;
             b += c;

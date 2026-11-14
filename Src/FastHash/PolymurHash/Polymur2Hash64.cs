@@ -117,22 +117,23 @@ public static class Polymur2Hash64
     internal static Parameters CreateParams(ulong seed) => polymur_init_params_from_seed(seed);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static uint polymur_load_le_u32(ReadOnlySpan<byte> p, int offset) => Read32(p, offset);
+    private static uint polymur_load_le_u32(ReadOnlySpan<byte> p, int offset) => Read32(ref MemoryMarshal.GetReference(p), offset);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong polymur_load_le_u64(ReadOnlySpan<byte> p, int offset) => Read64(p, offset);
+    private static ulong polymur_load_le_u64(ReadOnlySpan<byte> p, int offset) => Read64(ref MemoryMarshal.GetReference(p), offset);
 
     // Loads 0 to 8 bytes from buf with length len as a 64-bit little-endian integer.
     private static ulong polymur_load_le_u64_0_8(ReadOnlySpan<byte> buf, int len, int offset = 0)
     {
+        ref byte bufReference = ref MemoryMarshal.GetReference(buf);
         if (len < 4)
         {
             if (len == 0)
                 return 0;
 
-            ulong v = buf[offset + 0];
-            v |= (ulong)buf[offset + (len / 2)] << (8 * (len / 2));
-            v |= (ulong)buf[(offset + len) - 1] << (8 * (len - 1));
+            ulong v = Unsafe.Add(ref bufReference, offset + 0);
+            v |= (ulong)Unsafe.Add(ref bufReference, offset + (len / 2)) << (8 * (len / 2));
+            v |= (ulong)Unsafe.Add(ref bufReference, (offset + len) - 1) << (8 * (len - 1));
             return v;
         }
 

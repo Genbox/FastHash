@@ -1,6 +1,7 @@
 // C# port of MurmurHash3 from aappleby/smhasher (92cf370), written by Austin Appleby and placed in the public domain.
 // See THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
 
 namespace Genbox.FastHash.MurmurHash;
@@ -35,6 +36,7 @@ public static class Murmur3Hash32
     /// <returns>The 32-bit hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         uint length = (uint)data.Length;
         uint nBlocks = length / 4;
         uint h1 = seed;
@@ -44,7 +46,7 @@ public static class Murmur3Hash32
 
         for (uint i = 0; i < end; i += 4)
         {
-            k1 = Read32(data, i);
+            k1 = Read32(ref dataReference, i);
 
             k1 *= C1_32;
             k1 = RotateLeft(k1, 15);
@@ -63,13 +65,13 @@ public static class Murmur3Hash32
         switch (rem)
         {
             case 3:
-                k1 ^= (uint)data[tail + 2] << 16;
+                k1 ^= (uint)Unsafe.Add(ref dataReference, tail + 2) << 16;
                 goto case 2;
             case 2:
-                k1 ^= (uint)data[tail + 1] << 8;
+                k1 ^= (uint)Unsafe.Add(ref dataReference, tail + 1) << 8;
                 goto case 1;
             case 1:
-                k1 ^= data[tail];
+                k1 ^= Unsafe.Add(ref dataReference, tail);
                 break;
         }
 

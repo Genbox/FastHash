@@ -1,6 +1,7 @@
 // C# port of Bulat-Ziganshin/FARSH 0.2.0 (d74ef3a). Copyright (c) 2015-16 Bulat Ziganshin.
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.FarshHash.FarshHashConstants;
 using static Genbox.FastHash.FarshHash.FarshHash32;
 
@@ -73,6 +74,7 @@ public static class FarshHash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void farsh_full_block(ReadOnlySpan<byte> data, int offset, out ulong lowSum, out ulong highSum)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         lowSum = 0;
         highSum = 0;
 
@@ -80,8 +82,8 @@ public static class FarshHash64
 
         for (uint i = 0; i < STRIPE; i += 8, j += 2)
         {
-            uint val1 = Read32(data, (uint)offset + i);
-            uint val2 = Read32(data, (uint)offset + i + sizeof(uint));
+            uint val1 = Read32(ref dataReference, (uint)offset + i);
+            uint val2 = Read32(ref dataReference, (uint)offset + i + sizeof(uint));
             lowSum += (val1 + FARSH_KEYS[j]) * (ulong)(val2 + FARSH_KEYS[j + 1]);
             highSum += (val1 + FARSH_KEYS[j + 4]) * (ulong)(val2 + FARSH_KEYS[j + 5]);
         }
@@ -89,6 +91,7 @@ public static class FarshHash64
 
     private static void farsh_partial_block(ReadOnlySpan<byte> data, int offset, out ulong lowSum, out ulong highSum)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         ulong low = 0;
         ulong high = 0;
         int keyIndex = 0;
@@ -98,8 +101,8 @@ public static class FarshHash64
 
         for (; chunks > 0; chunks--)
         {
-            uint val1 = Read32(data, offset);
-            uint val2 = Read32(data, offset + sizeof(uint));
+            uint val1 = Read32(ref dataReference, offset);
+            uint val2 = Read32(ref dataReference, offset + sizeof(uint));
             low += (val1 + FARSH_KEYS[keyIndex]) * (ulong)(val2 + FARSH_KEYS[keyIndex + 1]);
             high += (val1 + FARSH_KEYS[keyIndex + 4]) * (ulong)(val2 + FARSH_KEYS[keyIndex + 5]);
             offset += 8;
@@ -113,37 +116,37 @@ public static class FarshHash64
         switch (remaining)
         {
             case 7:
-                v1 = Read32(data, offset);
+                v1 = Read32(ref dataReference, offset);
                 offset += 4;
-                v2 = (uint)(data[offset] | (data[offset + 1] << 8) | (data[offset + 2] << 16));
+                v2 = (uint)(Unsafe.Add(ref dataReference, offset) | (Unsafe.Add(ref dataReference, offset + 1) << 8) | (Unsafe.Add(ref dataReference, offset + 2) << 16));
                 AddPartial(v1, v2);
                 break;
             case 6:
-                v1 = Read32(data, offset);
+                v1 = Read32(ref dataReference, offset);
                 offset += 4;
-                v2 = Read16(data, offset);
+                v2 = Read16(ref dataReference, offset);
                 AddPartial(v1, v2);
                 break;
             case 5:
-                v1 = Read32(data, offset);
+                v1 = Read32(ref dataReference, offset);
                 offset += 4;
-                v2 = data[offset];
+                v2 = Unsafe.Add(ref dataReference, offset);
                 AddPartial(v1, v2);
                 break;
             case 4:
-                v1 = Read32(data, offset);
+                v1 = Read32(ref dataReference, offset);
                 AddPartial(v1, 0);
                 break;
             case 3:
-                v1 = (uint)(data[offset] | (data[offset + 1] << 8) | (data[offset + 2] << 16));
+                v1 = (uint)(Unsafe.Add(ref dataReference, offset) | (Unsafe.Add(ref dataReference, offset + 1) << 8) | (Unsafe.Add(ref dataReference, offset + 2) << 16));
                 AddPartial(v1, 0);
                 break;
             case 2:
-                v1 = Read16(data, offset);
+                v1 = Read16(ref dataReference, offset);
                 AddPartial(v1, 0);
                 break;
             case 1:
-                v1 = data[offset];
+                v1 = Unsafe.Add(ref dataReference, offset);
                 AddPartial(v1, 0);
                 break;
         }

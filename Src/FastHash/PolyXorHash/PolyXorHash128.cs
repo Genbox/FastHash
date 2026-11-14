@@ -3,11 +3,11 @@
 // C# port of orlp/polyxor 0.1.0 (3123eb6). Copyright (c) 2026 Orson Peters.
 // Distributed under the zlib license; see LICENSE.txt in this directory.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 
 using System.Diagnostics;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 using Genbox.FastHash.Misc;
@@ -203,6 +203,7 @@ public static class PolyXorHash128
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong ReadShort(ReadOnlySpan<byte> data)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         Debug.Assert(data.Length is >= 1 and <= sizeof(ulong));
         int length = data.Length;
         if (length == sizeof(ulong))
@@ -221,11 +222,11 @@ public static class PolyXorHash128
         {
             ulong value = Utilities.Read16(data, 0);
             if (length == 3)
-                value |= (ulong)data[2] << 16;
+                value |= (ulong)Unsafe.Add(ref dataReference, 2) << 16;
             return value;
         }
 
-        return data[0];
+        return Unsafe.Add(ref dataReference, 0);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

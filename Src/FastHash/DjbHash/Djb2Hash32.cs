@@ -1,6 +1,7 @@
 // C# implementation of the DJB2 hash by Daniel J. Bernstein, which is in the public domain.
 // See THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.DjbHash.DjbHashConstants;
 
 namespace Genbox.FastHash.DjbHash;
@@ -27,10 +28,11 @@ public static class Djb2Hash32
     /// <returns>The 32-bit DJB2 hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         uint hash = InitHash;
 
         for (int i = 0; i < data.Length; i++)
-            hash = (hash << 5) + hash + data[i];
+            hash = (hash << 5) + hash + Unsafe.Add(ref dataReference, i);
 
         return hash;
     }

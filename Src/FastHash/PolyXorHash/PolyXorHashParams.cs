@@ -2,9 +2,10 @@
 
 // C# port of orlp/polyxor 0.1.0 (3123eb6). Copyright (c) 2026 Orson Peters.
 // Distributed under the zlib license; see LICENSE.txt in this directory.
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Buffers.Binary;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using System.Security.Cryptography;
@@ -43,17 +44,17 @@ public sealed class PolyXorHashParams
         BinaryPrimitives.WriteUInt64LittleEndian(keyBytes[8..], key.High);
         _roundKeys = X86Aes.IsSupported || ArmAes.IsSupported ? ExpandKey(keyBytes) : null;
         for (int i = 0; i < EntropyNeeded / 16; i++)
-            Vector128.Create((ulong)i, 1UL << 63).AsByte().StoreUnsafe(ref entropy[i * 16]);
+            Vector128.Create((ulong)i, 1UL << 63).AsByte().StoreUnsafe(ref Unsafe.Add(ref MemoryMarshal.GetReference(entropy), i * 16));
 
         if (X86Aes.IsSupported || ArmAes.IsSupported)
         {
             for (int i = 0; i < entropy.Length; i += 32)
             {
-                Vector128<byte> a = Vector128.LoadUnsafe(ref entropy[i]);
-                Vector128<byte> b = Vector128.LoadUnsafe(ref entropy[i + 16]);
+                Vector128<byte> a = Vector128.LoadUnsafe(ref Unsafe.Add(ref MemoryMarshal.GetReference(entropy), i));
+                Vector128<byte> b = Vector128.LoadUnsafe(ref Unsafe.Add(ref MemoryMarshal.GetReference(entropy), i + 16));
                 EncryptPair(ref a, ref b);
-                a.StoreUnsafe(ref entropy[i]);
-                b.StoreUnsafe(ref entropy[i + 16]);
+                a.StoreUnsafe(ref Unsafe.Add(ref MemoryMarshal.GetReference(entropy), i));
+                b.StoreUnsafe(ref Unsafe.Add(ref MemoryMarshal.GetReference(entropy), i + 16));
             }
         }
         else
@@ -142,15 +143,16 @@ public sealed class PolyXorHashParams
         }
     }
 
-    private static Vector128<ulong> Load(ReadOnlySpan<byte> bytes) => Vector128.Create(BinaryPrimitives.ReadUInt64LittleEndian(bytes), BinaryPrimitives.ReadUInt64LittleEndian(bytes[8..]));
+    private static Vector128<ulong> Load(ReadOnlySpan<byte> bytes) => Vector128.Create(Read64(ref MemoryMarshal.GetReference(bytes)), Read64(ref MemoryMarshal.GetReference(bytes), 8));
 
     private static Vector128<ulong> Nonzero(Vector128<ulong> value) =>
         value.GetElement(0) == 0 && value.GetElement(1) == 0 ? Vector128.Create(1UL, 0UL) : value;
 
     private static Vector128<byte>[] ExpandKey(ReadOnlySpan<byte> key)
     {
+        ref byte keyReference = ref MemoryMarshal.GetReference(key);
         Vector128<byte>[] keys = new Vector128<byte>[11];
-        keys[0] = Vector128.Create(BinaryPrimitives.ReadUInt64LittleEndian(key), BinaryPrimitives.ReadUInt64LittleEndian(key[8..])).AsByte();
+        keys[0] = Vector128.Create(Read64(ref keyReference), Read64(ref keyReference, 8)).AsByte();
 
         if (X86Aes.IsSupported)
         {

@@ -1,10 +1,10 @@
 // C# port of the Abseil low-level hash from abseil/abseil-cpp (ddbc605). Copyright 2018 The Abseil Authors.
 // Distributed under the Apache License 2.0; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.AbslHash.AbslHashConstants;
 
 #if NET8_0_OR_GREATER
-using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 #endif
@@ -50,7 +50,7 @@ public static class AbslHash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong PrecombineLengthMix(ulong state, int len) => state ^ Read64(StaticRandomData, len);
+    private static ulong PrecombineLengthMix(ulong state, int len) => state ^ Read64(ref MemoryMarshal.GetReference(StaticRandomData), len);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong CombineSmallContiguous(ulong state, ReadOnlySpan<byte> data, int len)
@@ -68,30 +68,33 @@ public static class AbslHash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong CombineContiguous9To16(ulong state, ReadOnlySpan<byte> data, int len) => Mix(state ^ Read64(data), Mul ^ Read64(data, len - 8));
+    private static ulong CombineContiguous9To16(ulong state, ReadOnlySpan<byte> data, int len) => Mix(state ^ Read64(ref MemoryMarshal.GetReference(data)), Mul ^ Read64(ref MemoryMarshal.GetReference(data), len - 8));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong CombineContiguous17To32(ulong state, ReadOnlySpan<byte> data, int len)
     {
-        ulong m0 = Mix(Read64(data) ^ 0x13198a2e03707344UL, Read64(data, 8) ^ state);
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
+        ulong m0 = Mix(Read64(ref dataReference) ^ 0x13198a2e03707344UL, Read64(ref dataReference, 8) ^ state);
         int tail16 = len - 16;
-        ulong m1 = Mix(Read64(data, tail16) ^ 0x082efa98ec4e6c89UL, Read64(data, tail16 + 8) ^ state);
+        ulong m1 = Mix(Read64(ref dataReference, tail16) ^ 0x082efa98ec4e6c89UL, Read64(ref dataReference, tail16 + 8) ^ state);
         return m0 ^ m1;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong Read4To8(ReadOnlySpan<byte> data, int len)
     {
-        ulong mostSignificant = (ulong)Read32(data) << 32;
-        ulong leastSignificant = Read32(data, len - 4);
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
+        ulong mostSignificant = (ulong)Read32(ref dataReference) << 32;
+        ulong leastSignificant = Read32(ref dataReference, len - 4);
         return mostSignificant | leastSignificant;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint Read1To3(ReadOnlySpan<byte> data, int len)
     {
-        uint mem0 = ((uint)data[0] << 16) | data[len - 1];
-        uint mem1 = (uint)data[len / 2] << 8;
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
+        uint mem0 = ((uint)Unsafe.Add(ref dataReference, 0) << 16) | Unsafe.Add(ref dataReference, len - 1);
+        uint mem1 = (uint)Unsafe.Add(ref dataReference, len / 2) << 8;
         return mem0 | mem1;
     }
 
@@ -123,10 +126,11 @@ public static class AbslHash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong Mix32Bytes(ReadOnlySpan<byte> data, int offset, ulong currentState)
     {
-        ulong a = Read64(data, offset);
-        ulong b = Read64(data, offset + 8);
-        ulong c = Read64(data, offset + 16);
-        ulong d = Read64(data, offset + 24);
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
+        ulong a = Read64(ref dataReference, offset);
+        ulong b = Read64(ref dataReference, offset + 8);
+        ulong c = Read64(ref dataReference, offset + 16);
+        ulong d = Read64(ref dataReference, offset + 24);
 
         ulong cs0 = Mix(a ^ 0x13198a2e03707344UL, b ^ currentState);
         ulong cs1 = Mix(c ^ 0xa4093822299f31d0UL, d ^ currentState);
@@ -142,6 +146,7 @@ public static class AbslHash64
 
     private static ulong LowLevelHashLenGt64(ulong seed, ReadOnlySpan<byte> data, int len)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         ulong currentState = seed ^ 0x243f6a8885a308d3UL ^ (uint)len;
         int last32 = len - 32;
         ulong duplicatedState0 = currentState;
@@ -151,14 +156,14 @@ public static class AbslHash64
 
         do
         {
-            ulong a = Read64(data, offset);
-            ulong b = Read64(data, offset + 8);
-            ulong c = Read64(data, offset + 16);
-            ulong d = Read64(data, offset + 24);
-            ulong e = Read64(data, offset + 32);
-            ulong f = Read64(data, offset + 40);
-            ulong g = Read64(data, offset + 48);
-            ulong h = Read64(data, offset + 56);
+            ulong a = Read64(ref dataReference, offset);
+            ulong b = Read64(ref dataReference, offset + 8);
+            ulong c = Read64(ref dataReference, offset + 16);
+            ulong d = Read64(ref dataReference, offset + 24);
+            ulong e = Read64(ref dataReference, offset + 32);
+            ulong f = Read64(ref dataReference, offset + 40);
+            ulong g = Read64(ref dataReference, offset + 48);
+            ulong h = Read64(ref dataReference, offset + 56);
 
             currentState = Mix(a ^ 0x13198a2e03707344UL, b ^ currentState);
             duplicatedState0 = Mix(c ^ 0xa4093822299f31d0UL, d ^ duplicatedState0);

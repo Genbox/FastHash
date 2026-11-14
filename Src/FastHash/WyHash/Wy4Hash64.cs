@@ -1,6 +1,7 @@
 // C# port of wangyi-fudan/wyhash 4.3.0 (2ac9a50) by Wang Yi.
 // Distributed under the Unlicense; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.WyHash.WyHashConstants;
 
 namespace Genbox.FastHash.WyHash;
@@ -59,6 +60,7 @@ public static class Wy4Hash64
     /// <exception cref="ArgumentException"><paramref name="secret" /> contains fewer than four words.</exception>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed, ulong[]? secret)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         secret ??= V4DefaultSecret;
         if (secret.Length < 4)
             throw new ArgumentException("The secret must contain at least four words.", nameof(secret));
@@ -72,8 +74,8 @@ public static class Wy4Hash64
         {
             if (len >= 4)
             {
-                a = ((ulong)Read32(data) << 32) | Read32(data, (len >> 3) << 2);
-                b = ((ulong)Read32(data, len - 4) << 32) | Read32(data, len - 4 - ((len >> 3) << 2));
+                a = ((ulong)Read32(ref dataReference) << 32) | Read32(ref dataReference, (len >> 3) << 2);
+                b = ((ulong)Read32(ref dataReference, len - 4) << 32) | Read32(ref dataReference, len - 4 - ((len >> 3) << 2));
             }
             else if (len > 0)
             {
@@ -98,9 +100,9 @@ public static class Wy4Hash64
 
                 do
                 {
-                    seed = Wymix(Read64(data, offset) ^ secret[1], Read64(data, offset + 8) ^ seed);
-                    see1 = Wymix(Read64(data, offset + 16) ^ secret[2], Read64(data, offset + 24) ^ see1);
-                    see2 = Wymix(Read64(data, offset + 32) ^ secret[3], Read64(data, offset + 40) ^ see2);
+                    seed = Wymix(Read64(ref dataReference, offset) ^ secret[1], Read64(ref dataReference, offset + 8) ^ seed);
+                    see1 = Wymix(Read64(ref dataReference, offset + 16) ^ secret[2], Read64(ref dataReference, offset + 24) ^ see1);
+                    see2 = Wymix(Read64(ref dataReference, offset + 32) ^ secret[3], Read64(ref dataReference, offset + 40) ^ see2);
                     offset += 48;
                     i -= 48;
                 } while (i >= 48);
@@ -110,13 +112,13 @@ public static class Wy4Hash64
 
             while (i > 16)
             {
-                seed = Wymix(Read64(data, offset) ^ secret[1], Read64(data, offset + 8) ^ seed);
+                seed = Wymix(Read64(ref dataReference, offset) ^ secret[1], Read64(ref dataReference, offset + 8) ^ seed);
                 offset += 16;
                 i -= 16;
             }
 
-            a = Read64(data, (offset + i) - 16);
-            b = Read64(data, (offset + i) - 8);
+            a = Read64(ref dataReference, (offset + i) - 16);
+            b = Read64(ref dataReference, (offset + i) - 8);
         }
 
         a ^= secret[1];
@@ -126,7 +128,7 @@ public static class Wy4Hash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong Wyr3(ReadOnlySpan<byte> data, int len) => ((ulong)data[0] << 16) | ((ulong)data[len >> 1] << 8) | data[len - 1];
+    private static ulong Wyr3(ReadOnlySpan<byte> data, int len) => ((ulong)Unsafe.Add(ref MemoryMarshal.GetReference(data), 0) << 16) | ((ulong)Unsafe.Add(ref MemoryMarshal.GetReference(data), len >> 1) << 8) | Unsafe.Add(ref MemoryMarshal.GetReference(data), len - 1);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Wymum(ref ulong a, ref ulong b)

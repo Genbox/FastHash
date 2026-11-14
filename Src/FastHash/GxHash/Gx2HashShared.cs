@@ -43,13 +43,10 @@ internal static class Gx2HashShared
             return Vector128<byte>.Zero;
 
         ref byte ptr = ref MemoryMarshal.GetReference(bytes);
-        ref Vector128<byte> vectorPtr = ref Unsafe.As<byte, Vector128<byte>>(ref ptr);
 
         if (len <= VECTOR_SIZE)
         {
-            // Input fits on a single SIMD vector, however we might read beyond the input message.
-            // Thus we need this safe method that checks if it can safely read beyond or must copy.
-            return GetPartialVector(ref vectorPtr, len);
+            return Vector128.Add(ReadPartial128(ref ptr, len), Vector128.Create((byte)len));
         }
 
         Vector128<byte> hashVector;
@@ -59,33 +56,31 @@ internal static class Gx2HashShared
 
         if (extraBytesCount == 0)
         {
-            hashVector = vectorPtr;
+            hashVector = Unsafe.ReadUnaligned<Vector128<byte>>(ref ptr);
             offset = VECTOR_SIZE;
         }
         else
         {
-            // If the input length does not match the length of a whole number of SIMD vectors,
-            // it means we'll need to read a partial vector. We can start with the partial vector first,
-            // so that we can safely read beyond since we expect the following bytes to still be part of
-            // the input.
-            hashVector = GetPartialVectorUnsafe(ref vectorPtr, extraBytesCount);
+            // The complete first vector is inside this input (len > 16).
+            // Mask it down to the leading partial block before processing full blocks.
+            hashVector = GetMaskedVector(ref ptr, extraBytesCount);
             offset = extraBytesCount;
         }
 
-        Vector128<byte> tail = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref ptr, offset));
+        Vector128<byte> tail = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, offset));
         offset += VECTOR_SIZE;
 
         if (len > VECTOR_SIZE * 2)
         {
             // Fast path when input length > 32 and <= 48
-            Vector128<byte> next = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref ptr, offset));
+            Vector128<byte> next = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, offset));
             offset += VECTOR_SIZE;
             tail = AesEncrypt(tail, next);
 
             if (len > VECTOR_SIZE * 3)
             {
                 // Fast path when input length > 48 and <= 64
-                next = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref ptr, offset));
+                next = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, offset));
                 offset += VECTOR_SIZE;
                 tail = AesEncrypt(tail, next);
 
@@ -107,7 +102,7 @@ internal static class Gx2HashShared
 
         while (offset < endOffset)
         {
-            Vector128<byte> block = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset));
+            Vector128<byte> block = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset));
             hashVector = AesEncrypt(hashVector, block);
             offset += VECTOR_SIZE;
         }
@@ -125,14 +120,14 @@ internal static class Gx2HashShared
 
         while (offset < end)
         {
-            Vector128<byte> v0 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset));
-            Vector128<byte> v1 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + VECTOR_SIZE));
-            Vector128<byte> v2 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 2)));
-            Vector128<byte> v3 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 3)));
-            Vector128<byte> v4 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 4)));
-            Vector128<byte> v5 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 5)));
-            Vector128<byte> v6 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 6)));
-            Vector128<byte> v7 = Unsafe.As<byte, Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 7)));
+            Vector128<byte> v0 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset));
+            Vector128<byte> v1 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + VECTOR_SIZE));
+            Vector128<byte> v2 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 2)));
+            Vector128<byte> v3 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 3)));
+            Vector128<byte> v4 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 4)));
+            Vector128<byte> v5 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 5)));
+            Vector128<byte> v6 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 6)));
+            Vector128<byte> v7 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 7)));
 
             Vector128<byte> tmp1 = AesEncrypt(v0, v2);
             Vector128<byte> tmp2 = AesEncrypt(v1, v3);
@@ -160,33 +155,11 @@ internal static class Gx2HashShared
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe Vector128<byte> GetPartialVector(ref Vector128<byte> start, int remainingBytes)
-    {
-        fixed (Vector128<byte>* _ = &start)
-        {
-            if (IsReadBeyondSafe(ref start))
-                return GetPartialVectorUnsafe(ref start, remainingBytes);
-        }
-
-        return GetPartialVectorSafe(ref start, remainingBytes);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> GetPartialVectorSafe(ref Vector128<byte> start, int remainingBytes)
-    {
-        Vector128<byte> input = Vector128<byte>.Zero;
-        ref byte source = ref Unsafe.As<Vector128<byte>, byte>(ref start);
-        ref byte dest = ref Unsafe.As<Vector128<byte>, byte>(ref input);
-        Unsafe.CopyBlockUnaligned(ref dest, ref source, (uint)remainingBytes);
-        return Vector128.Add(input, Vector128.Create((byte)remainingBytes));
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> GetPartialVectorUnsafe(ref Vector128<byte> start, int remainingBytes)
+    private static Vector128<byte> GetMaskedVector(ref byte start, int remainingBytes)
     {
         Vector128<sbyte> indices = Vector128.Create(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
         Vector128<byte> mask = Vector128.GreaterThan(Vector128.Create((sbyte)remainingBytes), indices).AsByte();
-        Vector128<byte> hashVector = Vector128.BitwiseAnd(mask, start);
+        Vector128<byte> hashVector = Vector128.BitwiseAnd(mask, Unsafe.ReadUnaligned<Vector128<byte>>(ref start));
         return Vector128.Add(hashVector, Vector128.Create((byte)remainingBytes));
     }
 
@@ -223,14 +196,6 @@ internal static class Gx2HashShared
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Vector128<byte> Key2() => Vector128.Create(0xD0012E32, 0x689D2B7D, 0x5544B1B7, 0xC78B122B).AsByte();
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe bool IsReadBeyondSafe(ref Vector128<byte> reference)
-    {
-        // 4096 bytes is a conservative value for the page size.
-        const int PAGE_SIZE = 0x1000;
-        IntPtr address = (IntPtr)Unsafe.AsPointer(ref reference);
-        IntPtr offsetWithinPage = address & (PAGE_SIZE - 1);
-        return offsetWithinPage < PAGE_SIZE - VECTOR_SIZE;
-    }
+
 }
 #endif

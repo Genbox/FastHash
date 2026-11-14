@@ -1,6 +1,7 @@
 // C# port of Nicoshev/rapidhash 3.0.0 (bc4b4ba). Copyright 2025 Nicolas De Carli.
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.RapidHash.RapidHashConstants;
 
 namespace Genbox.FastHash.RapidHash;
@@ -25,6 +26,7 @@ internal static class RapidHashShared
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool TryReadSmall(ReadOnlySpan<byte> data, ref ulong seed, out ulong a, out ulong b)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         int length = data.Length;
         a = 0;
         b = 0;
@@ -38,19 +40,19 @@ internal static class RapidHashShared
 
             if (length >= 8)
             {
-                a = Read64(data);
-                b = Read64(data, length - 8);
+                a = Read64(ref dataReference);
+                b = Read64(ref dataReference, length - 8);
             }
             else
             {
-                a = Read32(data);
-                b = Read32(data, length - 4);
+                a = Read32(ref dataReference);
+                b = Read32(ref dataReference, length - 4);
             }
         }
         else if (length > 0)
         {
-            a = ((ulong)data[0] << 45) | data[length - 1];
-            b = data[length >> 1];
+            a = ((ulong)Unsafe.Add(ref dataReference, 0) << 45) | Unsafe.Add(ref dataReference, length - 1);
+            b = Unsafe.Add(ref dataReference, length >> 1);
         }
 
         return true;
@@ -58,37 +60,39 @@ internal static class RapidHashShared
 
     internal static void MixRemainingBlocks(ReadOnlySpan<byte> data, int offset, int length, ref ulong seed, ulong secret1, ulong secret2, int maxBlocks)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         if (length <= 16 || maxBlocks == 0)
             return;
 
-        seed = RapidMix(Read64(data, offset) ^ secret2, Read64(data, offset + 8) ^ seed);
+        seed = RapidMix(Read64(ref dataReference, offset) ^ secret2, Read64(ref dataReference, offset + 8) ^ seed);
         if (length <= 32 || maxBlocks == 1)
             return;
 
-        seed = RapidMix(Read64(data, offset + 16) ^ secret2, Read64(data, offset + 24) ^ seed);
+        seed = RapidMix(Read64(ref dataReference, offset + 16) ^ secret2, Read64(ref dataReference, offset + 24) ^ seed);
         if (length <= 48 || maxBlocks == 2)
             return;
 
-        seed = RapidMix(Read64(data, offset + 32) ^ secret1, Read64(data, offset + 40) ^ seed);
+        seed = RapidMix(Read64(ref dataReference, offset + 32) ^ secret1, Read64(ref dataReference, offset + 40) ^ seed);
         if (length <= 64 || maxBlocks == 3)
             return;
 
-        seed = RapidMix(Read64(data, offset + 48) ^ secret1, Read64(data, offset + 56) ^ seed);
+        seed = RapidMix(Read64(ref dataReference, offset + 48) ^ secret1, Read64(ref dataReference, offset + 56) ^ seed);
         if (length <= 80 || maxBlocks == 4)
             return;
 
-        seed = RapidMix(Read64(data, offset + 64) ^ secret2, Read64(data, offset + 72) ^ seed);
+        seed = RapidMix(Read64(ref dataReference, offset + 64) ^ secret2, Read64(ref dataReference, offset + 72) ^ seed);
         if (length <= 96 || maxBlocks == 5)
             return;
 
-        seed = RapidMix(Read64(data, offset + 80) ^ secret1, Read64(data, offset + 88) ^ seed);
+        seed = RapidMix(Read64(ref dataReference, offset + 80) ^ secret1, Read64(ref dataReference, offset + 88) ^ seed);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void ReadLongTail(ReadOnlySpan<byte> data, int offset, int length, out ulong a, out ulong b)
     {
-        a = Read64(data, (offset + length) - 16) ^ (ulong)length;
-        b = Read64(data, (offset + length) - 8);
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
+        a = Read64(ref dataReference, (offset + length) - 16) ^ (ulong)length;
+        b = Read64(ref dataReference, (offset + length) - 8);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -1,6 +1,7 @@
 // C# port of Bulat-Ziganshin/FARSH 0.2.0 (d74ef3a). Copyright (c) 2015-16 Bulat Ziganshin.
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.FarshHash.FarshHashConstants;
 
 namespace Genbox.FastHash.FarshHash;
@@ -56,14 +57,15 @@ public static class FarshHash32
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong farsh_full_block(ReadOnlySpan<byte> data, int offset)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         ulong sum = 0;
 
         uint j = 0;
 
         for (uint i = 0; i < STRIPE; i += 8, j += 2)
         {
-            uint val1 = Read32(data, (uint)offset + i);
-            uint val2 = Read32(data, (uint)offset + i + sizeof(uint));
+            uint val1 = Read32(ref dataReference, (uint)offset + i);
+            uint val2 = Read32(ref dataReference, (uint)offset + i + sizeof(uint));
             sum += (val1 + FARSH_KEYS[j]) * (ulong)(val2 + FARSH_KEYS[j + 1]);
         }
 
@@ -72,6 +74,7 @@ public static class FarshHash32
 
     private static ulong farsh_partial_block(ReadOnlySpan<byte> data, int offset)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         ulong sum = 0;
         int keyindex = 0;
         int length = data.Length;
@@ -80,8 +83,8 @@ public static class FarshHash32
 
         for (; chunks > 0; chunks--)
         {
-            uint val1 = Read32(data, offset);
-            uint val2 = Read32(data, offset + sizeof(uint));
+            uint val1 = Read32(ref dataReference, offset);
+            uint val2 = Read32(ref dataReference, offset + sizeof(uint));
             sum += (val1 + FARSH_KEYS[keyindex]) * (ulong)(val2 + FARSH_KEYS[keyindex + 1]);
             offset += 8;
             keyindex += 2;
@@ -94,37 +97,37 @@ public static class FarshHash32
         switch (remaining)
         {
             case 7:
-                v1 = Read32(data, offset);
+                v1 = Read32(ref dataReference, offset);
                 offset += 4;
-                v2 = (uint)(data[0 + offset] | (data[1 + offset] << 8) | (data[2 + offset] << 16));
+                v2 = (uint)(Unsafe.Add(ref dataReference, 0 + offset) | (Unsafe.Add(ref dataReference, 1 + offset) << 8) | (Unsafe.Add(ref dataReference, 2 + offset) << 16));
                 AddPartial(v1, v2);
                 break;
             case 6:
-                v1 = Read32(data, offset);
+                v1 = Read32(ref dataReference, offset);
                 offset += 4;
-                v2 = Read16(data, offset);
+                v2 = Read16(ref dataReference, offset);
                 AddPartial(v1, v2);
                 break;
             case 5:
-                v1 = Read32(data, offset);
+                v1 = Read32(ref dataReference, offset);
                 offset += 4;
-                v2 = data[offset];
+                v2 = Unsafe.Add(ref dataReference, offset);
                 AddPartial(v1, v2);
                 break;
             case 4:
-                v1 = Read32(data, offset);
+                v1 = Read32(ref dataReference, offset);
                 AddPartial(v1, 0);
                 break;
             case 3:
-                v1 = (uint)(data[0 + offset] | (data[1 + offset] << 8) | (data[2 + offset] << 16));
+                v1 = (uint)(Unsafe.Add(ref dataReference, 0 + offset) | (Unsafe.Add(ref dataReference, 1 + offset) << 8) | (Unsafe.Add(ref dataReference, 2 + offset) << 16));
                 AddPartial(v1, 0);
                 break;
             case 2:
-                v1 = Read16(data, offset);
+                v1 = Read16(ref dataReference, offset);
                 AddPartial(v1, 0);
                 break;
             case 1:
-                v1 = data[offset];
+                v1 = Unsafe.Add(ref dataReference, offset);
                 AddPartial(v1, 0);
                 break;
         }

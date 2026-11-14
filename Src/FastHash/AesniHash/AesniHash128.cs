@@ -2,9 +2,9 @@
 
 // C# port of AESNI_Hash from PeterRK/PageBloomFilter (src/aesni-hash.h, ae11846). Copyright (c) 2023, Ruan Kunliang.
 // Distributed under the BSD 3-Clause license; see THIRD-PARTY-NOTICES.txt at the repository root.
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
@@ -111,51 +111,51 @@ public static class AesniHash128
         switch (len)
         {
             case 15:
-                x |= (ulong)data[msg + 14] << 48;
+                x |= (ulong)Unsafe.Add(ref ptr, msg + 14) << 48;
                 goto case 14;
             case 14:
-                x |= (ulong)data[msg + 13] << 40;
+                x |= (ulong)Unsafe.Add(ref ptr, msg + 13) << 40;
                 goto case 13;
             case 13:
-                x |= (ulong)data[msg + 12] << 32;
+                x |= (ulong)Unsafe.Add(ref ptr, msg + 12) << 32;
                 goto case 12;
             case 12:
-                x |= Read32(data, msg + 8);
-                Mix(Vector128.Create(Read64(data, msg), x).AsByte());
+                x |= Read32(ref ptr, msg + 8);
+                Mix(Vector128.Create(Read64(ref ptr, msg), x).AsByte());
                 break;
             case 11:
-                x |= (uint)data[msg + 10] << 16;
+                x |= (uint)Unsafe.Add(ref ptr, msg + 10) << 16;
                 goto case 10;
             case 10:
-                x |= (uint)data[msg + 9] << 8;
+                x |= (uint)Unsafe.Add(ref ptr, msg + 9) << 8;
                 goto case 9;
             case 9:
-                x |= data[msg + 8];
+                x |= Unsafe.Add(ref ptr, msg + 8);
                 goto case 8;
             case 8:
-                Mix(Vector128.Create(Read64(data, msg), x).AsByte());
+                Mix(Vector128.Create(Read64(ref ptr, msg), x).AsByte());
                 break;
             case 7:
-                x |= (ulong)data[msg + 6] << 48;
+                x |= (ulong)Unsafe.Add(ref ptr, msg + 6) << 48;
                 goto case 6;
             case 6:
-                x |= (ulong)data[msg + 5] << 40;
+                x |= (ulong)Unsafe.Add(ref ptr, msg + 5) << 40;
                 goto case 5;
             case 5:
-                x |= (ulong)data[msg + 4] << 32;
+                x |= (ulong)Unsafe.Add(ref ptr, msg + 4) << 32;
                 goto case 4;
             case 4:
-                x |= Read32(data, msg);
+                x |= Read32(ref ptr, msg);
                 Mix(Vector128.Create(x, 0).AsByte());
                 break;
             case 3:
-                x |= (uint)data[msg + 2] << 16;
+                x |= (uint)Unsafe.Add(ref ptr, msg + 2) << 16;
                 goto case 2;
             case 2:
-                x |= (uint)data[msg + 1] << 8;
+                x |= (uint)Unsafe.Add(ref ptr, msg + 1) << 8;
                 goto case 1;
             case 1:
-                x |= data[msg];
+                x |= Unsafe.Add(ref ptr, msg);
                 Mix(Vector128.Create(x, 0).AsByte());
                 break;
             default: // try to keep m & s from register spilling

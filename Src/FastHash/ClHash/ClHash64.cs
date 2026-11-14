@@ -3,8 +3,8 @@
 // C# port of simdhash/clhash 1.0.0 (fd0331c) by Daniel Lemire and Owen Kaser.
 // Distributed under the Apache License 2.0; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using static Genbox.FastHash.ClHash.ClHashConstants;
@@ -170,6 +170,7 @@ public static class ClHash64
 
     private static Vector128<byte> ClMulHalfScalarProductWithTailWithoutReduction(ReadOnlySpan<ulong> randomSource, ReadOnlySpan<byte> data, int dataOffset, int lengthWords)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         int end = dataOffset + (lengthWords * sizeof(ulong));
         Vector128<byte> acc = Vector128<byte>.Zero;
         int keyOffset = 0;
@@ -193,7 +194,7 @@ public static class ClHash64
 
         if (dataOffset < end)
         {
-            Vector128<byte> add1 = Sse2.Xor(Load128(randomSource, keyOffset), Vector128.Create(Read64(data, dataOffset), 0UL).AsByte());
+            Vector128<byte> add1 = Sse2.Xor(Load128(randomSource, keyOffset), Vector128.Create(Read64(ref dataReference, dataOffset), 0UL).AsByte());
             acc = Sse2.Xor(ClMul(add1, add1, 0x10), acc);
         }
 
@@ -202,6 +203,7 @@ public static class ClHash64
 
     private static Vector128<byte> ClMulHalfScalarProductWithTailWithoutReductionWithExtraWord(ReadOnlySpan<ulong> randomSource, ReadOnlySpan<byte> data, int dataOffset, int lengthWords, ulong extraWord)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         int end = dataOffset + (lengthWords * sizeof(ulong));
         Vector128<byte> acc = Vector128<byte>.Zero;
         int keyOffset = 0;
@@ -225,7 +227,7 @@ public static class ClHash64
 
         if (dataOffset < end)
         {
-            Vector128<byte> add1 = Sse2.Xor(Load128(randomSource, keyOffset), Vector128.Create(Read64(data, dataOffset), extraWord).AsByte());
+            Vector128<byte> add1 = Sse2.Xor(Load128(randomSource, keyOffset), Vector128.Create(Read64(ref dataReference, dataOffset), extraWord).AsByte());
             acc = Sse2.Xor(ClMul(add1, add1, 0x10), acc);
         }
         else
@@ -247,11 +249,12 @@ public static class ClHash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong CreateLastWord(ReadOnlySpan<byte> data, int offset, int lengthBytes)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         int significantBytes = lengthBytes % sizeof(ulong);
         ulong lastWord = 0;
 
         for (int i = 0; i < significantBytes; i++)
-            lastWord |= (ulong)data[offset + i] << (i * 8);
+            lastWord |= (ulong)Unsafe.Add(ref dataReference, offset + i) << (i * 8);
 
         return lastWord;
     }

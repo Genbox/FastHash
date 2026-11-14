@@ -1,6 +1,7 @@
 // C# port of Cyan4973/xxHash 0.8.3 (e626a72). Copyright (c) 2012-2021 Yann Collet.
 // Distributed under the BSD 2-Clause license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 
 namespace Genbox.FastHash.XxHash;
@@ -39,6 +40,7 @@ public static class XxHash64
     /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         uint len = (uint)data.Length;
         ulong h64;
         int offset = 0;
@@ -53,10 +55,10 @@ public static class XxHash64
 
             do
             {
-                v1 = Round(v1, Read64(remaining));
-                v2 = Round(v2, Read64(remaining, 8));
-                v3 = Round(v3, Read64(remaining, 16));
-                v4 = Round(v4, Read64(remaining, 24));
+                v1 = Round(v1, Read64(ref MemoryMarshal.GetReference(remaining)));
+                v2 = Round(v2, Read64(ref MemoryMarshal.GetReference(remaining), 8));
+                v3 = Round(v3, Read64(ref MemoryMarshal.GetReference(remaining), 16));
+                v4 = Round(v4, Read64(ref MemoryMarshal.GetReference(remaining), 24));
                 remaining = remaining.Slice(32);
             } while (remaining.Length >= 32);
 
@@ -76,7 +78,7 @@ public static class XxHash64
 
         while (len >= 8)
         {
-            ulong k1 = Round(0, Read64(data, offset));
+            ulong k1 = Round(0, Read64(ref dataReference, offset));
             offset += 8;
             h64 ^= k1;
             h64 = (RotateLeft(h64, 27) * PRIME64_1) + PRIME64_4;
@@ -85,7 +87,7 @@ public static class XxHash64
 
         if (len >= 4)
         {
-            h64 ^= Read32(data, offset) * PRIME64_1;
+            h64 ^= Read32(ref dataReference, offset) * PRIME64_1;
             offset += 4;
             h64 = (RotateLeft(h64, 23) * PRIME64_2) + PRIME64_3;
             len -= 4;
@@ -93,7 +95,7 @@ public static class XxHash64
 
         while (len > 0)
         {
-            h64 ^= data[offset++] * PRIME64_5;
+            h64 ^= Unsafe.Add(ref dataReference, offset++) * PRIME64_5;
             h64 = RotateLeft(h64, 11) * PRIME64_1;
             len--;
         }

@@ -1,6 +1,7 @@
 // C# port of SuperFastHash by Paul Hsieh (http://www.azillionmonkeys.com/qed/hash.html).
 // Distributed under the Paul Hsieh derivative license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Genbox.FastHash.SuperFastHash;
 
@@ -61,6 +62,7 @@ public static class SuperFastHash32
     /// <returns>The 32-bit hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         if (data.Length <= 0)
             return 0;
 
@@ -73,8 +75,8 @@ public static class SuperFastHash32
 
         for (; length > 0; length--)
         {
-            hash += Read16(data, index);
-            tmp = (uint)((Read16(data, index + 2) << 11) ^ hash);
+            hash += Read16(ref dataReference, index);
+            tmp = (uint)((Read16(ref dataReference, index + 2) << 11) ^ hash);
             hash = (hash << 16) ^ tmp;
             index += 2 * sizeof(ushort);
             hash += hash >> 11;
@@ -83,18 +85,18 @@ public static class SuperFastHash32
         switch (rem)
         {
             case 3:
-                hash += Read16(data, index);
+                hash += Read16(ref dataReference, index);
                 hash ^= hash << 16;
-                hash ^= unchecked((uint)((sbyte)data[index + sizeof(ushort)] << 18)); // upstream reads tail bytes as signed char
+                hash ^= unchecked((uint)((sbyte)Unsafe.Add(ref dataReference, index + sizeof(ushort)) << 18)); // upstream reads tail bytes as signed char
                 hash += hash >> 11;
                 break;
             case 2:
-                hash += Read16(data, index);
+                hash += Read16(ref dataReference, index);
                 hash ^= hash << 11;
                 hash += hash >> 17;
                 break;
             case 1:
-                hash += unchecked((uint)(sbyte)data[index]);
+                hash += unchecked((uint)(sbyte)Unsafe.Add(ref dataReference, index));
                 hash ^= hash << 10;
                 hash += hash >> 1;
                 break;

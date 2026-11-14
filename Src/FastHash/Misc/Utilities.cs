@@ -2,57 +2,62 @@ using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+#if NET8_0_OR_GREATER
+using System.Runtime.Intrinsics;
+#endif
+
 namespace Genbox.FastHash.Misc;
 
 internal static class Utilities
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ushort Read16(ReadOnlySpan<byte> data, int offset)
+    internal static ushort Read16(ReadOnlySpan<byte> data, int offset = 0) => Read16(ref MemoryMarshal.GetReference(data), offset);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ushort Read16(ref byte data, int offset = 0)
     {
-        ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return BinaryPrimitives.ReadUInt16LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, offset), sizeof(ushort)));
+        ushort value = Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref data, offset));
+        return BitConverter.IsLittleEndian ? value : BinaryPrimitives.ReverseEndianness(value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint Read32(ReadOnlySpan<byte> data)
+    internal static uint Read32(ReadOnlySpan<byte> data, int offset = 0) => Read32(ref MemoryMarshal.GetReference(data), offset);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static uint Read32(ref byte data, int offset = 0)
     {
-        ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return BinaryPrimitives.ReadUInt32LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref ptr, sizeof(uint)));
+        uint value = Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref data, offset));
+        return BitConverter.IsLittleEndian ? value : BinaryPrimitives.ReverseEndianness(value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint Read32(ReadOnlySpan<byte> data, uint offset)
+    internal static uint Read32(ReadOnlySpan<byte> data, uint offset) => Read32(ref MemoryMarshal.GetReference(data), offset);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static uint Read32(ref byte data, uint offset)
     {
-        ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return BinaryPrimitives.ReadUInt32LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, (IntPtr)offset), sizeof(uint)));
+        uint value = Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref data, (IntPtr)offset));
+        return BitConverter.IsLittleEndian ? value : BinaryPrimitives.ReverseEndianness(value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static uint Read32(ReadOnlySpan<byte> data, int offset)
+    internal static ulong Read64(ReadOnlySpan<byte> data, int offset = 0) => Read64(ref MemoryMarshal.GetReference(data), offset);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ulong Read64(ref byte data, int offset = 0)
     {
-        ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return BinaryPrimitives.ReadUInt32LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, offset), sizeof(uint)));
+        ulong value = Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref data, offset));
+        return BitConverter.IsLittleEndian ? value : BinaryPrimitives.ReverseEndianness(value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong Read64(ReadOnlySpan<byte> data)
-    {
-        ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return BinaryPrimitives.ReadUInt64LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref ptr, sizeof(ulong)));
-    }
+    internal static ulong Read64(ReadOnlySpan<byte> data, uint offset) => Read64(ref MemoryMarshal.GetReference(data), offset);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong Read64(ReadOnlySpan<byte> data, uint offset)
+    internal static ulong Read64(ref byte data, uint offset)
     {
-        ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return BinaryPrimitives.ReadUInt64LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, (IntPtr)offset), sizeof(ulong)));
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ulong Read64(ReadOnlySpan<byte> data, int offset)
-    {
-        ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return BinaryPrimitives.ReadUInt64LittleEndian(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, offset), sizeof(ulong)));
+        ulong value = Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref data, (IntPtr)offset));
+        return BitConverter.IsLittleEndian ? value : BinaryPrimitives.ReverseEndianness(value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -120,4 +125,45 @@ internal static class Utilities
     }
 
 
+#if NET8_0_OR_GREATER
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static Vector128<byte> ReadPartial128(ref byte data, int length)
+    {
+        // Callers supply 0-16 available bytes; never read beyond that extent.
+        if (length == 16)
+            return Unsafe.ReadUnaligned<Vector128<byte>>(ref data);
+
+        if (!BitConverter.IsLittleEndian)
+        {
+            Vector128<byte> result = Vector128<byte>.Zero;
+            Unsafe.CopyBlockUnaligned(ref Unsafe.As<Vector128<byte>, byte>(ref result), ref data, (uint)length);
+            return result;
+        }
+        if (length >= 8)
+        {
+            ulong low = Read64(ref data);
+            ulong high = length == 8 ? 0 : Read64(ref data, length - 8) >> ((16 - length) * 8);
+            return Vector128.Create(low, high).AsByte();
+        }
+
+        if (length >= 4)
+        {
+            uint low = Read32(ref data);
+            uint high = length == 4 ? 0 : Read32(ref data, length - 4) >> ((8 - length) * 8);
+            return Vector128.Create(low | ((ulong)high << 32), 0UL).AsByte();
+        }
+
+        uint value = 0;
+        if (length != 0)
+        {
+            value = data;
+            if (length >= 2)
+                value |= (uint)Unsafe.Add(ref data, 1) << 8;
+            if (length == 3)
+                value |= (uint)Unsafe.Add(ref data, 2) << 16;
+        }
+
+        return Vector128.Create((ulong)value, 0UL).AsByte();
+    }
+#endif
 }

@@ -1,6 +1,7 @@
 // C# port of erthink/t1ha 2.1.1 (0db5d6b). Copyright (c) 2016-2020 Positive Technologies; portions Copyright (c) 2010-2013 Leonid Yuriev.
 // Distributed under the zlib license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.T1haHash.T1haHashConstants;
 
 namespace Genbox.FastHash.T1haHash;
@@ -26,10 +27,11 @@ internal static class T1haHashShared
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong Tail64(ReadOnlySpan<byte> data, int length)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         ulong value = 0;
 
         for (int i = 0; i < length; i++)
-            value |= (ulong)data[i] << (8 * i);
+            value |= (ulong)Unsafe.Add(ref dataReference, i) << (8 * i);
 
         return value;
     }

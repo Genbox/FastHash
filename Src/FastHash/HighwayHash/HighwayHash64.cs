@@ -113,10 +113,11 @@ public static class HighwayHash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void UpdatePacket(ReadOnlySpan<byte> packet, int offset, ref HighwayHashState state) => Update(Read64(packet, offset), Read64(packet, offset + 8), Read64(packet, offset + 16), Read64(packet, offset + 24), ref state);
+    private static void UpdatePacket(ReadOnlySpan<byte> packet, int offset, ref HighwayHashState state) => Update(Read64(ref MemoryMarshal.GetReference(packet), offset), Read64(ref MemoryMarshal.GetReference(packet), offset + 8), Read64(ref MemoryMarshal.GetReference(packet), offset + 16), Read64(ref MemoryMarshal.GetReference(packet), offset + 24), ref state);
 
     private static void UpdateRemainder(ReadOnlySpan<byte> bytes, int sizeMod32, ref HighwayHashState state)
     {
+        ref byte bytesReference = ref MemoryMarshal.GetReference(bytes);
         int sizeMod4 = sizeMod32 & 3;
         int remainderOffset = sizeMod32 & ~3;
         Span<byte> packet = stackalloc byte[32];
@@ -152,13 +153,13 @@ public static class HighwayHash64
         if ((sizeMod32 & 16) != 0)
         {
             for (int i = 0; i < 4; i++)
-                packet[28 + i] = bytes[(remainderOffset + i + sizeMod4) - 4];
+                Unsafe.Add(ref MemoryMarshal.GetReference(packet), 28 + i) = Unsafe.Add(ref bytesReference, (remainderOffset + i + sizeMod4) - 4);
         }
         else if (sizeMod4 != 0)
         {
-            packet[16] = bytes[remainderOffset];
-            packet[17] = bytes[remainderOffset + (sizeMod4 >> 1)];
-            packet[18] = bytes[(remainderOffset + sizeMod4) - 1];
+            Unsafe.Add(ref MemoryMarshal.GetReference(packet), 16) = Unsafe.Add(ref bytesReference, remainderOffset);
+            Unsafe.Add(ref MemoryMarshal.GetReference(packet), 17) = Unsafe.Add(ref bytesReference, remainderOffset + (sizeMod4 >> 1));
+            Unsafe.Add(ref MemoryMarshal.GetReference(packet), 18) = Unsafe.Add(ref bytesReference, (remainderOffset + sizeMod4) - 1);
         }
 
         UpdatePacket(packet, 0, ref state);
@@ -334,18 +335,18 @@ public static class HighwayHash64
         int remainderOffset = sizeMod32 & ~3;
         Span<byte> packet = stackalloc byte[32];
         packet.Clear();
-        MemoryMarshal.CreateReadOnlySpan(ref bytes, remainderOffset).CopyTo(packet);
+        Unsafe.CopyBlockUnaligned(ref MemoryMarshal.GetReference(packet), ref bytes, (uint)remainderOffset);
 
         if ((sizeMod32 & 16) != 0)
         {
             for (int i = 0; i < 4; i++)
-                packet[28 + i] = Unsafe.Add(ref bytes, (remainderOffset + i + sizeMod4) - 4);
+                Unsafe.Add(ref MemoryMarshal.GetReference(packet), 28 + i) = Unsafe.Add(ref bytes, (remainderOffset + i + sizeMod4) - 4);
         }
         else if (sizeMod4 != 0)
         {
-            packet[16] = Unsafe.Add(ref bytes, remainderOffset);
-            packet[17] = Unsafe.Add(ref bytes, remainderOffset + (sizeMod4 >> 1));
-            packet[18] = Unsafe.Add(ref bytes, (remainderOffset + sizeMod4) - 1);
+            Unsafe.Add(ref MemoryMarshal.GetReference(packet), 16) = Unsafe.Add(ref bytes, remainderOffset);
+            Unsafe.Add(ref MemoryMarshal.GetReference(packet), 17) = Unsafe.Add(ref bytes, remainderOffset + (sizeMod4 >> 1));
+            Unsafe.Add(ref MemoryMarshal.GetReference(packet), 18) = Unsafe.Add(ref bytes, (remainderOffset + sizeMod4) - 1);
         }
 
         UpdateAvx2(Vector256.LoadUnsafe(ref MemoryMarshal.GetReference(packet)).AsUInt64(), ref v0, ref v1, ref mul0, ref mul1);

@@ -1,6 +1,7 @@
 // C# port of google/farmhash 1.1.0 (0d859a8). Copyright (c) 2014 Google, Inc.
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Genbox.FastHash.CityHash;
 using static Genbox.FastHash.CityHash.CityHash64;
 using static Genbox.FastHash.FarmHash.FarmHashConstants;
@@ -58,6 +59,7 @@ public static class FarmHash32
     /// <returns>The 32-bit FarmHash value.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         uint len = (uint)data.Length;
 
         if (len <= 24)
@@ -74,11 +76,11 @@ public static class FarmHash32
         // len > 24
         uint h = len, g = C1 * len, f = g;
         {
-            uint a0 = RotateRight(Read32(data, len - 4) * C1, 17) * C2;
-            uint a1 = RotateRight(Read32(data, len - 8) * C1, 17) * C2;
-            uint a2 = RotateRight(Read32(data, len - 16) * C1, 17) * C2;
-            uint a3 = RotateRight(Read32(data, len - 12) * C1, 17) * C2;
-            uint a4 = RotateRight(Read32(data, len - 20) * C1, 17) * C2;
+            uint a0 = RotateRight(Read32(ref dataReference, len - 4) * C1, 17) * C2;
+            uint a1 = RotateRight(Read32(ref dataReference, len - 8) * C1, 17) * C2;
+            uint a2 = RotateRight(Read32(ref dataReference, len - 16) * C1, 17) * C2;
+            uint a3 = RotateRight(Read32(ref dataReference, len - 12) * C1, 17) * C2;
+            uint a4 = RotateRight(Read32(ref dataReference, len - 20) * C1, 17) * C2;
             h ^= a0;
             h = RotateRight(h, 19);
             h = (h * 5) + 0xe6546b64;
@@ -100,11 +102,11 @@ public static class FarmHash32
 
         do
         {
-            uint a0 = RotateRight(Read32(data, offset) * C1, 17) * C2;
-            uint a1 = Read32(data, offset + 4);
-            uint a2 = RotateRight(Read32(data, offset + 8) * C1, 17) * C2;
-            uint a3 = RotateRight(Read32(data, offset + 12) * C1, 17) * C2;
-            uint a4 = Read32(data, offset + 16);
+            uint a0 = RotateRight(Read32(ref dataReference, offset) * C1, 17) * C2;
+            uint a1 = Read32(ref dataReference, offset + 4);
+            uint a2 = RotateRight(Read32(ref dataReference, offset + 8) * C1, 17) * C2;
+            uint a3 = RotateRight(Read32(ref dataReference, offset + 12) * C1, 17) * C2;
+            uint a4 = Read32(ref dataReference, offset + 16);
             h ^= a0;
             h = RotateRight(h, 18);
             h = (h * 5) + 0xe6546b64;
@@ -141,12 +143,13 @@ public static class FarmHash32
 
     private static uint Hash32Len0to4(ReadOnlySpan<byte> s, uint len, uint seed)
     {
+        ref byte sReference = ref MemoryMarshal.GetReference(s);
         uint b = seed;
         uint c = 9;
 
         for (int i = 0; i < len; i++)
         {
-            uint v = (uint)(sbyte)s[i];
+            uint v = (uint)(sbyte)Unsafe.Add(ref sReference, i);
             b = (b * C1) + v;
             c ^= b;
         }
@@ -156,21 +159,23 @@ public static class FarmHash32
 
     private static uint Hash32Len5to12(ReadOnlySpan<byte> s, uint len, uint seed)
     {
+        ref byte sReference = ref MemoryMarshal.GetReference(s);
         uint a = len, b = len * 5, c = 9, d = b + seed;
-        a += Read32(s);
-        b += Read32(s, len - 4);
-        c += Read32(s, (len >> 1) & 4);
+        a += Read32(ref sReference);
+        b += Read32(ref sReference, len - 4);
+        c += Read32(ref sReference, (len >> 1) & 4);
         return AA_xmxmx_Murmur_32(seed ^ Mur(c, Mur(b, Mur(a, d))));
     }
 
     private static uint Hash32Len13to24(ReadOnlySpan<byte> s, uint len, uint seed)
     {
-        uint a = Read32(s, (len >> 1) - 4);
-        uint b = Read32(s, 4);
-        uint c = Read32(s, len - 8);
-        uint d = Read32(s, len >> 1);
-        uint e = Read32(s);
-        uint f = Read32(s, len - 4);
+        ref byte sReference = ref MemoryMarshal.GetReference(s);
+        uint a = Read32(ref sReference, (len >> 1) - 4);
+        uint b = Read32(ref sReference, 4);
+        uint c = Read32(ref sReference, len - 8);
+        uint d = Read32(ref sReference, len >> 1);
+        uint e = Read32(ref sReference);
+        uint f = Read32(ref sReference, len - 4);
         uint h = (d * C1) + len + seed;
         a = RotateRight(a, 12) + f;
         h = Mur(c, h) + a;

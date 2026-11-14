@@ -1,6 +1,7 @@
 // C# port of Nicoshev/rapidhash 3.0.0 (bc4b4ba). Copyright 2025 Nicolas De Carli.
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.RapidHash.RapidHashConstants;
 using static Genbox.FastHash.RapidHash.RapidHashShared;
 
@@ -23,6 +24,7 @@ public static class Rapid3HashNano64
     /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed = 0, ulong[]? secret = null)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         secret ??= DefaultSecret;
         ulong secret0 = secret[0];
         ulong secret1 = secret[1];
@@ -43,9 +45,9 @@ public static class Rapid3HashNano64
 
                 while (i > 48)
                 {
-                    seed = RapidMix(Read64(data, offset) ^ secret0, Read64(data, offset + 8) ^ seed);
-                    see1 = RapidMix(Read64(data, offset + 16) ^ secret1, Read64(data, offset + 24) ^ see1);
-                    see2 = RapidMix(Read64(data, offset + 32) ^ secret2, Read64(data, offset + 40) ^ see2);
+                    seed = RapidMix(Read64(ref dataReference, offset) ^ secret0, Read64(ref dataReference, offset + 8) ^ seed);
+                    see1 = RapidMix(Read64(ref dataReference, offset + 16) ^ secret1, Read64(ref dataReference, offset + 24) ^ see1);
+                    see2 = RapidMix(Read64(ref dataReference, offset + 32) ^ secret2, Read64(ref dataReference, offset + 40) ^ see2);
 
                     offset += 48;
                     i -= 48;

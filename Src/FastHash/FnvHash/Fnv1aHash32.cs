@@ -1,6 +1,7 @@
 // C# implementation of FNV-1a by Glenn Fowler, Landon Curt Noll and Kiem-Phong Vo, which is in the public domain.
 // See THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.FnvHash.FnvHashConstants;
 
 namespace Genbox.FastHash.FnvHash;
@@ -27,10 +28,11 @@ public static class Fnv1aHash32
     /// <returns>The 32-bit FNV-1a hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         uint hash = FNV1_32_INIT;
 
         for (int i = 0; i < data.Length; i++)
-            hash = (hash ^ data[i]) * FNV_32_PRIME;
+            hash = (hash ^ Unsafe.Add(ref dataReference, i)) * FNV_32_PRIME;
 
         return hash;
     }

@@ -1,6 +1,7 @@
 // C# port of veorq/SipHash 1.0.0 (dfaa38e). Copyright 2012-2024 JP Aumasson.
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.SipHash.SipHashConstants;
 
 namespace Genbox.FastHash.SipHash;
@@ -119,6 +120,7 @@ public static class SipHash64
     /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2, byte cRounds, byte dRounds)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         int length = data.Length;
         ulong v0 = v0Init;
         ulong v1 = v1Init;
@@ -138,7 +140,7 @@ public static class SipHash64
 
         for (i = 0; i < num; i++)
         {
-            ulong m = Read64(data, 8 * i);
+            ulong m = Read64(ref dataReference, 8 * i);
             v3 ^= m;
 
             for (int j = 0; j < cRounds; ++j)
@@ -150,25 +152,25 @@ public static class SipHash64
         switch (left)
         {
             case 7:
-                b |= (ulong)data[6 + offset1] << 48;
+                b |= (ulong)Unsafe.Add(ref dataReference, 6 + offset1) << 48;
                 goto case 6;
             case 6:
-                b |= (ulong)data[5 + offset1] << 40;
+                b |= (ulong)Unsafe.Add(ref dataReference, 5 + offset1) << 40;
                 goto case 5;
             case 5:
-                b |= (ulong)data[4 + offset1] << 32;
+                b |= (ulong)Unsafe.Add(ref dataReference, 4 + offset1) << 32;
                 goto case 4;
             case 4:
-                b |= (ulong)data[3 + offset1] << 24;
+                b |= (ulong)Unsafe.Add(ref dataReference, 3 + offset1) << 24;
                 goto case 3;
             case 3:
-                b |= (ulong)data[2 + offset1] << 16;
+                b |= (ulong)Unsafe.Add(ref dataReference, 2 + offset1) << 16;
                 goto case 2;
             case 2:
-                b |= (ulong)data[1 + offset1] << 8;
+                b |= (ulong)Unsafe.Add(ref dataReference, 1 + offset1) << 8;
                 goto case 1;
             case 1:
-                b |= data[0 + offset1];
+                b |= Unsafe.Add(ref dataReference, 0 + offset1);
                 break;
             case 0:
                 break;

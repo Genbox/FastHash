@@ -1,6 +1,7 @@
 // C# port of google/cityhash 1.1.1 (4726e30). Copyright (c) 2011 Google, Inc.
 // Distributed under the MIT license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.CityHash.CityHash64;
 using static Genbox.FastHash.CityHash.CityHashConstants;
 
@@ -39,11 +40,12 @@ public static class CityHash128
     /// <returns>The 128-bit hash.</returns>
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         uint len = (uint)data.Length;
 
         if (len >= 16)
         {
-            UInt128 seed = new UInt128(Read64(data, 8) + K0, Read64(data));
+            UInt128 seed = new UInt128(Read64(ref dataReference, 8) + K0, Read64(ref dataReference));
             return CityHash128WithSeed(data.Slice(16, (int)(len - 16)), len - 16, seed);
         }
 
@@ -60,6 +62,7 @@ public static class CityHash128
     // of any length representable in signed long.  Based on City and Murmur.
     private static UInt128 CityMurmur(ReadOnlySpan<byte> s, uint len, UInt128 seed)
     {
+        ref byte sReference = ref MemoryMarshal.GetReference(s);
         ulong a = seed.Low;
         ulong b = seed.High;
         ulong c;
@@ -69,12 +72,12 @@ public static class CityHash128
         {
             a = ShiftMix(a * K1) * K1;
             c = (b * K1) + HashLen0to16(s, len);
-            d = ShiftMix(a + (len >= 8 ? Read64(s) : c));
+            d = ShiftMix(a + (len >= 8 ? Read64(ref sReference) : c));
         }
         else
         {
-            c = HashLen16(Read64(s, len - 8) + K1, a);
-            d = HashLen16(b + len, c + Read64(s, len - 16));
+            c = HashLen16(Read64(ref sReference, len - 8) + K1, a);
+            d = HashLen16(b + len, c + Read64(ref sReference, len - 16));
             a += d;
 
             // len > 16 here, so do...while is safe
@@ -82,10 +85,10 @@ public static class CityHash128
 
             do
             {
-                a ^= ShiftMix(Read64(s, offset) * K1) * K1;
+                a ^= ShiftMix(Read64(ref sReference, offset) * K1) * K1;
                 a *= K1;
                 b ^= a;
-                c ^= ShiftMix(Read64(s, offset + 8) * K1) * K1;
+                c ^= ShiftMix(Read64(ref sReference, offset + 8) * K1) * K1;
                 c *= K1;
                 d ^= c;
                 offset += 16;
@@ -100,6 +103,7 @@ public static class CityHash128
 
     private static UInt128 CityHash128WithSeed(ReadOnlySpan<byte> s, uint len, UInt128 seed)
     {
+        ref byte sReference = ref MemoryMarshal.GetReference(s);
         if (len < 128)
             return CityMurmur(s, len, seed);
 
@@ -108,31 +112,31 @@ public static class CityHash128
         ulong x = seed.Low;
         ulong y = seed.High;
         ulong z = len * K1;
-        ulong vLow = (RotateRight(y ^ K1, 49) * K1) + Read64(s);
-        UInt128 v = new UInt128((RotateRight(vLow, 42) * K1) + Read64(s, 8), vLow);
-        UInt128 w = new UInt128(RotateRight(x + Read64(s, 88), 53) * K1, (RotateRight(y + z, 35) * K1) + x);
+        ulong vLow = (RotateRight(y ^ K1, 49) * K1) + Read64(ref sReference);
+        UInt128 v = new UInt128((RotateRight(vLow, 42) * K1) + Read64(ref sReference, 8), vLow);
+        UInt128 w = new UInt128(RotateRight(x + Read64(ref sReference, 88), 53) * K1, (RotateRight(y + z, 35) * K1) + x);
 
         // This is the same inner loop as CityHash64(), manually unrolled.
         uint offset = 0;
 
         do
         {
-            x = RotateRight(x + y + v.Low + Read64(s, offset + 8), 37) * K1;
-            y = RotateRight(y + v.High + Read64(s, offset + 48), 42) * K1;
+            x = RotateRight(x + y + v.Low + Read64(ref sReference, offset + 8), 37) * K1;
+            y = RotateRight(y + v.High + Read64(ref sReference, offset + 48), 42) * K1;
             x ^= w.High;
-            y += v.Low + Read64(s, offset + 40);
+            y += v.Low + Read64(ref sReference, offset + 40);
             z = RotateRight(z + w.Low, 33) * K1;
             v = WeakHashLen32WithSeeds(s, offset + 0, v.High * K1, x + w.Low);
-            w = WeakHashLen32WithSeeds(s, offset + 32, z + w.High, y + Read64(s, offset + 16));
+            w = WeakHashLen32WithSeeds(s, offset + 32, z + w.High, y + Read64(ref sReference, offset + 16));
             Swap(ref z, ref x);
             offset += 64;
-            x = RotateRight(x + y + v.Low + Read64(s, offset + 8), 37) * K1;
-            y = RotateRight(y + v.High + Read64(s, offset + 48), 42) * K1;
+            x = RotateRight(x + y + v.Low + Read64(ref sReference, offset + 8), 37) * K1;
+            y = RotateRight(y + v.High + Read64(ref sReference, offset + 48), 42) * K1;
             x ^= w.High;
-            y += v.Low + Read64(s, offset + 40);
+            y += v.Low + Read64(ref sReference, offset + 40);
             z = RotateRight(z + w.Low, 33) * K1;
             v = WeakHashLen32WithSeeds(s, offset, v.High * K1, x + w.Low);
-            w = WeakHashLen32WithSeeds(s, offset + 32, z + w.High, y + Read64(s, offset + 16));
+            w = WeakHashLen32WithSeeds(s, offset + 32, z + w.High, y + Read64(ref sReference, offset + 16));
             Swap(ref z, ref x);
             offset += 64;
             len -= 128;
@@ -149,9 +153,9 @@ public static class CityHash128
         {
             tail_done += 32;
             y = (RotateRight(x + y, 42) * K0) + v.High;
-            w = new UInt128(w.High, w.Low + Read64(s, ((offset + len) - tail_done) + 16));
+            w = new UInt128(w.High, w.Low + Read64(ref sReference, ((offset + len) - tail_done) + 16));
             x = (x * K0) + w.Low;
-            z += w.High + Read64(s, (offset + len) - tail_done);
+            z += w.High + Read64(ref sReference, (offset + len) - tail_done);
             w = new UInt128(w.High + v.Low, w.Low);
             v = WeakHashLen32WithSeeds(s, (offset + len) - tail_done, v.Low + z, v.High);
             v = new UInt128(v.High, v.Low * K0);

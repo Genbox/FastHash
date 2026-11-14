@@ -1,6 +1,7 @@
 // C# port of Cyan4973/xxHash 0.8.3 (e626a72). Copyright (c) 2012-2021 Yann Collet.
 // Distributed under the BSD 2-Clause license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 
 namespace Genbox.FastHash.XxHash;
@@ -38,6 +39,7 @@ public static class XxHash32
     /// <returns>The 32-bit hash.</returns>
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         uint len = (uint)data.Length;
         uint h32;
         int offset = 0;
@@ -52,10 +54,10 @@ public static class XxHash32
 
             do
             {
-                v1 = Round(v1, Read32(remaining));
-                v2 = Round(v2, Read32(remaining, 4));
-                v3 = Round(v3, Read32(remaining, 8));
-                v4 = Round(v4, Read32(remaining, 12));
+                v1 = Round(v1, Read32(ref MemoryMarshal.GetReference(remaining)));
+                v2 = Round(v2, Read32(ref MemoryMarshal.GetReference(remaining), 4));
+                v3 = Round(v3, Read32(ref MemoryMarshal.GetReference(remaining), 8));
+                v4 = Round(v4, Read32(ref MemoryMarshal.GetReference(remaining), 12));
                 remaining = remaining.Slice(16);
             } while (remaining.Length >= 16);
 
@@ -71,7 +73,7 @@ public static class XxHash32
 
         while (len >= 4)
         {
-            h32 += Read32(data, offset) * PRIME32_3;
+            h32 += Read32(ref dataReference, offset) * PRIME32_3;
             offset += 4;
             h32 = RotateLeft(h32, 17) * PRIME32_4;
             len -= 4;
@@ -79,7 +81,7 @@ public static class XxHash32
 
         while (len > 0)
         {
-            h32 += data[offset++] * PRIME32_5;
+            h32 += Unsafe.Add(ref dataReference, offset++) * PRIME32_5;
             h32 = RotateLeft(h32, 11) * PRIME32_1;
             len--;
         }

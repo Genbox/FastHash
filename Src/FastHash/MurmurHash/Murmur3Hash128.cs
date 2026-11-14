@@ -1,6 +1,7 @@
 // C# port of MurmurHash3 from aappleby/smhasher (92cf370), written by Austin Appleby and placed in the public domain.
 // See THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.MurmurHash.MurmurHashConstants;
 
 namespace Genbox.FastHash.MurmurHash;
@@ -56,6 +57,7 @@ public static class Murmur3Hash128
     /// <returns>The 128-bit hash.</returns>
     public static UInt128 ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         uint length = (uint)data.Length;
         uint nBlocks = length / 16;
 
@@ -67,8 +69,8 @@ public static class Murmur3Hash128
 
         for (uint i = 0; i < nBlocks; i++)
         {
-            k1 = Read64(data, (i * 16) + 0);
-            k2 = Read64(data, (i * 16) + 8);
+            k1 = Read64(ref dataReference, (i * 16) + 0);
+            k2 = Read64(ref dataReference, (i * 16) + 8);
 
             k1 *= C1_64;
             k1 = RotateLeft(k1, 31);
@@ -99,25 +101,25 @@ public static class Murmur3Hash128
         switch (rem)
         {
             case 15:
-                k2 ^= (ulong)data[tail + 14] << 48;
+                k2 ^= (ulong)Unsafe.Add(ref dataReference, tail + 14) << 48;
                 goto case 14;
             case 14:
-                k2 ^= (ulong)data[tail + 13] << 40;
+                k2 ^= (ulong)Unsafe.Add(ref dataReference, tail + 13) << 40;
                 goto case 13;
             case 13:
-                k2 ^= (ulong)data[tail + 12] << 32;
+                k2 ^= (ulong)Unsafe.Add(ref dataReference, tail + 12) << 32;
                 goto case 12;
             case 12:
-                k2 ^= (ulong)data[tail + 11] << 24;
+                k2 ^= (ulong)Unsafe.Add(ref dataReference, tail + 11) << 24;
                 goto case 11;
             case 11:
-                k2 ^= (ulong)data[tail + 10] << 16;
+                k2 ^= (ulong)Unsafe.Add(ref dataReference, tail + 10) << 16;
                 goto case 10;
             case 10:
-                k2 ^= (ulong)data[tail + 9] << 8;
+                k2 ^= (ulong)Unsafe.Add(ref dataReference, tail + 9) << 8;
                 goto case 9;
             case 9:
-                k2 ^= data[tail + 8];
+                k2 ^= Unsafe.Add(ref dataReference, tail + 8);
 
                 k2 *= C2_64;
                 k2 = RotateLeft(k2, 33);
@@ -126,28 +128,28 @@ public static class Murmur3Hash128
 
                 goto case 8;
             case 8:
-                k1 ^= (ulong)data[tail + 7] << 56;
+                k1 ^= (ulong)Unsafe.Add(ref dataReference, tail + 7) << 56;
                 goto case 7;
             case 7:
-                k1 ^= (ulong)data[tail + 6] << 48;
+                k1 ^= (ulong)Unsafe.Add(ref dataReference, tail + 6) << 48;
                 goto case 6;
             case 6:
-                k1 ^= (ulong)data[tail + 5] << 40;
+                k1 ^= (ulong)Unsafe.Add(ref dataReference, tail + 5) << 40;
                 goto case 5;
             case 5:
-                k1 ^= (ulong)data[tail + 4] << 32;
+                k1 ^= (ulong)Unsafe.Add(ref dataReference, tail + 4) << 32;
                 goto case 4;
             case 4:
-                k1 ^= (ulong)data[tail + 3] << 24;
+                k1 ^= (ulong)Unsafe.Add(ref dataReference, tail + 3) << 24;
                 goto case 3;
             case 3:
-                k1 ^= (ulong)data[tail + 2] << 16;
+                k1 ^= (ulong)Unsafe.Add(ref dataReference, tail + 2) << 16;
                 goto case 2;
             case 2:
-                k1 ^= (ulong)data[tail + 1] << 8;
+                k1 ^= (ulong)Unsafe.Add(ref dataReference, tail + 1) << 8;
                 goto case 1;
             case 1:
-                k1 ^= data[tail];
+                k1 ^= Unsafe.Add(ref dataReference, tail);
 
                 k1 *= C1_64;
                 k1 = RotateLeft(k1, 31);

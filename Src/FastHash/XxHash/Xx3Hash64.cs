@@ -191,13 +191,14 @@ public static class Xx3Hash64
 
     private static ulong XXH3_len_9to16_64b(ReadOnlySpan<byte> input, int len, ulong seed)
     {
+        ref byte inputReference = ref MemoryMarshal.GetReference(input);
         // XXH_ASSERT(input != NULL);
         // XXH_ASSERT(9 <= len && len <= 16);
 
         ulong bitflip1 = (SECRET64_024 ^ SECRET64_032) + seed;
         ulong bitflip2 = (SECRET64_040 ^ SECRET64_048) - seed;
-        ulong input_lo = Read64(input) ^ bitflip1;
-        ulong input_hi = Read64(input, len - 8) ^ bitflip2;
+        ulong input_lo = Read64(ref inputReference) ^ bitflip1;
+        ulong input_hi = Read64(ref inputReference, len - 8) ^ bitflip2;
         ulong acc = (ulong)len
                     + ByteSwap(input_lo) + input_hi
                     + XXH3_mul128_fold64(input_lo, input_hi);
@@ -206,13 +207,14 @@ public static class Xx3Hash64
 
     private static ulong XXH3_len_4to8_64b(ReadOnlySpan<byte> input, int len, ulong seed)
     {
+        ref byte inputReference = ref MemoryMarshal.GetReference(input);
         // XXH_ASSERT(input != NULL);
         // XXH_ASSERT(4 <= len && len <= 8);
 
         seed ^= (ulong)ByteSwap((uint)seed) << 32;
 
-        uint input1 = Read32(input);
-        uint input2 = Read32(input, len - 4);
+        uint input1 = Read32(ref inputReference);
+        uint input2 = Read32(ref inputReference, len - 4);
         ulong bitflip = (SECRET64_008 ^ SECRET64_016) - seed;
         ulong input64 = input2 + ((ulong)input1 << 32);
         ulong keyed = input64 ^ bitflip;
@@ -221,12 +223,13 @@ public static class Xx3Hash64
 
     private static ulong XXH3_len_1to3_64b(ReadOnlySpan<byte> input, int len, ulong seed)
     {
+        ref byte inputReference = ref MemoryMarshal.GetReference(input);
         // XXH_ASSERT(input != NULL);
         // XXH_ASSERT(1 <= len && len <= 3);
 
-        byte c1 = input[0];
-        byte c2 = input[len >> 1];
-        byte c3 = input[len - 1];
+        byte c1 = Unsafe.Add(ref inputReference, 0);
+        byte c2 = Unsafe.Add(ref inputReference, len >> 1);
+        byte c3 = Unsafe.Add(ref inputReference, len - 1);
         uint combined = ((uint)c1 << 16) | ((uint)c2 << 24) | ((uint)c3 << 0) | ((uint)len << 8);
         ulong bitflip = (SECRET32_000 ^ SECRET32_004) + seed;
         ulong keyed = combined ^ bitflip;
@@ -257,8 +260,9 @@ public static class Xx3Hash64
 
     internal static ulong XXH3_mix16B(ReadOnlySpan<byte> input, int offset, ulong secretLow, ulong secretHigh, ulong seed)
     {
-        ulong inputLow = Read64(input, offset) ^ (secretLow + seed);
-        ulong inputHigh = Read64(input, offset + 8) ^ (secretHigh - seed);
+        ref byte inputReference = ref MemoryMarshal.GetReference(input);
+        ulong inputLow = Read64(ref inputReference, offset) ^ (secretLow + seed);
+        ulong inputHigh = Read64(ref inputReference, offset + 8) ^ (secretHigh - seed);
         return XXH3_mul128_fold64(inputLow, inputHigh);
     }
 
@@ -315,7 +319,7 @@ public static class Xx3Hash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong XXH3_mix2Accs(Span<ulong> acc, int offset, ReadOnlySpan<byte> secret, int secretOffset) => XXH3_mul128_fold64(acc[offset + 0] ^ Read64(secret, secretOffset), acc[offset + 1] ^ Read64(secret, secretOffset + 8));
+    private static ulong XXH3_mix2Accs(Span<ulong> acc, int offset, ReadOnlySpan<byte> secret, int secretOffset) => XXH3_mul128_fold64(acc[offset + 0] ^ Read64(ref MemoryMarshal.GetReference(secret), secretOffset), acc[offset + 1] ^ Read64(ref MemoryMarshal.GetReference(secret), secretOffset + 8));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void XXH3_accumulate_scalar(Span<ulong> acc, ReadOnlySpan<byte> input, int inputOffset, ReadOnlySpan<byte> secret, int secretOffset, int nbStripes)
@@ -338,8 +342,8 @@ public static class Xx3Hash64
         ReadOnlySpan<byte> xinput = input;
         ReadOnlySpan<byte> xsecret = secret;
 
-        ulong data_val = Read64(xinput, inputOffset + (lane * 8));
-        ulong data_key = data_val ^ Read64(xsecret, secretOffset + (lane * 8));
+        ulong data_val = Read64(ref MemoryMarshal.GetReference(xinput), inputOffset + (lane * 8));
+        ulong data_key = data_val ^ Read64(ref MemoryMarshal.GetReference(xsecret), secretOffset + (lane * 8));
         xacc[lane ^ 1] += data_val;
         xacc[lane] += XXH_mult32to64(data_key & 0xFFFFFFFF, data_key >> 32);
     }
@@ -357,7 +361,7 @@ public static class Xx3Hash64
         Span<ulong> xacc = acc;
         ReadOnlySpan<byte> xsecret = secret;
 
-        ulong key64 = Read64(xsecret, secretOffset + (lane * 8));
+        ulong key64 = Read64(ref MemoryMarshal.GetReference(xsecret), secretOffset + (lane * 8));
         ulong acc64 = xacc[lane];
         acc64 = XXH_xorshift64(acc64, 47);
         acc64 ^= key64;

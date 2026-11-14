@@ -1,10 +1,10 @@
 // C# port of Cyan4973/xxHash 0.8.3 (e626a72). Copyright (c) 2012-2021 Yann Collet.
 // Distributed under the BSD 2-Clause license; see THIRD-PARTY-NOTICES.txt at the repository root.
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Genbox.FastHash.XxHash.XxHashConstants;
 using static Genbox.FastHash.XxHash.Xx3Hash64;
 
-using System.Runtime.InteropServices;
 
 namespace Genbox.FastHash.XxHash;
 
@@ -144,10 +144,11 @@ public static class Xx3Hash128
 
     private static Xx3Hash128Result XXH3_len_9to16_128b(ReadOnlySpan<byte> input, int len, ulong seed)
     {
+        ref byte inputReference = ref MemoryMarshal.GetReference(input);
         ulong bitflipl = (SECRET64_032 ^ SECRET64_040) - seed;
         ulong bitfliph = (SECRET64_048 ^ SECRET64_056) + seed;
-        ulong input_lo = Read64(input);
-        ulong input_hi = Read64(input, len - 8);
+        ulong input_lo = Read64(ref inputReference);
+        ulong input_hi = Read64(ref inputReference, len - 8);
         ulong high = BigMul(input_lo ^ input_hi ^ bitflipl, PRIME64_1, out ulong low);
         low += (ulong)(len - 1) << 54;
         input_hi ^= bitfliph;
@@ -159,6 +160,7 @@ public static class Xx3Hash128
 
     private static Xx3Hash128Result XXH3_len_1to3_128b(ReadOnlySpan<byte> input, int len, ulong seed)
     {
+        ref byte inputReference = ref MemoryMarshal.GetReference(input);
         /* A doubled version of 1to3_64b with different constants. */
         //XXH_ASSERT(input != NULL);
         //XXH_ASSERT(1 <= len && len <= 3);
@@ -169,9 +171,9 @@ public static class Xx3Hash128
          * len = 3: combinedl = { input[2], 0x03, input[0], input[1] }
          */
 
-        byte c1 = input[0];
-        byte c2 = input[len >> 1];
-        byte c3 = input[len - 1];
+        byte c1 = Unsafe.Add(ref inputReference, 0);
+        byte c2 = Unsafe.Add(ref inputReference, len >> 1);
+        byte c3 = Unsafe.Add(ref inputReference, len - 1);
 
         uint combinedl = ((uint)c1 << 16) | ((uint)c2 << 24) | ((uint)c3 << 0) | ((uint)len << 8);
         uint combinedh = RotateLeft(ByteSwap(combinedl), 13);
@@ -185,13 +187,14 @@ public static class Xx3Hash128
 
     private static Xx3Hash128Result XXH3_len_4to8_128b(ReadOnlySpan<byte> input, int len, ulong seed)
     {
+        ref byte inputReference = ref MemoryMarshal.GetReference(input);
         // XXH_ASSERT(input != NULL);
         // XXH_ASSERT(4 <= len && len <= 8);
 
         seed ^= (ulong)ByteSwap((uint)seed) << 32;
 
-        uint input_lo = Read32(input);
-        uint input_hi = Read32(input, len - 4);
+        uint input_lo = Read32(ref inputReference);
+        uint input_hi = Read32(ref inputReference, len - 4);
         ulong input_64 = input_lo + ((ulong)input_hi << 32);
         ulong bitflip = (SECRET64_016 ^ SECRET64_024) + seed;
         ulong keyed = input_64 ^ bitflip;
@@ -234,10 +237,11 @@ public static class Xx3Hash128
 
     private static void XXH128_mix32B(ref ulong low, ref ulong high, ReadOnlySpan<byte> input, int offset1, int offset2, ulong secret0, ulong secret1, ulong secret2, ulong secret3, ulong seed)
     {
+        ref byte inputReference = ref MemoryMarshal.GetReference(input);
         low += XXH3_mix16B(input, offset1, secret0, secret1, seed);
-        low ^= Read64(input, offset2) + Read64(input, offset2 + 8);
+        low ^= Read64(ref inputReference, offset2) + Read64(ref inputReference, offset2 + 8);
         high += XXH3_mix16B(input, offset2, secret2, secret3, seed);
-        high ^= Read64(input, offset1) + Read64(input, offset1 + 8);
+        high ^= Read64(ref inputReference, offset1) + Read64(ref inputReference, offset1 + 8);
     }
 
     [StructLayout(LayoutKind.Sequential)]
