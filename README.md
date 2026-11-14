@@ -52,24 +52,24 @@ The table below gives an overview of the implementations.
 | Name          | Managed | Unsafe | 32bit | 64bit | 128bit | Index | Seeded | Secret | Verified |
 |---------------|:-------:|:------:|:-----:|:-----:|:------:|:-----:|:------:|:------:|:--------:|
 | AbslHash      |    x    |   x    |       |   x   |        |       |   x    |        |    x     |
-| AesniHash     |    x    |        |       |   x   |   x    |   x   |   x    |        |          |
+| AesniHash     |    x    |        |       |   x   |   x    |   x   |   x    |        |    x     |
 | CityHash      |    x    |   x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
 | CLHash        |    x    |   x    |       |   x   |        |       |   x    |   x    |    x     |
-| DJBHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |          |
+| DJBHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |    x     |
 | FarmHash      |    x    |   x    |   x   |   x   |   x    |   x   |   x    |        |    x     |
 | FarshHash     |    x    |   x    |   x   |   x   |        |   x   |   x    |        |    x     |
-| FNVHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |          |
-| FoldHash      |    x    |        |       |   x   |        |   x   |   x    |   x    |          |
-| Gx2Hash       |    x    |        |   x   |   x   |   x    |   x   |   x    |        |          |
+| FNVHash       |    x    |   x    |   x   |   x   |        |   x   |        |        |    x     |
+| FoldHash      |    x    |        |       |   x   |        |   x   |   x    |   x    |    x     |
+| Gx2Hash       |    x    |        |   x   |   x   |   x    |   x   |   x    |        |    x     |
 | HighwayHash   |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
-| MarvinHash    |    x    |        |   x   |   x   |        |   x   |   x    |        |          |
-| MeowHash      |         |   x    |       |   x   |   x    |   x   |        |        |          |
-| MurmurHash    |    x    |   x    |   x   |       |   x    |   x   |   x    |        |    -     |
-| PolymurHash   |    x    |        |       |   x   |        |   x   |   x    |        |          |
+| MarvinHash    |    x    |        |   x   |   x   |        |   x   |   x    |        |    x     |
+| MeowHash      |    x    |   x    |       |   x   |   x    |   x   |        |        |    x     |
+| MurmurHash    |    x    |   x    |   x   |       |   x    |   x   |   x    |        |    x     |
+| PolymurHash   |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
 | PolyXorHash   |    x    |   x    |       |       |   x    |   x   |   x    |   x    |    x     |
 | RapidHash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
 | SipHash       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
-| SuperFastHash |    x    |   x    |   x   |       |        |   x   |   x    |        |          |
+| SuperFastHash |    x    |   x    |   x   |       |        |   x   |   x    |        |    x     |
 | T1ha2Hash     |    x    |        |       |   x   |        |   x   |   x    |        |    x     |
 | WyHash2       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
 | WyHash3       |    x    |   x    |       |   x   |        |   x   |   x    |   x    |    x     |
