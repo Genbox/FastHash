@@ -1,5 +1,6 @@
 root = true
 
+# Formatting and code style are defined here. DotSettings retains only IDE-specific settings.
 [*]
 charset = utf-8
 end_of_line = lf
@@ -9,12 +10,70 @@ tab_width = 4
 max_line_length = 2000
 trim_trailing_whitespace = true
 insert_final_newline = false
+resharper_enforce_line_ending_style = true
+
+# JetBrains inspection severities migrated from DotSettings
+resharper_can_simplify_dictionary_lookup_with_try_add_highlighting = error
+resharper_conditional_access_qualifier_is_non_nullable_according_to_api_contract_highlighting = error
+resharper_convert_if_statement_to_null_coalescing_expression_highlighting = none
+dotnet_diagnostic.CS1584.severity = error
+resharper_for_can_be_converted_to_foreach_highlighting = none
+resharper_foreach_can_be_partly_converted_to_query_using_another_get_enumerator_highlighting = none
+resharper_inconsistent_naming_highlighting = none
+resharper_invert_if_highlighting = none
+resharper_join_null_check_with_usage_highlighting = none
+resharper_loop_can_be_converted_to_query_highlighting = none
+resharper_member_can_be_made_static_global_highlighting = none
+resharper_merge_into_pattern_highlighting = none
+resharper_method_supports_cancellation_highlighting = error
+resharper_move_local_function_after_jump_statement_highlighting = none
+resharper_n_unit_async_method_must_be_task_highlighting = none
+resharper_n_unit_incorrect_argument_type_highlighting = none
+resharper_n_unit_incorrect_expected_result_type_highlighting = none
+resharper_n_unit_method_with_parameters_and_test_attribute_highlighting = none
+resharper_n_unit_missing_arguments_in_test_case_attribute_highlighting = none
+resharper_n_unit_non_public_method_with_test_attribute_highlighting = none
+resharper_n_unit_redundant_argument_instead_of_expected_result_highlighting = none
+resharper_n_unit_redundant_argument_in_test_case_attribute_highlighting = none
+resharper_n_unit_redundant_expected_result_in_test_case_attribute_highlighting = none
+resharper_n_unit_test_case_attribute_requires_expected_result_highlighting = none
+resharper_n_unit_test_case_source_cannot_be_resolved_highlighting = none
+resharper_n_unit_test_case_source_must_be_field_property_method_highlighting = none
+resharper_n_unit_test_case_source_must_be_static_highlighting = none
+resharper_n_unit_test_case_source_should_implement_i_enumerable_highlighting = none
+resharper_optional_parameter_ref_out_highlighting = none
+resharper_parameter_only_used_for_precondition_check_local_highlighting = none
+resharper_possible_multiple_enumeration_highlighting = error
+resharper_possible_unintended_linear_search_in_set_highlighting = error
+resharper_possible_unintended_reference_comparison_highlighting = error
+resharper_pure_attribute_on_void_method_highlighting = error
+resharper_redundant_discard_designation_highlighting = error
+resharper_redundant_suppress_nullable_warning_expression_highlighting = error
+resharper_redundant_using_directive_highlighting = hint
+resharper_replace_with_primary_constructor_parameter_highlighting = none
+resharper_required_base_types_is_not_inherited_highlighting = error
+resharper_switch_expression_handles_some_known_enum_values_with_exception_in_default_highlighting = none
+resharper_switch_statement_missing_some_enum_cases_no_default_highlighting = none
+resharper_type_parameter_can_be_variant_highlighting = error
+resharper_unassigned_field_compiler_highlighting = error
+resharper_unassigned_readonly_field_compiler_highlighting = error
+resharper_unused_variable_compiler_highlighting = error
+resharper_use_await_using_highlighting = error
+resharper_use_deconstruction_highlighting = suggestion
+resharper_use_deconstruction_on_parameter_highlighting = suggestion
+resharper_use_nameof_expression_highlighting = warning
+resharper_use_object_or_collection_initializer_highlighting = none
+resharper_use_pattern_matching_highlighting = error
+resharper_use_utf8_string_literal_highlighting = error
+resharper_variable_hides_outer_variable_highlighting = error
+resharper_void_method_with_must_use_return_value_attribute_highlighting = error
 
 [**/{bin,obj}/**]
 generated_code = true
 
 [*.g.cs]
 generated_code = true
+# CS1591: Missing XML comment for publicly visible type or member
 dotnet_diagnostic.CS1591.severity = none
 
 # Two-space formats
@@ -23,6 +82,15 @@ indent_size = 2
 tab_width = 2
 ij_xml_space_inside_empty_tag = true
 ij_xml_keep_blank_lines = 1
+resharper_xml_space_before_self_closing = true
+resharper_xml_wrap_lines = false
+resharper_xml_wrap_tags_and_pi = false
+
+[*.{html,htm,cshtml,aspx,ascx,asax,razor}]
+resharper_html_linebreak_before_elements = body,div,p,form
+resharper_html_max_blank_lines_between_tags = 1
+resharper_html_no_indent_inside_elements = html
+resharper_html_space_before_self_closing = true
 
 # Markdown preserves intentional trailing spaces
 [*.md]
@@ -42,6 +110,7 @@ csharp_prefer_braces = when_multiline:suggestion
 csharp_new_line_before_members_in_object_initializers = false
 csharp_preferred_modifier_order = public, private, protected, internal, file, new, sealed, static, unsafe, override, extern, async, virtual, abstract, required, volatile, readonly, partial:suggestion
 csharp_preserve_single_line_blocks = true
+csharp_preserve_single_line_statements = false
 csharp_space_after_cast = false
 csharp_style_implicit_object_creation_when_type_is_apparent = false:suggestion
 csharp_style_expression_bodied_accessors = true:suggestion
@@ -54,11 +123,57 @@ csharp_style_var_for_built_in_types = false:suggestion
 csharp_style_var_elsewhere = false:suggestion
 csharp_style_var_when_type_is_apparent = false:suggestion
 
+# Private field naming migrated from DotSettings; naming inspections remain disabled.
+dotnet_naming_rule.private_constants.symbols = private_constants
+dotnet_naming_rule.private_constants.style = underscore_camel_case
+dotnet_naming_rule.private_constants.severity = none
+dotnet_naming_rule.private_static_readonly_fields.symbols = private_static_readonly_fields
+dotnet_naming_rule.private_static_readonly_fields.style = underscore_camel_case
+dotnet_naming_rule.private_static_readonly_fields.severity = none
+dotnet_naming_symbols.private_constants.applicable_kinds = field
+dotnet_naming_symbols.private_constants.applicable_accessibilities = private
+dotnet_naming_symbols.private_constants.required_modifiers = const
+dotnet_naming_symbols.private_static_readonly_fields.applicable_kinds = field
+dotnet_naming_symbols.private_static_readonly_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_static_readonly_fields.required_modifiers = static, readonly
+dotnet_naming_style.underscore_camel_case.required_prefix = _
+dotnet_naming_style.underscore_camel_case.capitalization = camel_case
+
 # ReSharper-specific properties without standard equivalents
+resharper_csharp_apply_on_completion = true
+resharper_csharp_can_use_global_alias = false
+resharper_csharp_braces_for_fixed = required_for_multiline
+resharper_csharp_braces_for_for = required_for_multiline
+resharper_csharp_braces_for_foreach = required_for_multiline
+resharper_csharp_braces_for_ifelse = required_for_multiline
+resharper_csharp_braces_for_lock = required_for_multiline
+resharper_csharp_braces_for_using = required_for_multiline
+resharper_csharp_braces_for_while = required_for_multiline
+resharper_csharp_braces_for_dowhile = required_for_multiline
+resharper_csharp_braces_redundant = true
+resharper_csharp_object_creation_when_type_evident = explicitly_typed
+resharper_csharp_object_creation_when_type_not_evident = explicitly_typed
+resharper_csharp_method_or_operator_body = expression_body
+resharper_csharp_local_function_body = expression_body
+resharper_csharp_namespace_body = file_scoped
+resharper_csharp_for_built_in_types = use_explicit_type
+resharper_csharp_for_other_types = use_explicit_type
+resharper_csharp_for_simple_types = use_explicit_type
+resharper_csharp_align_linq_query = true
 resharper_align_multiline_calls_chain = true
+resharper_csharp_align_multiline_extends_list = true
+resharper_csharp_align_multiline_for_stmt = true
+resharper_csharp_align_multiline_parameter = true
+resharper_csharp_align_multiple_declaration = true
+resharper_align_multiline_type_parameter_constraints = true
+resharper_align_multiline_type_parameter_list = true
+resharper_csharp_align_tuple_components = true
 resharper_arguments_skip_single = true
 resharper_blank_lines_after_block_statements = 1
+resharper_csharp_blank_lines_after_control_transfer_statements = 1
+resharper_csharp_blank_lines_after_multiline_statements = 1
 resharper_blank_lines_after_start_comment = 0
+resharper_csharp_blank_lines_before_single_line_comment = 1
 resharper_blank_lines_before_block_statements = 1
 resharper_blank_lines_around_auto_property = 1
 resharper_blank_lines_around_property = 1
@@ -69,7 +184,14 @@ resharper_csharp_empty_block_style = together_same_line
 resharper_csharp_keep_blank_lines_in_code = 1
 resharper_csharp_keep_blank_lines_in_declarations = 1
 resharper_csharp_keep_existing_declaration_parens_arrangement = false
-resharper_csharp_keep_existing_invocation_parens_arrangement = false
+resharper_csharp_keep_existing_embedded_arrangement = false
+resharper_csharp_keep_existing_declaration_block_arrangement = true
+resharper_csharp_keep_existing_expr_member_arrangement = false
+# Preserve caller formatting; keep function definitions on one line when editing.
+resharper_csharp_keep_user_linebreaks = true
+# Preserve deliberate multiline layouts while allowing compact inline initializers.
+resharper_csharp_keep_existing_initializer_arrangement = true
+resharper_csharp_keep_existing_invocation_parens_arrangement = true
 resharper_csharp_keep_existing_primary_constructor_declaration_parens_arrangement = false
 resharper_csharp_max_formal_parameters_on_line = 1000
 resharper_csharp_max_line_length = 2081
@@ -78,6 +200,8 @@ resharper_csharp_space_before_trailing_comment = true
 resharper_csharp_wrap_lines = false
 resharper_csharp_wrap_parameters_style = wrap_if_long
 resharper_csharp_wrap_primary_constructor_parameters_style = wrap_if_long
+resharper_csharp_indent_nested_foreach_stmt = true
+resharper_csharp_stick_comment = false
 resharper_indent_preprocessor_other = do_not_change
 resharper_instance_members_qualify_declared_in = this_class
 resharper_keep_existing_attribute_arrangement = true
@@ -85,34 +209,43 @@ resharper_keep_existing_enum_arrangement = false
 resharper_nested_ternary_style = compact
 resharper_place_accessorholder_attribute_on_same_line = false
 resharper_place_accessor_attribute_on_same_line = true
-resharper_place_expr_accessor_on_single_line = true
-resharper_place_expr_method_on_single_line = true
-resharper_place_expr_property_on_single_line = true
+resharper_csharp_place_expr_accessor_on_single_line = always
+resharper_csharp_place_expr_method_on_single_line = always
+resharper_csharp_place_expr_property_on_single_line = always
 resharper_place_field_attribute_on_same_line = false
-resharper_place_simple_embedded_statement_on_same_line = false
-resharper_place_simple_initializer_on_single_line = true
+resharper_csharp_place_simple_anonymousmethod_on_single_line = false
+resharper_csharp_place_simple_embedded_statement_on_same_line = never
+resharper_csharp_place_simple_initializer_on_single_line = true
+resharper_csharp_initializer_braces = next_line
 resharper_remove_blank_lines_near_braces_in_code = true
 resharper_remove_blank_lines_near_braces_in_declarations = true
 resharper_space_after_attributes = false
 resharper_space_between_attribute_sections = false
 resharper_space_within_empty_braces = false
 resharper_space_within_single_line_array_initializer_braces = true
-resharper_wrap_object_and_collection_initializer_style = chop_always
+resharper_csharp_wrap_object_and_collection_initializer_style = chop_if_long
 resharper_xmldoc_indent_text = ZeroIndent
 resharper_xmldoc_max_line_length = 300
 resharper_xmldoc_attribute_indent = align_by_first_attribute
 resharper_xmldoc_keep_user_linebreaks = true
+resharper_xmldoc_wrap_lines = false
+resharper_xmldoc_wrap_tags_and_pi = false
 resharper_parentheses_non_obvious_operations = multiplicative, additive, shift, bitwise_and, bitwise_exclusive_or, bitwise_inclusive_or
 
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity = none
+
 # Non-cryptographic randomness is intentional in tests and benchmarks
-# CA5394: Random is an insecure random number generator. Use cryptographically secure random number generators when randomness is required for security.
-# S2245: Use a cryptographically strong random number generator.
 [**/*Test*/**.cs]
+# CA5394: Do not use insecure randomness
 dotnet_diagnostic.CA5394.severity = none
+# S2245: Using pseudorandom number generators (PRNGs) is security-sensitive
 dotnet_diagnostic.S2245.severity = none
 
 [**/*Benchmark*/**.cs]
+# CA5394: Do not use insecure randomness
 dotnet_diagnostic.CA5394.severity = none
+# S2245: Using pseudorandom number generators (PRNGs) is security-sensitive
 dotnet_diagnostic.S2245.severity = none
 
 # Verify settings
