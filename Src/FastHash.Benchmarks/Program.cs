@@ -20,7 +20,10 @@ internal static class Program
                                          WarmupCount = 3,
                                          MinIterationCount = 10,
                                          MaxIterationCount = 20
-                                     }, Job.Default))
+                                     }, Job.Default)
+                                         // Keep the driver independent of cold-call/JIT timing.
+                                         .WithUnrollFactor(1)
+                                         .WithEvaluateOverhead(true))
                                      .AddAnalyser(EnvironmentAnalyser.Default,
                                          MinIterationTimeAnalyser.Default,
                                          RuntimeErrorAnalyser.Default,
