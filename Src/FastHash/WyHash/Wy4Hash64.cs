@@ -91,7 +91,7 @@ public static class Wy4Hash64
         else
         {
             int i = len;
-            int offset = 0;
+            ref byte current = ref MemoryMarshal.GetReference(data);
 
             if (i >= 48)
             {
@@ -100,10 +100,10 @@ public static class Wy4Hash64
 
                 do
                 {
-                    seed = Wymix(Read64(ref dataReference, offset) ^ secret[1], Read64(ref dataReference, offset + 8) ^ seed);
-                    see1 = Wymix(Read64(ref dataReference, offset + 16) ^ secret[2], Read64(ref dataReference, offset + 24) ^ see1);
-                    see2 = Wymix(Read64(ref dataReference, offset + 32) ^ secret[3], Read64(ref dataReference, offset + 40) ^ see2);
-                    offset += 48;
+                    seed = Wymix(Read64(ref current, 0) ^ secret[1], Read64(ref current, 8) ^ seed);
+                    see1 = Wymix(Read64(ref current, 16) ^ secret[2], Read64(ref current, 24) ^ see1);
+                    see2 = Wymix(Read64(ref current, 32) ^ secret[3], Read64(ref current, 40) ^ see2);
+                    current = ref Unsafe.Add(ref current, 48);
                     i -= 48;
                 } while (i >= 48);
 
@@ -112,13 +112,13 @@ public static class Wy4Hash64
 
             while (i > 16)
             {
-                seed = Wymix(Read64(ref dataReference, offset) ^ secret[1], Read64(ref dataReference, offset + 8) ^ seed);
-                offset += 16;
+                seed = Wymix(Read64(ref current, 0) ^ secret[1], Read64(ref current, 8) ^ seed);
+                current = ref Unsafe.Add(ref current, 16);
                 i -= 16;
             }
 
-            a = Read64(ref dataReference, (offset + i) - 16);
-            b = Read64(ref dataReference, (offset + i) - 8);
+            a = Read64(ref current, i - 16);
+            b = Read64(ref current, i - 8);
         }
 
         a ^= secret[1];

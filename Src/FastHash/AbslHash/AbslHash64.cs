@@ -229,49 +229,49 @@ public static class AbslHash64
         return Mix4x16Vectors(na, nb, nc, nd);
     }
 
+    // Keep rounds local: deep helper chains can leave vector-argument calls in callers.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong LowLevelHashLenGt64Simd(ulong seed, ReadOnlySpan<byte> data, int len)
     {
         int last32 = len - 32;
-        int offset = 0;
-
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
+        ref byte current = ref dataReference;
         Vector128<byte> state0 = Set128(seed, (ulong)len);
         Vector128<byte> state1 = state0;
-        Vector128<byte> state2 = state1;
-        Vector128<byte> state3 = state2;
+        Vector128<byte> state2 = state0;
+        Vector128<byte> state3 = state0;
 
         do
         {
-            MixAb(data, offset, ref state0, ref state1);
-            MixCd(data, offset + 32, ref state2, ref state3);
-
-            offset += 64;
+            Vector128<byte> a = Unsafe.ReadUnaligned<Vector128<byte>>(ref current);
+            Vector128<byte> b = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref current, 16));
+            state0 = Aes.Decrypt(Sse2.Add(state0.AsUInt64(), a.AsUInt64()).AsByte(), state0);
+            state1 = Aes.Decrypt(Sse2.Subtract(state1.AsUInt64(), b.AsUInt64()).AsByte(), state1);
+            Vector128<byte> c = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref current, 32));
+            Vector128<byte> d = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref current, 48));
+            state2 = Aes.Encrypt(Sse2.Add(state2.AsUInt64(), c.AsUInt64()).AsByte(), state2);
+            state3 = Aes.Encrypt(Sse2.Subtract(state3.AsUInt64(), d.AsUInt64()).AsByte(), state3);
+            current = ref Unsafe.Add(ref current, 64);
             len -= 64;
         } while (len > 64);
 
         if (len > 32)
-            MixAb(data, offset, ref state0, ref state1);
+        {
+            Vector128<byte> extraA = Unsafe.ReadUnaligned<Vector128<byte>>(ref current);
+            Vector128<byte> extraB = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref current, 16));
+            state0 = Aes.Decrypt(Sse2.Add(state0.AsUInt64(), extraA.AsUInt64()).AsByte(), state0);
+            state1 = Aes.Decrypt(Sse2.Subtract(state1.AsUInt64(), extraB.AsUInt64()).AsByte(), state1);
+        }
 
-        MixCd(data, last32, ref state2, ref state3);
-
-        return Mix4x16Vectors(state0, state1, state2, state3);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void MixAb(ReadOnlySpan<byte> data, int offset, ref Vector128<byte> state0, ref Vector128<byte> state1)
-    {
-        Vector128<byte> a = Load128(data, offset);
-        Vector128<byte> b = Load128(data, offset + 16);
-        state0 = MixA(a, state0);
-        state1 = MixB(b, state1);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void MixCd(ReadOnlySpan<byte> data, int offset, ref Vector128<byte> state2, ref Vector128<byte> state3)
-    {
-        Vector128<byte> c = Load128(data, offset);
-        Vector128<byte> d = Load128(data, offset + 16);
-        state2 = MixC(c, state2);
-        state3 = MixD(d, state3);
+        ref byte tail = ref Unsafe.Add(ref dataReference, last32);
+        Vector128<byte> tailC = Unsafe.ReadUnaligned<Vector128<byte>>(ref tail);
+        Vector128<byte> tailD = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref tail, 16));
+        state2 = Aes.Encrypt(Sse2.Add(state2.AsUInt64(), tailC.AsUInt64()).AsByte(), state2);
+        state3 = Aes.Encrypt(Sse2.Subtract(state3.AsUInt64(), tailD.AsUInt64()).AsByte(), state3);
+        Vector128<byte> left = Aes.Encrypt(Sse2.Add(state0.AsUInt64(), state2.AsUInt64()).AsByte(), state3);
+        Vector128<byte> right = Aes.Decrypt(Sse2.Subtract(state1.AsUInt64(), state3.AsUInt64()).AsByte(), state0);
+        Vector128<ulong> result = Sse2.Add(left.AsUInt64(), right.AsUInt64());
+        return result.GetElement(0) ^ result.GetElement(1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -285,27 +285,23 @@ public static class AbslHash64
     private static Vector128<byte> Set128(ulong a, ulong b) => Vector128.Create(b, a).AsByte();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> Add128(Vector128<byte> a, Vector128<byte> b) => Sse2.Add(a.AsUInt64(), b.AsUInt64()).AsByte();
+    private static Vector128<byte> MixA(Vector128<byte> a, Vector128<byte> state) => Aes.Decrypt(Sse2.Add(state.AsUInt64(), a.AsUInt64()).AsByte(), state);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> Sub128(Vector128<byte> a, Vector128<byte> b) => Sse2.Subtract(a.AsUInt64(), b.AsUInt64()).AsByte();
+    private static Vector128<byte> MixB(Vector128<byte> b, Vector128<byte> state) => Aes.Decrypt(Sse2.Subtract(state.AsUInt64(), b.AsUInt64()).AsByte(), state);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> MixA(Vector128<byte> a, Vector128<byte> state) => Aes.Decrypt(Add128(state, a), state);
+    private static Vector128<byte> MixC(Vector128<byte> c, Vector128<byte> state) => Aes.Encrypt(Sse2.Add(state.AsUInt64(), c.AsUInt64()).AsByte(), state);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> MixB(Vector128<byte> b, Vector128<byte> state) => Aes.Decrypt(Sub128(state, b), state);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> MixC(Vector128<byte> c, Vector128<byte> state) => Aes.Encrypt(Add128(state, c), state);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> MixD(Vector128<byte> d, Vector128<byte> state) => Aes.Encrypt(Sub128(state, d), state);
+    private static Vector128<byte> MixD(Vector128<byte> d, Vector128<byte> state) => Aes.Encrypt(Sse2.Subtract(state.AsUInt64(), d.AsUInt64()).AsByte(), state);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong Mix4x16Vectors(Vector128<byte> a, Vector128<byte> b, Vector128<byte> c, Vector128<byte> d)
     {
-        Vector128<byte> res = Add128(Aes.Encrypt(Add128(a, c), d), Aes.Decrypt(Sub128(b, d), a));
+        Vector128<byte> left = Aes.Encrypt(Sse2.Add(a.AsUInt64(), c.AsUInt64()).AsByte(), d);
+        Vector128<byte> right = Aes.Decrypt(Sse2.Subtract(b.AsUInt64(), d.AsUInt64()).AsByte(), a);
+        Vector128<byte> res = Sse2.Add(left.AsUInt64(), right.AsUInt64()).AsByte();
         Vector128<ulong> res64 = res.AsUInt64();
         return res64.GetElement(0) ^ res64.GetElement(1);
     }

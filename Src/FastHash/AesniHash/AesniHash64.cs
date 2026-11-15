@@ -46,10 +46,14 @@ public static class AesniHash64
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         if (!IsSupported)
             throw new PlatformNotSupportedException("AesniHash requires AES, SSE2, and SSSE3 intrinsics.");
+
+        if (data.Length <= 16)
+            return AesniHash128.Hash128Short(data, seed).AsUInt64().ToScalar();
 
         Vector128<byte> res = AesniHash128.Hash128(data, seed);
         return Unsafe.As<Vector128<byte>, ulong>(ref res);

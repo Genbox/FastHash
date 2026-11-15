@@ -51,19 +51,22 @@ public static class Rapid3Hash64
                 ulong see5 = seed;
                 ulong see6 = seed;
 
+                ref byte current = ref dataReference;
                 while (i > 112)
                 {
-                    seed = RapidMix(Read64(ref dataReference, offset) ^ secret0, Read64(ref dataReference, offset + 8) ^ seed);
-                    see1 = RapidMix(Read64(ref dataReference, offset + 16) ^ secret1, Read64(ref dataReference, offset + 24) ^ see1);
-                    see2 = RapidMix(Read64(ref dataReference, offset + 32) ^ secret2, Read64(ref dataReference, offset + 40) ^ see2);
-                    see3 = RapidMix(Read64(ref dataReference, offset + 48) ^ secret3, Read64(ref dataReference, offset + 56) ^ see3);
-                    see4 = RapidMix(Read64(ref dataReference, offset + 64) ^ secret4, Read64(ref dataReference, offset + 72) ^ see4);
-                    see5 = RapidMix(Read64(ref dataReference, offset + 80) ^ secret5, Read64(ref dataReference, offset + 88) ^ see5);
-                    see6 = RapidMix(Read64(ref dataReference, offset + 96) ^ secret6, Read64(ref dataReference, offset + 104) ^ see6);
+                    seed = RapidMix(Read64(ref current) ^ secret0, Read64(ref current, 8) ^ seed);
+                    see1 = RapidMix(Read64(ref current, 16) ^ secret1, Read64(ref current, 24) ^ see1);
+                    see2 = RapidMix(Read64(ref current, 32) ^ secret2, Read64(ref current, 40) ^ see2);
+                    see3 = RapidMix(Read64(ref current, 48) ^ secret3, Read64(ref current, 56) ^ see3);
+                    see4 = RapidMix(Read64(ref current, 64) ^ secret4, Read64(ref current, 72) ^ see4);
+                    see5 = RapidMix(Read64(ref current, 80) ^ secret5, Read64(ref current, 88) ^ see5);
+                    see6 = RapidMix(Read64(ref current, 96) ^ secret6, Read64(ref current, 104) ^ see6);
 
-                    offset += 112;
+                    current = ref Unsafe.Add(ref current, 112);
                     i -= 112;
                 }
+
+                offset = data.Length - i;
 
                 seed ^= see1;
                 see2 ^= see3;

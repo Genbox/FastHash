@@ -43,15 +43,18 @@ public static class Rapid3HashNano64
                 ulong see1 = seed;
                 ulong see2 = seed;
 
+                ref byte current = ref dataReference;
                 while (i > 48)
                 {
-                    seed = RapidMix(Read64(ref dataReference, offset) ^ secret0, Read64(ref dataReference, offset + 8) ^ seed);
-                    see1 = RapidMix(Read64(ref dataReference, offset + 16) ^ secret1, Read64(ref dataReference, offset + 24) ^ see1);
-                    see2 = RapidMix(Read64(ref dataReference, offset + 32) ^ secret2, Read64(ref dataReference, offset + 40) ^ see2);
+                    seed = RapidMix(Read64(ref current) ^ secret0, Read64(ref current, 8) ^ seed);
+                    see1 = RapidMix(Read64(ref current, 16) ^ secret1, Read64(ref current, 24) ^ see1);
+                    see2 = RapidMix(Read64(ref current, 32) ^ secret2, Read64(ref current, 40) ^ see2);
 
-                    offset += 48;
+                    current = ref Unsafe.Add(ref current, 48);
                     i -= 48;
                 }
+
+                offset = data.Length - i;
 
                 seed ^= see1;
                 seed ^= see2;

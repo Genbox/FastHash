@@ -51,6 +51,11 @@ public static class CityHash32
         if (len <= 24)
             return Hash32Len13to24(data, len, seed);
 
+        return Hash32Long(ref dataReference, len, seed);
+    }
+
+    private static uint Hash32Long(ref byte dataReference, uint len, uint seed)
+    {
         // len > 24
         uint h = len + seed, g = C1 * h, f = g;
         uint a0 = RotateRight(Read32(ref dataReference, len - 4) * C1, 17) * C2;

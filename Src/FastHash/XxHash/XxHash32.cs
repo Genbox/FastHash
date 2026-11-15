@@ -71,23 +71,47 @@ public static class XxHash32
         h32 += len;
         len &= 15;
 
-        while (len >= 4)
+        if (len >= 8)
         {
-            h32 += Read32(ref dataReference, offset) * PRIME32_3;
-            offset += 4;
-            h32 = RotateLeft(h32, 17) * PRIME32_4;
-            len -= 4;
+            h32 = MixWord(h32, Read32(ref dataReference, offset));
+            h32 = MixWord(h32, Read32(ref dataReference, offset + 4));
+            offset += 8;
+            if (len >= 12)
+            {
+                h32 = MixWord(h32, Read32(ref dataReference, offset));
+                offset += 4;
+            }
         }
-
-        while (len > 0)
+        else if (len >= 4)
         {
-            h32 += Unsafe.Add(ref dataReference, offset++) * PRIME32_5;
-            h32 = RotateLeft(h32, 11) * PRIME32_1;
-            len--;
+            h32 = MixWord(h32, Read32(ref dataReference, offset));
+            offset += 4;
+        }
+        len &= 3;
+
+        if (len > 0)
+        {
+            h32 = MixByte(h32, ReadByteUnchecked(data, offset));
+            if (len > 1)
+            {
+                h32 = MixByte(h32, ReadByteUnchecked(data, offset + 1));
+                if (len > 2)
+                    h32 = MixByte(h32, ReadByteUnchecked(data, offset + 2));
+            }
         }
 
         return YC_xmxmx_XXH_32(h32);
     }
+
+    // The tail's length gate proves this byte is within the input.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static byte ReadByteUnchecked(ReadOnlySpan<byte> data, int offset) => Unsafe.Add(ref MemoryMarshal.GetReference(data), offset);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static uint MixByte(uint hash, byte input) => RotateLeft(hash + (input * PRIME32_5), 11) * PRIME32_1;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static uint MixWord(uint hash, uint input) => RotateLeft(hash + (input * PRIME32_3), 17) * PRIME32_4;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static uint Round(uint seed, uint input)

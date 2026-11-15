@@ -44,8 +44,10 @@ public static class ClHash64
     /// <param name="seed2">The second key seed.</param>
     /// <returns>The 64-bit hash.</returns>
     /// <exception cref="PlatformNotSupportedException">Required CPU intrinsics are unavailable.</exception>
+    [SkipLocalsInit]
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2)
     {
+        // CreateKey writes every word before the key is read.
         Span<ulong> key = stackalloc ulong[Random64BitWordsNeeded];
         ClHash64.CreateKey(seed1, seed2, key);
         return ComputeHash(data, key);
@@ -322,19 +324,19 @@ public static class ClHash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Vector128<byte> LeftShift1(Vector128<byte> value) => LeftShift(value, 1);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Vector128<byte> LeftShift2(Vector128<byte> value) => LeftShift(value, 2);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [SuppressMessage("Performance", "CA1857:Use a constant for the best performance", Justification = "Inlining callers supply constant shift counts 1 and 2.")]
-    internal static Vector128<byte> LeftShift(Vector128<byte> value, [ConstantExpected] byte count)
+    private static Vector128<byte> LeftShift1(Vector128<byte> value)
     {
-        Vector128<ulong> v = value.AsUInt64();
-        Vector128<byte> u64Shift = Sse2.ShiftLeftLogical(v, count).AsByte();
-        Vector128<byte> topBits = Sse2.ShiftLeftLogical128BitLane(Sse2.ShiftRightLogical(v, (byte)(64 - count)).AsByte(), sizeof(ulong));
-        return Sse2.Or(u64Shift, topBits);
+        Vector128<ulong> words = value.AsUInt64();
+        Vector128<byte> carry = Sse2.ShiftLeftLogical128BitLane(Sse2.ShiftRightLogical(words, 63).AsByte(), sizeof(ulong));
+        return Sse2.Or(Sse2.ShiftLeftLogical(words, 1).AsByte(), carry);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector128<byte> LeftShift2(Vector128<byte> value)
+    {
+        Vector128<ulong> words = value.AsUInt64();
+        Vector128<byte> carry = Sse2.ShiftLeftLogical128BitLane(Sse2.ShiftRightLogical(words, 62).AsByte(), sizeof(ulong));
+        return Sse2.Or(Sse2.ShiftLeftLogical(words, 2).AsByte(), carry);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

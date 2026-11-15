@@ -69,7 +69,6 @@ public static class AesniHash128
         Vector128<byte> m = Vector128.Create(0x89abcdef, 0x01234567, 0xffff0000, 0xdeadbeef).AsByte();
         Vector128<byte> s = Vector128.Create((byte)12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3);
 
-        int msg = 0;
         ref byte ptr = ref MemoryMarshal.GetReference(data);
 
         if (len > 80)
@@ -81,15 +80,15 @@ public static class AesniHash128
 
             do
             {
-                a = Sse2.Xor(a, Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, msg)));
-                b = Sse2.Xor(b, Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, msg + 16)));
-                c = Sse2.Xor(c, Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, msg + 32)));
-                d = Sse2.Xor(d, Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, msg + 48)));
+                a = Sse2.Xor(a, Unsafe.ReadUnaligned<Vector128<byte>>(ref ptr));
+                b = Sse2.Xor(b, Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, 16)));
+                c = Sse2.Xor(c, Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, 32)));
+                d = Sse2.Xor(d, Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, 48)));
                 a = Ssse3.Shuffle(Aes.Encrypt(a, m), s);
                 b = Ssse3.Shuffle(Aes.Decrypt(b, m), s);
                 c = Ssse3.Shuffle(Aes.Encrypt(c, m), s);
                 d = Ssse3.Shuffle(Aes.Decrypt(d, m), s);
-                msg += 64;
+                ptr = ref Unsafe.Add(ref ptr, 64);
                 len -= 64;
             } while (len > 80);
 
@@ -101,8 +100,8 @@ public static class AesniHash128
 
         while (len >= 16)
         {
-            Mix(Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, msg)));
-            msg += 16;
+            Mix(Unsafe.ReadUnaligned<Vector128<byte>>(ref ptr));
+            ptr = ref Unsafe.Add(ref ptr, 16);
             len -= 16;
         }
 
@@ -111,51 +110,51 @@ public static class AesniHash128
         switch (len)
         {
             case 15:
-                x |= (ulong)Unsafe.Add(ref ptr, msg + 14) << 48;
+                x |= (ulong)Unsafe.Add(ref ptr, 14) << 48;
                 goto case 14;
             case 14:
-                x |= (ulong)Unsafe.Add(ref ptr, msg + 13) << 40;
+                x |= (ulong)Unsafe.Add(ref ptr, 13) << 40;
                 goto case 13;
             case 13:
-                x |= (ulong)Unsafe.Add(ref ptr, msg + 12) << 32;
+                x |= (ulong)Unsafe.Add(ref ptr, 12) << 32;
                 goto case 12;
             case 12:
-                x |= Read32(ref ptr, msg + 8);
-                Mix(Vector128.Create(Read64(ref ptr, msg), x).AsByte());
+                x |= Read32(ref ptr, 8);
+                Mix(Vector128.Create(Read64(ref ptr), x).AsByte());
                 break;
             case 11:
-                x |= (uint)Unsafe.Add(ref ptr, msg + 10) << 16;
+                x |= (uint)Unsafe.Add(ref ptr, 10) << 16;
                 goto case 10;
             case 10:
-                x |= (uint)Unsafe.Add(ref ptr, msg + 9) << 8;
+                x |= (uint)Unsafe.Add(ref ptr, 9) << 8;
                 goto case 9;
             case 9:
-                x |= Unsafe.Add(ref ptr, msg + 8);
+                x |= Unsafe.Add(ref ptr, 8);
                 goto case 8;
             case 8:
-                Mix(Vector128.Create(Read64(ref ptr, msg), x).AsByte());
+                Mix(Vector128.Create(Read64(ref ptr), x).AsByte());
                 break;
             case 7:
-                x |= (ulong)Unsafe.Add(ref ptr, msg + 6) << 48;
+                x |= (ulong)Unsafe.Add(ref ptr, 6) << 48;
                 goto case 6;
             case 6:
-                x |= (ulong)Unsafe.Add(ref ptr, msg + 5) << 40;
+                x |= (ulong)Unsafe.Add(ref ptr, 5) << 40;
                 goto case 5;
             case 5:
-                x |= (ulong)Unsafe.Add(ref ptr, msg + 4) << 32;
+                x |= (ulong)Unsafe.Add(ref ptr, 4) << 32;
                 goto case 4;
             case 4:
-                x |= Read32(ref ptr, msg);
+                x |= Read32(ref ptr);
                 Mix(Vector128.Create(x, 0).AsByte());
                 break;
             case 3:
-                x |= (uint)Unsafe.Add(ref ptr, msg + 2) << 16;
+                x |= (uint)Unsafe.Add(ref ptr, 2) << 16;
                 goto case 2;
             case 2:
-                x |= (uint)Unsafe.Add(ref ptr, msg + 1) << 8;
+                x |= (uint)Unsafe.Add(ref ptr, 1) << 8;
                 goto case 1;
             case 1:
-                x |= Unsafe.Add(ref ptr, msg);
+                x |= ptr;
                 Mix(Vector128.Create(x, 0).AsByte());
                 break;
             default: // try to keep m & s from register spilling
@@ -174,6 +173,34 @@ public static class AesniHash128
             b = Ssse3.Shuffle(Sse2.Xor(x2, b), s);
             b = Ssse3.Shuffle(Aes.Decrypt(b, m), s);
         }
+    }
+
+    // Called only for 0-16 bytes; full-vector inputs retain the final key additions.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static Vector128<byte> Hash128Short(ReadOnlySpan<byte> data, uint seed)
+    {
+        uint len = (uint)data.Length;
+        Vector128<byte> a = Vector128.Create(seed).AsByte();
+        Vector128<byte> m = Vector128.Create(0x89abcdef, 0x01234567, 0xffff0000, 0xdeadbeef).AsByte();
+        Vector128<byte> s = Vector128.Create((byte)12, 8, 4, 0, 13, 9, 5, 1, 14, 10, 6, 2, 15, 11, 7, 3);
+
+        if (len == 0)
+            return Aes.Encrypt(Sse2.Add(a, s), m);
+
+        Vector128<byte> b = Vector128.Create(len).AsByte();
+        Vector128<byte> x = ReadPartial128(ref MemoryMarshal.GetReference(data), (int)len);
+        a = Aes.Encrypt(x, a);
+        a = Aes.Encrypt(a, m);
+        b = Ssse3.Shuffle(Sse2.Xor(x, b), s);
+        b = Ssse3.Shuffle(Aes.Decrypt(b, m), s);
+
+        if (len == 16)
+        {
+            a = Sse2.Add(a, s);
+            b = Sse2.Add(b, m);
+        }
+
+        return Aes.Encrypt(a, b);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

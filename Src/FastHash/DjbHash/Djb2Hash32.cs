@@ -31,7 +31,26 @@ public static class Djb2Hash32
         ref byte dataReference = ref MemoryMarshal.GetReference(data);
         uint hash = InitHash;
 
-        for (int i = 0; i < data.Length; i++)
+        int i = 0;
+        for (; i <= data.Length - 4; i += 4)
+        {
+            // Expand four h = h * 33 + byte steps to shorten the dependency chain.
+            hash = (hash * 1185921)
+                   + ((uint)Unsafe.Add(ref dataReference, i) * 35937)
+                   + ((uint)Unsafe.Add(ref dataReference, i + 1) * 1089)
+                   + ((uint)Unsafe.Add(ref dataReference, i + 2) * 33)
+                   + Unsafe.Add(ref dataReference, i + 3);
+        }
+
+        if (data.Length - i >= 2)
+        {
+            hash = (hash * 1089)
+                   + ((uint)Unsafe.Add(ref dataReference, i) * 33)
+                   + Unsafe.Add(ref dataReference, i + 1);
+            i += 2;
+        }
+
+        if (i < data.Length)
             hash = (hash << 5) + hash + Unsafe.Add(ref dataReference, i);
 
         return hash;

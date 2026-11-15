@@ -109,7 +109,7 @@ public static class SipHash64
     /// <param name="seed1">The first hash seed.</param>
     /// <param name="seed2">The second hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
-    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2) => ComputeHash(data, seed1, seed2, 2, 4);
+    public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2) => ComputeHashDefaultRounds(data, seed1, seed2);
 
     /// <summary>Computes a 64-bit hash for <paramref name="data" /> using the supplied seeds and rounds.</summary>
     /// <param name="data">The bytes to hash.</param>
@@ -186,6 +186,82 @@ public static class SipHash64
 
         for (i = 0; i < dRounds; ++i)
             SipRound(ref v0, ref v1, ref v2, ref v3);
+
+        return v0 ^ v1 ^ v2 ^ v3;
+    }
+
+    // Keep the full kernel together; partial inlining can leave by-reference SipRound calls.
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static ulong ComputeHashDefaultRounds(ReadOnlySpan<byte> data, ulong seed1, ulong seed2)
+    {
+        ref byte dataReference = ref MemoryMarshal.GetReference(data);
+        int length = data.Length;
+        ulong v0 = v0Init;
+        ulong v1 = v1Init;
+        ulong v2 = v2Init;
+        ulong v3 = v3Init;
+
+        int left = length & 7;
+        ulong b = (ulong)length << 56;
+        int num = length / 8;
+        int offset1 = length - left;
+        uint i;
+
+        v3 ^= seed2;
+        v2 ^= seed1;
+        v1 ^= seed2;
+        v0 ^= seed1;
+
+        for (i = 0; i < num; i++)
+        {
+            ulong m = Read64(ref dataReference, 8 * i);
+            v3 ^= m;
+
+            SipRound(ref v0, ref v1, ref v2, ref v3);
+            SipRound(ref v0, ref v1, ref v2, ref v3);
+
+            v0 ^= m;
+        }
+
+        switch (left)
+        {
+            case 7:
+                b |= (ulong)Unsafe.Add(ref dataReference, 6 + offset1) << 48;
+                goto case 6;
+            case 6:
+                b |= (ulong)Unsafe.Add(ref dataReference, 5 + offset1) << 40;
+                goto case 5;
+            case 5:
+                b |= (ulong)Unsafe.Add(ref dataReference, 4 + offset1) << 32;
+                goto case 4;
+            case 4:
+                b |= (ulong)Unsafe.Add(ref dataReference, 3 + offset1) << 24;
+                goto case 3;
+            case 3:
+                b |= (ulong)Unsafe.Add(ref dataReference, 2 + offset1) << 16;
+                goto case 2;
+            case 2:
+                b |= (ulong)Unsafe.Add(ref dataReference, 1 + offset1) << 8;
+                goto case 1;
+            case 1:
+                b |= Unsafe.Add(ref dataReference, 0 + offset1);
+                break;
+            case 0:
+                break;
+        }
+
+        v3 ^= b;
+
+        SipRound(ref v0, ref v1, ref v2, ref v3);
+        SipRound(ref v0, ref v1, ref v2, ref v3);
+
+        v0 ^= b;
+        v2 ^= 0xFF;
+
+        SipRound(ref v0, ref v1, ref v2, ref v3);
+        SipRound(ref v0, ref v1, ref v2, ref v3);
+        SipRound(ref v0, ref v1, ref v2, ref v3);
+        SipRound(ref v0, ref v1, ref v2, ref v3);
 
         return v0 ^ v1 ^ v2 ^ v3;
     }

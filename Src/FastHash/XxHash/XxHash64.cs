@@ -38,6 +38,7 @@ public static class XxHash64
     /// <param name="data">The data to hash.</param>
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed)
     {
         ref byte dataReference = ref MemoryMarshal.GetReference(data);

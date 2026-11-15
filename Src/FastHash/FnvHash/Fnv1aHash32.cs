@@ -29,10 +29,48 @@ public static class Fnv1aHash32
     public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
         ref byte dataReference = ref MemoryMarshal.GetReference(data);
-        uint hash = FNV1_32_INIT;
+        int remaining = data.Length;
+        if (remaining < 4)
+            return Hash0To3(ref dataReference, remaining);
 
-        for (int i = 0; i < data.Length; i++)
-            hash = (hash ^ Unsafe.Add(ref dataReference, i)) * FNV_32_PRIME;
+        uint hash = FNV1_32_INIT;
+        do
+        {
+            hash = (hash ^ dataReference) * FNV_32_PRIME;
+            hash = (hash ^ Unsafe.Add(ref dataReference, 1)) * FNV_32_PRIME;
+            hash = (hash ^ Unsafe.Add(ref dataReference, 2)) * FNV_32_PRIME;
+            hash = (hash ^ Unsafe.Add(ref dataReference, 3)) * FNV_32_PRIME;
+            dataReference = ref Unsafe.Add(ref dataReference, 4);
+            remaining -= 4;
+        } while (remaining >= 4);
+
+        if (remaining >= 2)
+        {
+            hash = (hash ^ dataReference) * FNV_32_PRIME;
+            hash = (hash ^ Unsafe.Add(ref dataReference, 1)) * FNV_32_PRIME;
+            dataReference = ref Unsafe.Add(ref dataReference, 2);
+            remaining -= 2;
+        }
+
+        if (remaining != 0)
+            hash = (hash ^ dataReference) * FNV_32_PRIME;
+
+        return hash;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static uint Hash0To3(ref byte data, int length)
+    {
+        if (length == 0)
+            return FNV1_32_INIT;
+
+        uint hash = (FNV1_32_INIT ^ data) * FNV_32_PRIME;
+        if (length > 1)
+        {
+            hash = (hash ^ Unsafe.Add(ref data, 1)) * FNV_32_PRIME;
+            if (length > 2)
+                hash = (hash ^ Unsafe.Add(ref data, 2)) * FNV_32_PRIME;
+        }
 
         return hash;
     }

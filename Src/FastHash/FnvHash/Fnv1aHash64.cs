@@ -30,15 +30,51 @@ public static class Fnv1aHash64
     /// <summary>Computes the hash of a byte sequence.</summary>
     /// <param name="data">The bytes to hash.</param>
     /// <returns>The 64-bit FNV-1a hash.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ComputeHash(ReadOnlySpan<byte> data)
     {
         ref byte dataReference = ref MemoryMarshal.GetReference(data);
-        ulong hash = FNV1_64_INIT;
+        int remaining = data.Length;
+        if (remaining < 4)
+            return Hash0To3(ref dataReference, remaining);
 
-        for (int i = 0; i < data.Length; i++)
+        ulong hash = FNV1_64_INIT;
+        do
         {
-            hash ^= Unsafe.Add(ref dataReference, i);
-            hash *= FNV_64_PRIME;
+            hash = (hash ^ dataReference) * FNV_64_PRIME;
+            hash = (hash ^ Unsafe.Add(ref dataReference, 1)) * FNV_64_PRIME;
+            hash = (hash ^ Unsafe.Add(ref dataReference, 2)) * FNV_64_PRIME;
+            hash = (hash ^ Unsafe.Add(ref dataReference, 3)) * FNV_64_PRIME;
+            dataReference = ref Unsafe.Add(ref dataReference, 4);
+            remaining -= 4;
+        } while (remaining >= 4);
+
+        if (remaining >= 2)
+        {
+            hash = (hash ^ dataReference) * FNV_64_PRIME;
+            hash = (hash ^ Unsafe.Add(ref dataReference, 1)) * FNV_64_PRIME;
+            dataReference = ref Unsafe.Add(ref dataReference, 2);
+            remaining -= 2;
+        }
+
+        if (remaining != 0)
+            hash = (hash ^ dataReference) * FNV_64_PRIME;
+
+        return hash;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong Hash0To3(ref byte data, int length)
+    {
+        if (length == 0)
+            return FNV1_64_INIT;
+
+        ulong hash = (FNV1_64_INIT ^ data) * FNV_64_PRIME;
+        if (length > 1)
+        {
+            hash = (hash ^ Unsafe.Add(ref data, 1)) * FNV_64_PRIME;
+            if (length > 2)
+                hash = (hash ^ Unsafe.Add(ref data, 2)) * FNV_64_PRIME;
         }
 
         return hash;

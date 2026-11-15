@@ -201,20 +201,21 @@ public static class FarmHash64
         ulong mul = K2 + (u & 0x82);
 
         // Set end so that after the loop we have 1 to 64 bytes left to process.
-        uint index = 0;
         uint end = ((len - 1) / 64) * 64;
         uint last64 = (end + ((len - 1) & 63)) - 63;
+        uint remaining = end;
+        ref byte blockReference = ref sReference;
 
         do
         {
-            ulong a0 = Read64(ref sReference, index);
-            ulong a1 = Read64(ref sReference, index + 8);
-            ulong a2 = Read64(ref sReference, index + 16);
-            ulong a3 = Read64(ref sReference, index + 24);
-            ulong a4 = Read64(ref sReference, index + 32);
-            ulong a5 = Read64(ref sReference, index + 40);
-            ulong a6 = Read64(ref sReference, index + 48);
-            ulong a7 = Read64(ref sReference, index + 56);
+            ulong a0 = Read64(ref blockReference);
+            ulong a1 = Read64(ref blockReference, 8);
+            ulong a2 = Read64(ref blockReference, 16);
+            ulong a3 = Read64(ref blockReference, 24);
+            ulong a4 = Read64(ref blockReference, 32);
+            ulong a5 = Read64(ref blockReference, 40);
+            ulong a6 = Read64(ref blockReference, 48);
+            ulong a7 = Read64(ref blockReference, 56);
             x += a0 + a1;
             y += a2;
             z += a3;
@@ -245,11 +246,12 @@ public static class FarmHash64
             x += w.High;
             w = new UInt128(RotateRight(w.High, 34), w.Low);
             Swap(ref u, ref z);
-            index += 64;
-        } while (index != end);
+            blockReference = ref Unsafe.Add(ref blockReference, 64);
+            remaining -= 64;
+        } while (remaining != 0);
 
         // Make s point to the last 64 bytes of input.
-        index = last64;
+        uint index = last64;
         u *= 9;
         v = new UInt128(RotateRight(v.High, 28), RotateRight(v.Low, 20));
         w = new UInt128(w.High, w.Low + ((len - 1) & 63));

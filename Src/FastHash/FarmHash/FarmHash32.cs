@@ -73,6 +73,11 @@ public static class FarmHash32
             return CityHash32.Hash32Len13to24(data, len);
         }
 
+        return Hash32Long(ref dataReference, len);
+    }
+
+    private static uint Hash32Long(ref byte dataReference, uint len)
+    {
         // len > 24
         uint h = len, g = C1 * len, f = g;
         {
@@ -98,7 +103,7 @@ public static class FarmHash32
             f = (f * 5) + 0xe6546b64;
         }
         uint iters = (len - 1) / 20;
-        int offset = 0;
+        uint offset = 0;
 
         do
         {

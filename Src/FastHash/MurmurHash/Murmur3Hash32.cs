@@ -34,6 +34,7 @@ public static class Murmur3Hash32
     /// <param name="data">The bytes to hash.</param>
     /// <param name="seed">The hash seed.</param>
     /// <returns>The 32-bit hash.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static uint ComputeHash(ReadOnlySpan<byte> data, uint seed)
     {
         ref byte dataReference = ref MemoryMarshal.GetReference(data);

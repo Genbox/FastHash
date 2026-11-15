@@ -29,11 +29,47 @@ public static class Djb2AltHash32
     public static uint ComputeHash(ReadOnlySpan<byte> data)
     {
         ref byte dataReference = ref MemoryMarshal.GetReference(data);
-        uint hash = InitHash;
+        if (data.Length < 4)
+            return ComputeShort(ref dataReference, data.Length);
 
-        for (int i = 0; i < data.Length; i++)
+        uint hash = InitHash;
+        int i = 0;
+        do
+        {
+            hash = ((hash << 5) + hash) ^ Unsafe.Add(ref dataReference, i);
+            hash = ((hash << 5) + hash) ^ Unsafe.Add(ref dataReference, i + 1);
+            hash = ((hash << 5) + hash) ^ Unsafe.Add(ref dataReference, i + 2);
+            hash = ((hash << 5) + hash) ^ Unsafe.Add(ref dataReference, i + 3);
+            i += 4;
+        } while (i <= data.Length - 4);
+
+        if (data.Length - i >= 2)
+        {
+            hash = ((hash << 5) + hash) ^ Unsafe.Add(ref dataReference, i);
+            hash = ((hash << 5) + hash) ^ Unsafe.Add(ref dataReference, i + 1);
+            i += 2;
+        }
+
+        if (i < data.Length)
             hash = ((hash << 5) + hash) ^ Unsafe.Add(ref dataReference, i);
 
         return hash;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static uint ComputeShort(ref byte data, int length)
+    {
+        if (length == 0)
+            return InitHash;
+
+        uint hash = (uint)(InitHash * 33) ^ data;
+        if (length == 1)
+            return hash;
+
+        hash = ((hash << 5) + hash) ^ Unsafe.Add(ref data, 1);
+        if (length == 2)
+            return hash;
+
+        return ((hash << 5) + hash) ^ Unsafe.Add(ref data, 2);
     }
 }

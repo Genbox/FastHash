@@ -49,8 +49,8 @@ public static class Polymur2Hash64
         ulong m0 = input & 0x00ffffffffffffffUL;
         ulong m1 = m0;
         ulong m2 = input >> 8;
-        UInt128 t0 = polymur_mul128(p.k2 + m0, p.k7 + m1);
-        UInt128 t1 = polymur_mul128(p.k + m2, p.k3 + len);
+        Product128 t0 = polymur_mul128(p.k2 + m0, p.k7 + m1);
+        Product128 t1 = polymur_mul128(p.k + m2, p.k3 + len);
         ulong h = polymur_red611(polymur_add128(t0, t1));
         return polymur_mix(h) + p.s;
     }
@@ -58,7 +58,7 @@ public static class Polymur2Hash64
     /// <summary>Computes a 64-bit hash for <paramref name="data" /> using the default seed.</summary>
     /// <param name="data">The bytes to hash.</param>
     /// <returns>The 64-bit hash.</returns>
-    public static ulong ComputeHash(ReadOnlySpan<byte> data) => ComputeHash(data, 0);
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => polymur_hash(data, data.Length, in _params, 0);
 
     /// <summary>Computes a 64-bit hash for <paramref name="data" /> using <paramref name="seed" />.</summary>
     /// <param name="data">The bytes to hash.</param>
@@ -143,17 +143,21 @@ public static class Polymur2Hash64
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static UInt128 polymur_add128(UInt128 a, UInt128 b)
+    private static Product128 polymur_add128(Product128 a, Product128 b)
     {
         ulong low = a.Low + b.Low;
-        return new UInt128(a.High + b.High + (low < b.Low ? 1UL : 0UL), low);
+        return new Product128(a.High + b.High + (low < b.Low ? 1UL : 0UL), low);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static UInt128 polymur_mul128(ulong a, ulong b) => Multiply64To128(a, b);
+    private static Product128 polymur_mul128(ulong a, ulong b)
+    {
+        ulong high = BigMul(a, b, out ulong low);
+        return new Product128(high, low);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong polymur_red611(UInt128 x) => (x.Low & POLYMUR_P611) + ((x.Low >> 61) | (x.High << 3));
+    private static ulong polymur_red611(Product128 x) => (x.Low & POLYMUR_P611) + ((x.Low >> 61) | (x.High << 3));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong polymur_extrared611(ulong x) => (x & POLYMUR_P611) + (x >> 61);
@@ -237,11 +241,11 @@ public static class Polymur2Hash64
                 ulong m5 = polymur_load_le_u64(buf, bufPtr + 35) & 0x00ffffffffffffffUL;
                 ulong m6 = polymur_load_le_u64(buf, bufPtr + 42) & 0x00ffffffffffffffUL;
 
-                UInt128 t0 = polymur_mul128(p.k + m0, k6 + m1);
-                UInt128 t1 = polymur_mul128(p.k2 + m2, k5 + m3);
-                UInt128 t2 = polymur_mul128(k3 + m4, k4 + m5);
-                UInt128 t3 = polymur_mul128(h + m6, p.k7);
-                UInt128 s = polymur_add128(polymur_add128(t0, t1), polymur_add128(t2, t3));
+                Product128 t0 = polymur_mul128(p.k + m0, k6 + m1);
+                Product128 t1 = polymur_mul128(p.k2 + m2, k5 + m3);
+                Product128 t2 = polymur_mul128(k3 + m4, k4 + m5);
+                Product128 t3 = polymur_mul128(h + m6, p.k7);
+                Product128 s = polymur_add128(polymur_add128(t0, t1), polymur_add128(t2, t3));
                 h = polymur_red611(s);
                 len -= 49;
                 bufPtr += 49;
@@ -257,8 +261,8 @@ public static class Polymur2Hash64
             ulong m0 = polymur_load_le_u64(buf, bufPtr) & 0x00ffffffffffffffUL;
             ulong m1 = polymur_load_le_u64(buf, bufPtr + ((len - 7) / 2)) & 0x00ffffffffffffffUL;
             ulong m2 = polymur_load_le_u64(buf, (bufPtr + len) - 8) >> 8;
-            UInt128 t0 = polymur_mul128(p.k2 + m0, p.k7 + m1);
-            UInt128 t1 = polymur_mul128(p.k + m2, k3 + (uint)len);
+            Product128 t0 = polymur_mul128(p.k2 + m0, p.k7 + m1);
+            Product128 t1 = polymur_mul128(p.k + m2, k3 + (uint)len);
 
             if (len <= 21)
                 return poly_acc + polymur_red611(polymur_add128(t0, t1));
@@ -268,9 +272,9 @@ public static class Polymur2Hash64
             ulong m5 = polymur_load_le_u64(buf, (bufPtr + len) - 21) & 0x00ffffffffffffffUL;
             ulong m6 = polymur_load_le_u64(buf, (bufPtr + len) - 14) & 0x00ffffffffffffffUL;
             ulong t0r = polymur_red611(t0);
-            UInt128 t2 = polymur_mul128(p.k2 + m3, p.k7 + m4);
-            UInt128 t3 = polymur_mul128(t0r + m5, k4 + m6);
-            UInt128 s = polymur_add128(polymur_add128(t1, t2), t3);
+            Product128 t2 = polymur_mul128(p.k2 + m3, p.k7 + m4);
+            Product128 t3 = polymur_mul128(t0r + m5, k4 + m6);
+            Product128 s = polymur_add128(polymur_add128(t1, t2), t3);
             return poly_acc + polymur_red611(s);
         }
 
@@ -283,6 +287,18 @@ public static class Polymur2Hash64
     {
         ulong h = polymur_hash_poly611(buf, len, in p, tweak);
         return polymur_mix(h) + p.s;
+    }
+
+    private readonly struct Product128
+    {
+        internal Product128(ulong high, ulong low)
+        {
+            High = high;
+            Low = low;
+        }
+
+        internal readonly ulong Low;
+        internal readonly ulong High;
     }
 
     [StructLayout(LayoutKind.Auto)]

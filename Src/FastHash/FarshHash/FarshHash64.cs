@@ -74,18 +74,20 @@ public static class FarshHash64
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void farsh_full_block(ReadOnlySpan<byte> data, int offset, out ulong lowSum, out ulong highSum)
     {
-        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         lowSum = 0;
         highSum = 0;
 
-        uint j = 0;
-
-        for (uint i = 0; i < STRIPE; i += 8, j += 2)
+        ref byte current = ref Unsafe.Add(ref MemoryMarshal.GetReference(data), offset);
+        // A stripe consumes 256 key words; the second hash uses four extra words.
+        ref uint keys = ref MemoryMarshal.GetReference(FARSH_KEYS.AsSpan());
+        for (int i = 0; i < STRIPE_ELEMENTS; i += 2)
         {
-            uint val1 = Read32(ref dataReference, (uint)offset + i);
-            uint val2 = Read32(ref dataReference, (uint)offset + i + sizeof(uint));
-            lowSum += (val1 + FARSH_KEYS[j]) * (ulong)(val2 + FARSH_KEYS[j + 1]);
-            highSum += (val1 + FARSH_KEYS[j + 4]) * (ulong)(val2 + FARSH_KEYS[j + 5]);
+            uint val1 = Read32(ref current);
+            uint val2 = Read32(ref current, sizeof(uint));
+            lowSum += (val1 + keys) * (ulong)(val2 + Unsafe.Add(ref keys, 1));
+            highSum += (val1 + Unsafe.Add(ref keys, 4)) * (ulong)(val2 + Unsafe.Add(ref keys, 5));
+            current = ref Unsafe.Add(ref current, 8);
+            keys = ref Unsafe.Add(ref keys, 2);
         }
     }
 
@@ -99,14 +101,22 @@ public static class FarshHash64
 
         uint chunks = (uint)((length - offset) >> 3);
 
-        for (; chunks > 0; chunks--)
+        if (chunks > 0)
         {
-            uint val1 = Read32(ref dataReference, offset);
-            uint val2 = Read32(ref dataReference, offset + sizeof(uint));
-            low += (val1 + FARSH_KEYS[keyIndex]) * (ulong)(val2 + FARSH_KEYS[keyIndex + 1]);
-            high += (val1 + FARSH_KEYS[keyIndex + 4]) * (ulong)(val2 + FARSH_KEYS[keyIndex + 5]);
-            offset += 8;
-            keyIndex += 2;
+            ref byte current = ref Unsafe.Add(ref dataReference, offset);
+            // A partial block uses at most 256 key words; the second hash uses four extra words.
+            ref uint keys = ref MemoryMarshal.GetReference(FARSH_KEYS.AsSpan());
+            do
+            {
+                uint val1 = Read32(ref current);
+                uint val2 = Read32(ref current, sizeof(uint));
+                low += (val1 + keys) * (ulong)(val2 + Unsafe.Add(ref keys, 1));
+                high += (val1 + Unsafe.Add(ref keys, 4)) * (ulong)(val2 + Unsafe.Add(ref keys, 5));
+                current = ref Unsafe.Add(ref current, 8);
+                keys = ref Unsafe.Add(ref keys, 2);
+                offset += 8;
+                keyIndex += 2;
+            } while (--chunks > 0);
         }
 
         uint v1;

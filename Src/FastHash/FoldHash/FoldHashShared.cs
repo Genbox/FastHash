@@ -54,7 +54,6 @@ internal static class FoldHashShared
         ulong s0 = accumulator;
         ulong seed0 = seeds[0];
         ulong s1 = s0 + seeds[1];
-        int offset = 0;
         int len = data.Length;
 
         if (len > 128)
@@ -69,13 +68,13 @@ internal static class FoldHashShared
 
                 while (len > 256)
                 {
-                    s0 = FoldedMultiply(Read64(ref dataReference, offset) ^ s0, Read64(ref dataReference, offset + 48) ^ seed0);
-                    s1 = FoldedMultiply(Read64(ref dataReference, offset + 8) ^ s1, Read64(ref dataReference, offset + 56) ^ seed0);
-                    s2 = FoldedMultiply(Read64(ref dataReference, offset + 16) ^ s2, Read64(ref dataReference, offset + 64) ^ seed0);
-                    s3 = FoldedMultiply(Read64(ref dataReference, offset + 24) ^ s3, Read64(ref dataReference, offset + 72) ^ seed0);
-                    s4 = FoldedMultiply(Read64(ref dataReference, offset + 32) ^ s4, Read64(ref dataReference, offset + 80) ^ seed0);
-                    s5 = FoldedMultiply(Read64(ref dataReference, offset + 40) ^ s5, Read64(ref dataReference, offset + 88) ^ seed0);
-                    offset += 96;
+                    s0 = FoldedMultiply(Read64(ref dataReference) ^ s0, Read64(ref dataReference, 48) ^ seed0);
+                    s1 = FoldedMultiply(Read64(ref dataReference, 8) ^ s1, Read64(ref dataReference, 56) ^ seed0);
+                    s2 = FoldedMultiply(Read64(ref dataReference, 16) ^ s2, Read64(ref dataReference, 64) ^ seed0);
+                    s3 = FoldedMultiply(Read64(ref dataReference, 24) ^ s3, Read64(ref dataReference, 72) ^ seed0);
+                    s4 = FoldedMultiply(Read64(ref dataReference, 32) ^ s4, Read64(ref dataReference, 80) ^ seed0);
+                    s5 = FoldedMultiply(Read64(ref dataReference, 40) ^ s5, Read64(ref dataReference, 88) ^ seed0);
+                    dataReference = ref Unsafe.Add(ref dataReference, 96);
                     len -= 96;
                 }
 
@@ -85,11 +84,11 @@ internal static class FoldHashShared
 
             while (len > 128)
             {
-                s0 = FoldedMultiply(Read64(ref dataReference, offset) ^ s0, Read64(ref dataReference, offset + 32) ^ seed0);
-                s1 = FoldedMultiply(Read64(ref dataReference, offset + 8) ^ s1, Read64(ref dataReference, offset + 40) ^ seed0);
-                s2 = FoldedMultiply(Read64(ref dataReference, offset + 16) ^ s2, Read64(ref dataReference, offset + 48) ^ seed0);
-                s3 = FoldedMultiply(Read64(ref dataReference, offset + 24) ^ s3, Read64(ref dataReference, offset + 56) ^ seed0);
-                offset += 64;
+                s0 = FoldedMultiply(Read64(ref dataReference) ^ s0, Read64(ref dataReference, 32) ^ seed0);
+                s1 = FoldedMultiply(Read64(ref dataReference, 8) ^ s1, Read64(ref dataReference, 40) ^ seed0);
+                s2 = FoldedMultiply(Read64(ref dataReference, 16) ^ s2, Read64(ref dataReference, 48) ^ seed0);
+                s3 = FoldedMultiply(Read64(ref dataReference, 24) ^ s3, Read64(ref dataReference, 56) ^ seed0);
+                dataReference = ref Unsafe.Add(ref dataReference, 64);
                 len -= 64;
             }
 
@@ -97,23 +96,23 @@ internal static class FoldHashShared
             s1 ^= s3;
         }
 
-        s0 = FoldedMultiply(Read64(ref dataReference, offset) ^ s0, Read64(ref dataReference, (offset + len) - 16) ^ seed0);
-        s1 = FoldedMultiply(Read64(ref dataReference, offset + 8) ^ s1, Read64(ref dataReference, (offset + len) - 8) ^ seed0);
+        s0 = FoldedMultiply(Read64(ref dataReference) ^ s0, Read64(ref dataReference, len - 16) ^ seed0);
+        s1 = FoldedMultiply(Read64(ref dataReference, 8) ^ s1, Read64(ref dataReference, len - 8) ^ seed0);
 
         if (len >= 32)
         {
-            s0 = FoldedMultiply(Read64(ref dataReference, offset + 16) ^ s0, Read64(ref dataReference, (offset + len) - 32) ^ seed0);
-            s1 = FoldedMultiply(Read64(ref dataReference, offset + 24) ^ s1, Read64(ref dataReference, (offset + len) - 24) ^ seed0);
+            s0 = FoldedMultiply(Read64(ref dataReference, 16) ^ s0, Read64(ref dataReference, len - 32) ^ seed0);
+            s1 = FoldedMultiply(Read64(ref dataReference, 24) ^ s1, Read64(ref dataReference, len - 24) ^ seed0);
 
             if (len >= 64)
             {
-                s0 = FoldedMultiply(Read64(ref dataReference, offset + 32) ^ s0, Read64(ref dataReference, (offset + len) - 48) ^ seed0);
-                s1 = FoldedMultiply(Read64(ref dataReference, offset + 40) ^ s1, Read64(ref dataReference, (offset + len) - 40) ^ seed0);
+                s0 = FoldedMultiply(Read64(ref dataReference, 32) ^ s0, Read64(ref dataReference, len - 48) ^ seed0);
+                s1 = FoldedMultiply(Read64(ref dataReference, 40) ^ s1, Read64(ref dataReference, len - 40) ^ seed0);
 
                 if (len >= 96)
                 {
-                    s0 = FoldedMultiply(Read64(ref dataReference, offset + 48) ^ s0, Read64(ref dataReference, (offset + len) - 64) ^ seed0);
-                    s1 = FoldedMultiply(Read64(ref dataReference, offset + 56) ^ s1, Read64(ref dataReference, (offset + len) - 56) ^ seed0);
+                    s0 = FoldedMultiply(Read64(ref dataReference, 48) ^ s0, Read64(ref dataReference, len - 64) ^ seed0);
+                    s1 = FoldedMultiply(Read64(ref dataReference, 56) ^ s1, Read64(ref dataReference, len - 56) ^ seed0);
                 }
             }
         }

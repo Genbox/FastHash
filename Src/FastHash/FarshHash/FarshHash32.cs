@@ -57,16 +57,18 @@ public static class FarshHash32
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ulong farsh_full_block(ReadOnlySpan<byte> data, int offset)
     {
-        ref byte dataReference = ref MemoryMarshal.GetReference(data);
         ulong sum = 0;
 
-        uint j = 0;
-
-        for (uint i = 0; i < STRIPE; i += 8, j += 2)
+        ref byte current = ref Unsafe.Add(ref MemoryMarshal.GetReference(data), offset);
+        // A stripe consumes 256 words from the fixed key table.
+        ref uint keys = ref MemoryMarshal.GetReference(FARSH_KEYS.AsSpan());
+        for (int i = 0; i < STRIPE_ELEMENTS; i += 2)
         {
-            uint val1 = Read32(ref dataReference, (uint)offset + i);
-            uint val2 = Read32(ref dataReference, (uint)offset + i + sizeof(uint));
-            sum += (val1 + FARSH_KEYS[j]) * (ulong)(val2 + FARSH_KEYS[j + 1]);
+            uint val1 = Read32(ref current);
+            uint val2 = Read32(ref current, sizeof(uint));
+            sum += (val1 + keys) * (ulong)(val2 + Unsafe.Add(ref keys, 1));
+            current = ref Unsafe.Add(ref current, 8);
+            keys = ref Unsafe.Add(ref keys, 2);
         }
 
         return sum;
@@ -81,13 +83,21 @@ public static class FarshHash32
 
         uint chunks = (uint)((length - offset) >> 3);
 
-        for (; chunks > 0; chunks--)
+        if (chunks > 0)
         {
-            uint val1 = Read32(ref dataReference, offset);
-            uint val2 = Read32(ref dataReference, offset + sizeof(uint));
-            sum += (val1 + FARSH_KEYS[keyindex]) * (ulong)(val2 + FARSH_KEYS[keyindex + 1]);
-            offset += 8;
-            keyindex += 2;
+            ref byte current = ref Unsafe.Add(ref dataReference, offset);
+            // A partial block consumes at most 256 words from the fixed key table.
+            ref uint keys = ref MemoryMarshal.GetReference(FARSH_KEYS.AsSpan());
+            do
+            {
+                uint val1 = Read32(ref current);
+                uint val2 = Read32(ref current, sizeof(uint));
+                sum += (val1 + keys) * (ulong)(val2 + Unsafe.Add(ref keys, 1));
+                current = ref Unsafe.Add(ref current, 8);
+                keys = ref Unsafe.Add(ref keys, 2);
+                offset += 8;
+                keyindex += 2;
+            } while (--chunks > 0);
         }
 
         uint v1;
@@ -137,7 +147,6 @@ public static class FarshHash32
 
         return sum;
     }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong farsh_combine(ulong sum, ulong h)

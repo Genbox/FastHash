@@ -26,7 +26,7 @@ public static class CityHash64
     /// <summary>Computes the hash of data with the default seed.</summary>
     /// <param name="data">The data to hash.</param>
     /// <returns>The 64-bit hash.</returns>
-    public static ulong ComputeHash(ReadOnlySpan<byte> data) => CityHash64Internal(data);
+    public static ulong ComputeHash(ReadOnlySpan<byte> data) => CityHash64Dispatch(data);
 
     /// <summary>Computes the hash of data with a seed.</summary>
     /// <param name="data">The data to hash.</param>
@@ -40,6 +40,23 @@ public static class CityHash64
     /// <param name="seed2">The second hash seed.</param>
     /// <returns>The 64-bit hash.</returns>
     public static ulong ComputeHash(ReadOnlySpan<byte> data, ulong seed1, ulong seed2) => CityHash64WithSeeds(data, seed1, seed2);
+
+    private static ulong CityHash64Dispatch(ReadOnlySpan<byte> s)
+    {
+        uint len = (uint)s.Length;
+
+        if (len <= 32)
+        {
+            if (len <= 16)
+                return HashLen0to16(s, len);
+            return HashLen17to32(s, len);
+        }
+
+        if (len <= 64)
+            return HashLen33to64(s, len);
+
+        return CityHash64Internal(s);
+    }
 
     private static ulong CityHash64Internal(ReadOnlySpan<byte> s)
     {
@@ -86,7 +103,7 @@ public static class CityHash64
         return HashLen16(HashLen16(v.Low, w.Low) + (ShiftMix(y) * K1) + z, HashLen16(v.High, w.High) + x);
     }
 
-    private static ulong CityHash64WithSeeds(ReadOnlySpan<byte> s, ulong seed0, ulong seed1) => HashLen16(CityHash64Internal(s) - seed0, seed1);
+    private static ulong CityHash64WithSeeds(ReadOnlySpan<byte> s, ulong seed0, ulong seed1) => HashLen16(CityHash64Dispatch(s) - seed0, seed1);
 
     // This probably works well for 16-byte strings as well, but it may be overkill in that case.
     private static ulong HashLen17to32(ReadOnlySpan<byte> s, uint len)

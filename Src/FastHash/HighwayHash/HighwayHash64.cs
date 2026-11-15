@@ -277,6 +277,7 @@ public static class HighwayHash64
     internal static ulong HashAvx2(ReadOnlySpan<byte> data, ulong key0, ulong key1, ulong key2, ulong key3) =>
         HashAvx2(ref MemoryMarshal.GetReference(data), data.Length, key0, key1, key2, key3);
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static ulong HashAvx2(ref byte data, int size, ulong key0, ulong key1, ulong key2, ulong key3)
     {
         ResetAvx2(key0, key1, key2, key3, out Vector256<ulong> v0, out Vector256<ulong> v1, out Vector256<ulong> mul0, out Vector256<ulong> mul1);
@@ -325,31 +326,38 @@ public static class HighwayHash64
         v1 += ZipperMerge(v0);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void UpdateRemainderAvx2(ref byte bytes, int sizeMod32, ref Vector256<ulong> v0, ref Vector256<ulong> v1, ref Vector256<ulong> mul0, ref Vector256<ulong> mul1)
     {
         v0 += Vector256.Create(((ulong)sizeMod32 << 32) + (uint)sizeMod32);
         v1 = Rotate32By(v1, sizeMod32);
 
-        // Same packet layout as the portable implementation.
-        int sizeMod4 = sizeMod32 & 3;
         int remainderOffset = sizeMod32 & ~3;
-        Span<byte> packet = stackalloc byte[32];
-        packet.Clear();
-        Unsafe.CopyBlockUnaligned(ref MemoryMarshal.GetReference(packet), ref bytes, (uint)remainderOffset);
-
+        Vector128<byte> lower;
+        Vector128<byte> upper;
         if ((sizeMod32 & 16) != 0)
         {
-            for (int i = 0; i < 4; i++)
-                Unsafe.Add(ref MemoryMarshal.GetReference(packet), 28 + i) = Unsafe.Add(ref bytes, (remainderOffset + i + sizeMod4) - 4);
+            lower = Unsafe.ReadUnaligned<Vector128<byte>>(ref bytes);
+            upper = ReadPartial128(ref Unsafe.Add(ref bytes, 16), remainderOffset - 16);
+            // The final four input bytes occupy the final four packet bytes.
+            upper = upper.AsUInt32().WithElement(3, Read32(ref bytes, sizeMod32 - 4)).AsByte();
         }
-        else if (sizeMod4 != 0)
+        else
         {
-            Unsafe.Add(ref MemoryMarshal.GetReference(packet), 16) = Unsafe.Add(ref bytes, remainderOffset);
-            Unsafe.Add(ref MemoryMarshal.GetReference(packet), 17) = Unsafe.Add(ref bytes, remainderOffset + (sizeMod4 >> 1));
-            Unsafe.Add(ref MemoryMarshal.GetReference(packet), 18) = Unsafe.Add(ref bytes, (remainderOffset + sizeMod4) - 1);
+            lower = ReadPartial128(ref bytes, remainderOffset);
+            uint last = 0;
+            int sizeMod4 = sizeMod32 & 3;
+            if (sizeMod4 != 0)
+            {
+                last = Unsafe.Add(ref bytes, remainderOffset);
+                last |= (uint)Unsafe.Add(ref bytes, remainderOffset + (sizeMod4 >> 1)) << 8;
+                last |= (uint)Unsafe.Add(ref bytes, remainderOffset + sizeMod4 - 1) << 16;
+            }
+
+            upper = Vector128.Create((ulong)last, 0UL).AsByte();
         }
 
-        UpdateAvx2(Vector256.LoadUnsafe(ref MemoryMarshal.GetReference(packet)).AsUInt64(), ref v0, ref v1, ref mul0, ref mul1);
+        UpdateAvx2(Vector256.Create(lower, upper).AsUInt64(), ref v0, ref v1, ref mul0, ref mul1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

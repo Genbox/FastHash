@@ -57,7 +57,7 @@ public static class Xx3Hash64
     {
         int length = data.Length;
         if (length <= 16)
-            return XXH3_len_0to16_64b(data, length, seed);
+            return XXH3_len_0to16_64b(data, (uint)length, seed);
         if (length <= 128)
             return XXH3_len_17to128_64b(data, length, seed);
         if (length <= MIDSIZE_MAX)
@@ -85,7 +85,8 @@ public static class Xx3Hash64
         return res;
     }
 
-    private static ulong XXH3_rrmxmx(ulong h64, int len)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong XXH3_rrmxmx(ulong h64, uint len)
     {
         /* this mix is inspired by Pelle Evensen's rrmxmx */
         h64 ^= RotateLeft(h64, 49) ^ RotateLeft(h64, 24);
@@ -174,68 +175,66 @@ public static class Xx3Hash64
         return XXH3_avalanche(acc);
     }
 
-
-    private static ulong XXH3_len_0to16_64b(ReadOnlySpan<byte> input, int len, ulong seed)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong XXH3_len_0to16_64b(ReadOnlySpan<byte> input, uint len, ulong seed)
     {
-        // XXH_ASSERT(len <= 16);
+        ref byte data = ref MemoryMarshal.GetReference(input);
 
         if (len > 8)
-            return XXH3_len_9to16_64b(input, len, seed);
+            return XXH3_len_9to16_64b(ref data, len, seed);
         if (len >= 4)
-            return XXH3_len_4to8_64b(input, len, seed);
+            return XXH3_len_4to8_64b(ref data, len, seed);
         if (len > 0)
-            return XXH3_len_1to3_64b(input, len, seed);
+            return XXH3_len_1to3_64b(ref data, len, seed);
 
         return YC_xmxmx_XXH_64(seed ^ SECRET64_056 ^ SECRET64_064);
     }
 
-    private static ulong XXH3_len_9to16_64b(ReadOnlySpan<byte> input, int len, ulong seed)
+    private static ulong XXH3_len_9to16_64b(ref byte input, uint len, ulong seed)
     {
-        ref byte inputReference = ref MemoryMarshal.GetReference(input);
         // XXH_ASSERT(input != NULL);
         // XXH_ASSERT(9 <= len && len <= 16);
 
         ulong bitflip1 = (SECRET64_024 ^ SECRET64_032) + seed;
         ulong bitflip2 = (SECRET64_040 ^ SECRET64_048) - seed;
-        ulong input_lo = Read64(ref inputReference) ^ bitflip1;
-        ulong input_hi = Read64(ref inputReference, len - 8) ^ bitflip2;
+        ulong input_lo = Read64(ref input) ^ bitflip1;
+        ulong input_hi = Read64(ref Unsafe.Add(ref input, (IntPtr)(len - 8))) ^ bitflip2;
         ulong acc = (ulong)len
                     + ByteSwap(input_lo) + input_hi
                     + XXH3_mul128_fold64(input_lo, input_hi);
         return XXH3_avalanche(acc);
     }
 
-    private static ulong XXH3_len_4to8_64b(ReadOnlySpan<byte> input, int len, ulong seed)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong XXH3_len_4to8_64b(ref byte input, uint len, ulong seed)
     {
-        ref byte inputReference = ref MemoryMarshal.GetReference(input);
         // XXH_ASSERT(input != NULL);
         // XXH_ASSERT(4 <= len && len <= 8);
 
         seed ^= (ulong)ByteSwap((uint)seed) << 32;
 
-        uint input1 = Read32(ref inputReference);
-        uint input2 = Read32(ref inputReference, len - 4);
+        uint input1 = Read32(ref input);
+        uint input2 = Read32(ref Unsafe.Add(ref input, (IntPtr)(len - 4)));
         ulong bitflip = (SECRET64_008 ^ SECRET64_016) - seed;
         ulong input64 = input2 + ((ulong)input1 << 32);
         ulong keyed = input64 ^ bitflip;
         return XXH3_rrmxmx(keyed, len);
     }
 
-    private static ulong XXH3_len_1to3_64b(ReadOnlySpan<byte> input, int len, ulong seed)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ulong XXH3_len_1to3_64b(ref byte input, uint len, ulong seed)
     {
-        ref byte inputReference = ref MemoryMarshal.GetReference(input);
         // XXH_ASSERT(input != NULL);
         // XXH_ASSERT(1 <= len && len <= 3);
 
-        byte c1 = Unsafe.Add(ref inputReference, 0);
-        byte c2 = Unsafe.Add(ref inputReference, len >> 1);
-        byte c3 = Unsafe.Add(ref inputReference, len - 1);
-        uint combined = ((uint)c1 << 16) | ((uint)c2 << 24) | ((uint)c3 << 0) | ((uint)len << 8);
+        byte c1 = input;
+        byte c2 = Unsafe.Add(ref input, (IntPtr)(len >> 1));
+        byte c3 = Unsafe.Add(ref input, (IntPtr)(len - 1));
+        uint combined = ((uint)c1 << 16) | ((uint)c2 << 24) | (uint)c3 | (len << 8);
         ulong bitflip = (SECRET32_000 ^ SECRET32_004) + seed;
         ulong keyed = combined ^ bitflip;
         return YC_xmxmx_XXH_64(keyed);
     }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong XXH3_avalanche(ulong hash)

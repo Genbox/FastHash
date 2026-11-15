@@ -47,7 +47,7 @@ public static class CityHashCrc256
     private static void CityHashCrc256Long(ReadOnlySpan<byte> s, uint length, uint seed, Span<ulong> result)
     {
         ref byte sReference = ref MemoryMarshal.GetReference(s);
-        int offset = 0;
+        ref byte current = ref sReference;
         ulong a = Read64(ref sReference, 56) + K0;
         ulong b = Read64(ref sReference, 96) + K0;
         ulong c = result[0] = HashLen16(b, length);
@@ -66,23 +66,30 @@ public static class CityHashCrc256
 
         do
         {
-            Chunk(0, s, ref offset);
+            Chunk(0, ref current);
+            current = ref Unsafe.Add(ref current, 40);
             Permute3(ref a, ref h, ref c);
-            Chunk(33, s, ref offset);
+            Chunk(33, ref current);
+            current = ref Unsafe.Add(ref current, 40);
             Permute3(ref a, ref h, ref f);
-            Chunk(0, s, ref offset);
+            Chunk(0, ref current);
+            current = ref Unsafe.Add(ref current, 40);
             Permute3(ref b, ref h, ref f);
-            Chunk(42, s, ref offset);
+            Chunk(42, ref current);
+            current = ref Unsafe.Add(ref current, 40);
             Permute3(ref b, ref h, ref d);
-            Chunk(0, s, ref offset);
+            Chunk(0, ref current);
+            current = ref Unsafe.Add(ref current, 40);
             Permute3(ref b, ref h, ref e);
-            Chunk(33, s, ref offset);
+            Chunk(33, ref current);
+            current = ref Unsafe.Add(ref current, 40);
             Permute3(ref a, ref h, ref e);
         } while (--iters > 0);
 
         while (length >= 40)
         {
-            Chunk(29, s, ref offset);
+            Chunk(29, ref current);
+            current = ref Unsafe.Add(ref current, 40);
             e ^= RotateRight(a, 20);
             h += RotateRight(b, 30);
             g ^= RotateRight(c, 40);
@@ -93,8 +100,9 @@ public static class CityHashCrc256
 
         if (length > 0)
         {
-            offset += (int)length - 40;
-            Chunk(33, s, ref offset);
+            current = ref Unsafe.Add(ref current, (int)length - 40);
+            Chunk(33, ref current);
+            current = ref Unsafe.Add(ref current, 40);
             e ^= RotateRight(a, 43);
             h += RotateRight(b, 42);
             g ^= RotateRight(c, 41);
@@ -123,15 +131,14 @@ public static class CityHashCrc256
         result[3] = a + result[2];
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        void Chunk(byte r, ReadOnlySpan<byte> input, ref int position)
+        void Chunk(byte r, ref byte inputReference)
         {
-        ref byte inputReference = ref MemoryMarshal.GetReference(input);
             Permute3(ref x, ref z, ref y);
-            b += Read64(ref inputReference, position);
-            c += Read64(ref inputReference, position + 8);
-            d += Read64(ref inputReference, position + 16);
-            e += Read64(ref inputReference, position + 24);
-            f += Read64(ref inputReference, position + 32);
+            b += Read64(ref inputReference);
+            c += Read64(ref inputReference, 8);
+            d += Read64(ref inputReference, 16);
+            e += Read64(ref inputReference, 24);
+            f += Read64(ref inputReference, 32);
             a += b;
             h += f;
             b += c;
@@ -144,7 +151,6 @@ public static class CityHashCrc256
             x = Sse42.X64.Crc32(x, f + a);
             e = RotateRight(e, r);
             c += e;
-            position += 40;
         }
     }
 

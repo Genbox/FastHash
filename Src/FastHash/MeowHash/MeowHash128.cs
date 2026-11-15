@@ -93,31 +93,37 @@ public static class MeowHash128
         Vector128<byte> xmm6 = Vector128.Create(0xf9c7125f04c9a76bUL, 0xcf16397b94194a92UL).AsByte();
         Vector128<byte> xmm7 = Vector128.Create(0xc1ef58282e1f8070UL, 0xe67415870d923666UL).AsByte();
 
-        int offset = 0;
+        ref byte current = ref MemoryMarshal.GetReference(source);
         int blockCount = len >> 8;
 
         while (blockCount-- > 0)
         {
-            MEOW_MIX(ref xmm0, ref xmm4, ref xmm6, ref xmm1, ref xmm2, source, offset + 0x00);
-            MEOW_MIX(ref xmm1, ref xmm5, ref xmm7, ref xmm2, ref xmm3, source, offset + 0x20);
-            MEOW_MIX(ref xmm2, ref xmm6, ref xmm0, ref xmm3, ref xmm4, source, offset + 0x40);
-            MEOW_MIX(ref xmm3, ref xmm7, ref xmm1, ref xmm4, ref xmm5, source, offset + 0x60);
-            MEOW_MIX(ref xmm4, ref xmm0, ref xmm2, ref xmm5, ref xmm6, source, offset + 0x80);
-            MEOW_MIX(ref xmm5, ref xmm1, ref xmm3, ref xmm6, ref xmm7, source, offset + 0xa0);
-            MEOW_MIX(ref xmm6, ref xmm2, ref xmm4, ref xmm7, ref xmm0, source, offset + 0xc0);
-            MEOW_MIX(ref xmm7, ref xmm3, ref xmm5, ref xmm0, ref xmm1, source, offset + 0xe0);
+            MEOW_MIX(ref xmm0, ref xmm4, ref xmm6, ref xmm1, ref xmm2, ref current, 0x00);
+            MEOW_MIX(ref xmm1, ref xmm5, ref xmm7, ref xmm2, ref xmm3, ref current, 0x20);
+            MEOW_MIX(ref xmm2, ref xmm6, ref xmm0, ref xmm3, ref xmm4, ref current, 0x40);
+            MEOW_MIX(ref xmm3, ref xmm7, ref xmm1, ref xmm4, ref xmm5, ref current, 0x60);
+            MEOW_MIX(ref xmm4, ref xmm0, ref xmm2, ref xmm5, ref xmm6, ref current, 0x80);
+            MEOW_MIX(ref xmm5, ref xmm1, ref xmm3, ref xmm6, ref xmm7, ref current, 0xa0);
+            MEOW_MIX(ref xmm6, ref xmm2, ref xmm4, ref xmm7, ref xmm0, ref current, 0xc0);
+            MEOW_MIX(ref xmm7, ref xmm3, ref xmm5, ref xmm0, ref xmm1, ref current, 0xe0);
 
-            offset += 0x100;
+            current = ref Unsafe.Add(ref current, 0x100);
         }
 
-        Span<byte> residual = stackalloc byte[32];
-        residual.Clear();
         int residualLength = len & 31;
-        if (residualLength != 0)
-            source.Slice(len - residualLength, residualLength).CopyTo(residual);
-
-        Vector128<byte> xmm9 = LoadVector(residual, 0);
-        Vector128<byte> xmm11 = LoadVector(residual, 16);
+        ref byte residual = ref Unsafe.Add(ref MemoryMarshal.GetReference(source), len - residualLength);
+        Vector128<byte> xmm9;
+        Vector128<byte> xmm11;
+        if (residualLength >= 16)
+        {
+            xmm9 = Unsafe.ReadUnaligned<Vector128<byte>>(ref residual);
+            xmm11 = ReadPartial128(ref Unsafe.Add(ref residual, 16), residualLength - 16);
+        }
+        else
+        {
+            xmm9 = ReadPartial128(ref residual, residualLength);
+            xmm11 = Vector128<byte>.Zero;
+        }
 
         Vector128<byte> xmm8 = xmm9;
         Vector128<byte> xmm10 = xmm9;
@@ -137,25 +143,25 @@ public static class MeowHash128
         int laneCount = (len >> 5) & 0x7;
 
         if (laneCount == 0) return MixDown(xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7);
-        MEOW_MIX(ref xmm2, ref xmm6, ref xmm0, ref xmm3, ref xmm4, source, offset + 0x00);
+        MEOW_MIX(ref xmm2, ref xmm6, ref xmm0, ref xmm3, ref xmm4, ref current, 0x00);
         --laneCount;
         if (laneCount == 0) return MixDown(xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7);
-        MEOW_MIX(ref xmm3, ref xmm7, ref xmm1, ref xmm4, ref xmm5, source, offset + 0x20);
+        MEOW_MIX(ref xmm3, ref xmm7, ref xmm1, ref xmm4, ref xmm5, ref current, 0x20);
         --laneCount;
         if (laneCount == 0) return MixDown(xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7);
-        MEOW_MIX(ref xmm4, ref xmm0, ref xmm2, ref xmm5, ref xmm6, source, offset + 0x40);
+        MEOW_MIX(ref xmm4, ref xmm0, ref xmm2, ref xmm5, ref xmm6, ref current, 0x40);
         --laneCount;
         if (laneCount == 0) return MixDown(xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7);
-        MEOW_MIX(ref xmm5, ref xmm1, ref xmm3, ref xmm6, ref xmm7, source, offset + 0x60);
+        MEOW_MIX(ref xmm5, ref xmm1, ref xmm3, ref xmm6, ref xmm7, ref current, 0x60);
         --laneCount;
         if (laneCount == 0) return MixDown(xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7);
-        MEOW_MIX(ref xmm6, ref xmm2, ref xmm4, ref xmm7, ref xmm0, source, offset + 0x80);
+        MEOW_MIX(ref xmm6, ref xmm2, ref xmm4, ref xmm7, ref xmm0, ref current, 0x80);
         --laneCount;
         if (laneCount == 0) return MixDown(xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7);
-        MEOW_MIX(ref xmm7, ref xmm3, ref xmm5, ref xmm0, ref xmm1, source, offset + 0xa0);
+        MEOW_MIX(ref xmm7, ref xmm3, ref xmm5, ref xmm0, ref xmm1, ref current, 0xa0);
         --laneCount;
         if (laneCount != 0)
-            MEOW_MIX(ref xmm0, ref xmm4, ref xmm6, ref xmm1, ref xmm2, source, offset + 0xc0);
+            MEOW_MIX(ref xmm0, ref xmm4, ref xmm6, ref xmm1, ref xmm2, ref current, 0xc0);
 
         return MixDown(xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7);
     }
@@ -199,18 +205,13 @@ public static class MeowHash128
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void MEOW_MIX(ref Vector128<byte> r1, ref Vector128<byte> r2, ref Vector128<byte> r3, ref Vector128<byte> r4, ref Vector128<byte> r5, ReadOnlySpan<byte> data, int offset) => MEOW_MIX_REG(ref r1, ref r2, ref r3, ref r4, ref r5,
-        LoadVector(data, offset + 15),
-        LoadVector(data, offset),
-        LoadVector(data, offset + 1),
-        LoadVector(data, offset + 16));
+    private static void MEOW_MIX(ref Vector128<byte> r1, ref Vector128<byte> r2, ref Vector128<byte> r3, ref Vector128<byte> r4, ref Vector128<byte> r5, ref byte data, int offset) => MEOW_MIX_REG(ref r1, ref r2, ref r3, ref r4, ref r5,
+        Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref data, offset + 15)),
+        Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref data, offset)),
+        Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref data, offset + 1)),
+        Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref data, offset + 16)));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> LoadVector(ReadOnlySpan<byte> data, int offset)
-    {
-        ref byte ptr = ref MemoryMarshal.GetReference(data);
-        return Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref ptr, offset));
-    }
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void MEOW_SHUFFLE(ref Vector128<byte> r1, ref Vector128<byte> r2, Vector128<byte> r3, ref Vector128<byte> r4, ref Vector128<byte> r5, Vector128<byte> r6)

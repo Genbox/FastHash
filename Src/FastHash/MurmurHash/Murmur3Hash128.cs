@@ -128,8 +128,12 @@ public static class Murmur3Hash128
 
                 goto case 8;
             case 8:
-                k1 ^= (ulong)Unsafe.Add(ref dataReference, tail + 7) << 56;
-                goto case 7;
+                k1 = Read64(ref dataReference, tail);
+                k1 *= C1_64;
+                k1 = RotateLeft(k1, 31);
+                k1 *= C2_64;
+                h1 ^= k1;
+                break;
             case 7:
                 k1 ^= (ulong)Unsafe.Add(ref dataReference, tail + 6) << 48;
                 goto case 6;

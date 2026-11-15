@@ -58,6 +58,7 @@ public static class Wy2Hash64
 
         int len = data.Length;
         seed ^= secret[0];
+        ulong secret1 = secret[1];
         ulong a, b;
 
         if (len <= 16)
@@ -89,18 +90,20 @@ public static class Wy2Hash64
         else
         {
             int i = len;
-            uint offset = 0;
+            ref byte current = ref MemoryMarshal.GetReference(data);
 
             if (i > 48)
             {
+                ulong secret2 = secret[2];
+                ulong secret3 = secret[3];
                 ulong see1 = seed, see2 = seed;
 
                 do
                 {
-                    seed = Wymix(Read64(ref dataReference, offset) ^ secret[1], Read64(ref dataReference, offset + 8) ^ seed);
-                    see1 = Wymix(Read64(ref dataReference, offset + 16) ^ secret[2], Read64(ref dataReference, offset + 24) ^ see1);
-                    see2 = Wymix(Read64(ref dataReference, offset + 32) ^ secret[3], Read64(ref dataReference, offset + 40) ^ see2);
-                    offset += 48;
+                    seed = Wymix(Read64(ref current, 0) ^ secret1, Read64(ref current, 8) ^ seed);
+                    see1 = Wymix(Read64(ref current, 16) ^ secret2, Read64(ref current, 24) ^ see1);
+                    see2 = Wymix(Read64(ref current, 32) ^ secret3, Read64(ref current, 40) ^ see2);
+                    current = ref Unsafe.Add(ref current, 48);
                     i -= 48;
                 } while (i > 48);
 
@@ -109,17 +112,16 @@ public static class Wy2Hash64
 
             while (i > 16)
             {
-                uint offset1 = offset + 8;
-                seed = Wymix(Read64(ref dataReference, offset) ^ secret[1], Read64(ref dataReference, offset1) ^ seed);
+                seed = Wymix(Read64(ref current, 0) ^ secret1, Read64(ref current, 8) ^ seed);
                 i -= 16;
-                offset += 16;
+                current = ref Unsafe.Add(ref current, 16);
             }
 
-            a = Read64(ref dataReference, (uint)((offset + i) - 16));
-            b = Read64(ref dataReference, (uint)((offset + i) - 8));
+            a = Read64(ref current, i - 16);
+            b = Read64(ref current, i - 8);
         }
 
-        return Wymix(secret[1] ^ (uint)len, Wymix(a ^ secret[1], b ^ seed));
+        return Wymix(secret1 ^ (uint)len, Wymix(a ^ secret1, b ^ seed));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

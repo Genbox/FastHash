@@ -38,24 +38,19 @@ public sealed class PolyXorHashParams
     public PolyXorHashParams(UInt128 key)
     {
         _hasAesKey = true;
-        Span<byte> entropy = stackalloc byte[EntropyNeeded];
+        Span<byte> entropy = stackalloc byte[64];
         Span<byte> keyBytes = stackalloc byte[16];
         BinaryPrimitives.WriteUInt64LittleEndian(keyBytes, key.Low);
         BinaryPrimitives.WriteUInt64LittleEndian(keyBytes[8..], key.High);
         _roundKeys = X86Aes.IsSupported || ArmAes.IsSupported ? ExpandKey(keyBytes) : null;
-        for (int i = 0; i < EntropyNeeded / 16; i++)
-            Vector128.Create((ulong)i, 1UL << 63).AsByte().StoreUnsafe(ref Unsafe.Add(ref MemoryMarshal.GetReference(entropy), i * 16));
+        BlockKey = new byte[EntropyNeeded - 64];
+        FillCounters(entropy, 0);
+        FillCounters(BlockKey, 4);
 
         if (X86Aes.IsSupported || ArmAes.IsSupported)
         {
-            for (int i = 0; i < entropy.Length; i += 32)
-            {
-                Vector128<byte> a = Vector128.LoadUnsafe(ref Unsafe.Add(ref MemoryMarshal.GetReference(entropy), i));
-                Vector128<byte> b = Vector128.LoadUnsafe(ref Unsafe.Add(ref MemoryMarshal.GetReference(entropy), i + 16));
-                EncryptPair(ref a, ref b);
-                a.StoreUnsafe(ref Unsafe.Add(ref MemoryMarshal.GetReference(entropy), i));
-                b.StoreUnsafe(ref Unsafe.Add(ref MemoryMarshal.GetReference(entropy), i + 16));
-            }
+            EncryptEntropy(entropy);
+            EncryptEntropy(BlockKey);
         }
         else
         {
@@ -63,14 +58,34 @@ public sealed class PolyXorHashParams
             using Aes aes = Aes.Create();
             aes.Key = keyBytes.ToArray();
             aes.EncryptEcb(entropy, entropy, PaddingMode.None);
+            aes.EncryptEcb(BlockKey, BlockKey, PaddingMode.None);
         }
 
         PolyZ = Load(entropy);
         PolyU = Load(entropy[16..]);
         PolyY = Load(entropy[32..]);
         AvalancheMul = Nonzero(Load(entropy[48..]));
-        BlockKey = entropy[64..].ToArray();
         PolyXorHash128.PrepareIndex(this, out IndexH0, out IndexH1, out IndexMultipliers);
+    }
+
+    private static void FillCounters(Span<byte> destination, ulong first)
+    {
+        ref byte start = ref MemoryMarshal.GetReference(destination);
+        for (int i = 0; i < destination.Length / 16; i++)
+            Vector128.Create(first + (ulong)i, 1UL << 63).AsByte().StoreUnsafe(ref Unsafe.Add(ref start, i * 16));
+    }
+
+    private void EncryptEntropy(Span<byte> entropy)
+    {
+        ref byte start = ref MemoryMarshal.GetReference(entropy);
+        for (int i = 0; i < entropy.Length; i += 32)
+        {
+            Vector128<byte> a = Vector128.LoadUnsafe(ref Unsafe.Add(ref start, i));
+            Vector128<byte> b = Vector128.LoadUnsafe(ref Unsafe.Add(ref start, i + 16));
+            EncryptPair(ref a, ref b);
+            a.StoreUnsafe(ref Unsafe.Add(ref start, i));
+            b.StoreUnsafe(ref Unsafe.Add(ref start, i + 16));
+        }
     }
 
     private PolyXorHashParams(ReadOnlySpan<byte> entropy)

@@ -133,7 +133,14 @@ public static class MarvinHash64
         // some data we've already processed, but we can handle that below.
 
         // Read the last 4 bytes of the buffer.
-        uint partialResult = Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref Unsafe.AddByteOffset(ref ptr, (IntPtr)(count & 7)), -4));
+        uint partialResult;
+        if ((count & 3) == 0)
+        {
+            partialResult = BitConverter.IsLittleEndian ? 0x80u : 0x8000_0000u;
+            goto DoFinalRoundsAndReturn;
+        }
+
+        partialResult = Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref Unsafe.AddByteOffset(ref ptr, (IntPtr)(count & 7)), -4));
 
         // The 'partialResult' local above contains any data we have yet to read, plus some number
         // of bytes which we've already read from the buffer. An example of this is given below

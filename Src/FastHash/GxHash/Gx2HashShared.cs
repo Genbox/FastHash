@@ -118,16 +118,17 @@ internal static class Gx2HashShared
         Vector128<byte> lane1 = hashVector;
         Vector128<byte> lane2 = hashVector;
 
+        ref byte current = ref Unsafe.Add(ref start, offset);
         while (offset < end)
         {
-            Vector128<byte> v0 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset));
-            Vector128<byte> v1 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + VECTOR_SIZE));
-            Vector128<byte> v2 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 2)));
-            Vector128<byte> v3 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 3)));
-            Vector128<byte> v4 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 4)));
-            Vector128<byte> v5 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 5)));
-            Vector128<byte> v6 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 6)));
-            Vector128<byte> v7 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref start, offset + (VECTOR_SIZE * 7)));
+            Vector128<byte> v0 = Unsafe.ReadUnaligned<Vector128<byte>>(ref current);
+            Vector128<byte> v1 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref current, VECTOR_SIZE));
+            Vector128<byte> v2 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref current, (VECTOR_SIZE * 2)));
+            Vector128<byte> v3 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref current, (VECTOR_SIZE * 3)));
+            Vector128<byte> v4 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref current, (VECTOR_SIZE * 4)));
+            Vector128<byte> v5 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref current, (VECTOR_SIZE * 5)));
+            Vector128<byte> v6 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref current, (VECTOR_SIZE * 6)));
+            Vector128<byte> v7 = Unsafe.ReadUnaligned<Vector128<byte>>(ref Unsafe.Add(ref current, (VECTOR_SIZE * 7)));
 
             Vector128<byte> tmp1 = AesEncrypt(v0, v2);
             Vector128<byte> tmp2 = AesEncrypt(v1, v3);
@@ -144,6 +145,7 @@ internal static class Gx2HashShared
             lane1 = AesEncryptLast(AesEncrypt(tmp1, t1), lane1);
             lane2 = AesEncryptLast(AesEncrypt(tmp2, t2), lane2);
 
+            current = ref Unsafe.Add(ref current, VECTOR_SIZE * UNROLL_FACTOR);
             offset += VECTOR_SIZE * UNROLL_FACTOR;
         }
 

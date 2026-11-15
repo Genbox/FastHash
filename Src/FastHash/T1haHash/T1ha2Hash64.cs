@@ -75,31 +75,31 @@ public static class T1ha2Hash64
         }
 
         int tailLength = length - offset;
-        ReadOnlySpan<byte> tail = data.Slice(offset);
+        ref byte tail = ref Unsafe.Add(ref dataReference, offset);
 
         if (tailLength > 24)
         {
-            MixUp(ref a, ref b, Read64(ref MemoryMarshal.GetReference(tail), 0), Prime4);
-            tail = tail.Slice(8);
+            MixUp(ref a, ref b, Read64(ref tail), Prime4);
+            tail = ref Unsafe.Add(ref tail, 8);
             tailLength -= 8;
         }
 
         if (tailLength > 16)
         {
-            MixUp(ref b, ref a, Read64(ref MemoryMarshal.GetReference(tail), 0), Prime3);
-            tail = tail.Slice(8);
+            MixUp(ref b, ref a, Read64(ref tail), Prime3);
+            tail = ref Unsafe.Add(ref tail, 8);
             tailLength -= 8;
         }
 
         if (tailLength > 8)
         {
-            MixUp(ref a, ref b, Read64(ref MemoryMarshal.GetReference(tail), 0), Prime2);
-            tail = tail.Slice(8);
+            MixUp(ref a, ref b, Read64(ref tail), Prime2);
+            tail = ref Unsafe.Add(ref tail, 8);
             tailLength -= 8;
         }
 
         if (tailLength > 0)
-            MixUp(ref b, ref a, Tail64(tail, tailLength), Prime1);
+            MixUp(ref b, ref a, Tail64(ref tail, tailLength), Prime1);
 
         return Final64(a, b);
     }

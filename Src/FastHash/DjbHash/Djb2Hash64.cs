@@ -35,7 +35,26 @@ public static class Djb2Hash64
         ref byte dataReference = ref MemoryMarshal.GetReference(data);
         ulong hash = InitHash;
 
-        for (int i = 0; i < data.Length; i++)
+        int i = 0;
+        for (; i <= data.Length - 4; i += 4)
+        {
+            // Four recurrence steps; the weighted bytes sum to at most 9,450,300.
+            uint chunk = ((uint)Unsafe.Add(ref dataReference, i) * 35937)
+                         + ((uint)Unsafe.Add(ref dataReference, i + 1) * 1089)
+                         + ((uint)Unsafe.Add(ref dataReference, i + 2) * 33)
+                         + Unsafe.Add(ref dataReference, i + 3);
+            hash = (hash * 1185921) + chunk;
+        }
+
+        if (data.Length - i >= 2)
+        {
+            uint chunk = ((uint)Unsafe.Add(ref dataReference, i) * 33)
+                         + Unsafe.Add(ref dataReference, i + 1);
+            hash = (hash * 1089) + chunk;
+            i += 2;
+        }
+
+        if (i < data.Length)
             hash = (hash << 5) + hash + Unsafe.Add(ref dataReference, i);
 
         return hash;

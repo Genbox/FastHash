@@ -113,8 +113,8 @@ public static class CityHash128
         ulong y = seed.High;
         ulong z = len * K1;
         ulong vLow = (RotateRight(y ^ K1, 49) * K1) + Read64(ref sReference);
-        UInt128 v = new UInt128((RotateRight(vLow, 42) * K1) + Read64(ref sReference, 8), vLow);
-        UInt128 w = new UInt128(RotateRight(x + Read64(ref sReference, 88), 53) * K1, (RotateRight(y + z, 35) * K1) + x);
+        Hash128State v = new Hash128State((RotateRight(vLow, 42) * K1) + Read64(ref sReference, 8), vLow);
+        Hash128State w = new Hash128State(RotateRight(x + Read64(ref sReference, 88), 53) * K1, (RotateRight(y + z, 35) * K1) + x);
 
         // This is the same inner loop as CityHash64(), manually unrolled.
         uint offset = 0;
@@ -126,8 +126,8 @@ public static class CityHash128
             x ^= w.High;
             y += v.Low + Read64(ref sReference, offset + 40);
             z = RotateRight(z + w.Low, 33) * K1;
-            v = WeakHashLen32WithSeeds(s, offset + 0, v.High * K1, x + w.Low);
-            w = WeakHashLen32WithSeeds(s, offset + 32, z + w.High, y + Read64(ref sReference, offset + 16));
+            v = WeakHashState(s, offset + 0, v.High * K1, x + w.Low);
+            w = WeakHashState(s, offset + 32, z + w.High, y + Read64(ref sReference, offset + 16));
             Swap(ref z, ref x);
             offset += 64;
             x = RotateRight(x + y + v.Low + Read64(ref sReference, offset + 8), 37) * K1;
@@ -135,8 +135,8 @@ public static class CityHash128
             x ^= w.High;
             y += v.Low + Read64(ref sReference, offset + 40);
             z = RotateRight(z + w.Low, 33) * K1;
-            v = WeakHashLen32WithSeeds(s, offset, v.High * K1, x + w.Low);
-            w = WeakHashLen32WithSeeds(s, offset + 32, z + w.High, y + Read64(ref sReference, offset + 16));
+            v = WeakHashState(s, offset, v.High * K1, x + w.Low);
+            w = WeakHashState(s, offset + 32, z + w.High, y + Read64(ref sReference, offset + 16));
             Swap(ref z, ref x);
             offset += 64;
             len -= 128;
@@ -145,20 +145,20 @@ public static class CityHash128
         x += RotateRight(v.Low + z, 49) * K0;
         y = (y * K0) + RotateRight(w.High, 37);
         z = (z * K0) + RotateRight(w.Low, 27);
-        w = new UInt128(w.High, w.Low * 9);
-        v = new UInt128(v.High, v.Low * K0);
+        w = new Hash128State(w.High, w.Low * 9);
+        v = new Hash128State(v.High, v.Low * K0);
 
         // If 0 < len < 128, hash up to 4 chunks of 32 bytes each from the end of s.
         for (uint tail_done = 0; tail_done < len;)
         {
             tail_done += 32;
             y = (RotateRight(x + y, 42) * K0) + v.High;
-            w = new UInt128(w.High, w.Low + Read64(ref sReference, ((offset + len) - tail_done) + 16));
+            w = new Hash128State(w.High, w.Low + Read64(ref sReference, ((offset + len) - tail_done) + 16));
             x = (x * K0) + w.Low;
             z += w.High + Read64(ref sReference, (offset + len) - tail_done);
-            w = new UInt128(w.High + v.Low, w.Low);
-            v = WeakHashLen32WithSeeds(s, (offset + len) - tail_done, v.Low + z, v.High);
-            v = new UInt128(v.High, v.Low * K0);
+            w = new Hash128State(w.High + v.Low, w.Low);
+            v = WeakHashState(s, (offset + len) - tail_done, v.Low + z, v.High);
+            v = new Hash128State(v.High, v.Low * K0);
         }
 
         // At this point our 56 bytes of state should contain more than
@@ -167,5 +167,35 @@ public static class CityHash128
         x = HashLen16(x, v.Low);
         y = HashLen16(y + z, w.Low);
         return new UInt128(HashLen16(x + w.High, y + v.High), HashLen16(x + v.High, w.High) + y);
+    }
+
+    // Keep the long-loop mixer inlined after short-input-first tiering.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Hash128State WeakHashState(ReadOnlySpan<byte> s, uint offset, ulong a, ulong b)
+    {
+        ref byte data = ref MemoryMarshal.GetReference(s);
+        ulong w = Read64(ref data, offset);
+        ulong x = Read64(ref data, offset + 8);
+        ulong y = Read64(ref data, offset + 16);
+        ulong z = Read64(ref data, offset + 24);
+        a += w;
+        b = RotateRight(b + a + z, 21);
+        ulong c = a;
+        a += x;
+        a += y;
+        b += RotateRight(a, 44);
+        return new Hash128State(b + c, a + z);
+    }
+
+    private readonly struct Hash128State
+    {
+        public readonly ulong Low;
+        public readonly ulong High;
+
+        public Hash128State(ulong high, ulong low)
+        {
+            Low = low;
+            High = high;
+        }
     }
 }
